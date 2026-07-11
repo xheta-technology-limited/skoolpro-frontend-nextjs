@@ -84,6 +84,15 @@
   --radius-lg: 1.5rem; /* 24px */
   --radius-xl: 2.25rem; /* 36px */
   --radius-round: 999px; /* 999px (fully rounded) */
+
+  /* transitions */
+  --ease-linear: linear;
+
+  --duration-instant: 75ms;
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 500ms;
 }
 
 @media (prefers-color-scheme: dark) {
