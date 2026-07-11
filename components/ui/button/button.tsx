@@ -39,6 +39,10 @@ const button = cva(
         false: null,
         true: "cursor-default",
       },
+      iconOnly: {
+        false: null,
+        true: "rounded-round",
+      },
     },
     compoundVariants: [
       {
@@ -83,6 +87,21 @@ const button = cva(
         loading: true,
         class: "bg-neutral-200",
       },
+      {
+        size: "lg",
+        iconOnly: true,
+        class: "p-4",
+      },
+      {
+        size: "md",
+        iconOnly: true,
+        class: "p-3.5",
+      },
+      {
+        size: "sm",
+        iconOnly: true,
+        class: "p-2",
+      },
     ],
     defaultVariants: {
       variant: "primary",
@@ -99,6 +118,7 @@ type ButtonProps = {
   rightIcon?: React.ReactNode;
   loading?: boolean;
   disabled?: boolean;
+  iconOnly?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const Button: React.FC<ButtonProps> = ({
@@ -108,12 +128,13 @@ const Button: React.FC<ButtonProps> = ({
   rightIcon,
   loading,
   disabled,
+  iconOnly,
   children,
   ...props
 }) => {
   return (
     <button
-      className={button({ variant, size, disabled, loading })}
+      className={button({ variant, size, disabled, loading, iconOnly })}
       disabled={disabled || undefined}
       {...props}
     >
