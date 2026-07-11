@@ -1,0 +1,122 @@
+import { cva } from "class-variance-authority";
+
+const button = cva(
+  [
+    "rounded-[28px]",
+    "flex",
+    "gap-2",
+    "items-center",
+    "justify-center",
+    "cursor-pointer",
+  ],
+  {
+    variants: {
+      variant: {
+        primary: ["bg-primary", "text-base-white", "border-transparent"],
+        secondary: [
+          "bg-transparent",
+          "text-primary",
+          "border",
+          "border-primary",
+        ],
+        tertiary: ["bg-transparent", "text-primary", "border-transparent"],
+      },
+      size: {
+        sm: ["text-sm", "py-4", "px-[32px]"],
+        md: ["text-base", "py-3.5", "px-[32px]"],
+        lg: ["text-base", "py-2", "px-4"],
+      },
+      disabled: {
+        false: null,
+        true: ["cursor-not-allowed text-neutral-200"],
+      },
+      loading: {
+        false: null,
+        true: "cursor-default",
+      },
+    },
+    compoundVariants: [
+      {
+        variant: "primary",
+        disabled: false,
+        class: "hover:bg-blue-600 focus:bg-primary-500 active:bg-primary-1000",
+      },
+      {
+        variant: "primary",
+        disabled: true,
+        class: "bg-primary-100",
+      },
+      {
+        variant: "primary",
+        loading: true,
+        class: "bg-primary-1000",
+      },
+      {
+        variant: "secondary",
+        disabled: false,
+        class:
+          "hover:bg-primary-100 focus:border-primary-500 active:bg-primary-100",
+      },
+      {
+        variant: "secondary",
+        disabled: true,
+        class: "border-primary-200",
+      },
+      {
+        variant: "tertiary",
+        disabled: false,
+        class:
+          "hover:bg-primary-100 focus:border-primary-500 focus:bg-primary-100 active:bg-primary-200",
+      },
+      {
+        variant: "tertiary",
+        disabled: true,
+        class: "border-0",
+      },
+      {
+        variant: "tertiary",
+        loading: true,
+        class: "bg-neutral-200",
+      },
+    ],
+    defaultVariants: {
+      variant: "primary",
+      size: "md",
+      disabled: false,
+    },
+  }
+);
+
+type ButtonProps = {
+  variant?: "primary" | "secondary" | "tertiary";
+  size?: "sm" | "md" | "lg";
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  loading?: boolean;
+  disabled?: boolean;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>;
+
+const Button: React.FC<ButtonProps> = ({
+  variant,
+  size,
+  leftIcon,
+  rightIcon,
+  loading,
+  disabled,
+  children,
+  ...props
+}) => {
+  return (
+    <button
+      className={button({ variant, size, disabled, loading })}
+      disabled={disabled || undefined}
+      {...props}
+    >
+      {leftIcon}
+      {children}
+      {rightIcon}
+    </button>
+  );
+};
+
+export default Button;
