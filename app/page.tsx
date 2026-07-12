@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui";
+import { Button, Input } from "@/components/ui";
 import { Text } from "@/components/ui";
 import Image from "next/image";
 
@@ -18,6 +18,7 @@ export default function Home() {
           <Text as="p" scale={"heading1"}>
             To get started, edit the page.tsx file
           </Text>
+          <Input>Some stupid shit</Input>
           <Button size="sm">SUCK YA MOTHER YOOO!!</Button>
           <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
             Looking for a starting point or more instructions? Head over to{" "}
