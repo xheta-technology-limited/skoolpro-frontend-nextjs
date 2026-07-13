@@ -1,6 +1,7 @@
 "use client";
 import { useFormContext } from "react-hook-form";
 import { XIcon } from "@phosphor-icons/react";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 type InputProps = {
   name: string;
@@ -48,6 +49,18 @@ const Input = ({
           <XIcon size={16} color="#C03744" />{" "}
           <span className="ml-2 text-xs text-[#C03744]">{error}</span>
         </>
+      )}
+
+      {isLoading && (
+        <div className="flex gap-1">
+          <DotLottieReact
+            src="/animations/ios-style-loading-spinner.lottie"
+            loop
+            autoplay
+            className="w-4 h-4"
+          />
+          <span className="text-xs text-neutrals-400">Loading</span>
+        </div>
       )}
     </div>
   );
