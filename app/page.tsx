@@ -1,5 +1,7 @@
+"use client";
 import { Button, Input } from "@/components/ui";
 import { Text } from "@/components/ui";
+import TextArea from "@/components/ui/form/textarea/text-area";
 import Image from "next/image";
 
 export default function Home() {
@@ -18,6 +20,7 @@ export default function Home() {
           <Text as="p" scale={"heading1"}>
             To get started, edit the page.tsx file
           </Text>
+          <TextArea name="balls" label="Le very big text" maxLength={12} />
           <Button size="sm">SUCK YA MOTHER YOOO!!</Button>
           <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
             Looking for a starting point or more instructions? Head over to{" "}
