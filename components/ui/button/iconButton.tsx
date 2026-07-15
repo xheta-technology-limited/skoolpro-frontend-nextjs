@@ -1,4 +1,3 @@
-import { Spinner } from "@/components/animations";
 import Button from "./button";
 
 type IconButtonProps = {

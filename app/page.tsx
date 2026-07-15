@@ -5,8 +5,6 @@ import TextArea from "@/components/ui/form/textarea/text-area";
 import Image from "next/image";
 import { Select } from "@/components/ui/form";
 import { FormProvider, useForm } from "react-hook-form";
-import { IconButton } from "@/components/ui/button";
-import { EyeClosedIcon } from "@phosphor-icons/react";
 
 export default function Home() {
   const methods = useForm();
@@ -42,6 +40,7 @@ export default function Home() {
           <Button size="sm" loading={true} variant="primary">
             SUCK YA MOTHER YOOO!!
           </Button>
+
           <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
             Looking for a starting point or more instructions? Head over to{" "}
             <a
