@@ -1,4 +1,7 @@
 import { cva } from "class-variance-authority";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { Spinner } from "@/components/animations";
+import { getSpinnerColor, getSpinnerSize } from "./helpers";
 
 const button = cva(
   [
@@ -90,17 +93,17 @@ const button = cva(
       {
         size: "lg",
         iconOnly: true,
-        class: "p-4",
+        class: "p-4!",
       },
       {
         size: "md",
         iconOnly: true,
-        class: "p-3.5",
+        class: "p-3.5!",
       },
       {
         size: "sm",
         iconOnly: true,
-        class: "p-2",
+        class: "p-2!",
       },
     ],
     defaultVariants: {
@@ -138,9 +141,12 @@ const Button: React.FC<ButtonProps> = ({
       disabled={disabled || undefined}
       {...props}
     >
-      {leftIcon}
+      {!loading && leftIcon}
       {children}
-      {rightIcon}
+      {!loading && rightIcon}
+      {loading && (
+        <Spinner size={getSpinnerSize(size)} color={getSpinnerColor(variant)} />
+      )}
     </button>
   );
 };
