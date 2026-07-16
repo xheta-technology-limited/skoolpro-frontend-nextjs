@@ -5,6 +5,7 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { ArrowSquareDown } from "iconsax-reactjs";
 import clsx from "clsx";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Spinner } from "@/components/animations";
 
 export type SelectOption = {
   label: string;
@@ -240,13 +241,7 @@ const Select = ({
 
             {isLoading && (
               <div className="flex gap-1">
-                <DotLottieReact
-                  src="/animations/ios-style-loading-spinner.lottie"
-                  loop
-                  autoplay
-                  className="w-4 h-4"
-                />
-                <span className="text-xs text-neutrals-400">Loading</span>
+                <Spinner />
               </div>
             )}
           </div>
