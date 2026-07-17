@@ -132,6 +132,7 @@ const Select = ({
           <div className="relative" ref={containerRef}>
             {searchable ? (
               <input
+                id="floating_select"
                 ref={inputRef}
                 value={isOpen ? searchTerm : selectedOption?.label ?? ""}
                 onChange={(e) => {
@@ -166,6 +167,7 @@ const Select = ({
             )}
 
             <label
+              htmlFor="floating_select"
               className={clsx(
                 "absolute text-neutral-400 transition-all pointer-events-none",
                 isFloating

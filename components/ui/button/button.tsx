@@ -2,6 +2,7 @@ import { cva } from "class-variance-authority";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { Spinner } from "@/components/animations";
 import { getSpinnerColor, getSpinnerSize } from "./helpers";
+import clsx from "clsx";
 
 const button = cva(
   [
@@ -137,9 +138,12 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   return (
     <button
-      className={button({ variant, size, disabled, loading, iconOnly })}
-      disabled={disabled || undefined}
       {...props}
+      className={clsx(
+        button({ variant, size, disabled, loading, iconOnly }),
+        props.className
+      )}
+      disabled={disabled || undefined}
     >
       {!loading && leftIcon}
       {children}

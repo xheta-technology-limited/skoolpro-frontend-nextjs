@@ -34,6 +34,7 @@ const TextArea = ({
   return (
     <div className="relative">
       <textarea
+        id="floating_textarea"
         {...register(name)}
         {...props}
         className={clsx(
@@ -43,6 +44,7 @@ const TextArea = ({
       />
 
       <label
+        htmlFor="floating_textarea"
         className={clsx(
           "left-ml absolute peer-placeholder-shown:top-4 text-neutral-400 transition-all peer-focus:top-0 peer-focus:text-[0.75rem] peer-not-placeholder-shown:text-[0.75rem] peer-disabled:text-neutrals-100"
         )}

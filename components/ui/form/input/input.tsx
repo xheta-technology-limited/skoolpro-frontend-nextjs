@@ -41,16 +41,18 @@ const Input = ({
       <input
         {...register(name)}
         {...props}
+        id="floating_input"
         type={passwordType}
         className={clsx(
           (icon || props.type === "password") && "pr-13.75",
           search && "pl-13.75",
-          "w-75 h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:border-primary-500 not-placeholder-shown:bg-transparent disabled:bg-[#F6F3FDCC]"
+          "w-full h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:outline-primary-500 focus:outline-1 not-placeholder-shown:bg-transparent disabled:bg-[#F6F3FDCC]"
         )}
         placeholder=" "
       />
 
       <label
+        htmlFor="floating_input"
         className={clsx(
           "absolute peer-placeholder-shown:top-4 text-neutral-400 transition-all peer-focus:top-0 peer-focus:text-[0.75rem] peer-not-placeholder-shown:text-[0.75rem] peer-disabled:text-neutrals-100",
           search ? "left-14" : "left-ml"
@@ -77,9 +79,9 @@ const Input = ({
           className="absolute cursor-pointer right-5 top-[0.843rem] border-0 bg-red peer-disabled:text-neutrals-100"
         >
           {isPasswordShown ? (
-            <EyeSlash size={24} className="text-neutrals-400" />
+            <EyeSlash variant="Bulk" size={24} className="text-neutrals-400" />
           ) : (
-            <Eye size={24} className="text-neutrals-400" />
+            <Eye variant="Bulk" size={24} className="text-neutrals-400" />
           )}
         </button>
       )}
