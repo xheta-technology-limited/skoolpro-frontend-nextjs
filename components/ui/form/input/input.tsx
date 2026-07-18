@@ -47,7 +47,8 @@ const Input = ({
         className={clsx(
           (icon || props.type === "password") && "pr-13.75",
           search && "pl-13.75",
-          "w-full h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:outline-primary-500 focus:outline-1 not-placeholder-shown:bg-transparent disabled:bg-[#F6F3FDCC]"
+          "w-full h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:outline-primary-500 focus:outline-1 not-placeholder-shown:bg-transparent disabled:bg-[#F6F3FDCC]",
+          error && "bg-[#FBD6D45C]"
         )}
         placeholder=" "
       />
