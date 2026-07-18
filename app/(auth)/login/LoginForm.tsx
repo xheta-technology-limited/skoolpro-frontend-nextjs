@@ -5,6 +5,9 @@ import { Text } from "@/components/ui";
 import Link from "next/link";
 import { linkVariants } from "@/styles";
 import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { userSchema } from "./_schemas/login-form-schema";
+
 const onSubmit = (data: loginForm) => {
   console.log(data);
 };
@@ -14,11 +17,12 @@ const LoginForm = () => {
       email: "",
       password: "",
     },
+    resolver: zodResolver(userSchema),
   });
   return (
     <FormProvider {...methods}>
       <form
-        className="flex flex-col gap-6 w-125"
+        className="flex flex-col sm:h-auto gap-6 w-125"
         onSubmit={methods.handleSubmit(onSubmit)}
       >
         <Input name="email" label="Enter email or phone number" type="email" />
@@ -37,7 +41,7 @@ const LoginForm = () => {
           </Link>
         </Text>
 
-        <Button size="lg" className="w-fit self-end">
+        <Button size="lg" className="w-full mt-auto sm:mt-0 sm:w-fit self-end">
           Login
         </Button>
       </form>
