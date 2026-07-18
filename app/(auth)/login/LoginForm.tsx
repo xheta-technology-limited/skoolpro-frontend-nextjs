@@ -1,3 +1,4 @@
+"use client";
 import { useForm, FormProvider } from "react-hook-form";
 import { loginForm } from "./types";
 import { Input } from "@/components/ui/form";
@@ -36,7 +37,10 @@ const LoginForm = () => {
           weight={"standard"}
         >
           Forgot Password?{" "}
-          <Link className={linkVariants({ size: "lg" })} href={"/"}>
+          <Link
+            className={linkVariants({ size: "lg" })}
+            href={"/reset-password"}
+          >
             Reset
           </Link>
         </Text>

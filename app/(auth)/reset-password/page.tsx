@@ -1,8 +1,8 @@
 import Image from "next/image";
-import LoginForm from "./LoginForm";
+import LoginForm from "./Form";
 import Link from "next/link";
 
-const Login = () => {
+const ResetPassword = () => {
   return (
     <div className="py-12 px-6 h-full sm:px-14 md:px-29.25 flex flex-col items-center w-screen">
       <Link href={"/"} className="mb-20.75">
@@ -30,4 +30,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ResetPassword;
