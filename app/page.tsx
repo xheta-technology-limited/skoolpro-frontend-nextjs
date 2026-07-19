@@ -19,12 +19,46 @@ export default function Home() {
           height={20}
           priority
         />
+        <Image
+          className="dark:invert"
+          src="/next.svg"
+          alt="Next.js logo"
+          width={100}
+          height={20}
+          priority
+        />
+        <Image
+          className="dark:invert"
+          src="/next.svg"
+          alt="Next.js logo"
+          width={100}
+          height={20}
+          priority
+        />
         <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
           <Text as="p" scale={"heading1"}>
             To get started, edit the page.tsx file
           </Text>
           <FormProvider {...methods}>
             <form>
+              <Select
+                searchable={true}
+                name="nothing"
+                label="Selection"
+                options={[
+                  { label: "nothing", value: "nothing" },
+                  { label: "something", value: "something" },
+                ]}
+              />
+              <Select
+                searchable={true}
+                name="nothing"
+                label="Selection"
+                options={[
+                  { label: "nothing", value: "nothing" },
+                  { label: "something", value: "something" },
+                ]}
+              />
               <Select
                 searchable={true}
                 name="nothing"

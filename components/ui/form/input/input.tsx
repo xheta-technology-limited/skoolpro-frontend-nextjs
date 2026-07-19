@@ -5,6 +5,7 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { EyeSlash, Eye, SearchNormal } from "iconsax-reactjs";
 import clsx from "clsx";
 import { useState } from "react";
+import { Spinner } from "@/components/animations";
 
 type InputProps = {
   name: string;
@@ -41,16 +42,19 @@ const Input = ({
       <input
         {...register(name)}
         {...props}
+        id={`floating_input_${name}`}
         type={passwordType}
         className={clsx(
           (icon || props.type === "password") && "pr-13.75",
           search && "pl-13.75",
-          "w-75 h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:border-primary-500 not-placeholder-shown:bg-transparent disabled:bg-[#F6F3FDCC]"
+          "w-full h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:outline-primary-500 focus:outline-1 not-placeholder-shown:bg-transparent disabled:bg-[#F6F3FDCC]",
+          error && "bg-[#FBD6D45C]"
         )}
         placeholder=" "
       />
 
       <label
+        htmlFor={`floating_input_${name}`}
         className={clsx(
           "absolute peer-placeholder-shown:top-4 text-neutral-400 transition-all peer-focus:top-0 peer-focus:text-[0.75rem] peer-not-placeholder-shown:text-[0.75rem] peer-disabled:text-neutrals-100",
           search ? "left-14" : "left-ml"
@@ -77,28 +81,23 @@ const Input = ({
           className="absolute cursor-pointer right-5 top-[0.843rem] border-0 bg-red peer-disabled:text-neutrals-100"
         >
           {isPasswordShown ? (
-            <EyeSlash size={24} className="text-neutrals-400" />
+            <EyeSlash variant="Bulk" size={24} className="text-neutrals-400" />
           ) : (
-            <Eye size={24} className="text-neutrals-400" />
+            <Eye variant="Bulk" size={24} className="text-neutrals-400" />
           )}
         </button>
       )}
 
       {error && (
-        <>
+        <div className="flex">
           <XIcon size={16} color="#C03744" />{" "}
           <span className="ml-2 text-xs text-[#C03744]">{error}</span>
-        </>
+        </div>
       )}
 
       {isLoading && (
         <div className="flex gap-1">
-          <DotLottieReact
-            src="/animations/ios-style-loading-spinner.lottie"
-            loop
-            autoplay
-            className="w-4 h-4"
-          />
+          <Spinner size={16} color={"#9f9c9c"} />
           <span className="text-xs text-neutrals-400">Loading</span>
         </div>
       )}
