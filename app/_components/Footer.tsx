@@ -1,12 +1,18 @@
+"use client";
 import Link from "next/link";
 import { FaFacebookF, FaXTwitter } from "react-icons/fa6";
 import { FaLinkedinIn, FaInstagram } from "react-icons/fa";
 import { AdmiralYellow11 } from "@/components/icons/logos";
+import { usePathname } from "next/navigation";
 
 const Footer = () => {
+  const pathname = usePathname();
+  if (pathname !== "/") {
+    return null;
+  }
   return (
     <div className="py-16 bg-primary">
-      <div className="container mx-auto">
+      <div className="container mx-auto max-w-[1625px] px-3.5">
         <div className="flex flex-col justify-between gap-4 px-2 sm:flex-row sm:items-center">
           <Link href="/">
             <AdmiralYellow11 width={200} height={67} />
