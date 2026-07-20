@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { AdmiralBlue11 } from "@/components/icons/logos";
-import { Brush, Blogger } from "iconsax-reactjs";
 
 const Navbar = () => {
   const [toggle, setToggle] = useState(false);
@@ -60,20 +58,6 @@ const Navbar = () => {
         <button className="rounded-[13px] px-4 py-2 font-normal text-white bg-primary">
           Book a Demo
         </button>
-
-        {!toggle ? (
-          <Brush
-            className="block cursor-pointer text-[var(--light-blue)] md:hidden"
-            size={20}
-            onClick={() => setToggle(!toggle)}
-          />
-        ) : (
-          <Blogger
-            className="block cursor-pointer text-[var(--light-blue)] md:hidden"
-            size={20}
-            onClick={() => setToggle(!toggle)}
-          />
-        )}
       </div>
     </div>
   );
