@@ -3,9 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import navLogo from "@/assets/navLogo.png";
-import { FaBars } from "react-icons/fa6";
-import { FaTimes } from "react-icons/fa";
+import { AdmiralBlue11 } from "@/components/icons/logos";
+import { Brush, Blogger } from "iconsax-reactjs";
 
 const Navbar = () => {
   const [toggle, setToggle] = useState(false);
@@ -17,10 +16,10 @@ const Navbar = () => {
   return (
     <div className="container mx-auto py-3">
       <div className="relative flex items-center justify-between">
-        <Image
-          src={navLogo}
-          alt="Navbar-logo"
-          className="h-auto w-[150px] max-w-full md:w-auto"
+        <AdmiralBlue11
+          width={200}
+          height={54}
+          className="h-auto w-37.5 max-w-full md:w-auto"
         />
 
         <ul className={navLinksClass} style={{ fontWeight: 400 }}>
@@ -66,13 +65,13 @@ const Navbar = () => {
         </button>
 
         {!toggle ? (
-          <FaBars
+          <Brush
             className="block cursor-pointer text-[var(--light-blue)] md:hidden"
             size={20}
             onClick={() => setToggle(!toggle)}
           />
         ) : (
-          <FaTimes
+          <Blogger
             className="block cursor-pointer text-[var(--light-blue)] md:hidden"
             size={20}
             onClick={() => setToggle(!toggle)}

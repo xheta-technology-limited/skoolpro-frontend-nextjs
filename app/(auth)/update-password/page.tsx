@@ -1,18 +1,13 @@
 import Image from "next/image";
 import LoginForm from "./Form";
 import Link from "next/link";
+import { AdmiralBlue11 } from "@/components/icons/logos";
 
 const UpdatePassword = () => {
   return (
     <div className="py-12 px-6 h-full sm:px-14 md:px-29.25 flex flex-col items-center w-screen">
       <Link href={"/"} className="mb-20.75">
-        <Image
-          src={"/icons/SkoolPro_Admiral_Blue_1_1.png"}
-          height={51}
-          width={199}
-          alt="app logo"
-          loading="eager"
-        />
+        <AdmiralBlue11 height={51} width={199} />
       </Link>
 
       <div className="flex h-full flex-wrap gap-16.5 items-center justify-center w-full">
