@@ -10,9 +10,10 @@ import { useState } from "react";
 
 const Form = () => {
   const [open, setOpen] = useState(false);
+
   const methods = useForm<passwordForm>({
     defaultValues: {
-      email: "",
+      identifier: "",
     },
     resolver: zodResolver(resetPasswordSchema),
   });
@@ -28,8 +29,7 @@ const Form = () => {
           className="flex flex-col sm:h-auto gap-6 w-125"
           onSubmit={methods.handleSubmit(onSubmit)}
         >
-          <Input name="email" label="Enter email" type="email" />
-
+          <Input name="identifier" label="Enter email or phone number" />
           <Button
             size="lg"
             className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
@@ -41,7 +41,7 @@ const Form = () => {
       <SuccessModal
         isOpen={open}
         onClose={onClose}
-        subheading="A password reset link has been sent to your email."
+        subheading="A password reset link has been sent to you"
       >
         <Button onClick={onClose} size="lg">
           Okay
