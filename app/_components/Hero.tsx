@@ -43,7 +43,7 @@ const Hero = () => {
           >
             Get started for free
             <Image
-              src="/cta-pointer.png"
+              src="/images/cta-pointer.png"
               alt="arrow"
               className="ml-1 inline-block h-10 w-auto"
               height={48}

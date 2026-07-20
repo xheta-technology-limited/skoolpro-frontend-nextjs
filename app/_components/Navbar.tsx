@@ -5,7 +5,7 @@ import Link from "next/link";
 import { AdmiralBlue11 } from "@/components/icons/logos";
 
 const Navbar = () => {
-  const [toggle, setToggle] = useState(false);
+  const [toggle, setToggle] = useState(false); // TODO: remove this and just use breakpoints
 
   const navLinksClass = toggle
     ? "absolute right-0 top-[75px] z-10 flex h-[calc(100vh-80px)] w-[250px] flex-col gap-4 bg-white pt-4 md:static md:h-auto md:w-auto md:flex-row md:items-center md:gap-6 md:bg-transparent md:pt-0"
