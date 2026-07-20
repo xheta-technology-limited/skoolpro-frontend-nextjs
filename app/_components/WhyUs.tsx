@@ -58,7 +58,7 @@ const WhyUS = () => {
   return (
     <>
       <section className="container mx-auto">
-        <div className="mb-6 w-fit rounded-[5px] bg-[#FFDF93] px-[10px] pb-[1px] pt-[3px]">
+        <div className="mb-6 w-fit rounded-[5px] bg-[#FFDF93] px-2.5 pb-px pt-0.75">
           <Text as="h4" weight={"bold"} scale={"heading4"}>
             Why choose Skoolpro
           </Text>
@@ -120,7 +120,7 @@ const WhyUS = () => {
               tool can help your business grow and succeed online.
             </p>
             <button
-              className="rounded-2xl px-3 py-2 font-normal text-[var(--light-blue)]"
+              className="rounded-2xl px-3 py-2 font-normal text-primary-1000"
               style={{ backgroundColor: "#FFDF93" }}
             >
               Get started for free{" "}

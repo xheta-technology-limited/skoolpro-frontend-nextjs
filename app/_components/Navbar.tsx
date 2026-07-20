@@ -22,34 +22,22 @@ const Navbar = () => {
 
         <ul className={navLinksClass} style={{ fontWeight: 400 }}>
           <li>
-            <Link
-              href="/"
-              className="list-none text-[var(--light-blue)] no-underline"
-            >
+            <Link href="/" className="list-none text-primary-1000 no-underline">
               Home
             </Link>
           </li>
           <li>
-            <Link
-              href="/"
-              className="list-none text-[var(--light-blue)] no-underline"
-            >
+            <Link href="/" className="list-none text-primary-1000 no-underline">
               About
             </Link>
           </li>
           <li>
-            <Link
-              href="/"
-              className="list-none text-[var(--light-blue)] no-underline"
-            >
+            <Link href="/" className="list-none text-primary-1000 no-underline">
               Services
             </Link>
           </li>
           <li>
-            <Link
-              href="/"
-              className="list-none text-[var(--light-blue)] no-underline"
-            >
+            <Link href="/" className="list-none text-primary-1000 no-underline">
               Contact us
             </Link>
           </li>

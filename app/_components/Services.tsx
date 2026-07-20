@@ -67,7 +67,7 @@ const Services = () => {
     <section className="container mx-auto my-16">
       <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-1">
-          <div className="flex w-fit items-center justify-center rounded-[5px] bg-[#FFDF93] px-[10px]">
+          <div className="flex w-fit items-center justify-center rounded-[5px] bg-[#FFDF93] px-2.5">
             <Text as="h4" weight={"bold"} scale={"heading4"}>
               Services
             </Text>
@@ -111,10 +111,7 @@ const Services = () => {
                 {dat.subHeading}
               </span>
             </div>
-            <div
-              className="mt-8 h-[7rem] w-[90%]"
-              style={{ color: dat.textColor }}
-            >
+            <div className="mt-8 h-28 w-[90%]" style={{ color: dat.textColor }}>
               {dat.body}
             </div>
           </div>
