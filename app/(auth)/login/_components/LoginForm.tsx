@@ -1,13 +1,13 @@
 "use client";
 import { useForm, FormProvider } from "react-hook-form";
-import { loginForm } from "./types";
+import { loginForm } from "../../../../features/auth/types/types";
 import { Input } from "@/components/ui/form";
 import { Text } from "@/components/ui";
 import Link from "next/link";
 import { linkVariants } from "@/styles";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { userSchema } from "./_schemas/login-form-schema";
+import { userSchema } from "../../../../features/auth/schemas/login-form-schema";
 
 const onSubmit = (data: loginForm) => {
   console.log(data);
