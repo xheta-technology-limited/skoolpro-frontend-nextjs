@@ -2,17 +2,20 @@ import { IconWrapper } from "@/components/icons";
 import clsx from "clsx";
 import { TickCircle, Mobile } from "iconsax-reactjs";
 
-interface props {
+interface props extends React.ComponentProps<"div"> {
   title: string;
   isActive: boolean;
 }
 
-const MfaButton = ({ title, isActive }: props) => {
+const MfaButton = ({ title, isActive, ...props }: props) => {
   return (
     <div
+      {...props}
       className={clsx(
-        "transition-all border flex gap-4 p-8 border-primary rounded-br-[200px] text-primary rounded-tr-[200px] rounded-tl-8 rounded-bl-4 bg-white hover:bg-primary-200 hover:text-white",
-        isActive && "bg-primary-900 border-primary-500"
+        "transition-all relative items-center border flex gap-4 p-8 border-primary rounded-br-[200px] text-primary rounded-tr-[200px] rounded-tl-[32px] rounded-bl-ml hover:text-white",
+        isActive
+          ? "bg-primary-900 border-primary-500"
+          : "bg-white hover:bg-primary-200"
       )}
     >
       <IconWrapper size={44}>
@@ -26,12 +29,14 @@ const MfaButton = ({ title, isActive }: props) => {
       >
         {title}
       </span>
-      <TickCircle
-        size={32}
-        variant="Bulk"
-        color="#FAFAFA"
-        className="top-4.75 right-7.75 absolute"
-      />
+      {isActive && (
+        <TickCircle
+          size={32}
+          variant="Bulk"
+          color="#FAFAFA"
+          className="top-4.75 right-7.75 absolute"
+        />
+      )}
     </div>
   );
 };
