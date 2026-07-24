@@ -77,6 +77,7 @@ const Input = ({
 
       {props.type === "password" && (
         <button
+          type="button"
           onClick={() => setPasswordShown((prev) => !prev)}
           className="absolute cursor-pointer right-5 top-[0.843rem] border-0 bg-red peer-disabled:text-neutrals-100"
         >

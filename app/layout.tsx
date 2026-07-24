@@ -1,7 +1,20 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Poppins, Lora } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Poppins,
+  Lora,
+  JetBrains_Mono,
+} from "next/font/google";
 import "./globals.css";
 import { Footer } from "./_components";
+import { Providers } from "./providers";
+import { cn } from "@/lib/utils";
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,13 +53,24 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${lora.variable} h-full antialiased`}
+      className={cn(
+        "h-full",
+        "antialiased",
+        geistSans.variable,
+        geistMono.variable,
+        poppins.variable,
+        lora.variable,
+        "font-mono",
+        jetbrainsMono.variable
+      )}
     >
       <body className="min-h-full">
-        <div className="mx-auto flex flex-col max-w-[1625px] min-h-full">
-          {children}
-        </div>
-        <Footer />
+        <Providers>
+          <div className="mx-auto flex flex-col max-w-[1625px] min-h-full">
+            {children}
+          </div>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

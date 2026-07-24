@@ -143,7 +143,7 @@ const Button: React.FC<ButtonProps> = ({
         button({ variant, size, disabled, loading, iconOnly }),
         props.className
       )}
-      disabled={disabled || undefined}
+      disabled={disabled || loading || undefined}
     >
       {!loading && leftIcon}
       {children}

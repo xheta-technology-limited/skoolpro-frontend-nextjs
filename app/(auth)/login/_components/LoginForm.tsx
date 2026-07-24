@@ -1,18 +1,46 @@
 "use client";
 import { useForm, FormProvider } from "react-hook-form";
-import { loginForm } from "../../../../features/auth/types/types";
+import { loginForm } from "@/features/auth/types/types";
 import { Input } from "@/components/ui/form";
 import { Text } from "@/components/ui";
 import Link from "next/link";
 import { linkVariants } from "@/styles";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { userSchema } from "../../../../features/auth/schemas/login-form-schema";
+import { userSchema } from "@/features/auth/schemas/login-form-schema";
+import { useSanctumCookie } from "@/features/auth/api/login";
+import { useLogin } from "@/features/auth/api/login";
+import { useEffect } from "react";
 
-const onSubmit = (data: loginForm) => {
-  console.log(data);
-};
 const LoginForm = () => {
+  useEffect(() => {
+    console.log("UWU :3");
+    const handleOffline = () => {
+      console.log(
+        "HERE WE FUCKING GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
+      );
+    };
+
+    const handleOnline = () => {
+      console.log(
+        "WE'RE ONLINNENENNENENEN AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      );
+    };
+
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+
+    if (!navigator.onLine) {
+      handleOffline();
+    }
+
+    // return () => {
+    //   window.removeEventListener("offline", handleOffline);
+    //   window.removeEventListener("online", handleOnline);
+    // };
+  }, []);
+
+  const { isSuccess } = useSanctumCookie();
   const methods = useForm<loginForm>({
     defaultValues: {
       email: "",
@@ -20,6 +48,12 @@ const LoginForm = () => {
     },
     resolver: zodResolver(userSchema),
   });
+  const { mutate, isPending } = useLogin();
+
+  const onSubmit = (data: loginForm) => {
+    mutate(data);
+  };
+
   return (
     <FormProvider {...methods}>
       <form
@@ -45,7 +79,11 @@ const LoginForm = () => {
           </Link>
         </Text>
 
-        <Button size="lg" className="w-full mt-auto sm:mt-0 sm:w-fit self-end">
+        <Button
+          loading={isPending}
+          size="lg"
+          className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+        >
           Login
         </Button>
       </form>
