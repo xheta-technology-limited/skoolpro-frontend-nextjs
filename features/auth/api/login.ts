@@ -5,7 +5,7 @@ import { authKeys } from "./query-keys";
 
 // 1. Pure service function (strongly typed)
 export const login = (data: loginRequest): Promise<loginResponse> => {
-  return api.post(`/auth/spa/login`, data);
+  return api.post(`/api/v1/auth/spa/login`, data);
 };
 
 // 2. TanStack Query Hook

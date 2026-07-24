@@ -31,9 +31,9 @@ const button = cva(
         tertiary: ["bg-transparent", "text-primary", "border-transparent"],
       },
       size: {
-        lg: ["text-base", "py-4", "px-8"],
-        md: ["text-base", "py-3.5", "px-8"],
-        sm: ["text-sm", "py-2", "px-4"],
+        lg: ["text-sm", "md:text-base", "py-4", "px-4", "md:px-8"],
+        md: ["text-sm", "md:text-base", "py-3.5", "px-4", "md:px-8"],
+        sm: ["text-[0.5rem]", "md:text-sm", "py-2", "px-4"],
       },
       disabled: {
         false: null,

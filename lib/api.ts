@@ -1,7 +1,8 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { toast } from "sonner";
 
-const BASE_CLIENT = process.env.NEXT_PUBLIC_BACKEND_API;
+//const BASE_CLIENT = process.env.NEXT_PUBLIC_BACKEND_API;
+const BASE_CLIENT = "";
 
 export const api = axios.create({
   baseURL: BASE_CLIENT,
