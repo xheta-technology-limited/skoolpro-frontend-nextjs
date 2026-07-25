@@ -1,27 +1,8 @@
-"use client";
-import { useState } from "react";
 import { Text } from "@/components/ui";
-import { Button } from "@/components/ui/custom-button";
 import Image from "next/image";
-import OTP from "@/components/ui/custom-otp-input";
+import Form from "./form";
 
-const options = [
-  {
-    title: "Authenticator App",
-    id: "app",
-  },
-  {
-    title: "Email OTP",
-    id: "email",
-  },
-  {
-    title: "SMS OTP",
-    id: "sms",
-  },
-];
 export default function Authenticator() {
-  const [active, setActive] = useState<null | string>(null);
-  const [code, setCode] = useState("null");
   return (
     <section>
       <div className="flex flex-col gap-6 mb-12">
@@ -48,7 +29,7 @@ export default function Authenticator() {
             <Text
               scale={"highlight"}
               weight={"standard"}
-            >{`Scan the QR code below with your authenticator app or enter the text code (${code}) on the authenticator app`}</Text>
+            >{`Scan the QR code below with your authenticator app or enter the text code ($null_for_now) on the authenticator app`}</Text>
             <Image
               src={"/"}
               width={179}
@@ -65,16 +46,7 @@ export default function Authenticator() {
         </ol>
       </div>
 
-      <OTP length={6} className="mb-6 justify-self-center" />
-
-      <div className="flex gap-6 justify-between items-center">
-        <Button variant="secondary" size="lg" className="min-w-0 flex-1">
-          Cancel
-        </Button>
-        <Button size="lg" className="min-w-0 flex-1">
-          Enable
-        </Button>
-      </div>
+      <Form />
     </section>
   );
 }

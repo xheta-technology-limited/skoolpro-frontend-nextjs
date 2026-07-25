@@ -1,15 +1,28 @@
 "use client";
 import clsx from "clsx";
-import { OTPInput, SlotProps } from "input-otp";
+import { OTPInput, SlotProps, REGEXP_ONLY_DIGITS } from "input-otp";
 
-interface props {
+type props = {
   length: number;
+  name: string;
+  value?: string;
+  onChange?: (e: string) => void;
   className?: string;
-}
-export default function OTP({ length, className }: props) {
+};
+export default function OTP({
+  length,
+  name,
+  className,
+  value,
+  onChange,
+}: props) {
   return (
     <OTPInput
+      name={name}
+      onChange={onChange}
+      value={value}
       containerClassName={className}
+      pattern={REGEXP_ONLY_DIGITS}
       maxLength={length}
       render={({ slots }) => (
         <>
