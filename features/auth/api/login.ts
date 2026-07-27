@@ -1,32 +1,31 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { api } from "@/lib/api";
-import { loginRequest, loginResponse } from "../types/api";
 import { authKeys } from "./query-keys";
+import type { LoginRequest, LoginResponse } from "../types/api";
 
-// 1. Pure service function (strongly typed)
-export const login = (data: loginRequest): Promise<loginResponse> => {
-  return api.post(`/api/v1/auth/spa/login`, data);
-};
-
-// 2. TanStack Query Hook
-export const useLogin = () => {
-  return useMutation({
-    mutationFn: login,
-    onSuccess: () => {
-      //TODO: add a redirect
-    },
-  });
-};
-
-export const getSanctumCookie = () => {
+export const getCsrfCookie = (): Promise<void> => {
   return api.get("https://api.skoolpro.net/sanctum/csrf-cookie");
 };
 
-export const useSanctumCookie = () => {
-  return useQuery({
-    queryKey: authKeys.all,
-    queryFn: () => getSanctumCookie(),
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
+export const login = (data: LoginRequest): Promise<LoginResponse> => {
+  return api.post("/api/v1/auth/spa/login", data);
+};
+
+export const useLogin = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    LoginResponse,
+    AxiosError<{ message: string }>,
+    LoginRequest
+  >({
+    mutationFn: async (data) => {
+      await getCsrfCookie();
+      return login(data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: authKeys.all });
+    },
   });
 };

@@ -1,4 +1,4 @@
 export type loginForm = {
-  email: string;
+  login: string;
   password: string;
 };

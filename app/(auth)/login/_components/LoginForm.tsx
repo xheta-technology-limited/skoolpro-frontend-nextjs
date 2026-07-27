@@ -8,19 +8,17 @@ import { linkVariants } from "@/styles";
 import { Button } from "@/components/ui/custom-button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userSchema } from "@/features/auth/schemas/login-form-schema";
-import { useSanctumCookie } from "@/features/auth/api/login";
 import { useLogin } from "@/features/auth/api/login";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SuccessModal from "@/components/common/successModal/modal";
 import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
-  const { isSuccess } = useSanctumCookie();
   const [isModalOpen, setModalOpen] = useState(false);
   const router = useRouter();
   const methods = useForm<loginForm>({
     defaultValues: {
-      email: "",
+      login: "",
       password: "",
     },
     resolver: zodResolver(userSchema),
@@ -28,7 +26,16 @@ const LoginForm = () => {
   const { mutate, isPending } = useLogin();
 
   const onSubmit = (data: loginForm) => {
-    mutate(data);
+    console.log("submitting");
+    mutate(data, {
+      onSuccess: (res) => {
+        if ("mfa_required" in res) {
+          //TODO: handle mfa login
+        } else {
+          res.mfa_enabled === false && setModalOpen(true);
+        }
+      },
+    });
   };
 
   return (
@@ -38,11 +45,7 @@ const LoginForm = () => {
           className="flex flex-col sm:h-auto gap-6 w-125"
           onSubmit={methods.handleSubmit(onSubmit)}
         >
-          <Input
-            name="email"
-            label="Enter email or phone number"
-            type="email"
-          />
+          <Input name="login" label="Enter email or phone number" />
 
           <Input name="password" label="Enter your password" type="password" />
 
@@ -65,7 +68,6 @@ const LoginForm = () => {
             loading={isPending}
             size="lg"
             className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
-            onClick={() => setModalOpen(true)}
           >
             Login
           </Button>
@@ -83,7 +85,7 @@ const LoginForm = () => {
           <Button
             size="lg"
             className="flex-1 min-w-0"
-            onClick={() => router.push("/mfa-setup")}
+            onClick={() => router.replace("/mfa-setup")}
           >
             Set up MFA
           </Button>

@@ -95,6 +95,14 @@ const Input = ({
           <span className="ml-2 text-xs text-[#C03744]">{error}</span>
         </div>
       )}
+      {errors.root?.serverError.type === 401 && (
+        <div className="flex">
+          <XIcon size={16} color="#C03744" />{" "}
+          <span className="ml-2 text-xs text-[#C03744]">
+            Invalid credentials
+          </span>
+        </div>
+      )}
 
       {isLoading && (
         <div className="flex gap-1">

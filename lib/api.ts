@@ -27,7 +27,13 @@ api.interceptors.response.use(
     toast.error("Error", {
       position: "top-right",
       description: message,
-      className: "bg-[#FBD6D45C] border-[1px] border-error text-black",
+      style: {
+        background: "#e4626f",
+        border: "3px solid #8c1823",
+      },
+      classNames: {
+        description: "!text-black",
+      },
     });
 
     if (error.response?.status === 401) {
