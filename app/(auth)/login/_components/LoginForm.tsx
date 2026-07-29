@@ -26,12 +26,12 @@ const LoginForm = () => {
   const { mutate, isPending } = useLogin();
 
   const onSubmit = (data: loginForm) => {
-    console.log("submitting");
     mutate(data, {
       onSuccess: (res) => {
         if ("mfa_required" in res) {
-          //TODO: handle mfa login
-        } else {
+          //TODO: add mfa steps
+        }
+        if ("mfa_enabled" in res) {
           res.mfa_enabled === false && setModalOpen(true);
         }
       },

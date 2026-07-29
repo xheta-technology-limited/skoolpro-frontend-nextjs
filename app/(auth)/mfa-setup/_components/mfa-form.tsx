@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Text } from "@/components/ui";
 import MfaButton from "./mfa-button";
 import { Button } from "@/components/ui/custom-button";
+import { useAuthenticatorSetup, useOtpSetup } from "@/features/auth/api/mfa";
+import { useRouter } from "next/navigation";
 
 const options = [
   {
@@ -11,15 +13,25 @@ const options = [
   },
   {
     title: "Email OTP",
-    id: "email",
+    id: "email_otp",
   },
   {
     title: "SMS OTP",
-    id: "sms",
+    id: "sms_otp",
   },
 ];
 export default function MfaForm() {
-  const [active, setActive] = useState<null | string>(null);
+  const [active, setActive] = useState<string | null>(null);
+  const router = useRouter();
+
+  const onProceed = () => {
+    if (active && active !== "app") {
+      router.push(`/mfa-setup/otp/${active}`);
+    } else if (active && active === "app") {
+      router.push("/mfa-setup/app");
+    }
+  };
+
   return (
     <section>
       <div className="flex flex-col gap-6 mb-12">
@@ -49,7 +61,7 @@ export default function MfaForm() {
         <Button variant="secondary" size="lg" className="min-w-0 flex-1">
           Cancel
         </Button>
-        <Button size="lg" className="min-w-0 flex-1">
+        <Button size="lg" className="min-w-0 flex-1" onClick={onProceed}>
           Proceed
         </Button>
       </div>

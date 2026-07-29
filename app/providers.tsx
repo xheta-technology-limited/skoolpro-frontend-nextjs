@@ -8,7 +8,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
   return (
     <>
-      <Toaster />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          classNames: {
+            error: "!border !border-[2.5px] !border-red-500 !bg-error-100",
+          },
+        }}
+      />
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </>
   );

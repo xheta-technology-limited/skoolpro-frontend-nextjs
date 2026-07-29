@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
         destination: "https://api.skoolpro.net/sanctum/:path*",
       },
       {
-        source: "/api/v1/:path*",
+        source: "/:path*",
         destination: "https://api.skoolpro.net/api/v1/:path*",
       },
     ];

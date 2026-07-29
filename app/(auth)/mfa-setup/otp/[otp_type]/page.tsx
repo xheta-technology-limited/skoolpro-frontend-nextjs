@@ -7,7 +7,12 @@ import OTP from "@/components/ui/custom-otp-input";
 import { useForm } from "react-hook-form";
 import { SuccessModal } from "@/components/common";
 
-export default function Email() {
+export default async function Email({
+  params,
+}: {
+  params: Promise<{ otp_type: "email" | "sms" }>;
+}) {
+  const { otp_type } = await params;
   const { register, handleSubmit } = useForm();
   const [success, setSuccess] = useState(false);
   const [otp, setOtp] = useState("");

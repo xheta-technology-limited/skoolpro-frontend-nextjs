@@ -1,14 +1,13 @@
 "use client";
 import OTP from "@/components/ui/custom-otp-input";
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/custom-button";
 import { useState } from "react";
 import { SuccessModal } from "@/components/common";
 
 export default function Form() {
-  const { register, handleSubmit } = useForm();
   const [success, setSuccess] = useState(false);
   const [otp, setOtp] = useState("");
+
   return (
     <>
       <form
