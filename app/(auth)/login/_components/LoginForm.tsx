@@ -28,6 +28,7 @@ const LoginForm = () => {
   const onSubmit = (data: loginForm) => {
     mutate(data, {
       onSuccess: (res) => {
+        console.log("respose: ", res);
         if ("mfa_required" in res) {
           //TODO: add mfa steps
         }

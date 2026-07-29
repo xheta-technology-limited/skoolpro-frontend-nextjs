@@ -8,7 +8,7 @@ import { AxiosError } from "axios";
 
 //setup mfa
 export const authenticatorSetup = (): Promise<AuthenticatorSetupResponse> => {
-  return api.post("/mfa/authenticator/setup");
+  return api.post("mfa/authenticator/setup");
 };
 export const useAuthenticatorSetup = () => {
   return useMutation<
@@ -22,7 +22,7 @@ export const useAuthenticatorSetup = () => {
 export const confirmMfaCode = (data: {
   code: string;
 }): Promise<AuthenticatorConfirmResponse> => {
-  return api.post("/mfa/authenticator/confirm", data);
+  return api.post("mfa/authenticator/confirm", data);
 };
 
 export const useConfirmMfaCode = () => {
@@ -37,7 +37,7 @@ export const useConfirmMfaCode = () => {
 
 // setup otp
 export const otpSetup = (): Promise<{ message: string }> => {
-  return api.post("/mfa/otp/request");
+  return api.post("mfa/otp/request");
 };
 
 export const useOtpSetup = () => {

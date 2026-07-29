@@ -1,5 +1,6 @@
 import { toast } from "sonner";
 import process from "process";
+import { redirect } from "next/navigation";
 
 type RequestOptions = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -9,7 +10,9 @@ type RequestOptions = {
   cache?: RequestCache;
 };
 //const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API
-const baseUrl = "";
+const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API;
+const backendBase =
+  typeof window === "undefined" ? process.env.BACKEND_API_URL : "";
 async function getCookieHeader(): Promise<string | undefined> {
   // Only relevant on the server — the browser sends cookies automatically
   if (typeof window !== "undefined") return undefined;
@@ -24,15 +27,14 @@ async function getCookieHeader(): Promise<string | undefined> {
 
 function buildUrl(path: string, params?: RequestOptions["params"]): string {
   const isAbsolute = /^https?:\/\//i.test(path);
+  const base = isAbsolute ? undefined : backendBase || undefined;
 
-  const base = isAbsolute
-    ? undefined
-    : baseUrl ||
-      (typeof window !== "undefined"
-        ? window.location.origin
-        : process.env.NEXT_PUBLIC_SITE_URL);
-
-  const url = base ? new URL(path, base) : new URL(path);
+  const url = base
+    ? new URL(path, base)
+    : new URL(
+        path,
+        typeof window !== "undefined" ? window.location.origin : undefined
+      );
 
   if (params) {
     for (const [key, value] of Object.entries(params)) {
@@ -71,6 +73,11 @@ async function request<T>(
         .then((data) => data.message)
         .catch(() => res.statusText);
 
+      if (res.status === 401) {
+        typeof window !== "undefined"
+          ? (window.location.href = "/login")
+          : redirect("/login");
+      }
       if (typeof window !== "undefined") {
         toast.error(message);
       }
@@ -78,7 +85,9 @@ async function request<T>(
       throw new Error(message);
     }
 
-    return res.status === 204 ? (undefined as T) : res.json();
+    return res.status === 204
+      ? (undefined as T)
+      : res.json().then((data) => data.data);
   } catch (error) {
     console.error(`[api] ${method} ${path} failed:`, error);
     throw error;

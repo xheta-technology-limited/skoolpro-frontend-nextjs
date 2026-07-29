@@ -4,7 +4,7 @@ import Form from "./form";
 import { authenticatorSetup } from "@/features/auth/api/mfa";
 
 export default async function Authenticator() {
-  //const res = await authenticatorSetup();
+  const res = await authenticatorSetup();
   return (
     <section>
       <div className="flex flex-col gap-6 mb-12">
@@ -31,9 +31,9 @@ export default async function Authenticator() {
             <Text
               scale={"highlight"}
               weight={"standard"}
-            >{`Scan the QR code below with your authenticator app or enter the text code (${""}) on the authenticator app`}</Text>
+            >{`Scan the QR code below with your authenticator app or enter the text code (${res.secret}) on the authenticator app`}</Text>
             <Image
-              src={"/"}
+              src={res.qr_code_url}
               width={179}
               height={179}
               alt="qr-code"

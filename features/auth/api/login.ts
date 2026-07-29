@@ -10,7 +10,7 @@ export const getCsrfCookie = (): Promise<void> => {
 };
 
 export const login = (data: LoginRequest): Promise<LoginResponse> => {
-  return api.post("/auth/spa/login", data);
+  return api.post("auth/spa/login", data);
 };
 
 export const useLogin = () => {
