@@ -36,8 +36,10 @@ export const useConfirmMfaCode = () => {
 };
 
 // setup otp
-export const otpSetup = (): Promise<{ message: string }> => {
-  return api.post("mfa/otp/request");
+export const otpSetup = (data: {
+  method: string;
+}): Promise<{ message: string }> => {
+  return api.post("mfa/otp/request", data);
 };
 
 export const useOtpSetup = () => {

@@ -1,18 +1,16 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/custom-button";
 import Image from "next/image";
 import OTP from "@/components/ui/custom-otp-input";
 import { useForm } from "react-hook-form";
 import { SuccessModal } from "@/components/common";
+import { useOtpSetup } from "@/features/auth/api/mfa";
+import { useParams } from "next/navigation";
 
-export default async function Email({
-  params,
-}: {
-  params: Promise<{ otp_type: "email" | "sms" }>;
-}) {
-  const { otp_type } = await params;
+export default function Email() {
+  const { otp_type } = useParams<{ otp_type: string }>();
   const { register, handleSubmit } = useForm();
   const [success, setSuccess] = useState(false);
   const [otp, setOtp] = useState("");

@@ -28,6 +28,8 @@ async function getCookieHeader(): Promise<string | undefined> {
 function buildUrl(path: string, params?: RequestOptions["params"]): string {
   const isAbsolute = /^https?:\/\//i.test(path);
   const base = isAbsolute ? undefined : backendBase || undefined;
+  console.log("path: ", path);
+  console.log("base: ", base);
 
   const url = base
     ? new URL(path, base)
@@ -54,6 +56,15 @@ async function request<T>(
 
   try {
     const cookie = await getCookieHeader();
+
+    const finalHeaders = new Headers({
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      ...(cookie ? { Cookie: cookie } : {}),
+      ...headers,
+    });
+    console.log("Final headers being sent:", [...finalHeaders.entries()]);
+    console.log("the cookie: ", cookie);
     const res = await fetch(buildUrl(path, params), {
       method,
       credentials: "include",
@@ -66,6 +77,8 @@ async function request<T>(
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
+    console.log("cookie: ", cookie);
+    console.log("applied cookies: ", res.headers.getSetCookie());
 
     if (!res.ok) {
       const message = await res
@@ -77,6 +90,7 @@ async function request<T>(
         typeof window !== "undefined"
           ? (window.location.href = "/login")
           : redirect("/login");
+        return undefined as T;
       }
       if (typeof window !== "undefined") {
         toast.error(message);
