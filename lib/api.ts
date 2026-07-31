@@ -1,5 +1,4 @@
 import { toast } from "sonner";
-import process from "process";
 import { redirect } from "next/navigation";
 
 type RequestOptions = {
@@ -9,10 +8,15 @@ type RequestOptions = {
   params?: Record<string, string | number | boolean | undefined | null>;
   cache?: RequestCache;
 };
-//const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API
-const baseUrl = process.env.NEXT_PUBLIC_BACKEND_API;
-const backendBase =
-  typeof window === "undefined" ? process.env.BACKEND_API_URL : "";
+var baseClient: string | undefined;
+if (typeof window === "undefined") {
+  baseClient = process.env.BACKEND_API_URL;
+} else if (process.env.NEXT_PUBLIC_ENV === "development") {
+  baseClient = process.env.NEXT_PUBLIC_BACKEND_API_URL;
+} else {
+  baseClient = "";
+}
+
 async function getCookieHeader(): Promise<string | undefined> {
   // Only relevant on the server — the browser sends cookies automatically
   if (typeof window !== "undefined") return undefined;
@@ -27,16 +31,16 @@ async function getCookieHeader(): Promise<string | undefined> {
 
 function buildUrl(path: string, params?: RequestOptions["params"]): string {
   const isAbsolute = /^https?:\/\//i.test(path);
-  const base = isAbsolute ? undefined : backendBase || undefined;
-  console.log("path: ", path);
-  console.log("base: ", base);
+  let url: URL;
 
-  const url = base
-    ? new URL(path, base)
-    : new URL(
-        path,
-        typeof window !== "undefined" ? window.location.origin : undefined
-      );
+  if (isAbsolute) {
+    url = new URL(path);
+  } else {
+    const pathWithPrefix = `/api/v1/${path}`;
+    url = baseClient
+      ? new URL(pathWithPrefix, baseClient)
+      : new URL(pathWithPrefix, window.location.origin);
+  }
 
   if (params) {
     for (const [key, value] of Object.entries(params)) {
@@ -45,6 +49,7 @@ function buildUrl(path: string, params?: RequestOptions["params"]): string {
       }
     }
   }
+  console.log("the string: ", url.toString());
   return url.toString();
 }
 
