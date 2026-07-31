@@ -11,8 +11,6 @@ type RequestOptions = {
 var baseClient: string | undefined;
 if (typeof window === "undefined") {
   baseClient = process.env.BACKEND_API_URL;
-} else if (process.env.NEXT_PUBLIC_ENV === "development") {
-  baseClient = process.env.NEXT_PUBLIC_BACKEND_API_URL;
 } else {
   baseClient = "";
 }
@@ -23,10 +21,17 @@ async function getCookieHeader(): Promise<string | undefined> {
 
   const { cookies } = await import("next/headers");
   const cookieStore = await cookies();
+  console.log("cokkies is: ", cookieStore.getAll());
   return cookieStore
     .getAll()
     .map((c) => `${c.name}=${c.value}`)
     .join("; ");
+}
+
+function getXsrfTokenFromCookie(): string | undefined {
+  if (typeof document === "undefined") return undefined;
+  const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : undefined;
 }
 
 function buildUrl(path: string, params?: RequestOptions["params"]): string {
@@ -36,7 +41,7 @@ function buildUrl(path: string, params?: RequestOptions["params"]): string {
   if (isAbsolute) {
     url = new URL(path);
   } else {
-    const pathWithPrefix = `/api/v1/${path}`;
+    const pathWithPrefix = path.startsWith("/") ? path : `/api/v1/${path}`;
     url = baseClient
       ? new URL(pathWithPrefix, baseClient)
       : new URL(pathWithPrefix, window.location.origin);
@@ -61,15 +66,7 @@ async function request<T>(
 
   try {
     const cookie = await getCookieHeader();
-
-    const finalHeaders = new Headers({
-      "Content-Type": "application/json",
-      Accept: "application/json",
-      ...(cookie ? { Cookie: cookie } : {}),
-      ...headers,
-    });
-    console.log("Final headers being sent:", [...finalHeaders.entries()]);
-    console.log("the cookie: ", cookie);
+    const xsrfToken = getXsrfTokenFromCookie();
     const res = await fetch(buildUrl(path, params), {
       method,
       credentials: "include",
@@ -78,12 +75,12 @@ async function request<T>(
         "Content-Type": "application/json",
         Accept: "application/json",
         ...(cookie ? { Cookie: cookie } : {}),
+        ...(xsrfToken ? { "X-XSRF-TOKEN": xsrfToken } : {}),
         ...headers,
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
-    console.log("cookie: ", cookie);
-    console.log("applied cookies: ", res.headers.getSetCookie());
+    console.log("Final headers being sent:", res.headers.getSetCookie());
 
     if (!res.ok) {
       const message = await res

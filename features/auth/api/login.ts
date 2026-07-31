@@ -6,7 +6,7 @@ import type { LoginRequest, LoginResponse } from "../types/api/login";
 import { toast } from "sonner";
 
 export const getCsrfCookie = (): Promise<void> => {
-  return api.get("https://api.skoolpro.net/sanctum/csrf-cookie");
+  return api.get("/sanctum/csrf-cookie");
 };
 
 export const login = (data: LoginRequest): Promise<LoginResponse> => {
