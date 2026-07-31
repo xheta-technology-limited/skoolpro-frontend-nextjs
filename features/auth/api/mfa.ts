@@ -3,6 +3,8 @@ import { useMutation } from "@tanstack/react-query";
 import {
   AuthenticatorConfirmResponse,
   AuthenticatorSetupResponse,
+  VerifyMfaRequest,
+  VerifyMfaResponse,
 } from "../types/api/mfa";
 import { AxiosError } from "axios";
 
@@ -66,5 +68,21 @@ export const useConfirmOtp = () => {
     { method: string; code: string }
   >({
     mutationFn: confirmOtp,
+  });
+};
+
+//verify mfa
+export const verifyMFA = (
+  body: VerifyMfaRequest
+): Promise<VerifyMfaResponse> => {
+  return api.post("auth/mfa/verify", body);
+};
+export const useVerifyMFA = () => {
+  return useMutation<
+    VerifyMfaResponse,
+    AxiosError<{ message: string }>,
+    VerifyMfaRequest
+  >({
+    mutationFn: verifyMFA,
   });
 };
