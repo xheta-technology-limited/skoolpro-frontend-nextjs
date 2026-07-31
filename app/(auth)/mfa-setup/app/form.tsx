@@ -3,10 +3,17 @@ import OTP from "@/components/ui/custom-otp-input";
 import { Button } from "@/components/ui/custom-button";
 import { useState } from "react";
 import { SuccessModal } from "@/components/common";
+import { useConfirmMfaCode } from "@/features/auth/api/mfa";
 
 export default function Form() {
   const [success, setSuccess] = useState(false);
   const [otp, setOtp] = useState("");
+
+  const { mutate, isPending } = useConfirmMfaCode();
+
+  const onSubmit = () => {
+    mutate({ code: otp }, { onSuccess: () => setSuccess(true) });
+  };
 
   return (
     <>
@@ -41,6 +48,8 @@ export default function Form() {
             type="submit"
             size="lg"
             className="min-w-0 flex-1"
+            loading={isPending}
+            onClick={onSubmit}
           >
             Enable
           </Button>

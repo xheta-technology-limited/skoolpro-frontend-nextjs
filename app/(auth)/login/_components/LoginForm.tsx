@@ -31,6 +31,7 @@ const LoginForm = () => {
         console.log("respose: ", res);
         if ("mfa_required" in res) {
           //TODO: add mfa steps
+          setModalOpen(true);
         }
         if ("mfa_enabled" in res) {
           //TODO: change this to false

@@ -1,10 +1,9 @@
 import { Text } from "@/components/ui";
 import Image from "next/image";
 import Form from "./form";
-import { authenticatorSetup } from "@/features/auth/api/mfa";
+import { SetupCard } from "./setup-card";
 
-export default async function Authenticator() {
-  const res = await authenticatorSetup();
+export default function Authenticator() {
   return (
     <section>
       <div className="flex flex-col gap-6 mb-12">
@@ -28,17 +27,7 @@ export default async function Authenticator() {
             </Text>
           </li>
           <li>
-            <Text
-              scale={"highlight"}
-              weight={"standard"}
-            >{`Scan the QR code below with your authenticator app or enter the text code (${res.secret}) on the authenticator app`}</Text>
-            <Image
-              src={res.qr_code_url}
-              width={179}
-              height={179}
-              alt="qr-code"
-              className="justify-self-center my-6"
-            />
+            <SetupCard />
           </li>
           <li>
             <Text scale={"highlight"} weight={"standard"}>
