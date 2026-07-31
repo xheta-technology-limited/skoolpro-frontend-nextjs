@@ -6,14 +6,31 @@ import Image from "next/image";
 import OTP from "@/components/ui/custom-otp-input";
 import { useForm } from "react-hook-form";
 import { SuccessModal } from "@/components/common";
-import { useOtpSetup } from "@/features/auth/api/mfa";
+import { useConfirmOtp, useOtpSetup } from "@/features/auth/api/mfa";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 
 export default function Email() {
   const { otp_type } = useParams<{ otp_type: string }>();
-  const { register, handleSubmit } = useForm();
   const [success, setSuccess] = useState(false);
   const [otp, setOtp] = useState("");
+  const { mutate } = useOtpSetup();
+  const { mutate: confirmMutate } = useConfirmOtp();
+  const confirmOtp = () => {
+    confirmMutate(
+      { method: otp_type, code: otp },
+      { onSuccess: () => setSuccess(true) }
+    );
+  };
+
+  useEffect(() => {
+    mutate(
+      { method: otp_type },
+      {
+        onSuccess: () => toast.success("OTP sent!"),
+      }
+    );
+  }, []);
   return (
     <section>
       <div className="flex flex-col gap-6 mb-12">
@@ -34,10 +51,7 @@ export default function Email() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-
-          const formData = new FormData(e.currentTarget);
-
-          console.log(formData.get("otp"));
+          confirmOtp();
         }}
       >
         <OTP
@@ -74,6 +88,7 @@ export default function Email() {
         subheading="Multi factor authentication has been enabled. This will be required in your subsequent login."
       >
         <Button size="lg">Proceed to dashboard</Button>
+        {/* TODO: make this actually proceed to dashboard */}
       </SuccessModal>
     </section>
   );

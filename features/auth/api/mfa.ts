@@ -51,3 +51,20 @@ export const useOtpSetup = () => {
     mutationFn: otpSetup,
   });
 };
+
+export const confirmOtp = (data: {
+  method: string;
+  code: string;
+}): Promise<{ message: string }> => {
+  return api.post("mfa/otp/confirm", data);
+};
+
+export const useConfirmOtp = () => {
+  return useMutation<
+    { message: string },
+    AxiosError<{ message: string }>,
+    { method: string; code: string }
+  >({
+    mutationFn: confirmOtp,
+  });
+};
