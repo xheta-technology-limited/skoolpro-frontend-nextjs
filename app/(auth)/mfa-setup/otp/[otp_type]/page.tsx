@@ -15,7 +15,7 @@ export default function Email() {
   const [success, setSuccess] = useState(false);
   const [otp, setOtp] = useState("");
   const { mutate } = useOtpSetup();
-  const { mutate: confirmMutate } = useConfirmOtp();
+  const { mutate: confirmMutate, status:confirmStatus } = useConfirmOtp();
   const confirmOtp = () => {
     confirmMutate(
       { method: otp_type, code: otp },

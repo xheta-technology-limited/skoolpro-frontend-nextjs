@@ -33,7 +33,8 @@ const LoginForm = () => {
           //TODO: add mfa steps
         }
         if ("mfa_enabled" in res) {
-          res.mfa_enabled === false && setModalOpen(true);
+          //TODO: change this to false
+          res.mfa_enabled === true && setModalOpen(true);
         }
       },
     });
