@@ -16,7 +16,7 @@ const Footer = () => {
         <Link href="/">
           <AdmiralYellow11 width={200} height={67} />
         </Link>
-        <div className="flex items-center gap-6 lg:gap-[45px] text-white">
+        <div className="flex items-center gap-6 lg:gap-11.25 text-white">
           <div className="flex h-8 w-8 md:h-12 md:w-12 lg:h-15 lg:w-15 items-center justify-center rounded-full border border-white">
             <Link href="/" className="text-white">
               <FaXTwitter />
@@ -41,31 +41,31 @@ const Footer = () => {
       </div>
 
       <div className="my-8 md:my-10 lg:my-12 xl:my-15">
-          <ul className="flex flex-col gap-8 pl-0 text-[18px] font-normal leading-[1.2] text-white sm:flex-row sm:gap-[54px] list-none">
+          <ul className="flex flex-col gap-8 pl-0 text-[18px] font-normal leading-[1.2] text-white sm:flex-row sm:gap-13.5 list-none">
           <li>
             <Link href="/" className="text-white no-underline">
               Home
             </Link>
           </li>
           <li>
-            <Link href="/" className="text-white no-underline">
+            <Link href="#why-us" className="text-white no-underline">
               About
             </Link>
           </li>
           <li>
-            <Link href="/" className="text-white no-underline">
+            <Link href="#services" className="text-white no-underline">
               Services
             </Link>
           </li>
           <li>
-            <Link href="/" className="text-white no-underline">
+            <Link href="#contact-us" className="text-white no-underline">
               Contact us
             </Link>
           </li>
         </ul>
       </div>
 
-      <hr className="border-t border-[#D5D5FF]" />
+      <hr className="border-t border-primary-100" />
 
       <div className="mt-8 md:mt-13 lg:mt-16 xl:mt-[76.3px] flex flex-col justify-between text-white sm:flex-row">
         <span>© Skoolpro 2026. All rights reserved</span>
