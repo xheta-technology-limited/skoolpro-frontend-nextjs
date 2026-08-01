@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Text } from "@/components/ui";
 import { useResendCountdown } from "@/features/auth/hooks";
+import { useUserStore } from "@/features/user/user.store";
 
 const formatCountdown = (seconds: number) =>
   `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, "0")}`;
@@ -25,13 +26,18 @@ export default function OTPForm() {
   const { mutate: requestMutate, isPending: requestPending } = useRequestOTP();
   const [otp, setOtp] = useState("");
   const { seconds, start: startCountdown } = useResendCountdown();
+  const updateUserData = useUserStore((state) => state.updateData);
   const router = useRouter();
   const confirmOtp = () => {
     primaryMethod &&
       challengeId &&
       mutate(
         { method: primaryMethod, code: otp, challenge_id: challengeId },
-        { onSuccess: () => console.log("that bih worked tho") }
+        {
+          onSuccess: (data) => {
+            updateUserData(data);
+          },
+        }
       );
   };
 

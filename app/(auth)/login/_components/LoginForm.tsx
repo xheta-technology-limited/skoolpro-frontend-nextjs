@@ -13,6 +13,7 @@ import { useState } from "react";
 import SuccessModal from "@/components/common/successModal/modal";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../../features/auth/auth-store";
+import { useUserStore } from "@/features/user/user.store";
 
 const LoginForm = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -25,21 +26,21 @@ const LoginForm = () => {
     resolver: zodResolver(userSchema),
   });
   const { mutate, isPending } = useLogin();
-  const updateData = useAuth((state) => state.updateData);
+  const updateMFAData = useAuth((state) => state.updateData);
+  const updateUserData = useUserStore((state) => state.updateData);
 
   const onSubmit = (data: loginForm) => {
     mutate(data, {
       onSuccess: (res) => {
         console.log("respose: ", res);
         if ("mfa_required" in res) {
-          //TODO: navigate to mfa login page
-          updateData("challenge_id", res.challenge_id);
-          updateData("available_methods", res.available_methods);
+          updateMFAData("challenge_id", res.challenge_id);
+          updateMFAData("available_methods", res.available_methods);
           router.push("/mfa");
         }
         if ("mfa_enabled" in res) {
-          //TODO: change this to false
-          res.mfa_enabled === true && setModalOpen(true);
+          updateUserData(res);
+          res.mfa_enabled === false && setModalOpen(true);
         }
       },
     });
