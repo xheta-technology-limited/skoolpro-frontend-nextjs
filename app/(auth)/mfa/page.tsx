@@ -2,15 +2,9 @@
 import { AdmiralBlue11 } from "@/components/icons/logos";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { Text } from "@/components/ui";
-import { Button } from "@/components/ui/custom-button";
-import OTP from "@/components/ui/custom-otp-input";
-import { useForm } from "react-hook-form";
-import { SuccessModal } from "@/components/common";
-import { useConfirmOtp, useOtpSetup } from "@/features/auth/api/mfa";
-import { useParams } from "next/navigation";
-import { toast } from "sonner";
+import InfoText from "./otp-text";
+import OTPForm from "./form";
 
 export default function MFALogin() {
   return (
@@ -38,48 +32,11 @@ export default function MFALogin() {
                 >
                   MFA Login
                 </Text>
-                <Text
-                  scale={"content"}
-                  className="font-normal text-neutral-900"
-                >
-                  {`Enter the OTP sent to your ${"TODO: add first method here"}`}
-                </Text>
+                <InfoText />
               </div>
             </div>
 
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                confirmOtp();
-              }}
-            >
-              <OTP
-                value={otp}
-                onChange={(e) => setOtp(e)}
-                name="otp"
-                length={6}
-                className="mb-6 justify-self-center"
-              />
-
-              <div className="flex gap-6 justify-between items-center">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="lg"
-                  className="min-w-0 flex-1"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  disabled={otp.length < 6}
-                  type="submit"
-                  size="lg"
-                  className="min-w-0 flex-1"
-                >
-                  Login
-                </Button>
-              </div>
-            </form>
+            <OTPForm />
           </section>
         </div>
       </div>

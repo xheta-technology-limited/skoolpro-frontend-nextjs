@@ -3,7 +3,6 @@ import { AxiosError } from "axios";
 import { api } from "@/lib/api";
 import { authKeys } from "./query-keys";
 import type { LoginRequest, LoginResponse } from "../types/api/login";
-import { toast } from "sonner";
 
 export const getCsrfCookie = (): Promise<void> => {
   return api.get("/sanctum/csrf-cookie");
