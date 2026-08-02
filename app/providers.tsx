@@ -13,6 +13,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
         toastOptions={{
           classNames: {
             error: "!border !border-[2.5px] !border-red-500 !bg-error-100",
+            success:
+              "!border !border-[2.5px] !border-green-500 !bg-success-100",
           },
         }}
       />

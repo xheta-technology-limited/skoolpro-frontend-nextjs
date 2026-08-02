@@ -9,13 +9,14 @@ import { SuccessModal } from "@/components/common";
 import { useConfirmOtp, useOtpSetup } from "@/features/auth/api/mfa";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
+import { MFAMethod } from "@/features/auth/types/types";
 
 export default function Email() {
-  const { otp_type } = useParams<{ otp_type: string }>();
+  const { otp_type } = useParams<{ otp_type: MFAMethod }>();
   const [success, setSuccess] = useState(false);
   const [otp, setOtp] = useState("");
   const { mutate } = useOtpSetup();
-  const { mutate: confirmMutate, status:confirmStatus } = useConfirmOtp();
+  const { mutate: confirmMutate, status: confirmStatus } = useConfirmOtp();
   const confirmOtp = () => {
     confirmMutate(
       { method: otp_type, code: otp },

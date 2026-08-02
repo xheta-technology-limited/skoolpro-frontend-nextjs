@@ -13,9 +13,7 @@ import { toast } from "sonner";
 import { Text } from "@/components/ui";
 import { useResendCountdown } from "@/features/auth/hooks";
 import { useUserStore } from "@/features/user/user.store";
-
-const formatCountdown = (seconds: number) =>
-  `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, "0")}`;
+import { formatCountdown } from "@/lib/utils/format-countdown";
 
 export default function OTPForm() {
   const OtpMethods = useAuth((state) => state.data?.available_methods);
@@ -56,15 +54,12 @@ export default function OTPForm() {
         }
       );
   }, [primaryMethod, requestMutate, startCountdown]);
-  const handleSubmit = () => {
-    confirmOtp();
-  };
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        handleSubmit();
+        confirmOtp();
       }}
     >
       <OTP

@@ -1,3 +1,3 @@
-export type passwordForm = {
-  identifier: string;
+export type ForgotPasswordForm = {
+  email: string;
 };

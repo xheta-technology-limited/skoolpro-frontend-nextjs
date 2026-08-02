@@ -1,9 +1,9 @@
 import Image from "next/image";
-import EmailForm from "./_components/Form";
 import Link from "next/link";
 import { AdmiralBlue11 } from "@/components/icons/logos";
+import OTPCode from "../_components/otp-code";
 
-const ResetPassword = () => {
+const ValidateOTP = () => {
   return (
     <div className="py-12 px-6 h-full sm:px-14 md:px-29.25 flex flex-col items-center w-full">
       <Link href={"/"} className="mb-20.75">
@@ -19,10 +19,10 @@ const ResetPassword = () => {
           className="hidden w-64 h-auto md:w-160 sm:block"
         />
 
-        <EmailForm />
+        <OTPCode />
       </div>
     </div>
   );
 };
 
-export default ResetPassword;
+export default ValidateOTP;
