@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { Suspense } from "react";
 import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/custom-button";
 import Image from "next/image";
@@ -11,7 +12,7 @@ import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { MFAMethod } from "@/features/auth/types/types";
 
-export default function Email() {
+function Email() {
   const { otp_type } = useParams<{ otp_type: MFAMethod }>();
   const [success, setSuccess] = useState(false);
   const [otp, setOtp] = useState("");
@@ -92,5 +93,13 @@ export default function Email() {
         {/* TODO: make this actually proceed to dashboard */}
       </SuccessModal>
     </section>
+  );
+}
+
+export default function EmailPage() {
+  return (
+    <Suspense fallback={null}>
+      <Email />
+    </Suspense>
   );
 }
