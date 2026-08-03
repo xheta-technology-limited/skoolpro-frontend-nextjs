@@ -1,5 +1,5 @@
 import Image from "next/image";
-import LoginForm from "./Form";
+import EmailForm from "./_components/Form";
 import Link from "next/link";
 import { AdmiralBlue11 } from "@/components/icons/logos";
 
@@ -19,7 +19,7 @@ const ResetPassword = () => {
           className="hidden w-64 h-auto md:w-160 sm:block"
         />
 
-        <LoginForm />
+        <EmailForm />
       </div>
     </div>
   );

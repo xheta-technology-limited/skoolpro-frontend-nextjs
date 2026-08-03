@@ -1,44 +1,135 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { toast } from "sonner";
+import { redirect } from "next/navigation";
 
-const BASE_CLIENT = process.env.NEXT_PUBLIC_BACKEND_API;
+type RequestOptions = {
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  headers?: Record<string, string>;
+  body?: unknown;
+  params?: Record<string, string | number | boolean | undefined | null>;
+  cache?: RequestCache;
+};
+var baseClient: string | undefined;
+if (typeof window === "undefined") {
+  baseClient = process.env.BACKEND_API_URL;
+} else {
+  baseClient = "";
+}
 
-export const api = axios.create({
-  baseURL: BASE_CLIENT,
-  timeout: 90000,
-});
-function authRequestInterceptor(config: InternalAxiosRequestConfig) {
-  if (config.headers) {
-    config.headers.Accept = "application/json";
+async function getCookieHeader(): Promise<string | undefined> {
+  // Only relevant on the server — the browser sends cookies automatically
+  if (typeof window !== "undefined") return undefined;
+
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  return cookieStore
+    .getAll()
+    .map((c) => `${c.name}=${c.value}`)
+    .join("; ");
+}
+
+function getXsrfTokenFromCookie(): string | undefined {
+  if (typeof document === "undefined") return undefined;
+  const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : undefined;
+}
+
+function buildUrl(path: string, params?: RequestOptions["params"]): string {
+  const isAbsolute = /^https?:\/\//i.test(path);
+  let url: URL;
+
+  if (isAbsolute) {
+    url = new URL(path);
+  } else {
+    const pathWithPrefix = path.startsWith("/") ? path : `/api/v1/${path}`;
+    url = baseClient
+      ? new URL(pathWithPrefix, baseClient)
+      : new URL(pathWithPrefix, window.location.origin);
   }
 
-  config.withCredentials = true;
-  config.withXSRFToken = true;
-  return config;
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined && value !== null) {
+        url.searchParams.set(key, String(value));
+      }
+    }
+  }
+  return url.toString();
 }
-api.interceptors.request.use(authRequestInterceptor);
-api.interceptors.response.use(
-  (response) => {
-    return response.data;
-  },
-  (error) => {
-    const message = error.response?.data?.message || error.message;
-    toast.error("Error", {
-      position: "top-right",
-      description: message,
-      className: "bg-[#FBD6D45C border-[1px] border-error",
+
+async function request<T>(
+  path: string,
+  options: RequestOptions = {}
+): Promise<T> {
+  const { method = "GET", headers, body, params, cache = "no-store" } = options;
+
+  try {
+    const cookie = await getCookieHeader();
+    const xsrfToken = getXsrfTokenFromCookie();
+    const res = await fetch(buildUrl(path, params), {
+      method,
+      credentials: "include",
+      cache,
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        ...(cookie ? { Cookie: cookie } : {}),
+        ...(xsrfToken ? { "X-XSRF-TOKEN": xsrfToken } : {}),
+        ...headers,
+      },
+      body: body !== undefined ? JSON.stringify(body) : undefined,
     });
 
-    if (error.response?.status === 401) {
-      if (window.location.pathname === "/login") {
-        return Promise.reject(error);
+    if (!res.ok) {
+      const message = await res
+        .json()
+        .then((data) => data.message)
+        .catch(() => res.statusText);
+
+      if (res.status === 401) {
+        typeof window !== "undefined"
+          ? (window.location.href = "/login")
+          : redirect("/login");
+        throw new Error(message);
       }
-      //   const { logout } = useAuthStore.getState(); // Get logout function
-      //   logout(); // Clear session
-      //TODO: add logic to log the user out of the app here.
-      window.location.href = "/login";
+      if (typeof window !== "undefined") {
+        toast.error(message);
+      }
+
+      throw new Error(message);
     }
 
-    return Promise.reject(error);
+    return res.status === 204
+      ? (undefined as T)
+      : res.json().then((data) => data.data);
+  } catch (error) {
+    throw error;
   }
-);
+}
+
+export const api = {
+  get: <T>(path: string, options?: Omit<RequestOptions, "method" | "body">) =>
+    request<T>(path, { ...options, method: "GET" }),
+
+  post: <T>(
+    path: string,
+    body?: unknown,
+    options?: Omit<RequestOptions, "method" | "body">
+  ) => request<T>(path, { ...options, method: "POST", body }),
+
+  put: <T>(
+    path: string,
+    body?: unknown,
+    options?: Omit<RequestOptions, "method" | "body">
+  ) => request<T>(path, { ...options, method: "PUT", body }),
+
+  patch: <T>(
+    path: string,
+    body?: unknown,
+    options?: Omit<RequestOptions, "method" | "body">
+  ) => request<T>(path, { ...options, method: "PATCH", body }),
+
+  delete: <T>(
+    path: string,
+    options?: Omit<RequestOptions, "method" | "body">
+  ) => request<T>(path, { ...options, method: "DELETE" }),
+};

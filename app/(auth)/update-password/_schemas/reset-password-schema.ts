@@ -12,9 +12,9 @@ export const resetPasswordSchema = z
         /[!@#$%^&*(),.?":{}|<>_\-\\[\]/`~+=;']/,
         "Must contain a special character"
       ),
-    confirmPassword: z.string(),
+    password_confirmation: z.string(),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine((data) => data.password === data.password_confirmation, {
     error: "Passwords do not match",
     path: ["confirmPassword"],
   });

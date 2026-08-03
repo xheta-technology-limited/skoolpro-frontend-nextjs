@@ -5,89 +5,101 @@ import { Input } from "@/components/ui/form";
 import { Text } from "@/components/ui";
 import Link from "next/link";
 import { linkVariants } from "@/styles";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/custom-button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userSchema } from "@/features/auth/schemas/login-form-schema";
-import { useSanctumCookie } from "@/features/auth/api/login";
 import { useLogin } from "@/features/auth/api/login";
-import { useEffect } from "react";
+import { useState } from "react";
+import SuccessModal from "@/components/common/successModal/modal";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../../../../features/auth/auth-store";
+import { useUserStore } from "@/features/user/user.store";
 
 const LoginForm = () => {
-  useEffect(() => {
-    console.log("UWU :3");
-    const handleOffline = () => {
-      console.log(
-        "HERE WE FUCKING GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-      );
-    };
-
-    const handleOnline = () => {
-      console.log(
-        "WE'RE ONLINNENENNENENEN AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-      );
-    };
-
-    window.addEventListener("offline", handleOffline);
-    window.addEventListener("online", handleOnline);
-
-    if (!navigator.onLine) {
-      handleOffline();
-    }
-
-    // return () => {
-    //   window.removeEventListener("offline", handleOffline);
-    //   window.removeEventListener("online", handleOnline);
-    // };
-  }, []);
-
-  const { isSuccess } = useSanctumCookie();
+  const [isModalOpen, setModalOpen] = useState(false);
+  const router = useRouter();
   const methods = useForm<loginForm>({
     defaultValues: {
-      email: "",
+      login: "",
       password: "",
     },
     resolver: zodResolver(userSchema),
   });
   const { mutate, isPending } = useLogin();
+  const updateMFAData = useAuth((state) => state.updateData);
+  const updateUserData = useUserStore((state) => state.updateData);
 
   const onSubmit = (data: loginForm) => {
-    mutate(data);
+    mutate(data, {
+      onSuccess: (res) => {
+        console.log("respose: ", res);
+        if ("mfa_required" in res) {
+          updateMFAData("challenge_id", res.challenge_id);
+          updateMFAData("available_methods", res.available_methods);
+          router.push("/mfa");
+        }
+        if ("mfa_enabled" in res) {
+          updateUserData(res);
+          res.mfa_enabled === false && setModalOpen(true);
+        }
+      },
+    });
   };
 
   return (
-    <FormProvider {...methods}>
-      <form
-        className="flex flex-col sm:h-auto gap-6 w-125"
-        onSubmit={methods.handleSubmit(onSubmit)}
-      >
-        <Input name="email" label="Enter email or phone number" type="email" />
-
-        <Input name="password" label="Enter your password" type="password" />
-
-        <Text
-          className="self-end"
-          as="p"
-          scale={"highlight"}
-          weight={"standard"}
+    <>
+      <FormProvider {...methods}>
+        <form
+          className="flex flex-col sm:h-auto gap-6 w-125"
+          onSubmit={methods.handleSubmit(onSubmit)}
         >
-          Forgot Password?{" "}
-          <Link
-            className={linkVariants({ size: "lg" })}
-            href={"/reset-password"}
+          <Input name="login" label="Enter email or phone number" />
+
+          <Input name="password" label="Enter your password" type="password" />
+
+          <Text
+            className="self-end"
+            as="p"
+            scale={"highlight"}
+            weight={"standard"}
           >
-            Reset
-          </Link>
-        </Text>
+            Forgot Password?{" "}
+            <Link
+              className={linkVariants({ size: "lg" })}
+              href={"/reset-password"}
+            >
+              Reset
+            </Link>
+          </Text>
 
-        <Button
-          loading={isPending}
-          size="lg"
-          className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
-        >
-          Login
-        </Button>
-      </form>
-    </FormProvider>
+          <Button
+            loading={isPending}
+            size="lg"
+            className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+          >
+            Login
+          </Button>
+        </form>
+      </FormProvider>
+      <SuccessModal
+        subheading="Your login is successful. Kindly click the button to proceed."
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+      >
+        <div className="flex justify-between gap-2 md:gap-6 items-center w-full">
+          <Button variant="secondary" size="lg" className="flex-1 min-w-0">
+            Proceed to dashboard
+          </Button>
+          <Button
+            size="lg"
+            className="flex-1 min-w-0"
+            onClick={() => router.replace("/mfa-setup")}
+          >
+            Set up MFA
+          </Button>
+        </div>
+      </SuccessModal>
+    </>
   );
 };
 
