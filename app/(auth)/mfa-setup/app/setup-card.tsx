@@ -35,13 +35,16 @@ export function SetupCard() {
         height={179}
         alt="qr-code"
       />
-      <Text>{`Scan the QR code below with your authenticator app or enter the text code (${
-        isPending ? (
+      <Text>
+        Scan the QR code below with your authenticator app or enter the text
+        code(
+        {isPending ? (
           <span className="italic">Loading...</span>
         ) : (
           data?.secret || "__"
-        )
-      }) on the authenticator app`}</Text>
+        )}
+        ) on the authenticator app
+      </Text>
     </>
   );
 }

@@ -21,6 +21,6 @@ export const useUserStore = create<UserStore>()(
       clearData: () => set(() => ({ data: {} })),
       updateData: (value) => set(() => ({ data: value })),
     }),
-    { name: "sp-auth-store" }
+    { name: "sp-user-store" }
   )
 );

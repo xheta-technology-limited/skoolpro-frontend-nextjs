@@ -4,13 +4,11 @@ import { Button } from "@/components/ui/custom-button";
 import { useState } from "react";
 import { SuccessModal } from "@/components/common";
 import { useConfirmMfaCode } from "@/features/auth/api/mfa";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export default function Form() {
   const [success, setSuccess] = useState(false);
   const [otp, setOtp] = useState("");
-  const router = useRouter();
 
   const { mutate, isPending } = useConfirmMfaCode();
 
@@ -23,10 +21,7 @@ export default function Form() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          setSuccess(true);
-          const formData = new FormData(e.currentTarget);
-
-          console.log(formData.get("otp"));
+          onSubmit();
         }}
       >
         <OTP

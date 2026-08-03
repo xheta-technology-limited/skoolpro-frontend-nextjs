@@ -21,7 +21,6 @@ async function getCookieHeader(): Promise<string | undefined> {
 
   const { cookies } = await import("next/headers");
   const cookieStore = await cookies();
-  console.log("cokkies is: ", cookieStore.getAll());
   return cookieStore
     .getAll()
     .map((c) => `${c.name}=${c.value}`)
@@ -54,7 +53,6 @@ function buildUrl(path: string, params?: RequestOptions["params"]): string {
       }
     }
   }
-  console.log("the string: ", url.toString());
   return url.toString();
 }
 
@@ -80,7 +78,6 @@ async function request<T>(
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
-    console.log("Final headers being sent:", res.headers.getSetCookie());
 
     if (!res.ok) {
       const message = await res
@@ -92,7 +89,7 @@ async function request<T>(
         typeof window !== "undefined"
           ? (window.location.href = "/login")
           : redirect("/login");
-        return undefined as T;
+        throw new Error(message);
       }
       if (typeof window !== "undefined") {
         toast.error(message);
@@ -105,7 +102,6 @@ async function request<T>(
       ? (undefined as T)
       : res.json().then((data) => data.data);
   } catch (error) {
-    console.error(`[api] ${method} ${path} failed:`, error);
     throw error;
   }
 }
