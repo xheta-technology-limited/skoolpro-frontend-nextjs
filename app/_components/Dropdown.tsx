@@ -60,7 +60,7 @@ export function CountryCodeDropdown({
 
   return (
     <div ref={wrapperRef} className="relative flex h-12 w-21 shrink-0 items-center">
-      {/* trigger — same look as the old select */}
+      {/* trigger */}
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}

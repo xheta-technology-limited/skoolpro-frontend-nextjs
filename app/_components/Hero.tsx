@@ -13,7 +13,8 @@ const Hero = () => {
         {/* decorative: star, bottom right */}
         <Image
           src="/Group.png"
-          alt="star-icon"
+          alt=""
+          aria-hidden="true"
           height={40}
           width={40}
           className="absolute left-[84%] top-[87.5%] h-10 w-10"
