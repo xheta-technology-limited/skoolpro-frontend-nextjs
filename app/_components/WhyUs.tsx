@@ -57,9 +57,9 @@ const data: WhyUsItem[] = [
 const WhyUS = () => {
   return (
     <>
-      <section className="mx-4 sm:mx-8 md:mx-16 lg:mx-20 xl:mx-25">
+      <section id="why-us" className="mx-4 sm:mx-8 md:mx-16 lg:mx-20 xl:mx-25">
         <div className="flex flex-col">
-          <div className="mb-[16px] md:mb-6 w-fit rounded-[5px] bg-[#FFDF93] px-2.5 pb-px pt-0.75">
+          <div className="mb-[16px] md:mb-6 w-fit rounded-[5px] bg-secondary px-2.5 pb-px pt-0.75">
             <Text as="h4" weight={"bold"} scale={"heading4"}>
               Why choose Skoolpro
             </Text>
@@ -72,10 +72,11 @@ const WhyUS = () => {
         </div>
         
 
-          <div className="mt-25 md:mt-[48px] mb-8 md:mb-[77px] grid grid-cols-1 gap-10 min-[768px]:grid-cols-2 min-[1400px]:grid-cols-3">          {data.map((dat) => (
+          <div className="mt-25 md:mt-12 mb-8 md:mb-19.25 grid grid-cols-1 gap-10 min-[768px]:grid-cols-2 min-[1400px]:grid-cols-3">          
+            {data.map((dat) => (
             <div
               key={dat.id}
-              className="rounded-[24px] border p-6 sm:rounded-[32px] md:rounded-[40px] md:py-9 md:px-7 lg:rounded-[44px] lg:py-[35px] lg:px-[30px] xl:rounded-[48px] xl:py-10 xl:px-[35px]"
+              className="rounded-lg border p-6 sm:rounded-[32px] md:rounded-[40px] md:py-9 md:px-7 lg:rounded-[44px] lg:py-8.75 lg:px-7.5 xl:rounded-[48px] xl:py-10 xl:px-8.75"
               //className="rounded-[2.3rem] border p-8"
               style={{ borderColor: dat.color }}
             >
@@ -92,7 +93,7 @@ const WhyUS = () => {
                     {dat.heading}
                   </Text>
               </div>
-              <hr className="my-4 border-t-2 border-[#ABAAFF]" />
+              <hr className="my-4 border-t-2 border-primary-200" />
               <div>
                 <Text as="p" weight={"standard"} scale={"highlight"}>
                   {dat.body}
@@ -104,7 +105,7 @@ const WhyUS = () => {
       </section>
 
      <section className="mx-4 sm:mx-8 md:mx-16 lg:mx-20 xl:mx-25 my-8 sm:my-12 md:my-16 lg:my-24 xl:my-[34.83px]">
-      <div className="relative grid grid-cols-1 gap-8 rounded-lg bg-primary p-[30px] min-h-[557px] sm:gap-12 sm:rounded-[32px] sm:min-h-[490px] sm:p-9 md:gap-20 md:rounded-[40px] md:min-h-[430px] md:p-11 lg:grid-cols-2 lg:gap-32 lg:rounded-[44px] lg:min-h-[390px] lg:p-13 xl:gap-[275px] xl:rounded-[48px] xl:min-h-[347px] xl:p-[60px]">        
+      <div className="relative grid grid-cols-1 gap-8 rounded-lg bg-primary p-7.5 min-h-139.25 sm:gap-12 sm:rounded-[32px] sm:min-h-122.5 sm:p-9 md:gap-20 md:rounded-[40px] md:min-h-107.5 md:p-11 lg:grid-cols-2 lg:gap-32 lg:rounded-[44px] lg:min-h-97.5 lg:p-13 xl:gap-68.75 xl:rounded-[48px] xl:min-h-86.75 xl:p-15">        
         <div className="max-w-125 items-center">
             <Text
               as="h4"
@@ -112,14 +113,14 @@ const WhyUS = () => {
               weight={"bold"}
               className="text-white"
             >
-              Let's make things happen
+              Let&apos;s make things happen
             </Text>
             <p className="my-6 font-lora text-[16px] font-normal leading-[1.2] text-white lg:font-(family-name:--font-poppins) lg:text-[18px]">
               Contact us today to learn more about how our digital management
               tool can help your business grow and succeed online.
             </p>
             <button
-  className="inline-flex items-center gap-2 rounded-2xl bg-[#FFDF93] px-6 py-2 font-lora text-[16px] font-normal leading-[1.2] text-center text-primary-1000 md:py-3 lg:font-[family-name:var(--font-poppins)] lg:text-[24px] lg:leading-[1]"
+  className="inline-flex items-center gap-2 rounded-2xl bg-secondary px-6 py-2 font-lora text-[16px] font-normal leading-[1.2] text-center text-primary-1000 md:py-3 lg:font-(family-name:--font-poppins) lg:text-[24px] lg:leading-none"
 >
   Get started for free
   <Image
@@ -136,7 +137,7 @@ const WhyUS = () => {
             alt="wheel image"
             width={500}
             height={415}
-            className="relative mx-auto mt-8 h-auto w-[344px] sm:w-[380px] md:w-[420px] lg:w-[460px] lg:absolute lg:right-[3%] lg:top-1/2 lg:mx-0 lg:mt-0 lg:-translate-y-1/2 xl:w-[500px]"
+            className="relative mx-auto mt-8 h-auto w-86 sm:w-95 md:w-105 lg:w-115 lg:absolute lg:right-[3%] lg:top-1/2 lg:mx-0 lg:mt-0 lg:-translate-y-1/2 xl:w-125"
           />
         </div>
       </section>
