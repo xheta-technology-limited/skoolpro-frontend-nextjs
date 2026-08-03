@@ -18,42 +18,35 @@ export default function Form() {
 
   return (
     <>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSubmit();
-        }}
-      >
-        <OTP
-          value={otp}
-          onChange={(e) => setOtp(e)}
-          name="otp"
-          length={6}
-          className="mb-6 justify-self-center"
-        />
+      <OTP
+        value={otp}
+        onChange={(e) => setOtp(e)}
+        name="otp"
+        length={6}
+        className="mb-6 justify-self-center"
+      />
 
-        <div className="flex gap-6 justify-between items-center">
-          <Button
-            type="button"
-            variant="secondary"
-            size="lg"
-            className="min-w-0 flex-1"
-            onClick={() => toast("TODO: navigate to dashboard")}
-          >
-            Cancel
-          </Button>
-          <Button
-            disabled={otp.length < 6}
-            type="submit"
-            size="lg"
-            className="min-w-0 flex-1"
-            loading={isPending}
-            onClick={onSubmit}
-          >
-            Enable
-          </Button>
-        </div>
-      </form>
+      <div className="flex gap-6 justify-between items-center">
+        <Button
+          type="button"
+          variant="secondary"
+          size="lg"
+          className="min-w-0 flex-1"
+          onClick={() => toast("TODO: navigate to dashboard")}
+        >
+          Cancel
+        </Button>
+        <Button
+          disabled={otp.length < 6}
+          type="submit"
+          size="lg"
+          className="min-w-0 flex-1"
+          loading={isPending}
+          onClick={onSubmit}
+        >
+          Enable
+        </Button>
+      </div>
 
       <SuccessModal
         isOpen={success}
