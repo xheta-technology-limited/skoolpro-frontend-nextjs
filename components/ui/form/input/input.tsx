@@ -95,7 +95,7 @@ const Input = ({
           <span className="ml-2 text-xs text-[#C03744]">{error}</span>
         </div>
       )}
-      {errors.root?.serverError.type === 401 && (
+      {errors.root?.serverError?.type === "unauthorized" && (
         <div className="flex">
           <XIcon size={16} color="#C03744" />{" "}
           <span className="ml-2 text-xs text-[#C03744]">
