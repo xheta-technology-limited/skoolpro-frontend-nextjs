@@ -57,41 +57,40 @@ const data: WhyUsItem[] = [
 const WhyUS = () => {
   return (
     <>
-      <section className="container mx-auto">
-        <div className="mb-6 w-fit rounded-[5px] bg-[#FFDF93] px-2.5 pb-px pt-0.75">
-          <Text as="h4" weight={"bold"} scale={"heading4"}>
-            Why choose Skoolpro
-          </Text>
+      <section className="mx-4 sm:mx-8 md:mx-16 lg:mx-20 xl:mx-25">
+        <div className="flex flex-col">
+          <div className="mb-[16px] md:mb-6 w-fit rounded-[5px] bg-[#FFDF93] px-2.5 pb-px pt-0.75">
+            <Text as="h4" weight={"bold"} scale={"heading4"}>
+              Why choose Skoolpro
+            </Text>
+          </div>
+          <p className="mb-8 md:mb-0">
+            Skoolpro is an all-in-one education management platform designed to
+            simplify <br />
+            school operations.
+          </p>
         </div>
-        <p>
-          Skoolpro is an all-in-one education management platform designed to
-          simplify <br />
-          school operations.
-        </p>
+        
 
-        <div className="mt-4 grid grid-cols-1 gap-8 min-[481px]:grid-cols-2 min-[787px]:grid-cols-3">
-          {data.map((dat) => (
+          <div className="mt-25 md:mt-[48px] mb-8 md:mb-[77px] grid grid-cols-1 gap-10 min-[768px]:grid-cols-2 min-[1400px]:grid-cols-3">          {data.map((dat) => (
             <div
               key={dat.id}
-              className="rounded-[2.3rem] border border-t-0 p-8"
+              className="rounded-[24px] border p-6 sm:rounded-[32px] md:rounded-[40px] md:py-9 md:px-7 lg:rounded-[44px] lg:py-[35px] lg:px-[30px] xl:rounded-[48px] xl:py-10 xl:px-[35px]"
+              //className="rounded-[2.3rem] border p-8"
               style={{ borderColor: dat.color }}
             >
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-5">
                 <Image
                   src={dat.img}
                   alt="laptop-icon"
-                  className="h-auto max-w-full"
+                  className="h-12 w-12 rounded-full sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 xl:h-25 xl:w-25"
                   width={100}
                   height={100}
                 />
-                <Text
-                  as="h4"
-                  weight={"accent"}
-                  scale={"feature"}
-                  className="w-44"
-                >
-                  {dat.heading}
-                </Text>
+                
+                  <Text as="h4" weight={"accent"} className="w-full wrap-break-word text-[20px] xl:text-[24px]">
+                    {dat.heading}
+                  </Text>
               </div>
               <hr className="my-4 border-t-2 border-[#ABAAFF]" />
               <div>
@@ -104,9 +103,9 @@ const WhyUS = () => {
         </div>
       </section>
 
-      <section className="container mx-auto mt-24">
-        <div className="relative mt-5 grid grid-cols-1 bg-primary justify-between rounded-4xl p-8 min-[787px]:grid-cols-2">
-          <div className="max-w-125">
+     <section className="mx-4 sm:mx-8 md:mx-16 lg:mx-20 xl:mx-25 my-8 sm:my-12 md:my-16 lg:my-24 xl:my-[34.83px]">
+      <div className="relative grid grid-cols-1 gap-8 rounded-lg bg-primary p-[30px] min-h-[557px] sm:gap-12 sm:rounded-[32px] sm:min-h-[490px] sm:p-9 md:gap-20 md:rounded-[40px] md:min-h-[430px] md:p-11 lg:grid-cols-2 lg:gap-32 lg:rounded-[44px] lg:min-h-[390px] lg:p-13 xl:gap-[275px] xl:rounded-[48px] xl:min-h-[347px] xl:p-[60px]">        
+        <div className="max-w-125 items-center">
             <Text
               as="h4"
               scale={"heading4"}
@@ -115,30 +114,29 @@ const WhyUS = () => {
             >
               Let's make things happen
             </Text>
-            <p className="my-4 text-white">
+            <p className="my-6 font-lora text-[16px] font-normal leading-[1.2] text-white lg:font-(family-name:--font-poppins) lg:text-[18px]">
               Contact us today to learn more about how our digital management
               tool can help your business grow and succeed online.
             </p>
             <button
-              className="rounded-2xl px-3 py-2 font-normal text-primary-1000"
-              style={{ backgroundColor: "#FFDF93" }}
-            >
-              Get started for free{" "}
-              <Image
-                src="/images/cta-pointer.png"
-                alt="arrow"
-                className="inline-block h-10 w-auto max-w-full"
-                width={48}
-                height={48}
-              />
-            </button>
+  className="inline-flex items-center gap-2 rounded-2xl bg-[#FFDF93] px-6 py-2 font-lora text-[16px] font-normal leading-[1.2] text-center text-primary-1000 md:py-3 lg:font-[family-name:var(--font-poppins)] lg:text-[24px] lg:leading-[1]"
+>
+  Get started for free
+  <Image
+    src="/images/cta-pointer.png"
+    alt="arrow"
+    className="h-10 w-auto max-w-full"
+    width={48}
+    height={48}
+  />
+</button>
           </div>
           <Image
             src={"/images/cycle.png"}
             alt="wheel image"
             width={500}
             height={415}
-            className="absolute right-[3%] top-[-25%] hidden max-w-full min-[787px]:block"
+            className="relative mx-auto mt-8 h-auto w-[344px] sm:w-[380px] md:w-[420px] lg:w-[460px] lg:absolute lg:right-[3%] lg:top-1/2 lg:mx-0 lg:mt-0 lg:-translate-y-1/2 xl:w-[500px]"
           />
         </div>
       </section>

@@ -66,7 +66,7 @@ export default function RootLayout({
     >
       <body className="min-h-full">
         <Providers>
-          <div className="mx-auto flex flex-col max-w-[1625px] min-h-full">
+          <div className="mx-auto flex flex-col max-w-360 min-h-full">
             {children}
           </div>
           <Footer />

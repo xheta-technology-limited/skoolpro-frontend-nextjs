@@ -33,7 +33,7 @@ const data: ServiceItem[] = [
     textColor: "#ffffff",
     subHeading: "For Schools",
     body: "Provide the best learning environment with Skool Pro short- and long-term loans to develop your institution and invest in high-quality equipment.",
-    bg: "#191A23",
+    bg: "#333333",
     color: "#FFFFFF",
   },
   {
@@ -56,7 +56,7 @@ const data: ServiceItem[] = [
     heading: "Analytics and",
     textColor: "#ffffff",
     subHeading: "Tracking",
-    body: "Take Advantage of Skool pro’s analytics tools to gain real-time insights into student performance, staff efficiency, and school growth.",
+    body: "Take advantage of Skoolpro’s analytics tools to gain real-time insights into student performance, staff efficiency, and school growth.",
     bg: "#333333",
     color: "#FFDF93",
   },
@@ -64,9 +64,9 @@ const data: ServiceItem[] = [
 
 const Services = () => {
   return (
-    <section className="container mx-auto my-16">
-      <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-1">
+    <section className="mx-4 sm:mx-8 md:mx-16 lg:mx-20 xl:mx-25">
+      <div className="flex flex-col items-start gap-8 py-8 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:pb-[48] sm:pt-0">
+        <div className="order-2 flex flex-col gap-1 sm:order-1">
           <div className="flex w-fit items-center justify-center rounded-[5px] bg-[#FFDF93] px-2.5">
             <Text as="h4" weight={"bold"} scale={"heading4"}>
               Services
@@ -77,16 +77,16 @@ const Services = () => {
             needs of educational institutions across Africa:
           </p>
         </div>
-        <div>
+        <div className="order-1 sm:order-2 self-center">
           <SkoolproCircle height={140} width={140} className="max-w-full" />
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-8 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 mb-8 sm:mb-16 md:mb-24 lg:mb-32 xl:mb-[135px]">
         {data.map((dat, index) => (
-          <div
+          <div 
             key={index}
-            className="rounded-4xl p-6"
+            className="rounded-[24px] border border-[#191A23] p-6 shadow-[0px_5px_0px_0px_#191A23] md:rounded-[48px] xl:p-[35px]"
             style={{ backgroundColor: dat.bg }}
           >
             <div className="mt-6">
@@ -111,7 +111,7 @@ const Services = () => {
                 {dat.subHeading}
               </span>
             </div>
-            <div className="mt-8 h-28 w-[90%]" style={{ color: dat.textColor }}>
+            <div className="mt-4 md:mt-8 lg:mt-10 xl:mt-12 min-h-28 w-[90%]" style={{ color: dat.textColor }}>
               {dat.body}
             </div>
           </div>

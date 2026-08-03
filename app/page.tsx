@@ -1,10 +1,10 @@
-import { ContactUs, Footer, Navbar, Services } from "./_components";
+import { ContactUs, Navbar, Services } from "./_components";
 import { Hero } from "./_components";
 import WhyUS from "./_components/WhyUs";
 
 export default function Home() {
   return (
-    <div className="w-full flex flex-col px-4">
+    <div className="flex w-full flex-col">
       <Navbar />
       <Hero />
       <Services />
