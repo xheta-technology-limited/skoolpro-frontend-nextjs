@@ -32,7 +32,8 @@ const Hero = () => {
         </div>
 
         <div>
-          <h1 className="mt-0 text-center font-lora text-[32px] font-semibold leading-[1.2] text-white lg:font-(family-name:--font-poppins) lg:text-[56px] lg:font-bold">
+          <h1 className="relative mt-0 text-center font-lora text-[32px] font-semibold leading-[1.2] text-white lg:font-(family-name:--font-poppins) lg:text-[56px] lg:font-bold min-[1239px]:max-[1395px]:max-w-229.75! min-[1239px]:max-[1395px]:mx-auto">
+          
             All-in-One School Management Software for Seamless Education:
             <br />
             <span className="text-secondary">
