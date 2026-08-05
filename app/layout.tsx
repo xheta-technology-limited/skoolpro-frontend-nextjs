@@ -7,9 +7,7 @@ import {
   JetBrains_Mono,
 } from "next/font/google";
 import "./globals.css";
-import { Footer } from "./_components";
 import { Providers } from "./providers";
-import { Suspense } from "react";
 import { cn } from "@/lib/utils";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -71,9 +69,6 @@ export default function RootLayout({
           <div className="mx-auto flex flex-col max-w-360 min-h-full">
             {children}
           </div>
-          <Suspense fallback={null}>
-            <Footer />
-          </Suspense>
         </Providers>
       </body>
     </html>
