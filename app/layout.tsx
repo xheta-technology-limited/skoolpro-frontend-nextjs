@@ -7,7 +7,6 @@ import {
   JetBrains_Mono,
 } from "next/font/google";
 import "./globals.css";
-import { Footer } from "./_components";
 import { Providers } from "./providers";
 import { cn } from "@/lib/utils";
 
@@ -70,7 +69,6 @@ export default function RootLayout({
           <div className="mx-auto flex flex-col max-w-360 min-h-full">
             {children}
           </div>
-          <Footer />
         </Providers>
       </body>
     </html>
