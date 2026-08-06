@@ -10,7 +10,9 @@ import { Spinner } from "@/components/animations";
 type InputProps = {
   name: string;
   search?: boolean;
+  value?: string;
   label?: string;
+  onChange?: (e: any[]) => void;
   isSuccess?: boolean;
   isLoading?: boolean;
   isWarning?: boolean;
@@ -24,15 +26,19 @@ const Input = ({
   isLoading,
   isWarning,
   icon,
+  value,
   search,
+  onChange,
   ...props
 }: InputProps) => {
+  const isControlled = value !== undefined;
   const {
     register,
     formState: { errors },
   } = useFormContext();
-
   const error = errors[name]?.message as string | undefined;
+  const fieldProps = isControlled ? { name, value, onChange } : register(name);
+
   const [isPasswordShown, setPasswordShown] = useState(false);
   const isPasswordType = props.type === "password" && !isPasswordShown;
   const passwordType = isPasswordType ? "password" : "text";
@@ -40,7 +46,7 @@ const Input = ({
   return (
     <div className="relative">
       <input
-        {...register(name)}
+        {...fieldProps}
         {...props}
         id={`floating_input_${name}`}
         type={passwordType}

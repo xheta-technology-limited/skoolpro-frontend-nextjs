@@ -34,6 +34,7 @@ export default function OTPForm() {
         {
           onSuccess: (data) => {
             updateUserData(data);
+            router.push("/onboard");
           },
         }
       );
@@ -97,7 +98,7 @@ export default function OTPForm() {
           variant="secondary"
           size="lg"
           className="min-w-0 flex-1"
-          onClick={router.back}
+          onClick={() => router.push("/login")}
         >
           Cancel
         </Button>

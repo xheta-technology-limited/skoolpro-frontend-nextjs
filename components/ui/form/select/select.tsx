@@ -147,7 +147,7 @@ const Select = ({
                 className={clsx(
                   icon && "pr-13.75",
                   "pr-13.75",
-                  "w-75 h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:border-primary-500 not-placeholder-shown:bg-transparent disabled:bg-[#F6F3FDCC] disabled:cursor-not-allowed cursor-pointer"
+                  "w-full h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:border-primary-500 not-placeholder-shown:bg-transparent disabled:bg-[#F6F3FDCC] disabled:cursor-not-allowed cursor-pointer"
                 )}
               />
             ) : (
@@ -158,7 +158,7 @@ const Select = ({
                 onKeyDown={handleKeyDown}
                 className={clsx(
                   "pr-13.75",
-                  "w-75 h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-left text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:border-primary-500 disabled:bg-[#F6F3FDCC] disabled:cursor-not-allowed cursor-pointer",
+                  "w-full h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-left text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:border-primary-500 disabled:bg-[#F6F3FDCC] disabled:cursor-not-allowed cursor-pointer",
                   selectedOption && "bg-transparent"
                 )}
               >
@@ -208,7 +208,7 @@ const Select = ({
             </button>
 
             {isOpen && (
-              <ul className="absolute z-10 mt-1 w-75 max-h-60 overflow-auto rounded-ml bg-white shadow-lg py-1">
+              <ul className="absolute z-10 mt-1 w-full max-h-60 overflow-auto rounded-ml bg-white shadow-lg py-1">
                 {filteredOptions.length === 0 && (
                   <li className="px-ml py-2 text-[0.875rem] text-neutrals-1000">
                     No options found
