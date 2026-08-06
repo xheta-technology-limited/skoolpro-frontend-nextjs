@@ -1,7 +1,8 @@
 import * as z from "zod";
+import { requiredString } from "@/lib/utils/zod-schemas";
 
 export const userSchema = z.object({
-  login: z.string().nonempty("This field is required"),
-  password: z.string().nonempty("This field is required"),
+  login: requiredString,
+  password: requiredString,
 });
 export type LoginFormData = z.infer<typeof userSchema>;
