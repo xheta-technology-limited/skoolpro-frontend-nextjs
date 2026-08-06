@@ -1,5 +1,5 @@
 "use client";
-import { Input, Select, DragNDrop } from "@/components/ui/form";
+import { Input, Select, DragNDrop, Checkbox } from "@/components/ui/form";
 import DatePickerInput from "@/components/ui/form/date-picker/date-picker";
 import { africanCountries } from "@/lib/utils/countries-list";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,6 +30,7 @@ export default function FirstForm() {
           label="Select country"
           options={africanCountries}
         />
+
         <Input name="authority" label="Enter issuing authority" />
         <DatePickerInput name="expiry_date" label="Enter expiry date" />
         <DragNDrop

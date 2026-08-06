@@ -69,7 +69,7 @@ export default function DragNDrop({ name, label }: Props) {
             {error && (
               <div className="flex">
                 <XIcon size={16} color="#C03744" />{" "}
-                <span className="ml-2 text-xs text-[#C03744]">{error}</span>
+                <span className="ml-2 text-xs text-error-200">{error}</span>
               </div>
             )}
           </div>
