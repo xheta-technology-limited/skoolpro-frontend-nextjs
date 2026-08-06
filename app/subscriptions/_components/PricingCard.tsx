@@ -89,7 +89,7 @@ const PricingCard = ({ plan, billingCycle }: PricingCardProps) => {
       </button>
 
       {/* button section */}
-      <div className="flex items-center px-6 pb-8 lg:min-h-19.75">
+      <div className="mt-6 lg:mt-14 flex items-center px-6 pb-8 lg:min-h-19.75">
         <button className="group flex h-11.75 w-full items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-base-white px-8 py-3.5 transition-colors hover:bg-primary">
           <span className="text-[16px] font-normal leading-[1.2] text-primary transition-colors group-hover:text-base-white">
             Choose Plan
