@@ -29,11 +29,11 @@ export default function DragNDrop({ name, label }: Props) {
         const file = field.value as File | undefined;
 
         return (
-          <div className="relative">
+          <div className="relative max-w-full">
             <div
               {...getRootProps()}
               className={clsx(
-                "mb-2 flex w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-ml border border-dashed border-[#713EDD] bg-[#F9F6FF] px-ml py-4 text-center",
+                "mb-2 flex w-full cursor-pointer flex-col items-center justify-center gap-4 rounded-ml border border-dashed border-[#713EDD] bg-[#F9F6FF] p-4 text-center",
                 isDragActive && "bg-primary-500/10",
                 error && "bg-[#FBD6D45C]"
               )}
@@ -55,8 +55,10 @@ export default function DragNDrop({ name, label }: Props) {
             </div>
 
             {file && (
-              <div className="mb-2 flex items-center justify-between gap-2 rounded-ml border border-neutrals-200 bg-[#F5F5FF] px-ml py-2">
-                <span className="truncate text-[0.875rem]">{file.name}</span>
+              <div className="mb-2 max-w-full flex items-center justify-between gap-2 rounded-ml border border-neutrals-200 bg-[#F5F5FF] px-ml py-2">
+                <span className="min-w-0 truncate text-[0.875rem]">
+                  {file.name}
+                </span>
                 <button
                   type="button"
                   onClick={() => field.onChange(undefined)}

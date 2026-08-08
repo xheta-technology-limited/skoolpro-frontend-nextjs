@@ -28,7 +28,7 @@ export default function SecondForm() {
     <FormProvider {...methods}>
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
-        className="flex flex-col gap-6 w-125"
+        className="flex flex-col gap-4 w-125"
       >
         <Input name="education_authority" label="Enter education authority" />
         <Select

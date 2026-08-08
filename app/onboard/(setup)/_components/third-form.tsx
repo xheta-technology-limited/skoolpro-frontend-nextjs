@@ -35,7 +35,7 @@ export default function ThirdForm() {
     <FormProvider {...methods}>
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
-        className="flex flex-col gap-6 w-125"
+        className="flex flex-col gap-4 w-125"
       >
         <Input name="school_address" label="Enter school address" />
         <Input

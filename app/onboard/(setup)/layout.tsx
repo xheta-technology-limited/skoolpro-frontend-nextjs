@@ -12,6 +12,7 @@ export default function LoginLayout({
   children: React.ReactNode;
 }>) {
   const currentStep = useOnboardForm((state) => state.data);
+  const updateStep = useOnboardForm((state) => state.updateStep);
   const steps = [
     { label: "School details" },
     { label: "School details" },
@@ -20,12 +21,16 @@ export default function LoginLayout({
   ];
   return (
     <div className="py-12 px-6 h-full sm:px-14 md:px-29.25 flex flex-col items-center w-full">
-      <Link href={"/"} className="mb-20.75">
+      <Link href={"/"} className="mb-8">
         <AdmiralBlue11 height={51} width={199} />
       </Link>
 
-      <StepProgress steps={steps} currentStep={currentStep} />
-
+      <StepProgress
+        steps={steps}
+        currentStep={currentStep}
+        onStepChange={updateStep}
+      />
+      <div className="h-14.25" />
       <div className="flex h-full flex-wrap xl:flex-nowrap gap-16.5 items-center justify-center w-full">
         <Image
           src={"/images/onboard/onboard_card.png"}

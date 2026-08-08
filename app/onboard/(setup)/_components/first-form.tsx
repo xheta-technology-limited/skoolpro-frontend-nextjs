@@ -10,9 +10,6 @@ import { Button } from "@/components/ui/custom-button";
 import { Dispatch, SetStateAction } from "react";
 import { useOnboardForm } from "@/features/onboard/onboarding-store";
 
-type Props = {
-  setPhase: Dispatch<SetStateAction<number>>;
-};
 export default function FirstForm() {
   const setStep = useOnboardForm((state) => state.updateStep);
   const methods = useForm<FirstFormData>({
@@ -26,7 +23,7 @@ export default function FirstForm() {
     <FormProvider {...methods}>
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
-        className="flex flex-col gap-6 w-125"
+        className="flex flex-col gap-4 md:w-125"
       >
         <Input name="school_name" label="School Name" />
         <Input name="display_name" label="Enter display name" />
