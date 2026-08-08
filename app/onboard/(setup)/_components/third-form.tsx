@@ -1,21 +1,12 @@
 "use client";
-import {
-  Input,
-  Select,
-  DragNDrop,
-  Checkbox,
-  TextArea,
-} from "@/components/ui/form";
-import DatePickerInput from "@/components/ui/form/date-picker/date-picker";
-import { africanCountries } from "@/lib/utils/countries-list";
+import { Input } from "@/components/ui/form";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, FormProvider, useWatch } from "react-hook-form";
 import { thirdFormSchema } from "@/features/onboard/schemas";
 import type { ThirdFormData } from "@/features/onboard/schemas";
 import { Button } from "@/components/ui/custom-button";
-import { ownershipTypes, schoolTypes } from "@/lib/utils/school-type-list";
 import { Dispatch, SetStateAction } from "react";
-import clsx from "clsx";
 
 type Props = {
   setPhase: Dispatch<SetStateAction<number>>;

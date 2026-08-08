@@ -1,19 +1,10 @@
 "use client";
-import {
-  Input,
-  Select,
-  DragNDrop,
-  Checkbox,
-  TextArea,
-} from "@/components/ui/form";
-import DatePickerInput from "@/components/ui/form/date-picker/date-picker";
-import { africanCountries } from "@/lib/utils/countries-list";
+import { Input, DragNDrop } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, FormProvider, useWatch } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { fourthFormSchema } from "@/features/onboard/schemas";
 import type { FourthFormData } from "@/features/onboard/schemas";
 import { Button } from "@/components/ui/custom-button";
-import { ownershipTypes, schoolTypes } from "@/lib/utils/school-type-list";
 import { Dispatch, SetStateAction } from "react";
 import { toast } from "sonner";
 
