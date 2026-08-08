@@ -6,19 +6,63 @@ import SubscriptionHeader from "./_components/SubscriptionHeader";
 import BillingToggle from "./_components/BillingToggle";
 import PricingCard, { PricingPlan } from "./_components/PricingCard";
 
-const features = [
-  "Admissions", "User management", "Attendance", "Examination & Grading",
-  "Finance", "Student portal", "Teacher portal", "Parent portal",
-  "Human resource", "Payroll", "Library", "Inventory", "Transport",
-  "Hostel", "Health record", "Communication", "Learning portal",
-  "Timetable", "Analytics", "Artificial Intelligence",
-];
-
 const plans: PricingPlan[] = [
-  { name: "Basic Plan", monthlyPrice: 0, yearlyPrice: 0, features },
-  { name: "Starter Plan", monthlyPrice: 0, yearlyPrice: 0, features },
-  { name: "Pro Plan", monthlyPrice: 0, yearlyPrice: 0, features },
-  { name: "Custom Plan", monthlyPrice: 0, yearlyPrice: 0, features },
+  {
+    name: "Small School",
+    description: "Core academic modules for small schools",
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    stats: [
+      { label: "Students", value: "300" },
+      { label: "Staff", value: "40" },
+      { label: "Campuses", value: "1" },
+      { label: "Storage", value: "5 GB" },
+    ],
+    moduleCount: 5,
+    features: ["Admissions", "Attendance", "Exam", "Finance", "Communication"],
+  },
+  {
+    name: "Medium School",
+    description: "Core plus common operational modules for medium schools",
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    stats: [
+      { label: "Students", value: "300" },
+      { label: "Staff", value: "40" },
+      { label: "Campuses", value: "1" },
+      { label: "Storage", value: "5 GB" },
+    ],
+    moduleCount: 8,
+    features: ["Core", "Behaviour", "Library", "Transport"],
+  },
+  {
+    name: "Large School",
+    description: "Full operational suite for large or multi-campus schools",
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    stats: [
+      { label: "Students", value: "5000" },
+      { label: "Staff", value: "600" },
+      { label: "Campuses", value: "10" },
+      { label: "Storage", value: "100 GB" },
+    ],
+    moduleCount: 12,
+    features: ["All core", "Inventory", "Hostel", "Health", "HR & payroll"],
+  },
+  {
+    name: "Enterprise",
+    description: "All modules, unlimited scale, negotiated terms",
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    stats: [
+      { label: "Students", value: "Unlimited" },
+      { label: "Staff", value: "Unlimited" },
+      { label: "Campuses", value: "Unlimited" },
+      { label: "Storage", value: "Unlimited" },
+    ],
+    moduleCount: 12,
+    features: ["Everything in Large"],
+  },
 ];
 
 export default function SubscriptionsPage() {
