@@ -8,17 +8,19 @@ import { firstFormSchema } from "@/features/onboard/schemas";
 import type { FirstFormData } from "@/features/onboard/schemas";
 import { Button } from "@/components/ui/custom-button";
 import { Dispatch, SetStateAction } from "react";
+import { useOnboardForm } from "@/features/onboard/onboarding-store";
 
 type Props = {
   setPhase: Dispatch<SetStateAction<number>>;
 };
-export default function FirstForm({ setPhase }: Props) {
+export default function FirstForm() {
+  const setStep = useOnboardForm((state) => state.updateStep);
   const methods = useForm<FirstFormData>({
     defaultValues: {},
     resolver: zodResolver(firstFormSchema),
   });
   const onSubmit = () => {
-    setPhase((prev) => prev + 1);
+    setStep(1);
   };
   return (
     <FormProvider {...methods}>

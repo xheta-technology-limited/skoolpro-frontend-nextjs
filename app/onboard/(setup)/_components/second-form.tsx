@@ -9,18 +9,20 @@ import type { SecondFormData } from "@/features/onboard/schemas";
 import { Button } from "@/components/ui/custom-button";
 import { ownershipTypes, schoolTypes } from "@/lib/utils/school-type-list";
 import { Dispatch, SetStateAction } from "react";
+import { useOnboardForm } from "@/features/onboard/onboarding-store";
 
 type Props = {
   setPhase: Dispatch<SetStateAction<number>>;
 };
-export default function SecondForm({ setPhase }: Props) {
+export default function SecondForm() {
+  const setStep = useOnboardForm((state) => state.updateStep);
   const methods = useForm<SecondFormData>({
     defaultValues: {},
     resolver: zodResolver(secondFormSchema),
   });
 
   const onSubmit = () => {
-    setPhase((prev) => prev + 1);
+    setStep(2);
   };
   return (
     <FormProvider {...methods}>

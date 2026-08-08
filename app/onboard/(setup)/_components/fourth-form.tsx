@@ -5,14 +5,9 @@ import { useForm, FormProvider } from "react-hook-form";
 import { fourthFormSchema } from "@/features/onboard/schemas";
 import type { FourthFormData } from "@/features/onboard/schemas";
 import { Button } from "@/components/ui/custom-button";
-import { Dispatch, SetStateAction } from "react";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-type Props = {
-  setPhase: Dispatch<SetStateAction<number>>;
-};
-export default function FourthForm({ setPhase }: Props) {
+export default function FourthForm() {
   const router = useRouter();
   const methods = useForm<FourthFormData>({
     defaultValues: {},

@@ -7,11 +7,11 @@ import { thirdFormSchema } from "@/features/onboard/schemas";
 import type { ThirdFormData } from "@/features/onboard/schemas";
 import { Button } from "@/components/ui/custom-button";
 import { Dispatch, SetStateAction } from "react";
+import { useOnboardForm } from "@/features/onboard/onboarding-store";
 
-type Props = {
-  setPhase: Dispatch<SetStateAction<number>>;
-};
-export default function ThirdForm({ setPhase }: Props) {
+export default function ThirdForm() {
+  const setStep = useOnboardForm((state) => state.updateStep);
+
   const methods = useForm<ThirdFormData>({
     defaultValues: {},
     resolver: zodResolver(thirdFormSchema),
@@ -29,7 +29,7 @@ export default function ThirdForm({ setPhase }: Props) {
     name: "tertiary_hex_code",
   });
   const onSubmit = () => {
-    setPhase((prev) => prev + 1);
+    setStep(3);
   };
   return (
     <FormProvider {...methods}>

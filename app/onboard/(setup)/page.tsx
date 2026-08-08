@@ -1,16 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import { ThirdForm, SecondForm, FirstForm, FourthForm } from "./_components";
+import { useOnboardForm } from "@/features/onboard/onboarding-store";
 
 export default function FormSwitcher() {
-  const [phase, setPhase] = useState(1);
+  const step = useOnboardForm((state) => state.data);
+
   return (
     <>
-      {phase === 1 && <FirstForm setPhase={setPhase} />}
-      {phase === 2 && <SecondForm setPhase={setPhase} />}
-      {phase === 3 && <ThirdForm setPhase={setPhase} />}
-      {phase === 4 && <FourthForm setPhase={setPhase} />}
+      {step === 0 && <FirstForm />}
+      {step === 1 && <SecondForm />}
+      {step === 2 && <ThirdForm />}
+      {step === 3 && <FourthForm />}
     </>
   );
 }
