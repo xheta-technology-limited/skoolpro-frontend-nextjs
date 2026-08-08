@@ -37,6 +37,7 @@ export default function DatePicker({ name, label, isWarning }: Props) {
             <CalendarContents
               open={open}
               setOpen={setOpen}
+              selected={field.value ? new Date(field.value) : undefined}
               onSelect={(date) => {
                 if (!date) return;
                 field.onChange(date.toISOString());
@@ -53,8 +54,14 @@ type CalendarProps = {
   onSelect: (e: Date | undefined) => void;
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
+  selected?: Date;
 };
-const CalendarContents = ({ onSelect, open, setOpen }: CalendarProps) => {
+const CalendarContents = ({
+  onSelect,
+  open,
+  setOpen,
+  selected,
+}: CalendarProps) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
@@ -72,8 +79,8 @@ const CalendarContents = ({ onSelect, open, setOpen }: CalendarProps) => {
       >
         <Calendar
           mode="single"
-          selected={new Date()}
-          month={undefined}
+          selected={selected}
+          defaultMonth={selected}
           captionLayout="dropdown"
           onSelect={(date) => {
             onSelect(date);
