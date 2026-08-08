@@ -1,11 +1,5 @@
 "use client";
-import {
-  Input,
-  Select,
-  DragNDrop,
-  Checkbox,
-  TextArea,
-} from "@/components/ui/form";
+import { Input, Select, Checkbox, TextArea } from "@/components/ui/form";
 import DatePickerInput from "@/components/ui/form/date-picker/date-picker";
 import { africanCountries } from "@/lib/utils/countries-list";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,14 +8,19 @@ import { secondFormSchema } from "@/features/onboard/schemas";
 import type { SecondFormData } from "@/features/onboard/schemas";
 import { Button } from "@/components/ui/custom-button";
 import { ownershipTypes, schoolTypes } from "@/lib/utils/school-type-list";
+import { Dispatch, SetStateAction } from "react";
 
-export default function SecondForm() {
+type Props = {
+  setPhase: Dispatch<SetStateAction<number>>;
+};
+export default function SecondForm({ setPhase }: Props) {
   const methods = useForm<SecondFormData>({
     defaultValues: {},
     resolver: zodResolver(secondFormSchema),
   });
+
   const onSubmit = () => {
-    console.log("Suck ya mudda yo");
+    setPhase((prev) => prev + 1);
   };
   return (
     <FormProvider {...methods}>
@@ -50,7 +49,11 @@ export default function SecondForm() {
           name="establishment_date"
           label="Enter date of establishment"
         />
-        <TextArea name="school_description" label="Enter school description" />
+        <TextArea
+          maxLength={200}
+          name="school_description"
+          label="Enter school description"
+        />
         <Button className="self-end">Next</Button>
       </form>
     </FormProvider>

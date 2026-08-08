@@ -1,15 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import FirstForm from "./_components/first-form";
-import SecondForm from "./_components/second-form";
+import { ThirdForm, SecondForm, FirstForm, FourthForm } from "./_components";
 
 export default function FormSwitcher() {
   const [phase, setPhase] = useState(1);
   return (
     <>
       {phase === 1 && <FirstForm setPhase={setPhase} />}
-      {phase === 2 && <SecondForm />}
+      {phase === 2 && <SecondForm setPhase={setPhase} />}
+      {phase === 3 && <ThirdForm setPhase={setPhase} />}
+      {phase === 4 && <FourthForm setPhase={setPhase} />}
     </>
   );
 }
