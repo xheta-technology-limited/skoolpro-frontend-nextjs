@@ -42,7 +42,7 @@ const TextArea = ({
         maxLength={maxLength}
         {...props}
         className={clsx(
-          "w-full h-30 mb-2 py-4 peer rounded-s bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:border-primary-500 not-placeholder-shown:bg-transparent disabled:bg-[#F6F3FDCC]",
+          "w-full h-30 mb-2 py-4 peer rounded-s bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:border-primary-500 disabled:bg-[#F6F3FDCC]",
           props.className
         )}
         placeholder=" "

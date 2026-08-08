@@ -7,17 +7,19 @@ import type { FourthFormData } from "@/features/onboard/schemas";
 import { Button } from "@/components/ui/custom-button";
 import { Dispatch, SetStateAction } from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type Props = {
   setPhase: Dispatch<SetStateAction<number>>;
 };
 export default function FourthForm({ setPhase }: Props) {
+  const router = useRouter();
   const methods = useForm<FourthFormData>({
     defaultValues: {},
     resolver: zodResolver(fourthFormSchema),
   });
   const onSubmit = () => {
-    toast("whooptidoo!");
+    router.push("/subscriptions");
   };
   return (
     <FormProvider {...methods}>

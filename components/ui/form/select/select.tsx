@@ -147,7 +147,7 @@ const Select = ({
                 className={clsx(
                   icon && "pr-13.75",
                   "pr-13.75",
-                  "w-full h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:border-primary-500 not-placeholder-shown:bg-transparent disabled:bg-[#F6F3FDCC] disabled:cursor-not-allowed cursor-pointer",
+                  "w-full h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:border-primary-500 disabled:bg-[#F6F3FDCC] disabled:cursor-not-allowed cursor-pointer",
                   error && "bg-[#FBD6D45C]"
                 )}
               />
