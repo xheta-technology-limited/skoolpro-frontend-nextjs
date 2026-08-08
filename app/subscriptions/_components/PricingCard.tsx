@@ -16,9 +16,10 @@ export interface PricingPlan {
 interface PricingCardProps {
   plan: PricingPlan;
   billingCycle: "monthly" | "yearly";
+  onSelectPlan: (planName: string) => void;
 }
 
-const PricingCard = ({ plan, billingCycle }: PricingCardProps) => {
+const PricingCard = ({ plan, billingCycle, onSelectPlan }: PricingCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const price = billingCycle === "monthly" ? plan.monthlyPrice : plan.yearlyPrice;
 
@@ -96,7 +97,7 @@ const PricingCard = ({ plan, billingCycle }: PricingCardProps) => {
 
       {/* button section — pinned to bottom */}
       <div className="mt-auto flex items-center px-6 pb-8">
-        <button className="group flex h-11.75 w-full items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-base-white px-8 py-3.5 transition-colors hover:bg-primary">
+        <button onClick={() => onSelectPlan(plan.name)} className="group flex h-11.75 w-full items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-base-white px-8 py-3.5 transition-colors hover:bg-primary">
           <span className="text-[16px] font-normal leading-[1.2] text-primary transition-colors group-hover:text-base-white">
             Choose Plan
           </span>

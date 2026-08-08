@@ -68,6 +68,11 @@ const plans: PricingPlan[] = [
 export default function SubscriptionsPage() {
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
 
+  function handleSelectPlan(planName: string) {
+    // TODO: wire up real checkout/subscription flow
+    console.log("selected plan:", planName);
+  }
+
   return (
     <div className="mx-4 py-16 sm:mx-8 md:mx-16 lg:mx-20 xl:mx-25">
       <div className="flex justify-center">
@@ -86,7 +91,12 @@ export default function SubscriptionsPage() {
 
       <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-4">
         {plans.map((plan) => (
-          <PricingCard key={plan.name} plan={plan} billingCycle={billingCycle} />
+          <PricingCard
+            key={plan.name}
+            plan={plan}
+            billingCycle={billingCycle}
+            onSelectPlan={handleSelectPlan}
+          />
         ))}
       </div>
     </div>
