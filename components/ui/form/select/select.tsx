@@ -210,22 +210,27 @@ const Select = ({
             </button>
 
             {isOpen && (
-              <ul className="absolute z-10 mt-1 w-full max-h-60 overflow-auto rounded-ml bg-white shadow-lg py-1">
+              <ul className="absolute flex flex-col gap-4 z-10 mt-1 w-full max-h-60 overflow-auto rounded-ml bg-[#F5F5FF] shadow-lg p-2">
                 {filteredOptions.length === 0 && (
                   <li className="px-ml py-2 text-[0.875rem] text-neutrals-1000">
                     No options found
                   </li>
                 )}
                 {filteredOptions.map((option, index) => (
-                  <li key={option.value}>
+                  <li
+                    key={option.value}
+                    onMouseEnter={() => setHighlightIndex(index)}
+                    className={clsx(
+                      "rounded-[8px] border border-[#F0EBFB] py-2 px-4",
+                      index === highlightIndex ? "bg-[#F5F5FF]" : "bg-white"
+                    )}
+                  >
                     <button
                       type="button"
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => selectOption(option)}
-                      onMouseEnter={() => setHighlightIndex(index)}
                       className={clsx(
                         "w-full text-neutrals-1000 text-left px-ml py-2 text-[0.875rem] md:text-[1rem] cursor-pointer",
-                        index === highlightIndex && "bg-[#F5F5FF]",
                         option.value === field.value && "font-medium"
                       )}
                     >

@@ -1,5 +1,5 @@
 "use client";
-import { Input, Select, DragNDrop, Checkbox } from "@/components/ui/form";
+import { Input, Select, DragNDrop } from "@/components/ui/form";
 import DatePickerInput from "@/components/ui/form/date-picker/date-picker";
 import { africanCountries } from "@/lib/utils/countries-list";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,14 +7,18 @@ import { useForm, FormProvider } from "react-hook-form";
 import { firstFormSchema } from "@/features/onboard/schemas";
 import type { FirstFormData } from "@/features/onboard/schemas";
 import { Button } from "@/components/ui/custom-button";
+import { Dispatch, SetStateAction } from "react";
 
-export default function FirstForm() {
+type Props = {
+  setPhase: Dispatch<SetStateAction<number>>;
+};
+export default function FirstForm({ setPhase }: Props) {
   const methods = useForm<FirstFormData>({
     defaultValues: {},
     resolver: zodResolver(firstFormSchema),
   });
   const onSubmit = () => {
-    console.log("Suck ya mudda yo");
+    setPhase((prev) => prev + 1);
   };
   return (
     <FormProvider {...methods}>
@@ -33,10 +37,7 @@ export default function FirstForm() {
 
         <Input name="authority" label="Enter issuing authority" />
         <DatePickerInput name="expiry_date" label="Enter expiry date" />
-        <DragNDrop
-          name="file"
-          label="Drag and drop or Browse to upload registration"
-        />
+        <DragNDrop name="file" label="registration" />
         <Button className="self-end">Next</Button>
       </form>
     </FormProvider>

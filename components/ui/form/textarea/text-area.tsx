@@ -1,4 +1,5 @@
 "use client";
+import { Spinner } from "@/components/animations";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { XIcon } from "@phosphor-icons/react";
 import clsx from "clsx";
@@ -38,7 +39,8 @@ const TextArea = ({
         {...register(name)}
         {...props}
         className={clsx(
-          "w-75 h-30 mb-2 py-4 peer rounded-s bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:border-primary-500 not-placeholder-shown:bg-transparent disabled:bg-[#F6F3FDCC]"
+          "w-full h-30 mb-2 py-4 peer rounded-s bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:border-primary-500 not-placeholder-shown:bg-transparent disabled:bg-[#F6F3FDCC]",
+          props.className
         )}
         placeholder=" "
       />
@@ -66,12 +68,7 @@ const TextArea = ({
 
       {isLoading && (
         <div className="flex gap-1">
-          <DotLottieReact
-            src="/animations/ios-style-loading-spinner.lottie"
-            loop
-            autoplay
-            className="w-4 h-4"
-          />
+          <Spinner size={16} color={"#9f9c9c"} />
           <span className="text-xs text-neutrals-400">Loading</span>
         </div>
       )}

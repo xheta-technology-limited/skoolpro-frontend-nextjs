@@ -49,7 +49,8 @@ export default function DragNDrop({ name, label }: Props) {
                 weight={"standard"}
                 className="text-neutrals-700 mb-4"
               >
-                {label ?? "Drag 'n' drop a file here, or click to select"}
+                Drag and drop or <span className="text-primary">Browse</span> to
+                upload {label}
               </Text>
             </div>
 

@@ -50,8 +50,7 @@ const Checkbox = ({ name, label, options, max, disabled }: CheckboxProps) => {
       render={({ field }) => {
         const value: string[] = field.value ?? [];
         const selectedOptions = options.filter((o) => value.includes(o.value));
-        const isFloating =
-          isOpen || selectedOptions.length > 0 || Boolean(label);
+        const isFloating = isOpen || selectedOptions.length > 0;
 
         const toggleOption = (option: CheckboxOption) => {
           if (disabled) return;
@@ -119,13 +118,18 @@ const Checkbox = ({ name, label, options, max, disabled }: CheckboxProps) => {
             </button>
 
             {isOpen && (
-              <ul className="absolute z-10 mt-1 w-full max-h-60 overflow-auto rounded-ml bg-white shadow-lg py-1">
+              <ul className="absolute flex flex-col gap-4 z-10 mt-1 w-full max-h-60 overflow-auto rounded-ml bg-[#F5F5FF] shadow-lg p-2">
                 {options.map((option) => {
                   const isSelected = value.includes(option.value);
                   const isOptionDisabled =
                     disabled || (!isSelected && isMaxedOut);
                   return (
-                    <li key={option.value}>
+                    <li
+                      key={option.value}
+                      className={clsx(
+                        "rounded-[8px] border border-[#F0EBFB] py-2 px-4 bg-white"
+                      )}
+                    >
                       <button
                         type="button"
                         onMouseDown={(e) => e.preventDefault()}
