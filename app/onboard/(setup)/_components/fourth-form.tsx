@@ -20,7 +20,7 @@ export default function FourthForm() {
     <FormProvider {...methods}>
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 w-125"
+        className="flex flex-col gap-4 md:w-125 min-w-0 w-full"
       >
         <Input name="motto" label="Enter school motto" />
         <DragNDrop name="logo" label="school logo" />

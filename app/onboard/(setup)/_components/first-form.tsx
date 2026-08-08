@@ -23,7 +23,7 @@ export default function FirstForm() {
     <FormProvider {...methods}>
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4 md:w-125"
+        className="flex flex-col gap-4 w-full md:w-125 min-w-0"
       >
         <Input name="school_name" label="School Name" />
         <Input name="display_name" label="Enter display name" />

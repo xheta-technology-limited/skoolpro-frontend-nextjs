@@ -42,6 +42,11 @@ const Input = ({
   const [isPasswordShown, setPasswordShown] = useState(false);
   const isPasswordType = props.type === "password" && !isPasswordShown;
   const passwordType = isPasswordType ? "password" : "text";
+  const labelMaxWidth = search
+    ? "max-w-[calc(100%-5.5rem)]"
+    : icon || props.type === "password"
+      ? "max-w-[calc(100%-5rem)]"
+      : "max-w-[calc(100%-2.5rem)]";
 
   return (
     <div className="relative">
@@ -61,8 +66,10 @@ const Input = ({
 
       <label
         htmlFor={`floating_input_${name}`}
+        title={label}
         className={clsx(
-          "absolute peer-placeholder-shown:top-4 text-neutral-400 transition-all peer-focus:top-0 peer-focus:text-[0.75rem] peer-not-placeholder-shown:text-[0.75rem] peer-disabled:text-neutrals-100",
+          "absolute truncate peer-placeholder-shown:top-4 text-neutral-400 transition-all peer-focus:top-0 peer-focus:text-[0.75rem] peer-not-placeholder-shown:text-[0.75rem] peer-disabled:text-neutrals-100",
+          labelMaxWidth,
           search ? "left-14" : "left-ml"
         )}
       >
