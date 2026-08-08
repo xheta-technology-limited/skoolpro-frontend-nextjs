@@ -7,7 +7,10 @@ import Link from "next/link";
 import { linkVariants } from "@/styles";
 import { Button } from "@/components/ui/custom-button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { userSchema } from "@/features/auth/schemas/login-form-schema";
+import {
+  LoginFormData,
+  userSchema,
+} from "@/features/auth/schemas/login-form-schema";
 import { useLogin } from "@/features/auth/api/login";
 import { useState } from "react";
 import SuccessModal from "@/components/common/successModal/modal";
@@ -18,7 +21,7 @@ import { useUserStore } from "@/features/user/user.store";
 const LoginForm = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const router = useRouter();
-  const methods = useForm<loginForm>({
+  const methods = useForm<LoginFormData>({
     defaultValues: {
       login: "",
       password: "",
@@ -30,20 +33,25 @@ const LoginForm = () => {
   const updateUserData = useUserStore((state) => state.updateData);
 
   const onSubmit = (data: loginForm) => {
-    mutate(data, {
-      onSuccess: (res) => {
-        console.log("respose: ", res);
-        if ("mfa_required" in res) {
-          updateMFAData("challenge_id", res.challenge_id);
-          updateMFAData("available_methods", res.available_methods);
-          router.push("/mfa");
-        }
-        if ("mfa_enabled" in res) {
-          updateUserData(res);
-          res.mfa_enabled === false && setModalOpen(true);
-        }
-      },
-    });
+    if (process.env.NEXT_PUBLIC_ENV === "development") {
+      //TODO: make this still fetch data so we can test in dev with user data
+      router.replace("/onboard");
+    } else {
+      mutate(data, {
+        onSuccess: (res) => {
+          console.log("respose: ", res);
+          if ("mfa_required" in res) {
+            updateMFAData("challenge_id", res.challenge_id);
+            updateMFAData("available_methods", res.available_methods);
+            router.replace("/mfa");
+          }
+          if ("mfa_enabled" in res) {
+            updateUserData(res);
+            res.mfa_enabled === false && setModalOpen(true);
+          }
+        },
+      });
+    }
   };
 
   return (
@@ -87,7 +95,12 @@ const LoginForm = () => {
         onClose={() => setModalOpen(false)}
       >
         <div className="flex justify-between gap-2 md:gap-6 items-center w-full">
-          <Button variant="secondary" size="lg" className="flex-1 min-w-0">
+          <Button
+            onClick={() => router.replace("/onboard")}
+            variant="secondary"
+            size="lg"
+            className="flex-1 min-w-0"
+          >
             Proceed to dashboard
           </Button>
           <Button

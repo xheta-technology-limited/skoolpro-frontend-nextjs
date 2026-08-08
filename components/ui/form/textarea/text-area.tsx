@@ -1,4 +1,5 @@
 "use client";
+import { Spinner } from "@/components/animations";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { XIcon } from "@phosphor-icons/react";
 import clsx from "clsx";
@@ -10,6 +11,7 @@ type TextAreaProps = {
   label?: string;
   isSuccess?: boolean;
   isLoading?: boolean;
+  maxLength?: number;
 } & React.InputHTMLAttributes<HTMLTextAreaElement>;
 
 const TextArea = ({
@@ -17,6 +19,7 @@ const TextArea = ({
   label,
   isSuccess,
   isLoading,
+  maxLength,
   ...props
 }: TextAreaProps) => {
   const {
@@ -36,9 +39,11 @@ const TextArea = ({
       <textarea
         id="floating_textarea"
         {...register(name)}
+        maxLength={maxLength}
         {...props}
         className={clsx(
-          "w-75 h-30 mb-2 py-4 peer rounded-s bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:border-primary-500 not-placeholder-shown:bg-transparent disabled:bg-[#F6F3FDCC]"
+          "w-full h-30 mb-2 py-4 peer rounded-s bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:border-primary-500 disabled:bg-[#F6F3FDCC]",
+          props.className
         )}
         placeholder=" "
       />
@@ -58,20 +63,15 @@ const TextArea = ({
           <span className="ml-2 text-xs text-[#C03744]">{error}</span>
         </>
       )}
-      {props.maxLength && (
+      {maxLength && (
         <p className="text-neutrals-400 text-[12px] text-right">
-          {value.length}/{props.maxLength}
+          {value?.length ?? 0}/{maxLength}
         </p>
       )}
 
       {isLoading && (
         <div className="flex gap-1">
-          <DotLottieReact
-            src="/animations/ios-style-loading-spinner.lottie"
-            loop
-            autoplay
-            className="w-4 h-4"
-          />
+          <Spinner size={16} color={"#9f9c9c"} />
           <span className="text-xs text-neutrals-400">Loading</span>
         </div>
       )}

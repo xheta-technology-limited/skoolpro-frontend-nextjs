@@ -10,7 +10,9 @@ import { Spinner } from "@/components/animations";
 type InputProps = {
   name: string;
   search?: boolean;
+  value?: string;
   label?: string;
+  onChange?: (e: any[]) => void;
   isSuccess?: boolean;
   isLoading?: boolean;
   isWarning?: boolean;
@@ -24,30 +26,39 @@ const Input = ({
   isLoading,
   isWarning,
   icon,
+  value,
   search,
+  onChange,
   ...props
 }: InputProps) => {
+  const isControlled = value !== undefined;
   const {
     register,
     formState: { errors },
   } = useFormContext();
-
   const error = errors[name]?.message as string | undefined;
+  const fieldProps = isControlled ? { name, value, onChange } : register(name);
+
   const [isPasswordShown, setPasswordShown] = useState(false);
   const isPasswordType = props.type === "password" && !isPasswordShown;
-  const passwordType = isPasswordType ? "password" : "text";
+  const passwordType = isPasswordType ? "password" : props.type;
+  const labelMaxWidth = search
+    ? "max-w-[calc(100%-5.5rem)]"
+    : icon || props.type === "password"
+    ? "max-w-[calc(100%-5rem)]"
+    : "max-w-[calc(100%-2.5rem)]";
 
   return (
     <div className="relative">
       <input
-        {...register(name)}
+        {...fieldProps}
         {...props}
         id={`floating_input_${name}`}
         type={passwordType}
         className={clsx(
           (icon || props.type === "password") && "pr-13.75",
           search && "pl-13.75",
-          "w-full h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:outline-primary-500 focus:outline-1 not-placeholder-shown:bg-transparent disabled:bg-[#F6F3FDCC]",
+          "w-full h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:outline-primary-500 focus:outline-1  disabled:bg-[#F6F3FDCC]",
           error && "bg-[#FBD6D45C]"
         )}
         placeholder=" "
@@ -55,8 +66,10 @@ const Input = ({
 
       <label
         htmlFor={`floating_input_${name}`}
+        title={label}
         className={clsx(
-          "absolute peer-placeholder-shown:top-4 text-neutral-400 transition-all peer-focus:top-0 peer-focus:text-[0.75rem] peer-not-placeholder-shown:text-[0.75rem] peer-disabled:text-neutrals-100",
+          "absolute truncate peer-placeholder-shown:top-4 text-neutral-400 transition-all peer-focus:top-0 peer-focus:text-[0.75rem] peer-not-placeholder-shown:text-[0.75rem] peer-disabled:text-neutrals-100",
+          labelMaxWidth,
           search ? "left-14" : "left-ml"
         )}
       >
