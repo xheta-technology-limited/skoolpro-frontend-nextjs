@@ -31,6 +31,7 @@ export function useProgressRouter() {
       refresh: () => {
         NProgress.start();
         router.refresh();
+        setTimeout(() => NProgress.done(), 500);
       },
     }),
     [router]

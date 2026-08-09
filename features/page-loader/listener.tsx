@@ -6,19 +6,20 @@ import NProgress from "nprogress";
 export function PageLoaderListener() {
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
+      if (e.defaultPrevented) return;
       const anchor = (e.target as HTMLElement).closest("a");
+      if (!anchor || !anchor.href) return;
+      if (anchor.hasAttribute("download")) return;
+      if (anchor.target !== "" && anchor.target !== "_self") return;
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+      if (anchor.origin !== window.location.origin) return;
       if (
-        anchor &&
-        anchor.href &&
-        anchor.target !== "_blank" &&
-        !e.ctrlKey &&
-        !e.metaKey &&
-        !e.shiftKey &&
-        anchor.origin === window.location.origin &&
-        anchor.href !== window.location.href
+        anchor.pathname === window.location.pathname &&
+        anchor.search === window.location.search
       ) {
-        NProgress.start();
+        return;
       }
+      NProgress.start();
     };
 
     document.addEventListener("click", handleClick);
