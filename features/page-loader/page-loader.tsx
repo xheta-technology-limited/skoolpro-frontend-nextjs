@@ -7,7 +7,6 @@ import "nprogress/nprogress.css";
 
 NProgress.configure({
   showSpinner: false,
-  template: "<div className='bg-primary-500 h-1 w-full'/>",
 });
 
 export function PageLoader() {
@@ -18,5 +17,11 @@ export function PageLoader() {
     NProgress.done();
   }, [pathname, searchParams]);
 
-  return null;
+  return (
+    <style>{`
+      #nprogress .bar {
+        height: 4px;
+      }
+    `}</style>
+  );
 }

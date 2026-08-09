@@ -8,10 +8,10 @@ import { useForgotPassword } from "@/features/auth/api/forgot-password";
 import { ForgotPasswordRequest } from "@/features/auth/types/api/forgot-password";
 import { toast } from "sonner";
 import { useResetPasswordStore } from "@/features/auth/auth-store";
-import { useRouter } from "next/navigation";
+import { useProgressRouter } from "@/features/page-loader";
 
 const Form = () => {
-  const router = useRouter();
+  const router = useProgressRouter();
   const { mutate, isPending } = useForgotPassword();
   const updateStoreField = useResetPasswordStore((state) => state.updateField);
 
@@ -23,9 +23,9 @@ const Form = () => {
   });
   const onSubmit = (data: ForgotPasswordRequest) => {
     mutate(data, {
-      onSuccess: () => {
+      onSuccess: (res) => {
         updateStoreField("login", data.login);
-        toast.success("An OTP has been sent to your email!");
+        toast.success(res?.message || "OTP code sent");
         router.push("reset-password/otp");
       },
     });
