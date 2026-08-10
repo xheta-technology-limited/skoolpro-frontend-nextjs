@@ -6,12 +6,13 @@ import {
   ResetPasswordRequest,
 } from "../types/api/forgot-password";
 
-export const forgotPassword = (data: ForgotPasswordRequest) =>
-  api.post("auth/forgot-password", data);
+export const forgotPassword = (
+  data: ForgotPasswordRequest
+): Promise<{ message: string }> => api.post("auth/forgot-password", data);
 
 export const useForgotPassword = () => {
   return useMutation<
-    any,
+    { message: string },
     AxiosError<{ message: string }>,
     ForgotPasswordRequest
   >({

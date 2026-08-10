@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { useForgotPassword } from "@/features/auth/api/forgot-password";
 import { useResetPasswordStore } from "@/features/auth/auth-store";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useProgressRouter } from "@/features/page-loader";
 
 export default function OTPCode() {
   const [otp, setOtp] = useState("");
@@ -18,7 +18,7 @@ export default function OTPCode() {
   const { mutate: resendMutate, isPending: resendPending } =
     useForgotPassword();
 
-  const router = useRouter();
+  const router = useProgressRouter();
 
   const resendCode = () => {
     if (!storeEmail) {

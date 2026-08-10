@@ -3,8 +3,7 @@ import { useState } from "react";
 import { Text } from "@/components/ui";
 import MfaButton from "./mfa-button";
 import { Button } from "@/components/ui/custom-button";
-import { useAuthenticatorSetup, useOtpSetup } from "@/features/auth/api/mfa";
-import { useRouter } from "next/navigation";
+import { useProgressRouter } from "@/features/page-loader";
 
 const options = [
   {
@@ -22,7 +21,7 @@ const options = [
 ];
 export default function MfaForm() {
   const [active, setActive] = useState<string | null>(null);
-  const router = useRouter();
+  const router = useProgressRouter();
 
   const onProceed = () => {
     if (active && active !== "app") {

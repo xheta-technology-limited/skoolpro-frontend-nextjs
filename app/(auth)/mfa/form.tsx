@@ -8,12 +8,12 @@ import {
 } from "@/features/auth/api/mfa";
 import { useCallback, useState } from "react";
 import { useAuth } from "../../../features/auth/auth-store";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Text } from "@/components/ui";
 import { useResendCountdown } from "@/features/auth/hooks";
 import { useUserStore } from "@/features/user/user.store";
 import { formatCountdown } from "@/lib/utils/format-countdown";
+import { useProgressRouter } from "@/features/page-loader";
 
 export default function OTPForm() {
   const OtpMethods = useAuth((state) => state.data?.available_methods);
@@ -25,7 +25,7 @@ export default function OTPForm() {
   const [otp, setOtp] = useState("");
   const { seconds, start: startCountdown } = useResendCountdown();
   const updateUserData = useUserStore((state) => state.updateData);
-  const router = useRouter();
+  const router = useProgressRouter();
   const confirmOtp = () => {
     primaryMethod &&
       challengeId &&

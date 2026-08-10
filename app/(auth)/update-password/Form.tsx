@@ -7,13 +7,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { resetPasswordSchema } from "./_schemas/reset-password-schema";
 import { SuccessModal } from "@/components/common";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useProgressRouter } from "@/features/page-loader";
 import { useResetPassword } from "@/features/auth/api/forgot-password";
 import { useResetPasswordStore } from "@/features/auth/auth-store";
 
 const Form = () => {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
+  const router = useProgressRouter();
   const { mutate, isPending } = useResetPassword();
   const store = useResetPasswordStore((state) => state.data);
   const methods = useForm<passwordForm>({

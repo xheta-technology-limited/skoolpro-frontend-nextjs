@@ -14,13 +14,14 @@ import {
 import { useLogin } from "@/features/auth/api/login";
 import { useState } from "react";
 import SuccessModal from "@/components/common/successModal/modal";
-import { useRouter } from "next/navigation";
 import { useAuth } from "../../../../features/auth/auth-store";
 import { useUserStore } from "@/features/user/user.store";
+import { useProgressRouter } from "@/features/page-loader";
+import { setFormErrors } from "@/lib/helpers/set-form-errors";
 
 const LoginForm = () => {
   const [isModalOpen, setModalOpen] = useState(false);
-  const router = useRouter();
+  const router = useProgressRouter();
   const methods = useForm<LoginFormData>({
     defaultValues: {
       login: "",
@@ -33,25 +34,29 @@ const LoginForm = () => {
   const updateUserData = useUserStore((state) => state.updateData);
 
   const onSubmit = (data: loginForm) => {
-    if (process.env.NEXT_PUBLIC_ENV === "development") {
-      //TODO: make this still fetch data so we can test in dev with user data
-      router.replace("/onboard");
-    } else {
-      mutate(data, {
-        onSuccess: (res) => {
-          console.log("respose: ", res);
-          if ("mfa_required" in res) {
-            updateMFAData("challenge_id", res.challenge_id);
-            updateMFAData("available_methods", res.available_methods);
-            router.replace("/mfa");
+    mutate(data, {
+      onSuccess: (res) => {
+        console.log("respose: ", res);
+        if ("mfa_required" in res) {
+          if (process.env.NEXT_PUBLIC_ENV === "development") {
+            router.replace("/onboard");
+            return;
           }
-          if ("mfa_enabled" in res) {
-            updateUserData(res);
-            res.mfa_enabled === false && setModalOpen(true);
-          }
-        },
-      });
-    }
+          updateMFAData("challenge_id", res.challenge_id);
+          updateMFAData("available_methods", res.available_methods);
+          router.replace("/mfa");
+        }
+        if ("mfa_enabled" in res) {
+          updateUserData(res);
+          res.mfa_enabled === false && setModalOpen(true);
+        }
+      },
+      onError: (res) => {
+        if (res.errors) {
+          setFormErrors(methods.setError, res.errors);
+        }
+      },
+    });
   };
 
   return (
