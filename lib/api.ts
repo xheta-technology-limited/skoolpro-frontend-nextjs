@@ -83,19 +83,19 @@ async function request<T>(
       const err = await res
         .json()
         .then((data) => data)
-        .catch(() => res.statusText);
+        .catch(() => ({ message: res.statusText }));
 
       if (res.status === 401) {
         typeof window !== "undefined"
           ? (window.location.href = "/login")
           : redirect("/login");
-        throw new ApiError(err.message, err.errors);
+        throw new ApiError(err.message, err?.errors);
       }
       if (typeof window !== "undefined") {
         toast.error(err.message);
       }
 
-      throw new ApiError(err.message, err.errors);
+      throw new ApiError(err.message, err?.errors);
     }
 
     return res.status === 204
