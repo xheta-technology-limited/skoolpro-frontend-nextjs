@@ -14,13 +14,13 @@ import {
 import { useLogin } from "@/features/auth/api/login";
 import { useState } from "react";
 import SuccessModal from "@/components/common/successModal/modal";
-import { useRouter } from "next/navigation";
 import { useAuth } from "../../../../features/auth/auth-store";
 import { useUserStore } from "@/features/user/user.store";
+import { useProgressRouter } from "@/features/page-loader";
 
 const LoginForm = () => {
   const [isModalOpen, setModalOpen] = useState(false);
-  const router = useRouter();
+  const router = useProgressRouter();
   const methods = useForm<LoginFormData>({
     defaultValues: {
       login: "",

@@ -5,10 +5,10 @@ import { useForm, FormProvider } from "react-hook-form";
 import { fourthFormSchema } from "@/features/onboard/schemas";
 import type { FourthFormData } from "@/features/onboard/schemas";
 import { Button } from "@/components/ui/custom-button";
-import { useRouter } from "next/navigation";
+import { useProgressRouter } from "@/features/page-loader";
 
 export default function FourthForm() {
-  const router = useRouter();
+  const router = useProgressRouter();
   const methods = useForm<FourthFormData>({
     defaultValues: {},
     resolver: zodResolver(fourthFormSchema),
