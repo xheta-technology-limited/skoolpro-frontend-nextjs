@@ -17,6 +17,7 @@ import SuccessModal from "@/components/common/successModal/modal";
 import { useAuth } from "../../../../features/auth/auth-store";
 import { useUserStore } from "@/features/user/user.store";
 import { useProgressRouter } from "@/features/page-loader";
+import { setFormErrors } from "@/lib/helpers/set-form-errors";
 
 const LoginForm = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -52,13 +53,7 @@ const LoginForm = () => {
       },
       onError: (res) => {
         if (res.errors) {
-          Object.entries(res.errors).forEach(([field, message]) => {
-            methods.setError(field as keyof loginForm, {
-              type: "server",
-              message: message as string,
-            });
-          });
-          console.log("erorrs be: ", methods.formState.errors);
+          setFormErrors(methods.setError, res.errors);
         }
       },
     });
