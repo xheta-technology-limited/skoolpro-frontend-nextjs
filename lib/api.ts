@@ -80,22 +80,22 @@ async function request<T>(
     });
 
     if (!res.ok) {
-      const message = await res
+      const err = await res
         .json()
-        .then((data) => data.message)
+        .then((data) => data)
         .catch(() => res.statusText);
 
       if (res.status === 401) {
         typeof window !== "undefined"
           ? (window.location.href = "/login")
           : redirect("/login");
-        throw new Error(message);
+        throw new ApiError(err.message, err.errors);
       }
       if (typeof window !== "undefined") {
-        toast.error(message);
+        toast.error(err.message);
       }
 
-      throw new Error(message);
+      throw new ApiError(err.message, err.errors);
     }
 
     return res.status === 204
@@ -133,3 +133,13 @@ export const api = {
     options?: Omit<RequestOptions, "method" | "body">
   ) => request<T>(path, { ...options, method: "DELETE" }),
 };
+
+class ApiError extends Error {
+  errors: unknown;
+
+  constructor(message: string, errors?: unknown) {
+    super(message);
+    this.name = "ApiError";
+    this.errors = errors;
+  }
+}

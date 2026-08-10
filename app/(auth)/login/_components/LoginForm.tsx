@@ -33,25 +33,35 @@ const LoginForm = () => {
   const updateUserData = useUserStore((state) => state.updateData);
 
   const onSubmit = (data: loginForm) => {
-    if (process.env.NEXT_PUBLIC_ENV === "development") {
-      //TODO: make this still fetch data so we can test in dev with user data
-      router.replace("/onboard");
-    } else {
-      mutate(data, {
-        onSuccess: (res) => {
-          console.log("respose: ", res);
-          if ("mfa_required" in res) {
-            updateMFAData("challenge_id", res.challenge_id);
-            updateMFAData("available_methods", res.available_methods);
-            router.replace("/mfa");
+    mutate(data, {
+      onSuccess: (res) => {
+        console.log("respose: ", res);
+        if ("mfa_required" in res) {
+          if (process.env.NEXT_PUBLIC_ENV === "development") {
+            router.replace("/onboard");
+            return;
           }
-          if ("mfa_enabled" in res) {
-            updateUserData(res);
-            res.mfa_enabled === false && setModalOpen(true);
-          }
-        },
-      });
-    }
+          updateMFAData("challenge_id", res.challenge_id);
+          updateMFAData("available_methods", res.available_methods);
+          router.replace("/mfa");
+        }
+        if ("mfa_enabled" in res) {
+          updateUserData(res);
+          res.mfa_enabled === false && setModalOpen(true);
+        }
+      },
+      onError: (res) => {
+        if (res.errors) {
+          Object.entries(res.errors).forEach(([field, message]) => {
+            methods.setError(field as keyof loginForm, {
+              type: "server",
+              message: message as string,
+            });
+          });
+          console.log("erorrs be: ", methods.formState.errors);
+        }
+      },
+    });
   };
 
   return (
