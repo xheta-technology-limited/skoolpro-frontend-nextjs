@@ -5,6 +5,7 @@ import {
   Poppins,
   Lora,
   JetBrains_Mono,
+  Inter,
 } from "next/font/google";
 import "./globals.css";
 import { Footer } from "./_components";
@@ -23,6 +24,11 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
@@ -61,13 +67,14 @@ export default function RootLayout({
         geistMono.variable,
         poppins.variable,
         lora.variable,
+        inter.variable,
         "font-mono",
         jetbrainsMono.variable
       )}
     >
       <body className="min-h-full">
         <Providers>
-          <div className="mx-auto flex flex-col max-w-360 min-h-full">
+          <div className="mx-auto flex flex-col min-h-full">
             {children}
           </div>
           <Footer />

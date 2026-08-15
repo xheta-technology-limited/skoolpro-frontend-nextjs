@@ -56,7 +56,7 @@ const data: WhyUsItem[] = [
 
 const WhyUS = () => {
   return (
-    <>
+    <div className="mx-auto w-full max-w-360">
       <section id="why-us" className="mx-4 sm:mx-8 md:mx-16 lg:mx-20 xl:mx-25">
         <div className="flex flex-col">
           <div className="mb-[16px] md:mb-6 w-fit rounded-[5px] bg-secondary px-2.5 pb-px pt-0.75">
@@ -70,14 +70,12 @@ const WhyUS = () => {
             school operations.
           </p>
         </div>
-        
 
-          <div className="mt-25 md:mt-12 mb-8 md:mb-19.25 grid grid-cols-1 gap-10 min-[768px]:grid-cols-2 min-[1400px]:grid-cols-3">          
-            {data.map((dat) => (
+        <div className="mt-25 md:mt-12 mb-8 md:mb-19.25 grid grid-cols-1 gap-10 min-[768px]:grid-cols-2 min-[1400px]:grid-cols-3">
+          {data.map((dat) => (
             <div
               key={dat.id}
               className="rounded-lg border p-6 sm:rounded-[32px] md:rounded-[40px] md:py-9 md:px-7 lg:rounded-[44px] lg:py-8.75 lg:px-7.5 xl:rounded-[48px] xl:py-10 xl:px-8.75"
-              //className="rounded-[2.3rem] border p-8"
               style={{ borderColor: dat.color }}
             >
               <div className="flex items-center gap-5">
@@ -88,10 +86,10 @@ const WhyUS = () => {
                   width={100}
                   height={100}
                 />
-                
-                  <Text as="h4" weight={"accent"} className="w-full wrap-break-word text-[20px] xl:text-[24px]">
-                    {dat.heading}
-                  </Text>
+
+                <Text as="h4" weight={"accent"} className="w-full wrap-break-word text-[20px] xl:text-[24px]">
+                  {dat.heading}
+                </Text>
               </div>
               <hr className="my-4 border-t-2 border-primary-200" />
               <div>
@@ -104,33 +102,26 @@ const WhyUS = () => {
         </div>
       </section>
 
-     <section className="mx-4 sm:mx-8 md:mx-16 lg:mx-20 xl:mx-25 my-8 sm:my-12 md:my-16 lg:my-24 xl:my-[34.83px]">
-      <div className="relative grid grid-cols-1 gap-8 rounded-lg bg-primary p-7.5 min-h-139.25 sm:gap-12 sm:rounded-[32px] sm:min-h-122.5 sm:p-9 md:gap-20 md:rounded-[40px] md:min-h-107.5 md:p-11 lg:grid-cols-2 lg:gap-32 lg:rounded-[44px] lg:min-h-97.5 lg:p-13 xl:gap-68.75 xl:rounded-[48px] xl:min-h-86.75 xl:p-15">        
-        <div className="max-w-125 items-center">
-            <Text
-              as="h4"
-              scale={"heading4"}
-              weight={"bold"}
-              className="text-white"
-            >
+      <section className="mx-4 sm:mx-8 md:mx-16 lg:mx-20 xl:mx-25 my-8 sm:my-12 md:my-16 lg:my-24 xl:my-[34.83px]">
+        <div className="relative grid grid-cols-1 gap-8 rounded-lg bg-primary p-7.5 min-h-139.25 sm:gap-12 sm:rounded-[32px] sm:min-h-122.5 sm:p-9 md:gap-20 md:rounded-[40px] md:min-h-107.5 md:p-11 lg:grid-cols-2 lg:gap-32 lg:rounded-[44px] lg:min-h-97.5 lg:p-13 xl:gap-68.75 xl:rounded-[48px] xl:min-h-86.75 xl:p-15">
+          <div className="max-w-125 items-center">
+            <Text as="h4" scale={"heading4"} weight={"bold"} className="text-white">
               Let&apos;s make things happen
             </Text>
             <p className="my-6 font-lora text-[16px] font-normal leading-[1.2] text-white lg:font-(family-name:--font-poppins) lg:text-[18px]">
               Contact us today to learn more about how our digital management
               tool can help your business grow and succeed online.
             </p>
-            <button
-  className="inline-flex items-center gap-2 rounded-2xl bg-secondary px-6 py-2 font-lora text-[16px] font-normal leading-[1.2] text-center text-primary-1000 md:py-3 lg:font-(family-name:--font-poppins) lg:text-[24px] lg:leading-none"
->
-  Get started for free
-  <Image
-    src="/images/cta-pointer.png"
-    alt="arrow"
-    className="h-10 w-auto max-w-full"
-    width={48}
-    height={48}
-  />
-</button>
+            <button className="inline-flex items-center gap-2 rounded-2xl bg-secondary px-6 py-2 font-lora text-[16px] font-normal leading-[1.2] text-center text-primary-1000 md:py-3 lg:font-(family-name:--font-poppins) lg:text-[24px] lg:leading-none">
+              Get started for free
+              <Image
+                src="/images/cta-pointer.png"
+                alt="arrow"
+                className="h-10 w-auto max-w-full"
+                width={48}
+                height={48}
+              />
+            </button>
           </div>
           <Image
             src={"/images/cycle.png"}
@@ -141,7 +132,7 @@ const WhyUS = () => {
           />
         </div>
       </section>
-    </>
+    </div>
   );
 };
 

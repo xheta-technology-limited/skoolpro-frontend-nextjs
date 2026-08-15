@@ -63,7 +63,7 @@ const data: ServiceItem[] = [
 
 const Services = () => {
   return (
-    <section id="services" className="mx-4 sm:mx-8 md:mx-16 lg:mx-20 xl:mx-25">
+    <section id="services" className="mx-auto w-full max-w-360 px-4 sm:px-8 md:px-16 lg:px-20 xl:px-25">
       <div className="flex flex-col items-start gap-8 py-8 sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:pb-[48] sm:pt-0">
         <div className="order-2 flex flex-col gap-1 sm:order-1">
           <div className="flex w-fit items-center justify-center rounded-[5px] bg-secondary px-2.5">

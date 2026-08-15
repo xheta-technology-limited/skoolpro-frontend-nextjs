@@ -5,7 +5,7 @@ import { AdmiralBlue11 } from "@/components/icons/logos";
 
 const Navbar = () => {
   return (
-    <nav className="flex h-19 items-center justify-between mx-4 sm:mx-8 md:mx-16 lg:mx-20 xl:mx-25 md:mt-10.25 md:h-13.5">
+    <nav className="mx-auto flex h-19 w-full max-w-[1440px] items-center justify-between px-4 sm:px-8 md:mt-10.25 md:h-13.5 md:px-16 lg:px-20 xl:px-25">
       <AdmiralBlue11
         width={200}
         height={54}
