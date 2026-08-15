@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { UseFormRegisterReturn, UseFormSetValue } from "react-hook-form";
+import { Path, UseFormRegisterReturn, UseFormSetValue } from "react-hook-form";
 import { DayPicker } from "react-day-picker";
 import { format } from "date-fns";
 import { Calendar } from "iconsax-react";
@@ -10,7 +10,7 @@ import { SchoolProfileFormValues } from "../SchoolProfileStep";
 
 interface DateFieldProps {
   placeholder: string;
-  fieldName: keyof SchoolProfileFormValues;
+  fieldName: Path<SchoolProfileFormValues>;
   register: UseFormRegisterReturn;
   value: string;
   setValue: UseFormSetValue<SchoolProfileFormValues>;
@@ -68,12 +68,25 @@ const DateField = ({ placeholder, fieldName, register, value, setValue }: DateFi
         <div className="absolute top-full left-0 z-20 mt-2 rounded-2xl border border-primary-100 bg-white p-2 shadow-lg">
           <DayPicker
             mode="single"
+            captionLayout="dropdown"
+            hideNavigation
+            startMonth={new Date(1950, 0)}
+            endMonth={new Date(2035, 11)}
             selected={selectedDate}
             onSelect={(date) => {
               if (date) {
                 setValue(fieldName, format(date, "yyyy-MM-dd"));
                 setIsOpen(false);
               }
+            }}
+            classNames={{
+              dropdowns: "flex gap-2",
+              dropdown: "rounded-lg border border-primary-100 bg-[#F5F5FF] px-2 py-1 text-sm text-neutrals-900 focus:outline-none",
+              caption_label: "hidden",
+              month_caption: "flex items-center justify-center mb-2",
+              day: "rounded-lg hover:bg-primary-100",
+              selected: "bg-primary text-white rounded-lg",
+              today: "font-semibold text-primary",
             }}
           />
         </div>

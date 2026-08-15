@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Image from "next/image";
 import confetti from "canvas-confetti";
 import { AdmiralBlue11 } from "@/components/icons/logos";
@@ -101,6 +101,14 @@ export default function SubscriptionsPage() {
 
   const selectedPlanData = plans.find((plan) => plan.name === selectedPlan);
 
+  const primaryLocation =
+    schoolProfileData?.locations?.find((l) => l.isPrimary) ??
+    schoolProfileData?.locations?.[0];
+  const primaryContact =
+    schoolProfileData?.contacts?.find((c) => c.isPrimary) ??
+    schoolProfileData?.contacts?.[0];
+  const firstRegistration = schoolProfileData?.registrationNumbers?.[0];
+
   return (
     <div className="min-h-screen bg-[#f5f5ff]">
       <div className="mx-4 py-16 sm:mx-8 md:mx-16 lg:mx-20 xl:mx-25">
@@ -114,13 +122,15 @@ export default function SubscriptionsPage() {
 
         <div className="mt-12 rounded-2xl bg-white p-6">
           {step === "school-profile" && (
-            <SchoolProfileStep
-              defaultValues={schoolProfileData ?? undefined}
-              onContinue={(data) => {
-                setSchoolProfileData(data);
-                setStep("choose-plan");
-              }}
-            />
+            <Suspense fallback={<div>Loading...</div>}>
+              <SchoolProfileStep
+                defaultValues={schoolProfileData ?? undefined}
+                onContinue={(data) => {
+                  setSchoolProfileData(data);
+                  setStep("choose-plan");
+                }}
+              />
+            </Suspense>
           )}
 
           {step === "choose-plan" && (
@@ -198,17 +208,14 @@ export default function SubscriptionsPage() {
                     { label: "School name", value: schoolProfileData?.schoolName ?? "" },
                     { label: "School type", value: schoolProfileData?.schoolType ?? "" },
                     { label: "Ownership type", value: schoolProfileData?.ownershipType ?? "" },
-                    { label: "Primary contact", value: schoolProfileData?.contactLabel ?? "" },
+                    { label: "Primary contact", value: primaryContact?.contactLabel ?? "" },
                     {
                       label: "Registration number",
-                      value: schoolProfileData?.registrationNumber ?? "",
+                      value: firstRegistration?.registrationNumber ?? "",
                     },
-                    { label: "School address", value: schoolProfileData?.addressLine1 ?? "" },
-                    {
-                      label: "Contact type",
-                      value: schoolProfileData?.contactType ?? "",
-                    },
-                    { label: "Contact value", value: schoolProfileData?.contactValue ?? "" },
+                    { label: "School address", value: primaryLocation?.addressLine1 ?? "" },
+                    { label: "Contact type", value: primaryContact?.contactType ?? "" },
+                    { label: "Contact value", value: primaryContact?.contactValue ?? "" },
                   ]}
                 />
 

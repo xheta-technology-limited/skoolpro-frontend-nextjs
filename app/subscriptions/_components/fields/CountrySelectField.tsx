@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { UseFormRegisterReturn, UseFormSetValue } from "react-hook-form";
+import { Path, UseFormRegisterReturn, UseFormSetValue } from "react-hook-form";
 import countryCodesList from "country-codes-list";
 import { IconSearch } from "@tabler/icons-react";
 import { ArrowSquareDown } from "iconsax-react";
@@ -24,7 +24,7 @@ const allCountries: Country[] = Object.entries(
 
 interface CountrySelectFieldProps {
   placeholder: string;
-  fieldName: keyof SchoolProfileFormValues;
+  fieldName: Path<SchoolProfileFormValues>;
   register: UseFormRegisterReturn;
   value: string;
   setValue: UseFormSetValue<SchoolProfileFormValues>;

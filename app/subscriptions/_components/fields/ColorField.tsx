@@ -1,10 +1,10 @@
-import { UseFormRegisterReturn, UseFormSetValue } from "react-hook-form";
+import { Path, UseFormRegisterReturn, UseFormSetValue } from "react-hook-form";
 import { SchoolProfileFormValues } from "../SchoolProfileStep";
 import TextField from "./TextField";
 
 interface ColorFieldProps {
   placeholder: string;
-  textFieldName: keyof SchoolProfileFormValues;
+  textFieldName: Path<SchoolProfileFormValues>;
   textRegister: UseFormRegisterReturn;
   colorRegister: UseFormRegisterReturn;
   value: string;
@@ -20,8 +20,10 @@ const ColorField = ({
   setValue,
 }: ColorFieldProps) => {
   return (
-    <div className="flex flex-1 items-center gap-4">
+    <div className="flex w-full min-w-0 items-center gap-4">
+      <div className="min-w-0 flex-1">
         <TextField placeholder={placeholder} register={textRegister} value={value} />
+      </div>
 
       <div className="flex h-12.75 w-20 shrink-0 items-center justify-center rounded-2xl bg-[#F5F5FF] p-2">
         <input

@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { AddSquare } from "iconsax-react";
+import { useForm, useFieldArray } from "react-hook-form";
+import { AddSquare, Trash } from "iconsax-react";
 import FormSectionCard from "./FormSectionCard";
 import TextField from "./fields/TextField";
 import SelectField from "./fields/SelectField";
@@ -11,6 +10,48 @@ import TextareaField from "./fields/TextareaField";
 import ToggleField from "./fields/ToggleField";
 import ColorField from "./fields/ColorField";
 import CountrySelectField from "./fields/CountrySelectField";
+
+interface RegistrationEntry {
+  registrationNumber: string;
+  regCountry: string;
+  issuingAuthority: string;
+  expiryDate: string;
+}
+
+interface LocationEntry {
+  locationName: string;
+  locationCode: string;
+  addressLine1: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  landmark: string;
+  timezone: string;
+  studentCapacity: string;
+  isPrimary: boolean;
+}
+
+interface ContactEntry {
+  contactType: string;
+  contactLabel: string;
+  contactValue: string;
+  isPrimary: boolean;
+}
+
+interface KeyContactEntry {
+  keyContactRole: string;
+  keyContactFullName: string;
+  keyContactRoleTitle: string;
+  keyContactEmail: string;
+  keyContactPhone: string;
+  isPrimary: boolean;
+}
+
+interface CustomColorEntry {
+  colorName: string;
+  colorValue: string;
+  colorSwatch: string;
+}
 
 export interface SchoolProfileFormValues {
   schoolName: string;
@@ -21,27 +62,10 @@ export interface SchoolProfileFormValues {
   country: string;
   dateOfEstablishment: string;
   description: string;
-  registrationNumber: string;
-  regCountry: string;
-  issuingAuthority: string;
-  expiryDate: string;
-  locationName: string;
-  locationCode: string;
-  addressLine1: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  landmark: string;
-  timezone: string;
-  studentCapacity: string;
-  contactType: string;
-  contactLabel: string;
-  contactValue: string;
-  keyContactRole: string;
-  keyContactFullName: string;
-  keyContactRoleTitle: string;
-  keyContactEmail: string;
-  keyContactPhone: string;
+  registrationNumbers: RegistrationEntry[];
+  locations: LocationEntry[];
+  contacts: ContactEntry[];
+  keyContacts: KeyContactEntry[];
   primaryColor: string;
   primaryColorSwatch: string;
   secondaryColor: string;
@@ -50,9 +74,52 @@ export interface SchoolProfileFormValues {
   tertiaryColorSwatch: string;
   accentColor: string;
   accentColorSwatch: string;
+  customColors: CustomColorEntry[];
   priorityLevel: string;
   targetGoLive: string;
 }
+
+const emptyRegistration: RegistrationEntry = {
+  registrationNumber: "",
+  regCountry: "",
+  issuingAuthority: "",
+  expiryDate: "",
+};
+
+const emptyLocation: LocationEntry = {
+  locationName: "",
+  locationCode: "",
+  addressLine1: "",
+  city: "",
+  state: "",
+  postalCode: "",
+  landmark: "",
+  timezone: "",
+  studentCapacity: "",
+  isPrimary: false,
+};
+
+const emptyContact: ContactEntry = {
+  contactType: "",
+  contactLabel: "",
+  contactValue: "",
+  isPrimary: false,
+};
+
+const emptyKeyContact: KeyContactEntry = {
+  keyContactRole: "",
+  keyContactFullName: "",
+  keyContactRoleTitle: "",
+  keyContactEmail: "",
+  keyContactPhone: "",
+  isPrimary: false,
+};
+
+const emptyCustomColor: CustomColorEntry = {
+  colorName: "",
+  colorValue: "",
+  colorSwatch: "#FFFFFF",
+};
 
 interface SchoolProfileStepProps {
   onContinue: (data: SchoolProfileFormValues) => void;
@@ -60,10 +127,20 @@ interface SchoolProfileStepProps {
 }
 
 const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps) => {
-  const { register, handleSubmit, watch, setValue } = useForm<SchoolProfileFormValues>({
-    defaultValues,
-  });
+  const { register, handleSubmit, watch, setValue, control, formState } =
+    useForm<SchoolProfileFormValues>({
+      mode: "onChange",
+      defaultValues: {
+        registrationNumbers: [emptyRegistration],
+        locations: [emptyLocation],
+        contacts: [emptyContact],
+        keyContacts: [emptyKeyContact],
+        customColors: [],
+        ...defaultValues,
+      },
+    });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const schoolName = watch("schoolName", "");
   const displayName = watch("displayName", "");
   const schoolType = watch("schoolType", "");
@@ -71,30 +148,7 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
   const educationAuthority = watch("educationAuthority", "");
   const country = watch("country", "");
   const description = watch("description", "");
-
-  const registrationNumber = watch("registrationNumber", "");
-  const regCountry = watch("regCountry", "");
-  const issuingAuthority = watch("issuingAuthority", "");
-
-  const locationName = watch("locationName", "");
-  const locationCode = watch("locationCode", "");
-  const addressLine1 = watch("addressLine1", "");
-  const city = watch("city", "");
-  const state = watch("state", "");
-  const postalCode = watch("postalCode", "");
-  const landmark = watch("landmark", "");
-  const timezone = watch("timezone", "");
-  const studentCapacity = watch("studentCapacity", "");
-
-  const contactType = watch("contactType", "");
-  const contactLabel = watch("contactLabel", "");
-  const contactValue = watch("contactValue", "");
-
-  const keyContactRole = watch("keyContactRole", "");
-  const keyContactFullName = watch("keyContactFullName", "");
-  const keyContactRoleTitle = watch("keyContactRoleTitle", "");
-  const keyContactEmail = watch("keyContactEmail", "");
-  const keyContactPhone = watch("keyContactPhone", "");
+  const dateOfEstablishment = watch("dateOfEstablishment", "");
 
   const primaryColor = watch("primaryColor", "");
   const secondaryColor = watch("secondaryColor", "");
@@ -102,14 +156,37 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
   const accentColor = watch("accentColor", "");
 
   const priorityLevel = watch("priorityLevel", "");
-
-  const dateOfEstablishment = watch("dateOfEstablishment", "");
-  const expiryDate = watch("expiryDate", "");
   const targetGoLive = watch("targetGoLive", "");
 
-  const [isPrimaryLocation, setIsPrimaryLocation] = useState(true);
-  const [isPrimaryContact, setIsPrimaryContact] = useState(true);
-  const [isPrimaryKeyContact, setIsPrimaryKeyContact] = useState(true);
+  const registrationArray = useFieldArray({ control, name: "registrationNumbers" });
+  const locationArray = useFieldArray({ control, name: "locations" });
+  const contactArray = useFieldArray({ control, name: "contacts" });
+  const keyContactArray = useFieldArray({ control, name: "keyContacts" });
+  const customColorArray = useFieldArray({ control, name: "customColors" });
+
+  const registrations = watch("registrationNumbers");
+  const locations = watch("locations");
+  const contacts = watch("contacts");
+  const keyContacts = watch("keyContacts");
+  const customColors = watch("customColors");
+
+  function setPrimaryLocation(index: number) {
+    locations.forEach((_, i) => {
+      setValue(`locations.${i}.isPrimary`, i === index);
+    });
+  }
+
+  function setPrimaryContact(index: number) {
+    contacts.forEach((_, i) => {
+      setValue(`contacts.${i}.isPrimary`, i === index);
+    });
+  }
+
+  function setPrimaryKeyContact(index: number) {
+    keyContacts.forEach((_, i) => {
+      setValue(`keyContacts.${i}.isPrimary`, i === index);
+    });
+  }
 
   const onSubmit = (data: SchoolProfileFormValues) => {
     onContinue(data);
@@ -125,7 +202,11 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
       <div className="mt-8 flex flex-col gap-8">
         <FormSectionCard title="School Identity">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-            <TextField placeholder="School Name" register={register("schoolName")} value={schoolName} />
+            <TextField
+              placeholder="School Name"
+              register={register("schoolName", { required: true })}
+              value={schoolName}
+            />
             <TextField
               placeholder="Enter display name"
               register={register("displayName")}
@@ -137,13 +218,13 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
             <SelectField
               placeholder="Select school type"
               options={["Primary", "Secondary", "Primary, Secondary"]}
-              register={register("schoolType")}
+              register={register("schoolType", { required: true })}
               value={schoolType}
             />
             <SelectField
               placeholder="Select ownership type"
               options={["Private", "Public", "Government"]}
-              register={register("ownershipType")}
+              register={register("ownershipType", { required: true })}
               value={ownershipType}
             />
           </div>
@@ -157,7 +238,7 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
             <CountrySelectField
               placeholder="Select country"
               fieldName="country"
-              register={register("country")}
+              register={register("country", { required: true })}
               value={country}
               setValue={setValue}
             />
@@ -166,7 +247,7 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
           <DateField
             placeholder="Enter date of establishment"
             fieldName="dateOfEstablishment"
-            register={register("dateOfEstablishment")}
+            register={register("dateOfEstablishment", { required: true })}
             value={dateOfEstablishment}
             setValue={setValue}
           />
@@ -179,38 +260,67 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
         </FormSectionCard>
 
         <FormSectionCard title="Registration number">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-            <TextField
-              placeholder="Enter registration number"
-              register={register("registrationNumber")}
-              value={registrationNumber}
-            />
-            <CountrySelectField
-              placeholder="Select country"
-              fieldName="regCountry"
-              register={register("regCountry")}
-              value={regCountry}
-              setValue={setValue}
-            />
-          </div>
+          {registrationArray.fields.map((field, index) => (
+            <div key={field.id} className="flex flex-col gap-6">
+              {index > 0 && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-neutrals-700">
+                    Registration number {index + 1}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => registrationArray.remove(index)}
+                    className="flex h-8 w-8 items-center justify-center rounded-md bg-neutrals-100"
+                  >
+                    <Trash size={18} variant="Bulk" color="#E4626F" />
+                  </button>
+                </div>
+              )}
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-            <TextField
-              placeholder="Enter issuing authority"
-              register={register("issuingAuthority")}
-              value={issuingAuthority}
-            />
-            <DateField
-              placeholder="Enter expiry date"
-              fieldName="expiryDate"
-              register={register("expiryDate")}
-              value={expiryDate}
-              setValue={setValue}
-            />
-          </div>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
+                <TextField
+                  placeholder="Enter registration number"
+                  register={register(
+                    `registrationNumbers.${index}.registrationNumber`,
+                    index === 0 ? { required: true } : {}
+                  )}
+                  value={registrations[index]?.registrationNumber ?? ""}
+                />
+                <CountrySelectField
+                  placeholder="Select country"
+                  fieldName={`registrationNumbers.${index}.regCountry`}
+                  register={register(
+                    `registrationNumbers.${index}.regCountry`,
+                    index === 0 ? { required: true } : {}
+                  )}
+                  value={registrations[index]?.regCountry ?? ""}
+                  setValue={setValue}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
+                <TextField
+                  placeholder="Enter issuing authority"
+                  register={register(
+                    `registrationNumbers.${index}.issuingAuthority`,
+                    index === 0 ? { required: true } : {}
+                  )}
+                  value={registrations[index]?.issuingAuthority ?? ""}
+                />
+                <DateField
+                  placeholder="Enter expiry date"
+                  fieldName={`registrationNumbers.${index}.expiryDate`}
+                  register={register(`registrationNumbers.${index}.expiryDate`)}
+                  value={registrations[index]?.expiryDate ?? ""}
+                  setValue={setValue}
+                />
+              </div>
+            </div>
+          ))}
 
           <button
             type="button"
+            onClick={() => registrationArray.append(emptyRegistration)}
             className="flex w-fit items-center gap-2 text-sm font-medium text-neutrals-700"
           >
             <AddSquare size={24} variant="Bulk" color="#5A5555" />
@@ -219,48 +329,99 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
         </FormSectionCard>
 
         <FormSectionCard title="Location">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-            <TextField placeholder="Enter name" register={register("locationName")} value={locationName} />
-            <TextField placeholder="Enter code" register={register("locationCode")} value={locationCode} />
-          </div>
+          {locationArray.fields.map((field, index) => (
+            <div key={field.id} className="flex flex-col gap-6">
+              {index > 0 && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-neutrals-700">
+                    Location {index + 1}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => locationArray.remove(index)}
+                    className="flex h-8 w-8 items-center justify-center rounded-md bg-neutrals-100"
+                  >
+                    <Trash size={18} variant="Bulk" color="#E4626F" />
+                  </button>
+                </div>
+              )}
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-            <TextField
-              placeholder="Enter address line 1"
-              register={register("addressLine1")}
-              value={addressLine1}
-            />
-            <TextField placeholder="Enter city" register={register("city")} value={city} />
-          </div>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
+                <TextField
+                  placeholder="Enter name"
+                  register={register(
+                    `locations.${index}.locationName`,
+                    index === 0 ? { required: true } : {}
+                  )}
+                  value={locations[index]?.locationName ?? ""}
+                />
+                <TextField
+                  placeholder="Enter code"
+                  register={register(`locations.${index}.locationCode`)}
+                  value={locations[index]?.locationCode ?? ""}
+                />
+              </div>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-            <TextField placeholder="Enter state" register={register("state")} value={state} />
-            <TextField
-              placeholder="Enter postal code"
-              register={register("postalCode")}
-              value={postalCode}
-            />
-          </div>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
+                <TextField
+                  placeholder="Enter address line 1"
+                  register={register(
+                    `locations.${index}.addressLine1`,
+                    index === 0 ? { required: true } : {}
+                  )}
+                  value={locations[index]?.addressLine1 ?? ""}
+                />
+                <TextField
+                  placeholder="Enter city"
+                  register={register(`locations.${index}.city`, index === 0 ? { required: true } : {})}
+                  value={locations[index]?.city ?? ""}
+                />
+              </div>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-            <TextField placeholder="Enter landmark" register={register("landmark")} value={landmark} />
-            <TextField placeholder="Enter timezone" register={register("timezone")} value={timezone} />
-          </div>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
+                <TextField
+                  placeholder="Enter state"
+                  register={register(`locations.${index}.state`, index === 0 ? { required: true } : {})}
+                  value={locations[index]?.state ?? ""}
+                />
+                <TextField
+                  placeholder="Enter postal code"
+                  register={register(`locations.${index}.postalCode`)}
+                  value={locations[index]?.postalCode ?? ""}
+                />
+              </div>
 
-          <TextField
-            placeholder="Enter student capacity"
-            register={register("studentCapacity")}
-            value={studentCapacity}
-          />
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
+                <TextField
+                  placeholder="Enter landmark"
+                  register={register(`locations.${index}.landmark`)}
+                  value={locations[index]?.landmark ?? ""}
+                />
+                <TextField
+                  placeholder="Enter timezone"
+                  register={register(`locations.${index}.timezone`)}
+                  value={locations[index]?.timezone ?? ""}
+                />
+              </div>
 
-          <ToggleField
-            label="Set as primary location"
-            checked={isPrimaryLocation}
-            onChange={setIsPrimaryLocation}
-          />
+              <TextField
+                placeholder="Enter student capacity"
+                register={register(`locations.${index}.studentCapacity`)}
+                value={locations[index]?.studentCapacity ?? ""}
+              />
+
+              <ToggleField
+                label="Set as primary location"
+                checked={locations.length === 1 ? true : Boolean(locations[index]?.isPrimary)}
+                onChange={() => setPrimaryLocation(index)}
+                disabled={locations.length === 1}
+              />
+            </div>
+          ))}
 
           <button
             type="button"
+            onClick={() => locationArray.append(emptyLocation)}
             className="flex w-fit items-center gap-2 text-sm font-medium text-neutrals-700"
           >
             <AddSquare size={24} variant="Bulk" color="#5A5555" />
@@ -269,26 +430,64 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
         </FormSectionCard>
 
         <FormSectionCard title="Contacts">
-          <SelectField
-            placeholder="Select contact type"
-            options={["Phone", "Email", "Website", "Social media"]}
-            register={register("contactType")}
-            value={contactType}
-          />
+          {contactArray.fields.map((field, index) => (
+            <div key={field.id} className="flex flex-col gap-6">
+              {index > 0 && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-neutrals-700">
+                    Contact {index + 1}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => contactArray.remove(index)}
+                    className="flex h-8 w-8 items-center justify-center rounded-md bg-neutrals-100"
+                  >
+                    <Trash size={18} variant="Bulk" color="#E4626F" />
+                  </button>
+                </div>
+              )}
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-            <TextField placeholder="Enter label" register={register("contactLabel")} value={contactLabel} />
-            <TextField placeholder="Enter value" register={register("contactValue")} value={contactValue} />
-          </div>
+              <SelectField
+                placeholder="Select contact type"
+                options={["Phone", "Email", "Website", "Social media"]}
+                register={register(
+                  `contacts.${index}.contactType`,
+                  index === 0 ? { required: true } : {}
+                )}
+                value={contacts[index]?.contactType ?? ""}
+              />
 
-          <ToggleField
-            label="Set as primary contact"
-            checked={isPrimaryContact}
-            onChange={setIsPrimaryContact}
-          />
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
+                <TextField
+                  placeholder="Enter label"
+                  register={register(
+                    `contacts.${index}.contactLabel`,
+                    index === 0 ? { required: true } : {}
+                  )}
+                  value={contacts[index]?.contactLabel ?? ""}
+                />
+                <TextField
+                  placeholder="Enter value"
+                  register={register(
+                    `contacts.${index}.contactValue`,
+                    index === 0 ? { required: true } : {}
+                  )}
+                  value={contacts[index]?.contactValue ?? ""}
+                />
+              </div>
+
+              <ToggleField
+                label="Set as primary contact"
+                checked={contacts.length === 1 ? true : Boolean(contacts[index]?.isPrimary)}
+                onChange={() => setPrimaryContact(index)}
+                disabled={contacts.length === 1}
+              />
+            </div>
+          ))}
 
           <button
             type="button"
+            onClick={() => contactArray.append(emptyContact)}
             className="flex w-fit items-center gap-2 text-sm font-medium text-neutrals-700"
           >
             <AddSquare size={24} variant="Bulk" color="#5A5555" />
@@ -297,47 +496,68 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
         </FormSectionCard>
 
         <FormSectionCard title="Key Contacts">
-          <SelectField
-            placeholder="Select role type"
-            options={["Principal", "Vice Principal", "Administrator", "IT Contact"]}
-            register={register("keyContactRole")}
-            value={keyContactRole}
-          />
+          {keyContactArray.fields.map((field, index) => (
+            <div key={field.id} className="flex flex-col gap-6">
+              {index > 0 && (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-neutrals-700">
+                    Key contact {index + 1}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => keyContactArray.remove(index)}
+                    className="flex h-8 w-8 items-center justify-center rounded-md bg-neutrals-100"
+                  >
+                    <Trash size={18} variant="Bulk" color="#E4626F" />
+                  </button>
+                </div>
+              )}
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-            <TextField
-              placeholder="Enter full name"
-              register={register("keyContactFullName")}
-              value={keyContactFullName}
-            />
-            <TextField
-              placeholder="Enter role"
-              register={register("keyContactRoleTitle")}
-              value={keyContactRoleTitle}
-            />
-          </div>
+              <SelectField
+                placeholder="Select role type"
+                options={["Principal", "Vice Principal", "Administrator", "IT Contact"]}
+                register={register(`keyContacts.${index}.keyContactRole`)}
+                value={keyContacts[index]?.keyContactRole ?? ""}
+              />
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-            <TextField
-              placeholder="Enter email"
-              register={register("keyContactEmail")}
-              value={keyContactEmail}
-            />
-            <TextField
-              placeholder="Enter phone number"
-              register={register("keyContactPhone")}
-              value={keyContactPhone}
-            />
-          </div>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
+                <TextField
+                  placeholder="Enter full name"
+                  register={register(`keyContacts.${index}.keyContactFullName`)}
+                  value={keyContacts[index]?.keyContactFullName ?? ""}
+                />
+                <TextField
+                  placeholder="Enter role"
+                  register={register(`keyContacts.${index}.keyContactRoleTitle`)}
+                  value={keyContacts[index]?.keyContactRoleTitle ?? ""}
+                />
+              </div>
 
-          <ToggleField
-            label="Set as primary contact"
-            checked={isPrimaryKeyContact}
-            onChange={setIsPrimaryKeyContact}
-          />
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
+                <TextField
+                  placeholder="Enter email"
+                  register={register(`keyContacts.${index}.keyContactEmail`)}
+                  value={keyContacts[index]?.keyContactEmail ?? ""}
+                />
+                <TextField
+                  placeholder="Enter phone number"
+                  register={register(`keyContacts.${index}.keyContactPhone`)}
+                  value={keyContacts[index]?.keyContactPhone ?? ""}
+                />
+              </div>
+
+              <ToggleField
+                label="Set as primary contact"
+                checked={keyContacts.length === 1 ? true : Boolean(keyContacts[index]?.isPrimary)}
+                onChange={() => setPrimaryKeyContact(index)}
+                disabled={keyContacts.length === 1}
+              />
+            </div>
+          ))}
 
           <button
             type="button"
+            onClick={() => keyContactArray.append(emptyKeyContact)}
             className="flex w-fit items-center gap-2 text-sm font-medium text-neutrals-700"
           >
             <AddSquare size={24} variant="Bulk" color="#5A5555" />
@@ -384,8 +604,42 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
             />
           </div>
 
+          {customColorArray.fields.map((field, index) => (
+            <div key={field.id} className="flex flex-col gap-6">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-neutrals-700">
+                  Custom color {index + 1}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => customColorArray.remove(index)}
+                  className="flex h-8 w-8 items-center justify-center rounded-md bg-neutrals-100"
+                >
+                  <Trash size={18} variant="Bulk" color="#E4626F" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
+                <TextField
+                  placeholder="Enter color name"
+                  register={register(`customColors.${index}.colorName`)}
+                  value={customColors[index]?.colorName ?? ""}
+                />
+                <ColorField
+                  placeholder="Enter hex code color"
+                  textFieldName={`customColors.${index}.colorValue`}
+                  textRegister={register(`customColors.${index}.colorValue`)}
+                  colorRegister={register(`customColors.${index}.colorSwatch`)}
+                  value={customColors[index]?.colorValue ?? ""}
+                  setValue={setValue}
+                />
+              </div>
+            </div>
+          ))}
+
           <button
             type="button"
+            onClick={() => customColorArray.append(emptyCustomColor)}
             className="flex w-fit items-center gap-2 text-sm font-medium text-neutrals-700"
           >
             <AddSquare size={24} variant="Bulk" color="#5A5555" />
@@ -421,7 +675,8 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
         </button>
         <button
           type="submit"
-          className="flex h-13.5 flex-1 items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-primary px-8 py-4"
+          disabled={!formState.isValid}
+          className="flex h-13.5 flex-1 items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-primary px-8 py-4 disabled:cursor-not-allowed disabled:border-neutrals-300 disabled:bg-neutrals-300"
         >
           <span className="text-[16px] font-normal leading-[1.2] text-white">Continue</span>
         </button>
