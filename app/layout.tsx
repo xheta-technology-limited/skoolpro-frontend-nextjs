@@ -8,9 +8,10 @@ import {
   Inter,
 } from "next/font/google";
 import "./globals.css";
-import { Footer } from "./_components";
 import { Providers } from "./providers";
 import { cn } from "@/lib/utils";
+import { Suspense } from "react";
+import { PageLoader, PageLoaderListener } from "@/features/page-loader";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -73,11 +74,14 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full">
+        <Suspense fallback={null}>
+          <PageLoader />
+        </Suspense>
+        <PageLoaderListener />
         <Providers>
           <div className="mx-auto flex flex-col min-h-full">
             {children}
           </div>
-          <Footer />
         </Providers>
       </body>
     </html>

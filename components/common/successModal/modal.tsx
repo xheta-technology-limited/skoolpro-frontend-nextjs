@@ -26,9 +26,9 @@ const SuccessModal = ({ isOpen, onClose, subheading, children }: props) => {
       <>
         <div
           onClick={onClose}
-          className="absolute px-7 inset-0 bg-neutrals-600 opacity-50 z-40"
+          className="fixed px-7 inset-0 bg-neutrals-600 opacity-50 z-40"
         ></div>
-        <div className="bg-base-white w-[80vw] py-14 sm:py-29 px-5 z-50 md:w-155 rounded-ml flex flex-col gap-4 items-center justify-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div className="bg-base-white w-[80vw] py-14 sm:py-29 px-5 md:px-12.5 z-50 md:w-155 rounded-ml flex flex-col gap-4 items-center justify-center fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <SuccessIcon width={100} height={100} />
           <Text scale={"feature"} weight={"accent"}>
             Success

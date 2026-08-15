@@ -1,5 +1,5 @@
 import Image from "next/image";
-import LoginForm from "./Form";
+import Form from "./Form";
 import Link from "next/link";
 import { AdmiralBlue11 } from "@/components/icons/logos";
 
@@ -12,14 +12,14 @@ const UpdatePassword = () => {
 
       <div className="flex h-full flex-wrap xl:flex-nowrap gap-16.5 items-center justify-center w-full">
         <Image
-          src={"/images/login_card.png"}
+          src={"/images/login-card-password.png"}
           height={660}
           width={640}
           alt="welcome"
           className="hidden w-64 h-auto md:w-160 sm:block"
         />
 
-        <LoginForm />
+        <Form />
       </div>
     </div>
   );
