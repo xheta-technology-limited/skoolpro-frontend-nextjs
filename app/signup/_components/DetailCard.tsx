@@ -1,4 +1,4 @@
-import { Edit } from "iconsax-react";
+import { Edit } from "iconsax-reactjs";
 import DetailField from "./DetailField";
 
 interface DetailCardProps {

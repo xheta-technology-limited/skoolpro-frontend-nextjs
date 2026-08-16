@@ -1,6 +1,6 @@
 "use client";
 
-import { ToggleOnCircle, ToggleOffCircle } from "iconsax-react";
+import { ToggleOnCircle, ToggleOffCircle } from "iconsax-reactjs";
 
 interface ToggleFieldProps {
   label: string;

@@ -1,7 +1,11 @@
+"use no memo";
+
 "use client";
 
 import { useForm, useFieldArray } from "react-hook-form";
-import { AddSquare, Trash } from "iconsax-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AddSquare, Trash } from "iconsax-reactjs";
+import { schoolProfileSchema, type SchoolProfileFormValues } from "@/features/auth/schemas";
 import FormSectionCard from "./FormSectionCard";
 import TextField from "./fields/TextField";
 import SelectField from "./fields/SelectField";
@@ -11,82 +15,16 @@ import ToggleField from "./fields/ToggleField";
 import ColorField from "./fields/ColorField";
 import CountrySelectField from "./fields/CountrySelectField";
 
-interface RegistrationEntry {
-  registrationNumber: string;
-  regCountry: string;
-  issuingAuthority: string;
-  expiryDate: string;
-}
+export type { SchoolProfileFormValues };
 
-interface LocationEntry {
-  locationName: string;
-  locationCode: string;
-  addressLine1: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  landmark: string;
-  timezone: string;
-  studentCapacity: string;
-  isPrimary: boolean;
-}
-
-interface ContactEntry {
-  contactType: string;
-  contactLabel: string;
-  contactValue: string;
-  isPrimary: boolean;
-}
-
-interface KeyContactEntry {
-  keyContactRole: string;
-  keyContactFullName: string;
-  keyContactRoleTitle: string;
-  keyContactEmail: string;
-  keyContactPhone: string;
-  isPrimary: boolean;
-}
-
-interface CustomColorEntry {
-  colorName: string;
-  colorValue: string;
-  colorSwatch: string;
-}
-
-export interface SchoolProfileFormValues {
-  schoolName: string;
-  displayName: string;
-  schoolType: string;
-  ownershipType: string;
-  educationAuthority: string;
-  country: string;
-  dateOfEstablishment: string;
-  description: string;
-  registrationNumbers: RegistrationEntry[];
-  locations: LocationEntry[];
-  contacts: ContactEntry[];
-  keyContacts: KeyContactEntry[];
-  primaryColor: string;
-  primaryColorSwatch: string;
-  secondaryColor: string;
-  secondaryColorSwatch: string;
-  tertiaryColor: string;
-  tertiaryColorSwatch: string;
-  accentColor: string;
-  accentColorSwatch: string;
-  customColors: CustomColorEntry[];
-  priorityLevel: string;
-  targetGoLive: string;
-}
-
-const emptyRegistration: RegistrationEntry = {
+const emptyRegistration = {
   registrationNumber: "",
   regCountry: "",
   issuingAuthority: "",
   expiryDate: "",
 };
 
-const emptyLocation: LocationEntry = {
+const emptyLocation = {
   locationName: "",
   locationCode: "",
   addressLine1: "",
@@ -99,14 +37,14 @@ const emptyLocation: LocationEntry = {
   isPrimary: false,
 };
 
-const emptyContact: ContactEntry = {
+const emptyContact = {
   contactType: "",
   contactLabel: "",
   contactValue: "",
   isPrimary: false,
 };
 
-const emptyKeyContact: KeyContactEntry = {
+const emptyKeyContact = {
   keyContactRole: "",
   keyContactFullName: "",
   keyContactRoleTitle: "",
@@ -115,7 +53,7 @@ const emptyKeyContact: KeyContactEntry = {
   isPrimary: false,
 };
 
-const emptyCustomColor: CustomColorEntry = {
+const emptyCustomColor = {
   colorName: "",
   colorValue: "",
   colorSwatch: "#FFFFFF",
@@ -129,7 +67,7 @@ interface SchoolProfileStepProps {
 const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps) => {
   const { register, handleSubmit, watch, setValue, control, formState } =
     useForm<SchoolProfileFormValues>({
-      mode: "onChange",
+      resolver: zodResolver(schoolProfileSchema),
       defaultValues: {
         registrationNumbers: [emptyRegistration],
         locations: [emptyLocation],
@@ -140,23 +78,24 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
       },
     });
 
-  // eslint-disable-next-line react-hooks/incompatible-library
+  const errors = formState.errors;
+
   const schoolName = watch("schoolName", "");
-  const displayName = watch("displayName", "");
+  const displayName = watch("displayName", "") ?? "";
   const schoolType = watch("schoolType", "");
   const ownershipType = watch("ownershipType", "");
-  const educationAuthority = watch("educationAuthority", "");
+  const educationAuthority = watch("educationAuthority", "") ?? "";
   const country = watch("country", "");
-  const description = watch("description", "");
+  const description = watch("description", "") ?? "";
   const dateOfEstablishment = watch("dateOfEstablishment", "");
 
-  const primaryColor = watch("primaryColor", "");
-  const secondaryColor = watch("secondaryColor", "");
-  const tertiaryColor = watch("tertiaryColor", "");
-  const accentColor = watch("accentColor", "");
+  const primaryColor = watch("primaryColor", "") ?? "";
+  const secondaryColor = watch("secondaryColor", "") ?? "";
+  const tertiaryColor = watch("tertiaryColor", "") ?? "";
+  const accentColor = watch("accentColor", "") ?? "";
 
-  const priorityLevel = watch("priorityLevel", "");
-  const targetGoLive = watch("targetGoLive", "");
+  const priorityLevel = watch("priorityLevel", "") ?? "";
+  const targetGoLive = watch("targetGoLive", "") ?? "";
 
   const registrationArray = useFieldArray({ control, name: "registrationNumbers" });
   const locationArray = useFieldArray({ control, name: "locations" });
@@ -204,8 +143,9 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
             <TextField
               placeholder="School Name"
-              register={register("schoolName", { required: true })}
+              register={register("schoolName")}
               value={schoolName}
+              error={errors.schoolName?.message}
             />
             <TextField
               placeholder="Enter display name"
@@ -218,14 +158,16 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
             <SelectField
               placeholder="Select school type"
               options={["Primary", "Secondary", "Primary, Secondary"]}
-              register={register("schoolType", { required: true })}
+              register={register("schoolType")}
               value={schoolType}
+              error={errors.schoolType?.message}
             />
             <SelectField
               placeholder="Select ownership type"
               options={["Private", "Public", "Government"]}
-              register={register("ownershipType", { required: true })}
+              register={register("ownershipType")}
               value={ownershipType}
+              error={errors.ownershipType?.message}
             />
           </div>
 
@@ -238,18 +180,20 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
             <CountrySelectField
               placeholder="Select country"
               fieldName="country"
-              register={register("country", { required: true })}
+              register={register("country")}
               value={country}
               setValue={setValue}
+              error={errors.country?.message}
             />
           </div>
 
           <DateField
             placeholder="Enter date of establishment"
             fieldName="dateOfEstablishment"
-            register={register("dateOfEstablishment", { required: true })}
+            register={register("dateOfEstablishment")}
             value={dateOfEstablishment}
             setValue={setValue}
+            error={errors.dateOfEstablishment?.message}
           />
 
           <TextareaField
@@ -280,32 +224,26 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
                 <TextField
                   placeholder="Enter registration number"
-                  register={register(
-                    `registrationNumbers.${index}.registrationNumber`,
-                    index === 0 ? { required: true } : {}
-                  )}
+                  register={register(`registrationNumbers.${index}.registrationNumber`)}
                   value={registrations[index]?.registrationNumber ?? ""}
+                  error={errors.registrationNumbers?.[index]?.registrationNumber?.message}
                 />
                 <CountrySelectField
                   placeholder="Select country"
                   fieldName={`registrationNumbers.${index}.regCountry`}
-                  register={register(
-                    `registrationNumbers.${index}.regCountry`,
-                    index === 0 ? { required: true } : {}
-                  )}
+                  register={register(`registrationNumbers.${index}.regCountry`)}
                   value={registrations[index]?.regCountry ?? ""}
                   setValue={setValue}
+                  error={errors.registrationNumbers?.[index]?.regCountry?.message}
                 />
               </div>
 
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
                 <TextField
                   placeholder="Enter issuing authority"
-                  register={register(
-                    `registrationNumbers.${index}.issuingAuthority`,
-                    index === 0 ? { required: true } : {}
-                  )}
+                  register={register(`registrationNumbers.${index}.issuingAuthority`)}
                   value={registrations[index]?.issuingAuthority ?? ""}
+                  error={errors.registrationNumbers?.[index]?.issuingAuthority?.message}
                 />
                 <DateField
                   placeholder="Enter expiry date"
@@ -349,11 +287,9 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
                 <TextField
                   placeholder="Enter name"
-                  register={register(
-                    `locations.${index}.locationName`,
-                    index === 0 ? { required: true } : {}
-                  )}
+                  register={register(`locations.${index}.locationName`)}
                   value={locations[index]?.locationName ?? ""}
+                  error={errors.locations?.[index]?.locationName?.message}
                 />
                 <TextField
                   placeholder="Enter code"
@@ -365,24 +301,24 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
                 <TextField
                   placeholder="Enter address line 1"
-                  register={register(
-                    `locations.${index}.addressLine1`,
-                    index === 0 ? { required: true } : {}
-                  )}
+                  register={register(`locations.${index}.addressLine1`)}
                   value={locations[index]?.addressLine1 ?? ""}
+                  error={errors.locations?.[index]?.addressLine1?.message}
                 />
                 <TextField
                   placeholder="Enter city"
-                  register={register(`locations.${index}.city`, index === 0 ? { required: true } : {})}
+                  register={register(`locations.${index}.city`)}
                   value={locations[index]?.city ?? ""}
+                  error={errors.locations?.[index]?.city?.message}
                 />
               </div>
 
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
                 <TextField
                   placeholder="Enter state"
-                  register={register(`locations.${index}.state`, index === 0 ? { required: true } : {})}
+                  register={register(`locations.${index}.state`)}
                   value={locations[index]?.state ?? ""}
+                  error={errors.locations?.[index]?.state?.message}
                 />
                 <TextField
                   placeholder="Enter postal code"
@@ -450,29 +386,23 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
               <SelectField
                 placeholder="Select contact type"
                 options={["Phone", "Email", "Website", "Social media"]}
-                register={register(
-                  `contacts.${index}.contactType`,
-                  index === 0 ? { required: true } : {}
-                )}
+                register={register(`contacts.${index}.contactType`)}
                 value={contacts[index]?.contactType ?? ""}
+                error={errors.contacts?.[index]?.contactType?.message}
               />
 
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
                 <TextField
                   placeholder="Enter label"
-                  register={register(
-                    `contacts.${index}.contactLabel`,
-                    index === 0 ? { required: true } : {}
-                  )}
+                  register={register(`contacts.${index}.contactLabel`)}
                   value={contacts[index]?.contactLabel ?? ""}
+                  error={errors.contacts?.[index]?.contactLabel?.message}
                 />
                 <TextField
                   placeholder="Enter value"
-                  register={register(
-                    `contacts.${index}.contactValue`,
-                    index === 0 ? { required: true } : {}
-                  )}
+                  register={register(`contacts.${index}.contactValue`)}
                   value={contacts[index]?.contactValue ?? ""}
+                  error={errors.contacts?.[index]?.contactValue?.message}
                 />
               </div>
 
@@ -538,6 +468,7 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
                   placeholder="Enter email"
                   register={register(`keyContacts.${index}.keyContactEmail`)}
                   value={keyContacts[index]?.keyContactEmail ?? ""}
+                  error={errors.keyContacts?.[index]?.keyContactEmail?.message}
                 />
                 <TextField
                   placeholder="Enter phone number"
@@ -675,8 +606,7 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
         </button>
         <button
           type="submit"
-          disabled={!formState.isValid}
-          className="flex h-13.5 flex-1 items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-primary px-8 py-4 disabled:cursor-not-allowed disabled:border-neutrals-300 disabled:bg-neutrals-300"
+          className="flex h-13.5 flex-1 items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-primary px-8 py-4"
         >
           <span className="text-[16px] font-normal leading-[1.2] text-white">Continue</span>
         </button>
