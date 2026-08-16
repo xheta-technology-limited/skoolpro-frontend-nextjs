@@ -21,7 +21,8 @@ const DateField = ({ placeholder, fieldName, register, value, setValue, error }:
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const selectedDate = value ? new Date(value) : undefined;
+  const parsedDate = value ? parse(value, "yyyy-MM-dd", new Date()) : undefined;
+  const selectedDate = parsedDate && isValid(parsedDate) ? parsedDate : undefined;
   const isFloating = isOpen || Boolean(value);
 
   useEffect(() => {
