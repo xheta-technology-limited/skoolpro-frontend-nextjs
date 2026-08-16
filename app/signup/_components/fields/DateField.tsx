@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Path, UseFormRegisterReturn, UseFormSetValue } from "react-hook-form";
 import { DayPicker } from "react-day-picker";
-import { format } from "date-fns";
+import { format, isValid, parse } from "date-fns";
 import { Calendar } from "iconsax-reactjs";
 import { SchoolProfileFormValues } from "@/features/auth/schemas";
 import "react-day-picker/dist/style.css";
