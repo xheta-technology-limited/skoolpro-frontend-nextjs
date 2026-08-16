@@ -14,11 +14,14 @@ interface TextFieldProps {
 const TextField = ({ placeholder, register, type = "text", value, error }: TextFieldProps) => {
   const [isFocused, setIsFocused] = useState(false);
   const isFloating = isFocused || value.length > 0;
+  const inputId = `field-${register.name}`;
+  const errorId = error ? `${inputId}-error` : undefined;
 
   return (
     <div className="w-full">
       <div className="relative">
         <label
+          htmlFor={inputId}
           className={`pointer-events-none absolute left-5 transition-all duration-150 ${
             isFloating
               ? "top-2 text-xs text-neutrals-500"
@@ -28,10 +31,16 @@ const TextField = ({ placeholder, register, type = "text", value, error }: TextF
           {placeholder}
         </label>
         <input
+          id={inputId}
           type={type}
           {...register}
           onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onBlur={(e) => {
+            register.onBlur(e);
+            setIsFocused(false);
+          }}
+          aria-invalid={Boolean(error)}
+          aria-describedby={errorId}
           className={`h-14 w-full rounded-2xl border ${
             error ? "border-error" : "border-transparent"
           } bg-[#F5F5FF] px-5 text-[16px] font-normal leading-[1.2] text-neutrals-900 focus:border-primary-500 focus:bg-white focus:outline-none ${
@@ -39,7 +48,11 @@ const TextField = ({ placeholder, register, type = "text", value, error }: TextF
           }`}
         />
       </div>
-      {error && <p className="mt-1 text-xs text-error">{error}</p>}
+      {error && (
+        <p id={errorId} className="mt-1 text-xs text-error">
+          {error}
+        </p>
+      )}
     </div>
   );
 };

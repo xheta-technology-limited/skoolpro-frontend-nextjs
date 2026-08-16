@@ -10,12 +10,19 @@ interface SelectFieldProps {
 }
 
 const SelectField = ({ placeholder, options, register, value, error }: SelectFieldProps) => {
+  const selectId = `field-${register.name}`;
+  const errorId = error ? `${selectId}-error` : undefined;
+
   return (
     <div className="w-full">
       <div className="relative">
         <select
+          id={selectId}
           {...register}
           defaultValue=""
+          aria-label={placeholder}
+          aria-invalid={Boolean(error)}
+          aria-describedby={errorId}
           className={`h-14 w-full appearance-none rounded-2xl border ${
             error ? "border-error" : "border-transparent"
           } bg-[#F5F5FF] px-5 py-4 text-[16px] font-normal leading-[1.2] focus:outline-none ${
@@ -38,7 +45,11 @@ const SelectField = ({ placeholder, options, register, value, error }: SelectFie
           className="pointer-events-none absolute top-1/2 right-5 -translate-y-1/2"
         />
       </div>
-      {error && <p className="mt-1 text-xs text-error">{error}</p>}
+      {error && (
+        <p id={errorId} className="mt-1 text-xs text-error">
+          {error}
+        </p>
+      )}
     </div>
   );
 };

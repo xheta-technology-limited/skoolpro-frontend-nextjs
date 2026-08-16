@@ -1,7 +1,6 @@
-"use no memo";
-
 "use client";
 
+import { useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AddSquare, Trash } from "iconsax-reactjs";
@@ -61,20 +60,21 @@ const emptyCustomColor = {
 
 interface SchoolProfileStepProps {
   onContinue: (data: SchoolProfileFormValues) => void;
+  onCancel?: () => void;
   defaultValues?: Partial<SchoolProfileFormValues>;
 }
 
-const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps) => {
+const SchoolProfileStep = ({ onContinue, onCancel, defaultValues }: SchoolProfileStepProps) => {
   const { register, handleSubmit, watch, setValue, control, formState } =
     useForm<SchoolProfileFormValues>({
       resolver: zodResolver(schoolProfileSchema),
       defaultValues: {
-        registrationNumbers: [emptyRegistration],
-        locations: [emptyLocation],
-        contacts: [emptyContact],
-        keyContacts: [emptyKeyContact],
-        customColors: [],
         ...defaultValues,
+        registrationNumbers: defaultValues?.registrationNumbers ?? [emptyRegistration],
+        locations: defaultValues?.locations ?? [emptyLocation],
+        contacts: defaultValues?.contacts ?? [emptyContact],
+        keyContacts: defaultValues?.keyContacts ?? [emptyKeyContact],
+        customColors: defaultValues?.customColors ?? [],
       },
     });
 
@@ -103,11 +103,11 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
   const keyContactArray = useFieldArray({ control, name: "keyContacts" });
   const customColorArray = useFieldArray({ control, name: "customColors" });
 
-  const registrations = watch("registrationNumbers");
-  const locations = watch("locations");
-  const contacts = watch("contacts");
-  const keyContacts = watch("keyContacts");
-  const customColors = watch("customColors");
+  const registrations = watch("registrationNumbers") ?? [];
+  const locations = watch("locations") ?? [];
+  const contacts = watch("contacts") ?? [];
+  const keyContacts = watch("keyContacts") ?? [];
+  const customColors = watch("customColors") ?? [];
 
   function setPrimaryLocation(index: number) {
     locations.forEach((_, i) => {
@@ -126,6 +126,31 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
       setValue(`keyContacts.${i}.isPrimary`, i === index);
     });
   }
+
+  const locationsHasPrimary = locations.some((l) => l?.isPrimary);
+  const contactsHasPrimary = contacts.some((c) => c?.isPrimary);
+  const keyContactsHasPrimary = keyContacts.some((k) => k?.isPrimary);
+
+  useEffect(() => {
+    if (locations.length > 0 && !locationsHasPrimary) {
+      setValue("locations.0.isPrimary", true);
+    }
+     
+  }, [locations.length, locationsHasPrimary, setValue]);
+
+  useEffect(() => {
+    if (contacts.length > 0 && !contactsHasPrimary) {
+      setValue("contacts.0.isPrimary", true);
+    }
+     
+  }, [contacts.length, contactsHasPrimary, setValue]);
+
+  useEffect(() => {
+    if (keyContacts.length > 0 && !keyContactsHasPrimary) {
+      setValue("keyContacts.0.isPrimary", true);
+    }
+     
+  }, [keyContacts.length, keyContactsHasPrimary, setValue]);
 
   const onSubmit = (data: SchoolProfileFormValues) => {
     onContinue(data);
@@ -348,7 +373,7 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
 
               <ToggleField
                 label="Set as primary location"
-                checked={locations.length === 1 ? true : Boolean(locations[index]?.isPrimary)}
+                checked={Boolean(locations[index]?.isPrimary)}
                 onChange={() => setPrimaryLocation(index)}
                 disabled={locations.length === 1}
               />
@@ -408,7 +433,7 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
 
               <ToggleField
                 label="Set as primary contact"
-                checked={contacts.length === 1 ? true : Boolean(contacts[index]?.isPrimary)}
+                checked={Boolean(contacts[index]?.isPrimary)}
                 onChange={() => setPrimaryContact(index)}
                 disabled={contacts.length === 1}
               />
@@ -479,7 +504,7 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
 
               <ToggleField
                 label="Set as primary contact"
-                checked={keyContacts.length === 1 ? true : Boolean(keyContacts[index]?.isPrimary)}
+                checked={Boolean(keyContacts[index]?.isPrimary)}
                 onChange={() => setPrimaryKeyContact(index)}
                 disabled={keyContacts.length === 1}
               />
@@ -600,6 +625,7 @@ const SchoolProfileStep = ({ onContinue, defaultValues }: SchoolProfileStepProps
       <div className="mt-8 flex gap-6">
         <button
           type="button"
+          onClick={onCancel}
           className="flex h-13.5 flex-1 items-center justify-center gap-2.5 rounded-[28px] border border-primary px-8 py-4"
         >
           <span className="text-[16px] font-normal leading-[1.2] text-primary">Cancel</span>

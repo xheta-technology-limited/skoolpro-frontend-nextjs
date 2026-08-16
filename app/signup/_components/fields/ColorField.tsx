@@ -1,5 +1,5 @@
 import { Path, UseFormRegisterReturn, UseFormSetValue } from "react-hook-form";
-import { SchoolProfileFormValues } from "../SchoolProfileStep";
+import type { SchoolProfileFormValues } from "@/features/auth/schemas";
 import TextField from "./TextField";
 
 interface ColorFieldProps {
@@ -30,7 +30,11 @@ const ColorField = ({
           type="color"
           defaultValue="#FFFFFF"
           {...colorRegister}
-          onChange={(e) => setValue(textFieldName, e.target.value)}
+          onChange={(e) => {
+            colorRegister.onChange(e);
+            setValue(textFieldName, e.target.value);
+          }}
+          aria-label={`${placeholder} swatch`}
           className="h-8.75 w-16 cursor-pointer appearance-none rounded-lg border-0 bg-white p-0 [&::-webkit-color-swatch-wrapper]:p-0 [&::-webkit-color-swatch]:rounded-lg [&::-webkit-color-swatch]:border-none"
         />
       </div>

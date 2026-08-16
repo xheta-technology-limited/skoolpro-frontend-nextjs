@@ -43,8 +43,10 @@ const CountrySelectField = ({
   const [search, setSearch] = useState("");
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const selected = allCountries.find((c) => c.name === value);
+  const selected = allCountries.find((c) => c.code === value);
   const isFloating = isOpen || Boolean(value);
+  const triggerId = `field-${register.name}`;
+  const listboxId = `${triggerId}-listbox`;
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -65,6 +67,7 @@ const CountrySelectField = ({
     <div className="w-full">
       <div ref={wrapperRef} className="relative">
         <label
+          htmlFor={triggerId}
           className={`pointer-events-none absolute left-5 transition-all duration-150 ${
             isFloating
               ? "top-2 text-xs text-neutrals-500"
@@ -77,8 +80,12 @@ const CountrySelectField = ({
         <input type="hidden" {...register} />
 
         <button
+          id={triggerId}
           type="button"
           onClick={() => setIsOpen((prev) => !prev)}
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
+          aria-controls={isOpen ? listboxId : undefined}
           className={`flex h-14 w-full items-center justify-between rounded-2xl border ${
             error ? "border-error" : "border-transparent"
           } bg-[#F5F5FF] px-5 text-left text-[16px] font-normal leading-[1.2] text-neutrals-900 focus:border-primary-500 focus:bg-white focus:outline-none ${
@@ -103,11 +110,12 @@ const CountrySelectField = ({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search for countries"
+                aria-label="Search for countries"
                 className="w-full text-sm outline-none"
               />
             </div>
 
-            <div className="max-h-64 overflow-y-auto">
+            <div id={listboxId} role="listbox" className="max-h-64 overflow-y-auto">
               {filtered.length === 0 && (
                 <div className="px-4 py-4 text-sm text-neutrals-500">No countries found</div>
               )}
@@ -115,8 +123,10 @@ const CountrySelectField = ({
                 <button
                   key={c.code}
                   type="button"
+                  role="option"
+                  aria-selected={c.code === value}
                   onClick={() => {
-                    setValue(fieldName, c.name);
+                    setValue(fieldName, c.code, { shouldValidate: true, shouldDirty: true });
                     setIsOpen(false);
                     setSearch("");
                   }}

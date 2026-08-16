@@ -13,11 +13,13 @@ interface TextareaFieldProps {
 const TextareaField = ({ placeholder, register, value, maxLength = 200 }: TextareaFieldProps) => {
   const [isFocused, setIsFocused] = useState(false);
   const isFloating = isFocused || value.length > 0;
+  const textareaId = `field-${register.name}`;
 
   return (
     <div className="w-full">
       <div className="relative">
         <label
+          htmlFor={textareaId}
           className={`pointer-events-none absolute left-5 transition-all duration-150 ${
             isFloating
               ? "top-2 text-xs text-neutrals-500"
@@ -27,10 +29,14 @@ const TextareaField = ({ placeholder, register, value, maxLength = 200 }: Textar
           {placeholder}
         </label>
         <textarea
+          id={textareaId}
           maxLength={maxLength}
           {...register}
           onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onBlur={(e) => {
+            register.onBlur(e);
+            setIsFocused(false);
+          }}
           className={`h-30 w-full resize-none rounded-[4px] border border-transparent bg-[#F5F5FF] px-5 text-[16px] font-normal leading-[1.2] text-neutrals-900 focus:border-primary-500 focus:bg-white focus:outline-none ${
             isFloating ? "pt-8 pb-1" : "py-4"
           }`}

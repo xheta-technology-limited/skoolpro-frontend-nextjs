@@ -16,7 +16,7 @@ const DetailCard = ({ title, fields, onEdit }: DetailCardProps) => {
   return (
     <div className="flex flex-1 flex-col gap-6 rounded-2xl border border-[#F0EBFB] bg-white pb-8">
       <div className="flex items-center justify-between rounded-t-2xl border border-primary-100 bg-[#F5F5FF] px-8 py-4">
-        <span className="font-[Inter] text-[16px] font-normal leading-6 text-[#645D72]">
+        <span className="text-[16px] font-normal leading-6 text-[#645D72] [font-family:var(--font-inter)]">
             {title}
         </span>
         <button

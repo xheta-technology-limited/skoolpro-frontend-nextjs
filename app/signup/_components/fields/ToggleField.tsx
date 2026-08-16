@@ -13,6 +13,8 @@ const ToggleField = ({ label, checked, disabled = false, onChange }: ToggleField
   return (
     <button
       type="button"
+      role="switch"
+      aria-checked={checked}
       disabled={disabled}
       onClick={() => onChange(!checked)}
       className={`flex h-14 w-full items-center justify-between rounded-2xl bg-[#F5F5FF] px-5 py-4 ${
