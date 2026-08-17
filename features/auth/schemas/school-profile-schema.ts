@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { requiredString, phoneString } from "@/lib/utils/zod-schemas";
+import { requiredString, phoneString, emailString, hexColorString } from "@/lib/utils/zod-schemas";
 
 const registrationSchema = z.object({
   registrationNumber: requiredString,
@@ -48,15 +48,15 @@ const keyContactSchema = z.object({
   keyContactRole: requiredString,
   keyContactFullName: requiredString,
   keyContactRoleTitle: requiredString,
-  keyContactEmail: z.email("This field is required"),
+  keyContactEmail: emailString,
   keyContactPhone: phoneString,
   isPrimary: z.boolean(),
 });
 
 const customColorSchema = z.object({
   colorName: requiredString,
-  colorValue: requiredString,
-  colorSwatch: requiredString,
+  colorValue: hexColorString,
+  colorSwatch: hexColorString,
 });
 
 export const schoolProfileSchema = z.object({
@@ -72,14 +72,14 @@ export const schoolProfileSchema = z.object({
   locations: z.array(locationSchema).min(1),
   contacts: z.array(contactSchema).min(1),
   keyContacts: z.array(keyContactSchema).min(1),
-  primaryColor: requiredString,
-  primaryColorSwatch: requiredString,
-  secondaryColor: requiredString,
-  secondaryColorSwatch: requiredString,
-  tertiaryColor: requiredString,
-  tertiaryColorSwatch: requiredString,
-  accentColor: requiredString,
-  accentColorSwatch: requiredString,
+  primaryColor: hexColorString,
+  primaryColorSwatch: hexColorString,
+  secondaryColor: hexColorString,
+  secondaryColorSwatch: hexColorString,
+  tertiaryColor: hexColorString,
+  tertiaryColorSwatch: hexColorString,
+  accentColor: hexColorString,
+  accentColorSwatch: hexColorString,
   customColors: z.array(customColorSchema),
   priorityLevel: requiredString,
   targetGoLive: requiredString,

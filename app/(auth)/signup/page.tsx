@@ -273,7 +273,7 @@ export default function SubscriptionsPage() {
                     <Image src="/success.png" alt="" width={100} height={100} />
                   </div>
 
-                  <h2 className="text-center text-[24px] font-semibold leading-[1.2] text-neutrals-900">
+                  <h2 className="text-center w-full max-w-full wrap-break-word text-[24px] font-semibold leading-[1.2] text-neutrals-900">
                     Onboarding started for {schoolProfileData?.schoolName || "this school"}
                   </h2>
 
