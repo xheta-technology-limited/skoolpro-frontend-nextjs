@@ -16,15 +16,20 @@ export interface PricingPlan {
 interface PricingCardProps {
   plan: PricingPlan;
   billingCycle: "monthly" | "yearly";
+  isSelected: boolean;
   onSelectPlan: (planName: string) => void;
 }
 
-const PricingCard = ({ plan, billingCycle, onSelectPlan }: PricingCardProps) => {
+const PricingCard = ({ plan, billingCycle, isSelected, onSelectPlan }: PricingCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const price = billingCycle === "monthly" ? plan.monthlyPrice : plan.yearlyPrice;
 
   return (
-    <div className="flex h-full w-full flex-col rounded-[30px] bg-base-white lg:max-w-75 lg:min-h-152.5">
+    <div
+      className={`flex h-full w-full flex-col rounded-[30px] border-2 transition-colors lg:max-w-75 lg:min-h-152.5 ${
+        isSelected ? "border-primary bg-primary-100/40" : "border-transparent bg-base-white"
+      }`}
+    >
       {/* header: plan name, price, billed text, description */}
       <div className="flex flex-col gap-4 px-6 pt-8 pb-8">
         <h3 className="text-[16px] font-semibold leading-[1.2] text-neutrals-900">
@@ -47,7 +52,7 @@ const PricingCard = ({ plan, billingCycle, onSelectPlan }: PricingCardProps) => 
         </p>
       </div>
 
-      {/* animated mid section: stats + module count + checklist — mobile collapsible, always shown on lg */}
+      {/* animated mid section: stats + module count + checklist*/}
       <div
         className={`grid px-6 transition-[grid-template-rows] duration-300 ease-in-out lg:grid-rows-[1fr]! ${
           isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
@@ -97,9 +102,13 @@ const PricingCard = ({ plan, billingCycle, onSelectPlan }: PricingCardProps) => 
 
       {/* button section — pinned to bottom */}
       <div className="mt-auto flex items-center px-6 pb-8">
-        <button onClick={() => onSelectPlan(plan.name)} className="group flex h-11.75 w-full items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-base-white px-8 py-3.5 transition-colors hover:bg-primary">
-          <span className="text-[16px] font-normal leading-[1.2] text-primary transition-colors group-hover:text-base-white">
-            Choose Plan
+        <button
+          onClick={() => onSelectPlan(plan.name)}
+          disabled={isSelected}
+          className="group flex h-11.75 w-full items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-base-white px-8 py-3.5 transition-colors hover:bg-primary disabled:cursor-not-allowed disabled:border-primary-300 disabled:bg-primary-100 disabled:hover:bg-primary-100"
+        >
+          <span className="text-[16px] font-normal leading-[1.2] text-primary transition-colors group-hover:text-base-white group-disabled:text-primary-400 group-disabled:group-hover:text-primary-400">
+            {isSelected ? "Selected" : "Choose Plan"}
           </span>
         </button>
       </div>
