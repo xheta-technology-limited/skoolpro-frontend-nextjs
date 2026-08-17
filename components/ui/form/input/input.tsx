@@ -1,5 +1,5 @@
 "use client";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, get } from "react-hook-form";
 import { XIcon } from "@phosphor-icons/react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { EyeSlash, Eye, SearchNormal } from "iconsax-reactjs";
@@ -36,7 +36,7 @@ const Input = ({
     register,
     formState: { errors },
   } = useFormContext();
-  const error = errors[name]?.message as string | undefined;
+  const error = get(errors, name)?.message as string | undefined;
   const fieldProps = isControlled ? { name, value, onChange } : register(name);
 
   const [isPasswordShown, setPasswordShown] = useState(false);

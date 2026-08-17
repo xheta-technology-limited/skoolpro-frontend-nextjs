@@ -107,7 +107,13 @@ export default function SubscriptionsPage() {
   const primaryContact =
     schoolProfileData?.contacts?.find((c) => c.isPrimary) ??
     schoolProfileData?.contacts?.[0];
-  const firstRegistration = schoolProfileData?.registrationNumbers?.[0];
+  const emailContact = schoolProfileData?.contacts?.find(
+  (c) => c.contactType === "email"
+  );
+  const phoneContact = schoolProfileData?.contacts?.find(
+    (c) => c.contactType === "phone_number"
+  );
+    const firstRegistration = schoolProfileData?.registrationNumbers?.[0];
 
   return (
     <div className="min-h-screen bg-[#f5f5ff]">
@@ -214,8 +220,8 @@ export default function SubscriptionsPage() {
                       value: firstRegistration?.registrationNumber ?? "",
                     },
                     { label: "School address", value: primaryLocation?.addressLine1 ?? "" },
-                    { label: "Contact type", value: primaryContact?.contactType ?? "" },
-                    { label: "Contact value", value: primaryContact?.contactValue ?? "" },
+                    { label: "Email", value: emailContact?.contactValue ?? "Not provided" },
+                    { label: "Phone number", value: phoneContact?.contactValue ?? "Not provided" },
                   ]}
                 />
 

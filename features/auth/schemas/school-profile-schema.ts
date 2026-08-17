@@ -1,72 +1,88 @@
 import * as z from "zod";
-import { requiredString } from "@/lib/utils/zod-schemas";
+import { requiredString, phoneString } from "@/lib/utils/zod-schemas";
 
 const registrationSchema = z.object({
   registrationNumber: requiredString,
   regCountry: requiredString,
   issuingAuthority: requiredString,
-  expiryDate: z.string().optional(),
+  expiryDate: requiredString,
 });
 
 const locationSchema = z.object({
   locationName: requiredString,
-  locationCode: z.string().optional(),
+  locationCode: requiredString,
   addressLine1: requiredString,
   city: requiredString,
   state: requiredString,
-  postalCode: z.string().optional(),
-  landmark: z.string().optional(),
-  timezone: z.string().optional(),
-  studentCapacity: z.string().optional(),
+  postalCode: requiredString,
+  landmark: requiredString,
+  timezone: requiredString,
+  studentCapacity: requiredString,
   isPrimary: z.boolean(),
 });
 
-const contactSchema = z.object({
-  contactType: requiredString,
-  contactLabel: requiredString,
-  contactValue: requiredString,
-  isPrimary: z.boolean(),
-});
+const contactSchema = z
+  .object({
+    contactType: requiredString,
+    contactLabel: requiredString,
+    contactValue: requiredString,
+    isPrimary: z.boolean(),
+  })
+  .refine(
+    (data) => {
+      if (data.contactType === "phone_number") {
+        return /^\+?[0-9]{7,15}$/.test(data.contactValue);
+      }
+      if (data.contactType === "email") {
+        return z.email().safeParse(data.contactValue).success;
+      }
+      return true;
+    },
+    {
+      message: "Enter a valid value for the selected contact type",
+      path: ["contactValue"],
+    }
+  );
 
 const keyContactSchema = z.object({
-  keyContactRole: z.string().optional(),
-  keyContactFullName: z.string().optional(),
-  keyContactRoleTitle: z.string().optional(),
-  keyContactEmail: z.email().optional().or(z.literal("")),
-  keyContactPhone: z.string().optional(),
+  keyContactRole: requiredString,
+  keyContactFullName: requiredString,
+  keyContactRoleTitle: requiredString,
+  keyContactEmail: z.email("This field is required"),
+  keyContactPhone: phoneString,
   isPrimary: z.boolean(),
 });
 
 const customColorSchema = z.object({
-  colorName: z.string().optional(),
-  colorValue: z.string().optional(),
-  colorSwatch: z.string().optional(),
+  colorName: requiredString,
+  colorValue: requiredString,
+  colorSwatch: requiredString,
 });
 
 export const schoolProfileSchema = z.object({
   schoolName: requiredString,
-  displayName: z.string().optional(),
-  schoolType: z.array(z.string()).min(1, "Required"),
+  displayName: requiredString,
+  schoolType: z.array(z.string()).min(1, "This field is required"),
   ownershipType: requiredString,
-  educationAuthority: z.string().optional(),
+  educationAuthority: requiredString,
   country: requiredString,
   dateOfEstablishment: requiredString,
-  description: z.string().optional(),
+  description: requiredString,
   registrationNumbers: z.array(registrationSchema).min(1),
   locations: z.array(locationSchema).min(1),
   contacts: z.array(contactSchema).min(1),
-  keyContacts: z.array(keyContactSchema),
-  primaryColor: z.string().optional(),
-  primaryColorSwatch: z.string().optional(),
-  secondaryColor: z.string().optional(),
-  secondaryColorSwatch: z.string().optional(),
-  tertiaryColor: z.string().optional(),
-  tertiaryColorSwatch: z.string().optional(),
-  accentColor: z.string().optional(),
-  accentColorSwatch: z.string().optional(),
+  keyContacts: z.array(keyContactSchema).min(1),
+  primaryColor: requiredString,
+  primaryColorSwatch: requiredString,
+  secondaryColor: requiredString,
+  secondaryColorSwatch: requiredString,
+  tertiaryColor: requiredString,
+  tertiaryColorSwatch: requiredString,
+  accentColor: requiredString,
+  accentColorSwatch: requiredString,
   customColors: z.array(customColorSchema),
-  priorityLevel: z.string().optional(),
-  targetGoLive: z.string().optional(),
+  priorityLevel: requiredString,
+  targetGoLive: requiredString,
 });
 
 export type SchoolProfileFormValues = z.infer<typeof schoolProfileSchema>;

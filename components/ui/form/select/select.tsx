@@ -1,5 +1,5 @@
 "use client";
-import { useFormContext, Controller } from "react-hook-form";
+import { useFormContext, Controller, get } from "react-hook-form";
 import { XIcon } from "@phosphor-icons/react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { ArrowSquareDown } from "iconsax-reactjs";
@@ -40,8 +40,7 @@ const Select = ({
     formState: { errors },
   } = useFormContext();
 
-  const error = errors[name]?.message as string | undefined;
-
+  const error = get(errors, name)?.message as string | undefined;
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [highlightIndex, setHighlightIndex] = useState(0);
