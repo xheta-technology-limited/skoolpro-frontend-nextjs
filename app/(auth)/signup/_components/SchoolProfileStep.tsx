@@ -13,7 +13,7 @@ import ColorField from "./fields/ColorField";
 
 export type { SchoolProfileFormValues };
 
-const SCHOOL_TYPE_OPTIONS = [
+export const SCHOOL_TYPE_OPTIONS = [
   { label: "Nursery", value: "nursery" },
   { label: "Primary", value: "primary" },
   { label: "Secondary", value: "secondary" },
@@ -28,7 +28,7 @@ const SCHOOL_TYPE_OPTIONS = [
   { label: "Private school", value: "private_school" },
 ];
 
-const OWNERSHIP_TYPE_OPTIONS = [
+export const OWNERSHIP_TYPE_OPTIONS = [
   { label: "Private individual", value: "private_individual" },
   { label: "Limited company", value: "limited_company" },
   { label: "Trust", value: "trust" },
@@ -102,7 +102,7 @@ const emptyKeyContact = {
 const emptyCustomColor = {
   colorName: "",
   colorValue: "",
-  colorSwatch: "#FFFFFF",
+  colorValueSwatch: "#FFFFFF",
 };
 
 interface SchoolProfileStepProps {

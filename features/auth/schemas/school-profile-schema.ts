@@ -56,7 +56,7 @@ const keyContactSchema = z.object({
 const customColorSchema = z.object({
   colorName: requiredString,
   colorValue: hexColorString,
-  colorSwatch: hexColorString,
+  colorValueSwatch: hexColorString,
 });
 
 export const schoolProfileSchema = z.object({

@@ -8,7 +8,18 @@ import BillingToggle from "./_components/BillingToggle";
 import PricingCard, { PricingPlan } from "./_components/PricingCard";
 import Stepper from "./_components/Stepper";
 import DetailCard from "./_components/DetailCard";
-import SchoolProfileStep, { SchoolProfileFormValues } from "./_components/SchoolProfileStep";
+import SchoolProfileStep, {
+  SchoolProfileFormValues,
+  SCHOOL_TYPE_OPTIONS,
+  OWNERSHIP_TYPE_OPTIONS,
+} from "./_components/SchoolProfileStep";
+
+function getOptionLabel(
+  options: { label: string; value: string }[],
+  value: string | undefined
+): string {
+  return options.find((o) => o.value === value)?.label ?? value ?? "";
+}
 
 const plans: PricingPlan[] = [
   {
@@ -212,8 +223,17 @@ export default function SubscriptionsPage() {
                   onEdit={() => setStep("school-profile")}
                   fields={[
                     { label: "School name", value: schoolProfileData?.schoolName ?? "" },
-                    { label: "School type", value: schoolProfileData?.schoolType?.join(", ") ?? "", },
-                    { label: "Ownership type", value: schoolProfileData?.ownershipType ?? "" },
+                    {
+                      label: "School type",
+                      value:
+                        schoolProfileData?.schoolType
+                          ?.map((t) => getOptionLabel(SCHOOL_TYPE_OPTIONS, t))
+                          .join(", ") ?? "",
+                    },
+                    {
+                      label: "Ownership type",
+                      value: getOptionLabel(OWNERSHIP_TYPE_OPTIONS, schoolProfileData?.ownershipType),
+                    },
                     { label: "Primary contact", value: primaryContact?.contactLabel ?? "" },
                     {
                       label: "Registration number",
