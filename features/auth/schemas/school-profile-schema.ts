@@ -46,7 +46,7 @@ const customColorSchema = z.object({
 export const schoolProfileSchema = z.object({
   schoolName: requiredString,
   displayName: z.string().optional(),
-  schoolType: requiredString,
+  schoolType: z.array(z.string()).min(1, "Required"),
   ownershipType: requiredString,
   educationAuthority: z.string().optional(),
   country: requiredString,

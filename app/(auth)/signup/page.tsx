@@ -206,7 +206,7 @@ export default function SubscriptionsPage() {
                   onEdit={() => setStep("school-profile")}
                   fields={[
                     { label: "School name", value: schoolProfileData?.schoolName ?? "" },
-                    { label: "School type", value: schoolProfileData?.schoolType ?? "" },
+                    { label: "School type", value: schoolProfileData?.schoolType?.join(", ") ?? "", },
                     { label: "Ownership type", value: schoolProfileData?.ownershipType ?? "" },
                     { label: "Primary contact", value: primaryContact?.contactLabel ?? "" },
                     {
