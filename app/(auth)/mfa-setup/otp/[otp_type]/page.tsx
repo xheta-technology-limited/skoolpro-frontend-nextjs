@@ -88,7 +88,7 @@ function Email() {
         onClose={() => setSuccess(false)}
         subheading="Multi factor authentication has been enabled. This will be required in your subsequent login."
       >
-        <Button onClick={() => router.replace("/signup")} size="lg">
+        <Button onClick={() => router.replace("/onboarding")} size="lg">
           Proceed to dashboard
         </Button>
         {/* TODO: make this actually proceed to dashboard */}

@@ -55,7 +55,7 @@ export default function Form() {
         onClose={() => setSuccess(false)}
         subheading="Multi factor authentication has been enabled. This will be required in your subsequent login."
       >
-        <Button size="lg" onClick={() => router.replace("/signup")}>
+        <Button size="lg" onClick={() => router.replace("/onboarding")}>
           Proceed to dashboard
         </Button>
       </SuccessModal>

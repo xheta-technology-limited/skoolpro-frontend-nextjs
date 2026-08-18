@@ -4,8 +4,17 @@ import { useEffect } from "react";
 import { useForm, useFieldArray, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AddSquare, Trash } from "iconsax-reactjs";
-import { schoolProfileSchema, type SchoolProfileFormValues } from "@/features/auth/schemas";
-import { Input, Select, TextArea, DatePicker, Checkbox } from "@/components/ui/form";
+import {
+  schoolProfileSchema,
+  type SchoolProfileFormValues,
+} from "@/features/auth/schemas";
+import {
+  Input,
+  Select,
+  TextArea,
+  DatePicker,
+  Checkbox,
+} from "@/components/ui/form";
 import { africanCountries } from "@/lib/utils/countries-list";
 import FormSectionCard from "./FormSectionCard";
 import ToggleField from "./fields/ToggleField";
@@ -111,12 +120,18 @@ interface SchoolProfileStepProps {
   defaultValues?: Partial<SchoolProfileFormValues>;
 }
 
-const SchoolProfileStep = ({ onContinue, onCancel, defaultValues }: SchoolProfileStepProps) => {
+const SchoolProfileStep = ({
+  onContinue,
+  onCancel,
+  defaultValues,
+}: SchoolProfileStepProps) => {
   const methods = useForm<SchoolProfileFormValues>({
     resolver: zodResolver(schoolProfileSchema),
     defaultValues: {
       ...defaultValues,
-      registrationNumbers: defaultValues?.registrationNumbers ?? [emptyRegistration],
+      registrationNumbers: defaultValues?.registrationNumbers ?? [
+        emptyRegistration,
+      ],
       locations: defaultValues?.locations ?? [emptyLocation],
       contacts: defaultValues?.contacts ?? [emptyContact],
       keyContacts: defaultValues?.keyContacts ?? [emptyKeyContact],
@@ -126,7 +141,10 @@ const SchoolProfileStep = ({ onContinue, onCancel, defaultValues }: SchoolProfil
 
   const { handleSubmit, watch, setValue, control } = methods;
 
-  const registrationArray = useFieldArray({ control, name: "registrationNumbers" });
+  const registrationArray = useFieldArray({
+    control,
+    name: "registrationNumbers",
+  });
   const locationArray = useFieldArray({ control, name: "locations" });
   const contactArray = useFieldArray({ control, name: "contacts" });
   const keyContactArray = useFieldArray({ control, name: "keyContacts" });
@@ -162,21 +180,18 @@ const SchoolProfileStep = ({ onContinue, onCancel, defaultValues }: SchoolProfil
     if (locations.length > 0 && !locationsHasPrimary) {
       setValue("locations.0.isPrimary", true);
     }
-     
   }, [locations.length, locationsHasPrimary, setValue]);
 
   useEffect(() => {
     if (contacts.length > 0 && !contactsHasPrimary) {
       setValue("contacts.0.isPrimary", true);
     }
-     
   }, [contacts.length, contactsHasPrimary, setValue]);
 
   useEffect(() => {
     if (keyContacts.length > 0 && !keyContactsHasPrimary) {
       setValue("keyContacts.0.isPrimary", true);
     }
-     
   }, [keyContacts.length, keyContactsHasPrimary, setValue]);
 
   const onSubmit = (data: SchoolProfileFormValues) => {
@@ -186,7 +201,9 @@ const SchoolProfileStep = ({ onContinue, onCancel, defaultValues }: SchoolProfil
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <h2 className="text-lg font-semibold text-neutrals-900">School profile</h2>
+        <h2 className="text-lg font-semibold text-neutrals-900">
+          School profile
+        </h2>
         <p className="text-sm text-neutrals-500">
           Tell us about the school to get started.
         </p>
@@ -200,7 +217,11 @@ const SchoolProfileStep = ({ onContinue, onCancel, defaultValues }: SchoolProfil
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
               <div className="[&>div>button:first-child]:bg-[#F5F5FF]!">
-                <Checkbox name="schoolType" label="Select school type" options={SCHOOL_TYPE_OPTIONS} />
+                <Checkbox
+                  name="schoolType"
+                  label="Select school type"
+                  options={SCHOOL_TYPE_OPTIONS}
+                />
               </div>
               <Select
                 name="ownershipType"
@@ -210,7 +231,10 @@ const SchoolProfileStep = ({ onContinue, onCancel, defaultValues }: SchoolProfil
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-              <Input name="educationAuthority" label="Enter education authority" />
+              <Input
+                name="educationAuthority"
+                label="Enter education authority"
+              />
               <Select
                 name="country"
                 label="Select country"
@@ -219,9 +243,16 @@ const SchoolProfileStep = ({ onContinue, onCancel, defaultValues }: SchoolProfil
               />
             </div>
 
-            <DatePicker name="dateOfEstablishment" label="Enter date of establishment" />
+            <DatePicker
+              name="dateOfEstablishment"
+              label="Enter date of establishment"
+            />
 
-            <TextArea name="description" label="Enter school description" maxLength={200} />
+            <TextArea
+              name="description"
+              label="Enter school description"
+              maxLength={200}
+            />
           </FormSectionCard>
 
           <FormSectionCard title="Registration number">
@@ -297,8 +328,14 @@ const SchoolProfileStep = ({ onContinue, onCancel, defaultValues }: SchoolProfil
                 )}
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-                  <Input name={`locations.${index}.locationName`} label="Enter name" />
-                  <Input name={`locations.${index}.locationCode`} label="Enter code" />
+                  <Input
+                    name={`locations.${index}.locationName`}
+                    label="Enter name"
+                  />
+                  <Input
+                    name={`locations.${index}.locationCode`}
+                    label="Enter code"
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
@@ -310,13 +347,25 @@ const SchoolProfileStep = ({ onContinue, onCancel, defaultValues }: SchoolProfil
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-                  <Input name={`locations.${index}.state`} label="Enter state" />
-                  <Input name={`locations.${index}.postalCode`} label="Enter postal code" />
+                  <Input
+                    name={`locations.${index}.state`}
+                    label="Enter state"
+                  />
+                  <Input
+                    name={`locations.${index}.postalCode`}
+                    label="Enter postal code"
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-                  <Input name={`locations.${index}.landmark`} label="Enter landmark" />
-                  <Input name={`locations.${index}.timezone`} label="Enter timezone" />
+                  <Input
+                    name={`locations.${index}.landmark`}
+                    label="Enter landmark"
+                  />
+                  <Input
+                    name={`locations.${index}.timezone`}
+                    label="Enter timezone"
+                  />
                 </div>
 
                 <Input
@@ -368,8 +417,14 @@ const SchoolProfileStep = ({ onContinue, onCancel, defaultValues }: SchoolProfil
                 />
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-                  <Input name={`contacts.${index}.contactLabel`} label="Enter label" />
-                  <Input name={`contacts.${index}.contactValue`} label="Enter value" />
+                  <Input
+                    name={`contacts.${index}.contactLabel`}
+                    label="Enter label"
+                  />
+                  <Input
+                    name={`contacts.${index}.contactValue`}
+                    label="Enter value"
+                  />
                 </div>
 
                 <ToggleField
@@ -420,11 +475,17 @@ const SchoolProfileStep = ({ onContinue, onCancel, defaultValues }: SchoolProfil
                     name={`keyContacts.${index}.keyContactFullName`}
                     label="Enter full name"
                   />
-                  <Input name={`keyContacts.${index}.keyContactRoleTitle`} label="Enter role" />
+                  <Input
+                    name={`keyContacts.${index}.keyContactRoleTitle`}
+                    label="Enter role"
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-                  <Input name={`keyContacts.${index}.keyContactEmail`} label="Enter email" />
+                  <Input
+                    name={`keyContacts.${index}.keyContactEmail`}
+                    label="Enter email"
+                  />
                   <Input
                     name={`keyContacts.${index}.keyContactPhone`}
                     label="Enter phone number"
@@ -452,14 +513,25 @@ const SchoolProfileStep = ({ onContinue, onCancel, defaultValues }: SchoolProfil
 
           <FormSectionCard title="Color Code">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-              <ColorField name="primaryColor" label="Primary school hex code color" />
-              <ColorField name="secondaryColor" label="Secondary school hex code color" />
+              <ColorField
+                name="primaryColor"
+                label="Primary school hex code color"
+              />
+              <ColorField
+                name="secondaryColor"
+                label="Secondary school hex code color"
+              />
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-              <ColorField name="tertiaryColor" label="Tertiary school hex code color" />
-              <ColorField name="accentColor" label="Accent school hex code color" />
-
+              <ColorField
+                name="tertiaryColor"
+                label="Tertiary school hex code color"
+              />
+              <ColorField
+                name="accentColor"
+                label="Accent school hex code color"
+              />
             </div>
 
             {customColorArray.fields.map((field, index) => (
@@ -478,8 +550,14 @@ const SchoolProfileStep = ({ onContinue, onCancel, defaultValues }: SchoolProfil
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-                  <Input name={`customColors.${index}.colorName`} label="Enter color name" />
-                  <ColorField name={`customColors.${index}.colorValue`} label="Enter hex code color" />
+                  <Input
+                    name={`customColors.${index}.colorName`}
+                    label="Enter color name"
+                  />
+                  <ColorField
+                    name={`customColors.${index}.colorValue`}
+                    label="Enter hex code color"
+                  />
                 </div>
               </div>
             ))}
@@ -512,13 +590,17 @@ const SchoolProfileStep = ({ onContinue, onCancel, defaultValues }: SchoolProfil
             onClick={onCancel}
             className="flex h-13.5 flex-1 items-center justify-center gap-2.5 rounded-[28px] border border-primary px-8 py-4"
           >
-            <span className="text-[16px] font-normal leading-[1.2] text-primary">Cancel</span>
+            <span className="text-[16px] font-normal leading-[1.2] text-primary">
+              Cancel
+            </span>
           </button>
           <button
             type="submit"
             className="flex h-13.5 flex-1 items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-primary px-8 py-4"
           >
-            <span className="text-[16px] font-normal leading-[1.2] text-white">Continue</span>
+            <span className="text-[16px] font-normal leading-[1.2] text-white">
+              Continue
+            </span>
           </button>
         </div>
       </form>
