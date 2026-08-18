@@ -101,7 +101,7 @@ const LoginForm = () => {
       >
         <div className="flex justify-between gap-2 md:gap-6 items-center w-full">
           <Button
-            onClick={() => router.replace("/onboard")}
+            onClick={() => router.replace("/signup")}
             variant="secondary"
             size="lg"
             className="flex-1 min-w-0"

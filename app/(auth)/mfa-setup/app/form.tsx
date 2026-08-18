@@ -5,10 +5,12 @@ import { useState } from "react";
 import { SuccessModal } from "@/components/common";
 import { useConfirmMfaCode } from "@/features/auth/api/mfa";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function Form() {
   const [success, setSuccess] = useState(false);
   const [otp, setOtp] = useState("");
+  const router = useRouter();
 
   const { mutate, isPending } = useConfirmMfaCode();
 
@@ -53,7 +55,9 @@ export default function Form() {
         onClose={() => setSuccess(false)}
         subheading="Multi factor authentication has been enabled. This will be required in your subsequent login."
       >
-        <Button size="lg">Proceed to dashboard</Button>
+        <Button size="lg" onClick={() => router.replace("/signup")}>
+          Proceed to dashboard
+        </Button>
       </SuccessModal>
     </>
   );
