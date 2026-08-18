@@ -81,14 +81,15 @@ const plans: PricingPlan[] = [
 ];
 
 export default function SubscriptionsPage() {
-  const [step, setStep] = useState<"school-profile" | "choose-plan" | "review" | "success">(
-    "school-profile"
+  const [step, setStep] = useState<
+    "school-profile" | "choose-plan" | "review" | "success"
+  >("school-profile");
+  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
+    "monthly"
   );
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const [schoolProfileData, setSchoolProfileData] = useState<SchoolProfileFormValues | null>(
-    null
-  );
+  const [schoolProfileData, setSchoolProfileData] =
+    useState<SchoolProfileFormValues | null>(null);
 
   useEffect(() => {
     if (step === "success") {
@@ -112,19 +113,19 @@ export default function SubscriptionsPage() {
 
   const selectedPlanData = plans.find((plan) => plan.name === selectedPlan);
 
-  const primaryLocation =
-    schoolProfileData?.locations?.find((l) => l.isPrimary) ??
-    schoolProfileData?.locations?.[0];
+  const primaryCampus =
+    schoolProfileData?.campuses?.find((c) => c.is_primary) ??
+    schoolProfileData?.campuses?.[0];
   const primaryContact =
-    schoolProfileData?.contacts?.find((c) => c.isPrimary) ??
+    schoolProfileData?.contacts?.find((c) => c.is_primary) ??
     schoolProfileData?.contacts?.[0];
   const emailContact = schoolProfileData?.contacts?.find(
-  (c) => c.contactType === "email"
+    (c) => c.type === "email"
   );
   const phoneContact = schoolProfileData?.contacts?.find(
-    (c) => c.contactType === "phone_number"
+    (c) => c.type === "phone"
   );
-    const firstRegistration = schoolProfileData?.registrationNumbers?.[0];
+  const firstRegistration = schoolProfileData?.registration_numbers?.[0];
 
   return (
     <div className="min-h-screen bg-[#f5f5ff]">
@@ -158,18 +159,25 @@ export default function SubscriptionsPage() {
                     Choose a subscription plan
                   </h2>
                   <p className="text-sm text-neutrals-500">
-                    Modules and limits are copied onto this school when you continue.
+                    Modules and limits are copied onto this school when you
+                    continue.
                   </p>
                 </div>
 
                 <div className="hidden lg:block">
-                  <BillingToggle billingCycle={billingCycle} onChange={setBillingCycle} />
+                  <BillingToggle
+                    billingCycle={billingCycle}
+                    onChange={setBillingCycle}
+                  />
                 </div>
               </div>
 
               <div className="sticky top-0 z-20 mt-4 bg-white/95 px-4 py-4 backdrop-blur-sm lg:hidden">
                 <div className="flex justify-center">
-                  <BillingToggle billingCycle={billingCycle} onChange={setBillingCycle} />
+                  <BillingToggle
+                    billingCycle={billingCycle}
+                    onChange={setBillingCycle}
+                  />
                 </div>
               </div>
 
@@ -214,7 +222,7 @@ export default function SubscriptionsPage() {
               </h2>
               <p className="text-sm text-neutrals-500">
                 Confirm the subscription before it&apos;s created for{" "}
-                {schoolProfileData?.schoolName || "this school"}.
+                {schoolProfileData?.school?.registered_name || "this school"}.
               </p>
 
               <div className="mt-4 grid grid-cols-1 gap-8 lg:grid-cols-2">
@@ -222,26 +230,44 @@ export default function SubscriptionsPage() {
                   title="School details"
                   onEdit={() => setStep("school-profile")}
                   fields={[
-                    { label: "School name", value: schoolProfileData?.schoolName ?? "" },
+                    {
+                      label: "School name",
+                      value: schoolProfileData?.school?.registered_name ?? "",
+                    },
                     {
                       label: "School type",
                       value:
-                        schoolProfileData?.schoolType
+                        schoolProfileData?.type_slugs
                           ?.map((t) => getOptionLabel(SCHOOL_TYPE_OPTIONS, t))
                           .join(", ") ?? "",
                     },
                     {
                       label: "Ownership type",
-                      value: getOptionLabel(OWNERSHIP_TYPE_OPTIONS, schoolProfileData?.ownershipType),
+                      value: getOptionLabel(
+                        OWNERSHIP_TYPE_OPTIONS,
+                        schoolProfileData?.school?.ownership_type
+                      ),
                     },
-                    { label: "Primary contact", value: primaryContact?.contactLabel ?? "" },
+                    {
+                      label: "Primary contact",
+                      value: primaryContact?.label ?? "",
+                    },
                     {
                       label: "Registration number",
-                      value: firstRegistration?.registrationNumber ?? "",
+                      value: firstRegistration?.number ?? "",
                     },
-                    { label: "School address", value: primaryLocation?.addressLine1 ?? "" },
-                    { label: "Email", value: emailContact?.contactValue ?? "Not provided" },
-                    { label: "Phone number", value: phoneContact?.contactValue ?? "Not provided" },
+                    {
+                      label: "School address",
+                      value: primaryCampus?.address_line_1 ?? "",
+                    },
+                    {
+                      label: "Email",
+                      value: emailContact?.value ?? "Not provided",
+                    },
+                    {
+                      label: "Phone number",
+                      value: phoneContact?.value ?? "Not provided",
+                    },
                   ]}
                 />
 
@@ -255,11 +281,26 @@ export default function SubscriptionsPage() {
                       value: billingCycle === "monthly" ? "Monthly" : "Yearly",
                     },
                     { label: "Status", value: "Pending payment" },
-                    { label: "Students", value: selectedPlanData?.stats[0]?.value ?? "" },
-                    { label: "Staff", value: selectedPlanData?.stats[1]?.value ?? "" },
-                    { label: "Campuses", value: selectedPlanData?.stats[2]?.value ?? "" },
-                    { label: "Storage", value: selectedPlanData?.stats[3]?.value ?? "" },
-                    { label: "Modules", value: String(selectedPlanData?.moduleCount ?? "") },
+                    {
+                      label: "Students",
+                      value: selectedPlanData?.stats[0]?.value ?? "",
+                    },
+                    {
+                      label: "Staff",
+                      value: selectedPlanData?.stats[1]?.value ?? "",
+                    },
+                    {
+                      label: "Campuses",
+                      value: selectedPlanData?.stats[2]?.value ?? "",
+                    },
+                    {
+                      label: "Storage",
+                      value: selectedPlanData?.stats[3]?.value ?? "",
+                    },
+                    {
+                      label: "Modules",
+                      value: String(selectedPlanData?.moduleCount ?? ""),
+                    },
                   ]}
                 />
               </div>
@@ -294,13 +335,14 @@ export default function SubscriptionsPage() {
                   </div>
 
                   <h2 className="text-center w-full max-w-full wrap-break-word text-[24px] font-semibold leading-[1.2] text-neutrals-900">
-                    Onboarding started for {schoolProfileData?.schoolName || "this school"}
+                    Onboarding started for{" "}
+                    {schoolProfileData?.school?.registered_name || "this school"}
                   </h2>
 
                   <p className="text-center text-[18px] font-normal leading-[1.2] text-neutrals-900">
-                    The school and its subscription are set up. The {selectedPlan} plan&apos;s
-                    modules are now active, and the onboarding is ready to move through its
-                    stages.
+                    The school and its subscription are set up. The{" "}
+                    {selectedPlan} plan&apos;s modules are now active, and the
+                    onboarding is ready to move through its stages.
                   </p>
                 </div>
 

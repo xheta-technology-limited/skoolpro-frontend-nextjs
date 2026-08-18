@@ -27,7 +27,7 @@ export const OWNERSHIP_TYPE_OPTIONS = [
 
 export const CONTACT_TYPE_OPTIONS = [
   { label: "Email", value: "email" },
-  { label: "Phone number", value: "phone_number" },
+  { label: "Phone number", value: "phone" },
   { label: "Social media", value: "social_media" },
   { label: "Website", value: "website" },
 ];
@@ -49,43 +49,33 @@ export const PRIORITY_LEVEL_OPTIONS = [
 ];
 
 export const emptyRegistration = {
-  registrationNumber: "",
-  regCountry: "",
-  issuingAuthority: "",
-  expiryDate: "",
+  country_code: "",
+  number: "",
+  issuing_authority: "",
 };
 
-export const emptyLocation = {
-  locationName: "",
-  locationCode: "",
-  addressLine1: "",
+export const emptyCampus = {
+  name: "",
+  is_primary: false,
+  address_line_1: "",
   city: "",
-  state: "",
-  postalCode: "",
-  landmark: "",
+  state_province: "",
+  country_code: "",
   timezone: "",
-  studentCapacity: "",
-  isPrimary: false,
+  student_capacity: "",
 };
 
 export const emptyContact = {
-  contactType: "",
-  contactLabel: "",
-  contactValue: "",
-  isPrimary: false,
+  type: "",
+  label: "",
+  value: "",
+  is_primary: false,
 };
 
 export const emptyKeyContact = {
-  keyContactRole: "",
-  keyContactFullName: "",
-  keyContactRoleTitle: "",
-  keyContactEmail: "",
-  keyContactPhone: "",
-  isPrimary: false,
-};
-
-export const emptyCustomColor = {
-  colorName: "",
-  colorValue: "",
-  colorValueSwatch: "#FFFFFF",
+  role_type: "",
+  full_name: "",
+  job_title: "",
+  email: "",
+  phone: "",
 };
