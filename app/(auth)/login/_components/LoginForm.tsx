@@ -39,7 +39,7 @@ const LoginForm = () => {
         console.log("respose: ", res);
         if ("mfa_required" in res) {
           if (process.env.NEXT_PUBLIC_ENV === "development") {
-            router.replace("/onboard");
+            router.replace("/onboarding");
             return;
           }
           updateMFAData("challenge_id", res.challenge_id);

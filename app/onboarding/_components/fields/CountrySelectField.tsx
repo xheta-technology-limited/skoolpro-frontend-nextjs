@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Path, UseFormRegisterReturn, UseFormSetValue } from "react-hook-form";
+import { useFormContext, get } from "react-hook-form";
 import countryCodesList from "country-codes-list";
 import { IconSearch } from "@tabler/icons-react";
-import { SchoolProfileFormValues } from "@/features/auth/schemas";
 import { ArrowSquareDown } from "iconsax-reactjs";
 
 function flagEmoji(isoCode: string) {
@@ -23,29 +22,31 @@ const allCountries: Country[] = Object.entries(
 ).map(([code, name]) => ({ code, name: name as string }));
 
 interface CountrySelectFieldProps {
+  name: string;
   placeholder: string;
-  fieldName: Path<SchoolProfileFormValues>;
-  register: UseFormRegisterReturn;
-  value: string;
-  setValue: UseFormSetValue<SchoolProfileFormValues>;
-  error?: string;
 }
 
 const CountrySelectField = ({
+  name,
   placeholder,
-  fieldName,
-  register,
-  value,
-  setValue,
-  error,
 }: CountrySelectFieldProps) => {
+  const {
+    register,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useFormContext();
+
+  const value = watch(name);
+  const error = get(errors, name)?.message as string | undefined;
+
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const selected = allCountries.find((c) => c.code === value);
   const isFloating = isOpen || Boolean(value);
-  const triggerId = `field-${register.name}`;
+  const triggerId = `field-${name}`;
   const listboxId = `${triggerId}-listbox`;
 
   const filtered = useMemo(() => {
@@ -77,7 +78,7 @@ const CountrySelectField = ({
           {placeholder}
         </label>
 
-        <input type="hidden" {...register} />
+        <input type="hidden" {...register(name)} />
 
         <button
           id={triggerId}
@@ -126,7 +127,7 @@ const CountrySelectField = ({
                   role="option"
                   aria-selected={c.code === value}
                   onClick={() => {
-                    setValue(fieldName, c.code, { shouldValidate: true, shouldDirty: true });
+                    setValue(name, c.code, { shouldValidate: true, shouldDirty: true });
                     setIsOpen(false);
                     setSearch("");
                   }}

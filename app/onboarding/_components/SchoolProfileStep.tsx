@@ -4,7 +4,10 @@ import { useEffect } from "react";
 import { useForm, useFieldArray, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AddSquare, Trash } from "iconsax-reactjs";
-import { schoolProfileInputSchema, type SchoolProfileFormInput } from "@/features/onboarding/school-profile-schema";
+import {
+  schoolProfileInputSchema,
+  type SchoolProfileFormInput,
+} from "@/features/onboarding/school-profile-schema";
 import { type SchoolProfileFormValues } from "@/features/onboarding/school-profile-schema";
 import {
   Input,
@@ -28,6 +31,7 @@ import {
   emptyContact,
   emptyKeyContact,
 } from "./fields/constants";
+import CountrySelectField from "./fields/CountrySelectField";
 
 export type { SchoolProfileFormValues };
 export {
@@ -203,11 +207,9 @@ const SchoolProfileStep = ({
                     name={`registration_numbers.${index}.number`}
                     label="Enter registration number"
                   />
-                  <Select
+                  <CountrySelectField
                     name={`registration_numbers.${index}.country_code`}
-                    label="Select country"
-                    options={africanCountries}
-                    searchable
+                    placeholder="Select country"
                   />
                 </div>
 
@@ -266,12 +268,11 @@ const SchoolProfileStep = ({
                 </div>
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-                  <Select
+                  <CountrySelectField
                     name={`campuses.${index}.country_code`}
-                    label="Select country"
-                    options={africanCountries}
-                    searchable
+                    placeholder="Select country"
                   />
+
                   <Input
                     name={`campuses.${index}.timezone`}
                     label="Enter timezone"
@@ -327,14 +328,8 @@ const SchoolProfileStep = ({
                 />
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:items-center">
-                  <Input
-                    name={`contacts.${index}.label`}
-                    label="Enter label"
-                  />
-                  <Input
-                    name={`contacts.${index}.value`}
-                    label="Enter value"
-                  />
+                  <Input name={`contacts.${index}.label`} label="Enter label" />
+                  <Input name={`contacts.${index}.value`} label="Enter value" />
                 </div>
 
                 <ToggleField
@@ -434,7 +429,10 @@ const SchoolProfileStep = ({
                 label="Select priority level"
                 options={PRIORITY_LEVEL_OPTIONS}
               />
-              <DatePicker name="onboarding.target_go_live_date" label="Target go live" />
+              <DatePicker
+                name="onboarding.target_go_live_date"
+                label="Target go live"
+              />
             </div>
           </FormSectionCard>
         </div>

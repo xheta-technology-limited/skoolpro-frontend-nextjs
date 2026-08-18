@@ -13,6 +13,8 @@ import SchoolProfileStep, {
   SCHOOL_TYPE_OPTIONS,
   OWNERSHIP_TYPE_OPTIONS,
 } from "./_components/SchoolProfileStep";
+import { useOnboardSchool } from "@/features/onboarding/api/api";
+import { Button } from "@/components/ui/custom-button";
 
 function getOptionLabel(
   options: { label: string; value: string }[],
@@ -105,10 +107,14 @@ export default function SubscriptionsPage() {
     if (!selectedPlan) return;
     setStep("review");
   }
+  const { isPending: submitPending, mutate: submitMutate } = useOnboardSchool();
 
   function handleContinueFromReview() {
-    // TODO: submit subscription request to backend
-    setStep("success");
+    if (!schoolProfileData) {
+      console.log("SchoolProfileData is null");
+      return;
+    }
+    submitMutate(schoolProfileData, { onSuccess: () => setStep("success") });
   }
 
   const selectedPlanData = plans.find((plan) => plan.name === selectedPlan);
@@ -314,14 +320,14 @@ export default function SubscriptionsPage() {
                     Back
                   </span>
                 </button>
-                <button
+                <Button
+                  className="flex-1"
                   onClick={handleContinueFromReview}
-                  className="flex h-13.5 flex-1 items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-primary px-8 py-4"
+                  loading={submitPending}
+                  size="lg"
                 >
-                  <span className="text-[16px] font-normal leading-[1.2] text-white">
-                    Continue
-                  </span>
-                </button>
+                  Continue
+                </Button>
               </div>
             </>
           )}
@@ -336,7 +342,8 @@ export default function SubscriptionsPage() {
 
                   <h2 className="text-center w-full max-w-full wrap-break-word text-[24px] font-semibold leading-[1.2] text-neutrals-900">
                     Onboarding started for{" "}
-                    {schoolProfileData?.school?.registered_name || "this school"}
+                    {schoolProfileData?.school?.registered_name ||
+                      "this school"}
                   </h2>
 
                   <p className="text-center text-[18px] font-normal leading-[1.2] text-neutrals-900">
