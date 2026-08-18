@@ -19,100 +19,27 @@ import { africanCountries } from "@/lib/utils/countries-list";
 import FormSectionCard from "./FormSectionCard";
 import ToggleField from "./fields/ToggleField";
 import ColorField from "./fields/ColorField";
+import {
+  SCHOOL_TYPE_OPTIONS,
+  OWNERSHIP_TYPE_OPTIONS,
+  CONTACT_TYPE_OPTIONS,
+  ROLE_TYPE_OPTIONS,
+  PRIORITY_LEVEL_OPTIONS,
+  emptyRegistration,
+  emptyLocation,
+  emptyContact,
+  emptyKeyContact,
+  emptyCustomColor,
+} from "./fields/constants";
 
 export type { SchoolProfileFormValues };
-
-export const SCHOOL_TYPE_OPTIONS = [
-  { label: "Nursery", value: "nursery" },
-  { label: "Primary", value: "primary" },
-  { label: "Secondary", value: "secondary" },
-  { label: "Sixth form", value: "sixth_form" },
-  { label: "College", value: "college" },
-  { label: "Vocational institution", value: "vocational_institution" },
-  { label: "Special education school", value: "special_education_school" },
-  { label: "Faith based school", value: "faith_based_school" },
-  { label: "Boarding school", value: "boarding_school" },
-  { label: "Day school", value: "day_school" },
-  { label: "Government school", value: "government_school" },
-  { label: "Private school", value: "private_school" },
-];
-
-export const OWNERSHIP_TYPE_OPTIONS = [
-  { label: "Private individual", value: "private_individual" },
-  { label: "Limited company", value: "limited_company" },
-  { label: "Trust", value: "trust" },
-  { label: "Charity", value: "charity" },
-  { label: "Religious organization", value: "religious_organization" },
-  { label: "Government", value: "government" },
-  { label: "Community organization", value: "community_organization" },
-  { label: "Partnership", value: "partnership" },
-  { label: "Others", value: "others" },
-];
-
-const CONTACT_TYPE_OPTIONS = [
-  { label: "Email", value: "email" },
-  { label: "Phone number", value: "phone_number" },
-  { label: "Social media", value: "social_media" },
-  { label: "Website", value: "website" },
-];
-
-const ROLE_TYPE_OPTIONS = [
-  { label: "Primary contact", value: "primary_contact" },
-  { label: "Project lead", value: "project_lead" },
-  { label: "Executive sponsor", value: "executive_sponsor" },
-  { label: "Technical contact", value: "technical_contact" },
-  { label: "Finance contact", value: "finance_contact" },
-  { label: "Academic contact", value: "academic_contact" },
-];
-
-const PRIORITY_LEVEL_OPTIONS = [
-  { label: "Standard", value: "standard" },
-  { label: "High", value: "high" },
-  { label: "Urgent", value: "urgent" },
-  { label: "Strategic client", value: "strategic_client" },
-];
-
-const emptyRegistration = {
-  registrationNumber: "",
-  regCountry: "",
-  issuingAuthority: "",
-  expiryDate: "",
-};
-
-const emptyLocation = {
-  locationName: "",
-  locationCode: "",
-  addressLine1: "",
-  city: "",
-  state: "",
-  postalCode: "",
-  landmark: "",
-  timezone: "",
-  studentCapacity: "",
-  isPrimary: false,
-};
-
-const emptyContact = {
-  contactType: "",
-  contactLabel: "",
-  contactValue: "",
-  isPrimary: false,
-};
-
-const emptyKeyContact = {
-  keyContactRole: "",
-  keyContactFullName: "",
-  keyContactRoleTitle: "",
-  keyContactEmail: "",
-  keyContactPhone: "",
-  isPrimary: false,
-};
-
-const emptyCustomColor = {
-  colorName: "",
-  colorValue: "",
-  colorValueSwatch: "#FFFFFF",
-};
+export {
+  SCHOOL_TYPE_OPTIONS,
+  OWNERSHIP_TYPE_OPTIONS,
+  CONTACT_TYPE_OPTIONS,
+  ROLE_TYPE_OPTIONS,
+  PRIORITY_LEVEL_OPTIONS,
+} from "./fields/constants";
 
 interface SchoolProfileStepProps {
   onContinue: (data: SchoolProfileFormValues) => void;
@@ -205,7 +132,7 @@ const SchoolProfileStep = ({
           School profile
         </h2>
         <p className="text-sm text-neutrals-500">
-          Tell us about the school to get started.
+          This creates the school record and begins its onboarding in one step.
         </p>
 
         <div className="mt-8 flex flex-col gap-8">
