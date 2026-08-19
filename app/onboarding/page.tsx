@@ -13,8 +13,10 @@ import SchoolProfileStep, {
   SCHOOL_TYPE_OPTIONS,
   OWNERSHIP_TYPE_OPTIONS,
 } from "./_components/SchoolProfileStep";
+import { useGetPlans } from "@/features/subscriptions/api/get-plans";
 import { useOnboardSchool } from "@/features/onboarding/api/api";
 import { Button } from "@/components/ui/custom-button";
+import { Spinner } from "@/components/animations";
 
 function getOptionLabel(
   options: { label: string; value: string }[],
@@ -114,9 +116,15 @@ export default function SubscriptionsPage() {
       console.log("SchoolProfileData is null");
       return;
     }
-    submitMutate(schoolProfileData, { onSuccess: () => setStep("success") });
+    submitMutate(schoolProfileData, {
+      onSuccess: () => setStep("success"),
+    });
   }
 
+  const { isPending: isPlansPending, data: plansData } = useGetPlans();
+  useEffect(() => {
+    console.log("plans data is: ", plansData);
+  }, [plansData]);
   const selectedPlanData = plans.find((plan) => plan.name === selectedPlan);
 
   const primaryCampus =
@@ -187,17 +195,23 @@ export default function SubscriptionsPage() {
                 </div>
               </div>
 
-              <div className="mt-8.75 grid grid-cols-1 gap-8 lg:grid-cols-4">
-                {plans.map((plan) => (
-                  <PricingCard
-                    key={plan.name}
-                    plan={plan}
-                    billingCycle={billingCycle}
-                    isSelected={selectedPlan === plan.name}
-                    onSelectPlan={setSelectedPlan}
-                  />
-                ))}
-              </div>
+              {isPlansPending ? (
+                <div className="flex items-center content-center h-full">
+                  <Spinner size={100} />
+                </div>
+              ) : (
+                <div className="mt-8.75 grid grid-cols-1 gap-8 lg:grid-cols-4">
+                  {plansData?.map((plan) => (
+                    <PricingCard
+                      key={plan.key}
+                      plan={plan}
+                      billingCycle={billingCycle}
+                      isSelected={selectedPlan === plan.name}
+                      onSelectPlan={setSelectedPlan}
+                    />
+                  ))}
+                </div>
+              )}
 
               <div className="mt-8 flex gap-6">
                 <button

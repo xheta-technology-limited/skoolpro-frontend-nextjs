@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { IconCircleCheck, IconChevronDown } from "@tabler/icons-react";
+import { SchoolPlan } from "@/features/subscriptions/types/types";
+import { titleCase } from "@/lib/helpers/string-to-title-case";
 
 export interface PricingPlan {
   name: string;
@@ -14,20 +16,31 @@ export interface PricingPlan {
 }
 
 interface PricingCardProps {
-  plan: PricingPlan;
+  plan: SchoolPlan;
   billingCycle: "monthly" | "yearly";
   isSelected: boolean;
-  onSelectPlan: (planName: string) => void;
+  onSelectPlan: (planKey: string) => void;
 }
 
-const PricingCard = ({ plan, billingCycle, isSelected, onSelectPlan }: PricingCardProps) => {
+const dummyMonthlyPrice = 0;
+const dummyYearlyPrice = 12;
+
+const PricingCard = ({
+  plan,
+  billingCycle,
+  isSelected,
+  onSelectPlan,
+}: PricingCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const price = billingCycle === "monthly" ? plan.monthlyPrice : plan.yearlyPrice;
+  const price =
+    billingCycle === "monthly" ? dummyMonthlyPrice : dummyYearlyPrice;
 
   return (
     <div
       className={`flex h-full w-full flex-col rounded-[30px] border-2 transition-colors lg:max-w-75 lg:min-h-152.5 ${
-        isSelected ? "border-primary bg-primary-100/40" : "border-transparent bg-base-white"
+        isSelected
+          ? "border-primary bg-primary-100/40"
+          : "border-transparent bg-base-white"
       }`}
     >
       {/* header: plan name, price, billed text, description */}
@@ -59,28 +72,48 @@ const PricingCard = ({ plan, billingCycle, isSelected, onSelectPlan }: PricingCa
         }`}
       >
         <div className="flex flex-col gap-3 overflow-hidden pb-12">
-          {plan.stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="flex items-center justify-between text-[14px] leading-[1.2]"
-            >
-              <span className="text-neutrals-600">{stat.label}</span>
-              <span className="font-semibold text-neutrals-900">{stat.value}</span>
-            </div>
-          ))}
+          <div className="flex items-center justify-between text-[14px] leading-[1.2]">
+            <span className="text-neutrals-600">Student</span>
+            <span className="font-semibold text-neutrals-900">
+              {plan.limits.max_students}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-[14px] leading-[1.2]">
+            <span className="text-neutrals-600">Staff</span>
+            <span className="font-semibold text-neutrals-900">
+              {plan.limits.max_staff}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between text-[14px] leading-[1.2]">
+            <span className="text-neutrals-600">Campuses</span>
+            <span className="font-semibold text-neutrals-900">
+              {plan.limits.max_campuses}
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between text-[14px] leading-[1.2]">
+            <span className="text-neutrals-600">Storage</span>
+            <span className="font-semibold text-neutrals-900">
+              {plan.limits.max_storage_mb / 1000} GB
+            </span>
+          </div>
 
           <span className="text-[14px] font-semibold leading-[1.2] text-neutrals-900">
-            {plan.moduleCount} modules
+            {plan.module_keys.length} modules
           </span>
 
           <ul className="flex flex-col gap-3">
-            {plan.features.map((feature) => (
+            {plan.module_keys.map((feature) => (
               <li
                 key={feature}
                 className="flex items-center gap-2 text-[14px] font-light leading-[1.2] text-neutrals-800"
               >
-                <IconCircleCheck size={18} className="shrink-0 text-neutrals-400" />
-                {feature}
+                <IconCircleCheck
+                  size={18}
+                  className="shrink-0 text-neutrals-400"
+                />
+                {titleCase(feature)}
               </li>
             ))}
           </ul>
@@ -96,14 +129,16 @@ const PricingCard = ({ plan, billingCycle, isSelected, onSelectPlan }: PricingCa
         {isExpanded ? "Show less" : "See all features"}
         <IconChevronDown
           size={16}
-          className={`transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`}
+          className={`transition-transform duration-300 ${
+            isExpanded ? "rotate-180" : ""
+          }`}
         />
       </button>
 
       {/* button section — pinned to bottom */}
       <div className="mt-auto flex items-center px-6 pb-8">
         <button
-          onClick={() => onSelectPlan(plan.name)}
+          onClick={() => onSelectPlan(plan.key)}
           disabled={isSelected}
           className="group flex h-11.75 w-full items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-base-white px-8 py-3.5 transition-colors hover:bg-primary disabled:cursor-not-allowed disabled:border-primary-300 disabled:bg-primary-100 disabled:hover:bg-primary-100"
         >
