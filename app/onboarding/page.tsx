@@ -196,8 +196,8 @@ export default function SubscriptionsPage() {
               </div>
 
               {isPlansPending ? (
-                <div className="flex items-center content-center h-full">
-                  <Spinner size={100} />
+                <div className="flex items-center justify-center h-[30vh] md:h-[50vh] w-full">
+                  <Spinner size={50} />
                 </div>
               ) : (
                 <div className="mt-8.75 grid grid-cols-1 gap-8 lg:grid-cols-4">
@@ -206,7 +206,7 @@ export default function SubscriptionsPage() {
                       key={plan.key}
                       plan={plan}
                       billingCycle={billingCycle}
-                      isSelected={selectedPlan === plan.name}
+                      isSelected={selectedPlan === plan.key}
                       onSelectPlan={setSelectedPlan}
                     />
                   ))}
