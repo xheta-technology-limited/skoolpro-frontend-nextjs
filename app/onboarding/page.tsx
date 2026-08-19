@@ -17,6 +17,19 @@ import { useGetPlans } from "@/features/subscriptions/api/get-plans";
 import { useOnboardSchool } from "@/features/onboarding/api/api";
 import { Button } from "@/components/ui/custom-button";
 import { Spinner } from "@/components/animations";
+import { setFormErrors } from "@/lib/helpers/set-form-errors";
+import { useForm } from "react-hook-form";
+import {
+  SchoolProfileFormInput,
+  schoolProfileInputSchema,
+} from "@/features/onboarding/school-profile-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  emptyCampus,
+  emptyContact,
+  emptyKeyContact,
+  emptyRegistration,
+} from "./_components/fields/constants";
 
 function getOptionLabel(
   options: { label: string; value: string }[],
@@ -95,6 +108,29 @@ export default function SubscriptionsPage() {
   const [schoolProfileData, setSchoolProfileData] =
     useState<SchoolProfileFormValues | null>(null);
 
+  const methods = useForm<SchoolProfileFormInput>({
+    resolver: zodResolver(schoolProfileInputSchema),
+    defaultValues: {
+      ...schoolProfileData,
+      school: schoolProfileData?.school
+        ? {
+            ...schoolProfileData.school,
+            education_authorities: Array.isArray(
+              schoolProfileData.school.education_authorities
+            )
+              ? schoolProfileData.school.education_authorities.join(", ")
+              : schoolProfileData.school.education_authorities ?? "",
+          }
+        : undefined,
+      registration_numbers: schoolProfileData?.registration_numbers ?? [
+        emptyRegistration,
+      ],
+      campuses: schoolProfileData?.campuses ?? [emptyCampus],
+      contacts: schoolProfileData?.contacts ?? [emptyContact],
+      key_contacts: schoolProfileData?.key_contacts ?? [emptyKeyContact],
+    },
+  });
+
   useEffect(() => {
     if (step === "success") {
       confetti({
@@ -118,6 +154,11 @@ export default function SubscriptionsPage() {
     }
     submitMutate(schoolProfileData, {
       onSuccess: () => setStep("success"),
+      onError: (res) => {
+        if (res.errors) {
+          setFormErrors(methods.setError, res.errors);
+        }
+      },
     });
   }
 
@@ -156,7 +197,7 @@ export default function SubscriptionsPage() {
           {step === "school-profile" && (
             <Suspense fallback={<div>Loading...</div>}>
               <SchoolProfileStep
-                defaultValues={schoolProfileData ?? undefined}
+                methods={methods}
                 onContinue={(data) => {
                   setSchoolProfileData(data);
                   setStep("choose-plan");

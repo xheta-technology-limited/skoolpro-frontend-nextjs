@@ -241,10 +241,10 @@ const Select = ({
             )}
 
             {error && (
-              <>
+              <div className="flex">
                 <XIcon size={16} color="#C03744" />{" "}
                 <span className="ml-2 text-xs text-[#C03744]">{error}</span>
-              </>
+              </div>
             )}
 
             {isLoading && (

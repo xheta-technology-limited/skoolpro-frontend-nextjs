@@ -5,6 +5,7 @@ import { useFormContext, get } from "react-hook-form";
 import countryCodesList from "country-codes-list";
 import { IconSearch } from "@tabler/icons-react";
 import { ArrowSquareDown } from "iconsax-reactjs";
+import { XIcon } from "@phosphor-icons/react";
 
 function flagEmoji(isoCode: string) {
   return isoCode
@@ -26,10 +27,7 @@ interface CountrySelectFieldProps {
   placeholder: string;
 }
 
-const CountrySelectField = ({
-  name,
-  placeholder,
-}: CountrySelectFieldProps) => {
+const CountrySelectField = ({ name, placeholder }: CountrySelectFieldProps) => {
   const {
     register,
     setValue,
@@ -56,7 +54,10 @@ const CountrySelectField = ({
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(e.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -87,19 +88,21 @@ const CountrySelectField = ({
           aria-haspopup="listbox"
           aria-expanded={isOpen}
           aria-controls={isOpen ? listboxId : undefined}
-          className={`flex h-14 w-full items-center justify-between rounded-2xl border ${
+          className={`flex h-14 w-full items-center justify-between mb-2 rounded-2xl border ${
             error ? "border-error" : "border-transparent"
           } bg-[#F5F5FF] px-5 text-left text-[16px] font-normal leading-[1.2] text-neutrals-900 focus:border-primary-500 focus:bg-white focus:outline-none ${
             isFloating ? "pt-5 pb-1" : "py-4"
           }`}
         >
-          <span>{selected ? `${flagEmoji(selected.code)} ${selected.name}` : ""}</span>
-          <ArrowSquareDown 
-              size={24} 
-              variant="Bulk" 
-              color="#433E3F"
-              className="pointer-events-none absolute top-1/2 right-5 -translate-y-1/2"
-        />
+          <span>
+            {selected ? `${flagEmoji(selected.code)} ${selected.name}` : ""}
+          </span>
+          <ArrowSquareDown
+            size={24}
+            variant="Bulk"
+            color="#433E3F"
+            className="pointer-events-none absolute top-1/2 right-5 -translate-y-1/2"
+          />
         </button>
 
         {isOpen && (
@@ -116,9 +119,15 @@ const CountrySelectField = ({
               />
             </div>
 
-            <div id={listboxId} role="listbox" className="max-h-64 overflow-y-auto">
+            <div
+              id={listboxId}
+              role="listbox"
+              className="max-h-64 overflow-y-auto"
+            >
               {filtered.length === 0 && (
-                <div className="px-4 py-4 text-sm text-neutrals-500">No countries found</div>
+                <div className="px-4 py-4 text-sm text-neutrals-500">
+                  No countries found
+                </div>
               )}
               {filtered.map((c) => (
                 <button
@@ -127,7 +136,10 @@ const CountrySelectField = ({
                   role="option"
                   aria-selected={c.code === value}
                   onClick={() => {
-                    setValue(name, c.code, { shouldValidate: true, shouldDirty: true });
+                    setValue(name, c.code, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
                     setIsOpen(false);
                     setSearch("");
                   }}
@@ -141,7 +153,12 @@ const CountrySelectField = ({
           </div>
         )}
       </div>
-      {error && <p className="mt-1 text-xs text-error">{error}</p>}
+      {error && (
+        <div className="flex">
+          <XIcon size={16} color="#C03744" />{" "}
+          <span className="ml-2 text-xs text-[#C03744]">{error}</span>
+        </div>
+      )}
     </div>
   );
 };

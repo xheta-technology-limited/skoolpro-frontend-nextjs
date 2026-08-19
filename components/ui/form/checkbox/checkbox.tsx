@@ -43,10 +43,6 @@ const Checkbox = ({ name, label, options, max, disabled }: CheckboxProps) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    console.log("le error is: ", error);
-  }, [error]);
-
   return (
     <Controller
       name={name}

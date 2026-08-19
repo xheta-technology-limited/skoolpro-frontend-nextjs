@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { useForm, useFieldArray, FormProvider } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useFieldArray, FormProvider, type UseFormReturn } from "react-hook-form";
 import { AddSquare, Trash } from "iconsax-reactjs";
 import {
-  schoolProfileInputSchema,
   type SchoolProfileFormInput,
 } from "@/features/onboarding/school-profile-schema";
 import { type SchoolProfileFormValues } from "@/features/onboarding/school-profile-schema";
@@ -43,38 +41,16 @@ export {
 } from "./fields/constants";
 
 interface SchoolProfileStepProps {
+  methods: UseFormReturn<SchoolProfileFormInput>;
   onContinue: (data: SchoolProfileFormValues) => void;
   onCancel?: () => void;
-  defaultValues?: Partial<SchoolProfileFormValues>;
 }
 
 const SchoolProfileStep = ({
+  methods,
   onContinue,
   onCancel,
-  defaultValues,
 }: SchoolProfileStepProps) => {
-  const methods = useForm<SchoolProfileFormInput>({
-    resolver: zodResolver(schoolProfileInputSchema),
-    defaultValues: {
-      ...defaultValues,
-      school: defaultValues?.school
-        ? {
-            ...defaultValues.school,
-            education_authorities: Array.isArray(
-              defaultValues.school.education_authorities
-            )
-              ? defaultValues.school.education_authorities.join(", ")
-              : defaultValues.school.education_authorities ?? "",
-          }
-        : undefined,
-      registration_numbers: defaultValues?.registration_numbers ?? [
-        emptyRegistration,
-      ],
-      campuses: defaultValues?.campuses ?? [emptyCampus],
-      contacts: defaultValues?.contacts ?? [emptyContact],
-      key_contacts: defaultValues?.key_contacts ?? [emptyKeyContact],
-    },
-  });
 
   const { handleSubmit, watch, setValue, control } = methods;
 
