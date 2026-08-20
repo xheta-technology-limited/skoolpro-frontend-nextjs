@@ -146,7 +146,7 @@ const Select = ({
                 className={clsx(
                   icon && "pr-13.75",
                   "pr-13.75",
-                  "w-full h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:border-primary-500 disabled:bg-[#F6F3FDCC] disabled:cursor-not-allowed cursor-pointer",
+                  "w-full h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:outline-primary-500 focus:outline-1 disabled:bg-[#F6F3FDCC] disabled:cursor-not-allowed cursor-pointer",
                   error && "bg-[#FBD6D45C]"
                 )}
               />
@@ -158,8 +158,9 @@ const Select = ({
                 onKeyDown={handleKeyDown}
                 className={clsx(
                   "pr-13.75",
-                  "w-full h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-left text-[0.875rem] md:text-[1rem] focus:bg-transparent focus:border-primary-500 disabled:bg-[#F6F3FDCC] disabled:cursor-not-allowed cursor-pointer",
-                  error && "bg-[#FBD6D45C]"
+                  "w-full h-[3.18rem] mb-2 peer rounded-ml bg-[#F5F5FF] px-ml text-left text-[0.875rem] md:text-[1rem] focus:bg-transparent disabled:bg-[#F6F3FDCC] disabled:cursor-not-allowed cursor-pointer",
+                  error && "bg-[#FBD6D45C]",
+                  isOpen && "outline-primary-500 outline-1"
                 )}
               >
                 {selectedOption?.label}
@@ -240,10 +241,10 @@ const Select = ({
             )}
 
             {error && (
-              <>
+              <div className="flex">
                 <XIcon size={16} color="#C03744" />{" "}
                 <span className="ml-2 text-xs text-[#C03744]">{error}</span>
-              </>
+              </div>
             )}
 
             {isLoading && (

@@ -41,7 +41,7 @@ const Input = ({
 
   const [isPasswordShown, setPasswordShown] = useState(false);
   const isPasswordType = props.type === "password" && !isPasswordShown;
-  const passwordType = isPasswordType ? "password" : props.type;
+  const passwordType = isPasswordType ? "password" : "text";
   const labelMaxWidth = search
     ? "max-w-[calc(100%-5.5rem)]"
     : icon || props.type === "password"

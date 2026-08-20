@@ -9,17 +9,16 @@ import {
 import { AxiosError } from "axios";
 import { MFAMethod } from "../types/types";
 import { LoginData } from "../types/api/login";
+import { ServerErrorResponse } from "../types/api/shared";
 
 //setup mfa
 export const authenticatorSetup = (): Promise<AuthenticatorSetupResponse> => {
   return api.post("mfa/authenticator/setup");
 };
 export const useAuthenticatorSetup = () => {
-  return useMutation<
-    AuthenticatorSetupResponse,
-    AxiosError<{ message: string }>,
-    {}
-  >({ mutationFn: authenticatorSetup });
+  return useMutation<AuthenticatorSetupResponse, ServerErrorResponse, {}>({
+    mutationFn: authenticatorSetup,
+  });
 };
 
 // confirm mfa
@@ -32,7 +31,7 @@ export const confirmMfaCode = (data: {
 export const useConfirmMfaCode = () => {
   return useMutation<
     AuthenticatorConfirmResponse,
-    AxiosError<{ message: string }>,
+    ServerErrorResponse,
     { code: string }
   >({
     mutationFn: confirmMfaCode,
@@ -49,7 +48,7 @@ export const otpSetup = (data: {
 export const useOtpSetup = () => {
   return useMutation<
     { message: string },
-    AxiosError<{ message: string }>,
+    ServerErrorResponse,
     { method: MFAMethod }
   >({
     mutationFn: otpSetup,
@@ -66,7 +65,7 @@ export const confirmOtp = (data: {
 export const useConfirmOtp = () => {
   return useMutation<
     { message: string },
-    AxiosError<{ message: string }>,
+    ServerErrorResponse,
     { method: string; code: string }
   >({
     mutationFn: confirmOtp,
@@ -78,11 +77,7 @@ export const verifyMFA = (body: VerifyMfaRequest): Promise<LoginData> => {
   return api.post("auth/spa/mfa/verify", body);
 };
 export const useVerifyMFA = () => {
-  return useMutation<
-    LoginData,
-    AxiosError<{ message: string }>,
-    VerifyMfaRequest
-  >({
+  return useMutation<LoginData, ServerErrorResponse, VerifyMfaRequest>({
     mutationFn: verifyMFA,
   });
 };
