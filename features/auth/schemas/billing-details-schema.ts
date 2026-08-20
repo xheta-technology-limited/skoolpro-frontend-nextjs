@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { requiredString } from "@/lib/utils/zod-schemas";
+import { requiredString, emailString } from "@/lib/utils/zod-schemas";
 
 export const billingDetailsSchema = z.object({
   status: requiredString,
@@ -9,7 +9,7 @@ export const billingDetailsSchema = z.object({
   paymentStatus: requiredString,
   billingContactName: requiredString,
   billingContactOrganization: requiredString,
-  billingContactEmail: z.email("This field is required"),
+  billingContactEmail: emailString,
   billingAddress: requiredString,
   purchaseOrderReference: requiredString,
   taxIdentifier: requiredString,
