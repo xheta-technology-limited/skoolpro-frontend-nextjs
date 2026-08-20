@@ -12,6 +12,7 @@ import {
 import { useOnboardSchool } from "@/features/onboarding/api/api";
 import { setFormErrors } from "@/lib/helpers/set-form-errors";
 import { Button } from "@/components/ui/custom-button";
+import { useSubscriptionStore } from "@/features/subscriptions/subscription-store";
 import {
   Input,
   Select,
@@ -65,6 +66,7 @@ const SchoolProfileStep = ({
   });
 
   const { isPending, mutate } = useOnboardSchool();
+  const setCreatedSchool = useSubscriptionStore((s) => s.setCreatedSchool);
 
   const { handleSubmit, watch, setValue, control } = methods;
 
@@ -120,7 +122,10 @@ const SchoolProfileStep = ({
       },
     };
     mutate(output, {
-      onSuccess: () => onSuccess(output),
+      onSuccess: (response) => {
+        setCreatedSchool(response);
+        onSuccess(output);
+      },
       onError: (res) => {
         if (res.errors) {
           setFormErrors(methods.setError, res.errors);
