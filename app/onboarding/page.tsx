@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import confetti from "canvas-confetti";
 import { AdmiralBlue11 } from "@/components/icons/logos";
@@ -8,6 +8,8 @@ import BillingToggle from "./_components/BillingToggle";
 import PricingCard, { PricingPlan } from "./_components/PricingCard";
 import Stepper from "./_components/Stepper";
 import DetailCard from "./_components/DetailCard";
+import BillingDetailsModal from "./_components/BillingDetailsModal";
+import type { BillingDetailsFormValues } from "@/features/auth/schemas";
 import SchoolProfileStep, {
   SchoolProfileFormValues,
   SCHOOL_TYPE_OPTIONS,
@@ -99,7 +101,7 @@ const plans: PricingPlan[] = [
 
 export default function SubscriptionsPage() {
   const [step, setStep] = useState<
-    "school-profile" | "choose-plan" | "review" | "success"
+   "school-profile" | "choose-plan" | "review" | "success"
   >("school-profile");
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
     "monthly"
@@ -107,6 +109,11 @@ export default function SubscriptionsPage() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [schoolProfileData, setSchoolProfileData] =
     useState<SchoolProfileFormValues | null>(null);
+
+  const [billingModalOpen, setBillingModalOpen] = useState(false);
+  const [billingDetails, setBillingDetails] =
+    useState<BillingDetailsFormValues | null>(null);
+  const billingDetailsSavedRef = useRef(false);
 
   const methods = useForm<SchoolProfileFormInput>({
     resolver: zodResolver(schoolProfileInputSchema),
@@ -142,7 +149,7 @@ export default function SubscriptionsPage() {
   }, [step]);
 
   function handleContinueFromPlan() {
-    if (!selectedPlan) return;
+    if (!selectedPlan || !billingDetails) return;
     setStep("review");
   }
   const { isPending: submitPending, mutate: submitMutate } = useOnboardSchool();
@@ -167,6 +174,26 @@ export default function SubscriptionsPage() {
     console.log("plans data is: ", plansData);
   }, [plansData]);
   const selectedPlanData = plans.find((plan) => plan.name === selectedPlan);
+
+  const selectedPlanFromApi = plansData?.find((plan) => plan.key === selectedPlan);
+
+  function handleSelectPlan(planKey: string) {
+    billingDetailsSavedRef.current = false;
+    setSelectedPlan(planKey);
+    setBillingModalOpen(true);
+  }
+
+  function handleBillingModalChange(open: boolean) {
+    setBillingModalOpen(open);
+
+    if (!open && !billingDetailsSavedRef.current) {
+      setSelectedPlan(null);
+    }
+
+    if (!open) {
+      billingDetailsSavedRef.current = false;
+    }
+  }
 
   const primaryCampus =
     schoolProfileData?.campuses?.find((c) => c.is_primary) ??
@@ -248,11 +275,22 @@ export default function SubscriptionsPage() {
                       plan={plan}
                       billingCycle={billingCycle}
                       isSelected={selectedPlan === plan.key}
-                      onSelectPlan={setSelectedPlan}
+                      onSelectPlan={handleSelectPlan}
                     />
                   ))}
                 </div>
               )}
+
+              <BillingDetailsModal
+                open={billingModalOpen}
+                onOpenChange={handleBillingModalChange}
+                planName={selectedPlanFromApi?.name ?? selectedPlan ?? ""}
+                defaultValues={billingDetails ?? undefined}
+                onSave={(data) => {
+                  billingDetailsSavedRef.current = true;
+                  setBillingDetails(data);
+                }}
+              />
 
               <div className="mt-8 flex gap-6">
                 <button
@@ -265,7 +303,7 @@ export default function SubscriptionsPage() {
                 </button>
                 <button
                   onClick={handleContinueFromPlan}
-                  disabled={!selectedPlan}
+                  disabled={!selectedPlan || !billingDetails}
                   className="group flex h-13.5 flex-1 items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-primary px-8 py-4 transition-colors disabled:cursor-not-allowed disabled:border-neutrals-300 disabled:bg-neutrals-300"
                 >
                   <span className="text-[16px] font-normal leading-[1.2] text-white transition-colors">
@@ -336,7 +374,7 @@ export default function SubscriptionsPage() {
                   title="Subscription"
                   onEdit={() => setStep("choose-plan")}
                   fields={[
-                    { label: "Plan", value: selectedPlan ?? "" },
+                    { label: "Plan", value: selectedPlanFromApi?.name ?? selectedPlan ?? "" },
                     {
                       label: "Billing",
                       value: billingCycle === "monthly" ? "Monthly" : "Yearly",
@@ -361,6 +399,14 @@ export default function SubscriptionsPage() {
                     {
                       label: "Modules",
                       value: String(selectedPlanData?.moduleCount ?? ""),
+                    },
+                    {
+                      label: "Billing contact",
+                      value: billingDetails?.billingContactName ?? "",
+                    },
+                    {
+                      label: "Billing email",
+                      value: billingDetails?.billingContactEmail ?? "",
                     },
                   ]}
                 />
