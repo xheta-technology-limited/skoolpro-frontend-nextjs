@@ -3,12 +3,10 @@ import { useEffect, useState } from "react";
 import { Suspense } from "react";
 import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/custom-button";
-import Image from "next/image";
 import OTP from "@/components/ui/custom-otp-input";
-import { useForm } from "react-hook-form";
 import { SuccessModal } from "@/components/common";
 import { useConfirmOtp, useOtpSetup } from "@/features/auth/api/mfa";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { MFAMethod } from "@/features/auth/types/types";
 
@@ -16,6 +14,7 @@ function Email() {
   const { otp_type } = useParams<{ otp_type: MFAMethod }>();
   const [success, setSuccess] = useState(false);
   const [otp, setOtp] = useState("");
+  const router = useRouter();
   const { mutate } = useOtpSetup();
   const { mutate: confirmMutate, status: confirmStatus } = useConfirmOtp();
   const confirmOtp = () => {
@@ -89,7 +88,9 @@ function Email() {
         onClose={() => setSuccess(false)}
         subheading="Multi factor authentication has been enabled. This will be required in your subsequent login."
       >
-        <Button size="lg">Proceed to dashboard</Button>
+        <Button onClick={() => router.replace("/onboarding")} size="lg">
+          Proceed to dashboard
+        </Button>
         {/* TODO: make this actually proceed to dashboard */}
       </SuccessModal>
     </section>

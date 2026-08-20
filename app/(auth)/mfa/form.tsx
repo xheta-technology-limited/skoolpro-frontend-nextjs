@@ -34,7 +34,7 @@ export default function OTPForm() {
         {
           onSuccess: (data) => {
             updateUserData(data);
-            router.push("/onboard");
+            router.push("/onboarding");
           },
         }
       );

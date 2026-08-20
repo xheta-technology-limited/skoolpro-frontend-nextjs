@@ -39,7 +39,7 @@ const LoginForm = () => {
         console.log("respose: ", res);
         if ("mfa_required" in res) {
           if (process.env.NEXT_PUBLIC_ENV === "development") {
-            router.replace("/onboard");
+            router.replace("/onboarding");
             return;
           }
           updateMFAData("challenge_id", res.challenge_id);
@@ -101,7 +101,7 @@ const LoginForm = () => {
       >
         <div className="flex justify-between gap-2 md:gap-6 items-center w-full">
           <Button
-            onClick={() => router.replace("/onboard")}
+            onClick={() => router.replace("/onboarding")}
             variant="secondary"
             size="lg"
             className="flex-1 min-w-0"

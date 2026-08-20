@@ -73,8 +73,9 @@ const Checkbox = ({ name, label, options, max, disabled }: CheckboxProps) => {
               onClick={() => (isOpen ? setIsOpen(false) : setIsOpen(true))}
               className={clsx(
                 "pr-13.75",
-                "w-full min-h-[3.18rem] mb-2 rounded-ml bg-[#F5F5FF] px-ml py-3 text-left text-[0.875rem] md:text-[1rem] disabled:bg-[#F6F3FDCC] disabled:cursor-not-allowed cursor-pointer",
+                "w-full min-h-[3.18rem] mb-2 rounded-ml bg-[#F5F5FF] px-ml py-3 text-left text-[0.875rem] md:text-[1rem] disabled:bg-[#F6F3FDCC] cursor-pointer disabled:cursor-not-allowed ",
                 selectedOptions.length > 0 && "bg-transparent",
+                isOpen && "outline-primary-500 outline-1",
                 error && "bg-[#FBD6D45C]"
               )}
             >

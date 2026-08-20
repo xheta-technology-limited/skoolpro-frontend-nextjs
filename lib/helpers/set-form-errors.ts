@@ -8,7 +8,16 @@ export function setFormErrors<T extends FieldValues>(
   Object.entries(errors).forEach(([field, message]) => {
     setError(field as FieldPath<T>, {
       type: "server",
-      message: message as string,
+      message: formattedMessage(message) as string,
     });
   });
 }
+
+const formattedMessage = (message: unknown) => {
+  const stringified = message as string[];
+  if (stringified[0].includes("required")) {
+    return "This field is required";
+  } else {
+    return stringified;
+  }
+};
