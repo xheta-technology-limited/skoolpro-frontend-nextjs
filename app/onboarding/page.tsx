@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Image from "next/image";
 import confetti from "canvas-confetti";
 import { AdmiralBlue11 } from "@/components/icons/logos";
@@ -101,7 +101,7 @@ const plans: PricingPlan[] = [
 
 export default function SubscriptionsPage() {
   const [step, setStep] = useState<
-   "school-profile" | "choose-plan" | "review" | "success"
+    "school-profile" | "choose-plan" | "review" | "success"
   >("school-profile");
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
     "monthly"
@@ -113,7 +113,6 @@ export default function SubscriptionsPage() {
   const [billingModalOpen, setBillingModalOpen] = useState(false);
   const [billingDetails, setBillingDetails] =
     useState<BillingDetailsFormValues | null>(null);
-  const billingDetailsSavedRef = useRef(false);
 
   const methods = useForm<SchoolProfileFormInput>({
     resolver: zodResolver(schoolProfileInputSchema),
@@ -152,7 +151,9 @@ export default function SubscriptionsPage() {
     if (!selectedPlan || !billingDetails) return;
     setStep("review");
   }
-  const { isPending: submitPending, mutate: submitMutate } = useOnboardSchool();
+
+  const { isPending: submitPending, mutate: submitMutate } =
+    useOnboardSchool();
 
   function handleContinueFromReview() {
     if (!schoolProfileData) {
@@ -169,30 +170,26 @@ export default function SubscriptionsPage() {
     });
   }
 
-  const { isPending: isPlansPending, data: plansData } = useGetPlans();
+  const {
+    isPending: isPlansPending,
+    isError: isPlansError,
+    data: plansData,
+    refetch: refetchPlans,
+  } = useGetPlans();
+
   useEffect(() => {
     console.log("plans data is: ", plansData);
   }, [plansData]);
+
   const selectedPlanData = plans.find((plan) => plan.name === selectedPlan);
 
-  const selectedPlanFromApi = plansData?.find((plan) => plan.key === selectedPlan);
+  const selectedPlanFromApi = plansData?.find(
+    (plan) => plan.key === selectedPlan
+  );
 
   function handleSelectPlan(planKey: string) {
-    billingDetailsSavedRef.current = false;
     setSelectedPlan(planKey);
     setBillingModalOpen(true);
-  }
-
-  function handleBillingModalChange(open: boolean) {
-    setBillingModalOpen(open);
-
-    if (!open && !billingDetailsSavedRef.current) {
-      setSelectedPlan(null);
-    }
-
-    if (!open) {
-      billingDetailsSavedRef.current = false;
-    }
   }
 
   const primaryCampus =
@@ -264,8 +261,23 @@ export default function SubscriptionsPage() {
               </div>
 
               {isPlansPending ? (
-                <div className="flex items-center justify-center h-[30vh] md:h-[50vh] w-full">
+                <div className="flex h-[30vh] w-full items-center justify-center md:h-[50vh]">
                   <Spinner size={50} />
+                </div>
+              ) : isPlansError ? (
+                <div className="flex min-h-[30vh] flex-col items-center justify-center gap-4 md:min-h-[50vh]">
+                  <p className="text-sm text-neutrals-500">
+                    Unable to load subscription plans.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => refetchPlans()}
+                    className="flex h-13.5 items-center justify-center rounded-[28px] bg-primary px-8 py-4"
+                  >
+                    <span className="text-[16px] font-normal leading-[1.2] text-white">
+                      Retry
+                    </span>
+                  </button>
                 </div>
               ) : (
                 <div className="mt-8.75 grid grid-cols-1 gap-8 lg:grid-cols-4">
@@ -283,13 +295,10 @@ export default function SubscriptionsPage() {
 
               <BillingDetailsModal
                 open={billingModalOpen}
-                onOpenChange={handleBillingModalChange}
+                onOpenChange={setBillingModalOpen}
                 planName={selectedPlanFromApi?.name ?? selectedPlan ?? ""}
                 defaultValues={billingDetails ?? undefined}
-                onSave={(data) => {
-                  billingDetailsSavedRef.current = true;
-                  setBillingDetails(data);
-                }}
+                onSave={(data) => setBillingDetails(data)}
               />
 
               <div className="mt-8 flex gap-6">
@@ -331,7 +340,8 @@ export default function SubscriptionsPage() {
                   fields={[
                     {
                       label: "School name",
-                      value: schoolProfileData?.school?.registered_name ?? "",
+                      value:
+                        schoolProfileData?.school?.registered_name ?? "",
                     },
                     {
                       label: "School type",
@@ -374,10 +384,14 @@ export default function SubscriptionsPage() {
                   title="Subscription"
                   onEdit={() => setStep("choose-plan")}
                   fields={[
-                    { label: "Plan", value: selectedPlanFromApi?.name ?? selectedPlan ?? "" },
+                    {
+                      label: "Plan",
+                      value: selectedPlanFromApi?.name ?? selectedPlan ?? "",
+                    },
                     {
                       label: "Billing",
-                      value: billingCycle === "monthly" ? "Monthly" : "Yearly",
+                      value:
+                        billingCycle === "monthly" ? "Monthly" : "Yearly",
                     },
                     { label: "Status", value: "Pending payment" },
                     {
@@ -438,10 +452,15 @@ export default function SubscriptionsPage() {
               <div className="flex w-full max-w-161.25 flex-col items-center gap-8">
                 <div className="flex w-full flex-col items-center gap-4">
                   <div className="flex h-25 w-25 items-center justify-center">
-                    <Image src="/success.png" alt="" width={100} height={100} />
+                    <Image
+                      src="/success.png"
+                      alt=""
+                      width={100}
+                      height={100}
+                    />
                   </div>
 
-                  <h2 className="text-center w-full max-w-full wrap-break-word text-[24px] font-semibold leading-[1.2] text-neutrals-900">
+                  <h2 className="wrap-break-word w-full max-w-full text-center text-[24px] font-semibold leading-[1.2] text-neutrals-900">
                     Onboarding started for{" "}
                     {schoolProfileData?.school?.registered_name ||
                       "this school"}
@@ -460,7 +479,7 @@ export default function SubscriptionsPage() {
                   </span>
                 </div>
 
-                <button className="flex h-13.5 w-66.75 items-center justify-center gap-2.5 rounded-[28px] bg-primary px-8 py-4">
+                <button className="flex h-13.5 w-66.75 items-center justify-center rounded-[28px] bg-primary px-8 py-4">
                   <span className="text-center text-[18px] font-normal leading-[1.2] text-base-white">
                     Proceed to Dashboard
                   </span>
