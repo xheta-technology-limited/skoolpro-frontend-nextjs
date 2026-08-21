@@ -21,12 +21,11 @@ import { Spinner } from "@/components/animations";
 export default function SubscriptionsPage() {
   const [step, setStep] = useState<
     "school-profile" | "choose-plan" | "success"
-  >("school-profile");
+  >("choose-plan");
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
     "monthly"
   );
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const [schoolID, setSchoolID] = useState("");
   const [schoolProfileData, setSchoolProfileData] =
     useState<SchoolProfileFormValues | null>(null);
 
@@ -43,11 +42,6 @@ export default function SubscriptionsPage() {
       });
     }
   }, [step]);
-
-  function handleContinueFromPlan() {
-    if (!selectedPlan || !billingDetails) return;
-    setStep("success");
-  }
 
   const {
     isPending: isPlansPending,
@@ -168,21 +162,22 @@ export default function SubscriptionsPage() {
               <BillingDetailsModal
                 open={billingModalOpen}
                 onOpenChange={setBillingModalOpen}
-                planName={selectedPlanFromApi?.name ?? selectedPlan ?? ""}
+                selectedPlan={selectedPlanFromApi!}
                 defaultValues={billingDetails ?? undefined}
+                setStep={() => setStep("success")}
                 onSave={(data) => setBillingDetails(data)}
               />
 
-              <div className="mt-8 flex gap-6">
+              <div className="mt-8 flex gap-6 justify-center">
                 <button
                   onClick={() => setStep("school-profile")}
-                  className="flex h-13.5 flex-1 items-center justify-center gap-2.5 rounded-[28px] border border-primary px-8 py-4"
+                  className="flex h-13.5 flex-1 max-w-80 items-center justify-center gap-2.5 rounded-[28px] border border-primary px-8 py-4"
                 >
                   <span className="text-[16px] font-normal leading-[1.2] text-primary">
                     Back
                   </span>
                 </button>
-                <button
+                {/* <button
                   onClick={handleContinueFromPlan}
                   disabled={!selectedPlan || !billingDetails}
                   className="group flex h-13.5 flex-1 items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-primary px-8 py-4 transition-colors disabled:cursor-not-allowed disabled:border-neutrals-300 disabled:bg-neutrals-300"
@@ -190,7 +185,7 @@ export default function SubscriptionsPage() {
                   <span className="text-[16px] font-normal leading-[1.2] text-white transition-colors">
                     Continue
                   </span>
-                </button>
+                </button> */}
               </div>
             </>
           )}
@@ -288,11 +283,11 @@ export default function SubscriptionsPage() {
                     },
                     {
                       label: "Billing contact",
-                      value: billingDetails?.billingContactName ?? "",
+                      value: billingDetails?.billing_contact_name ?? "",
                     },
                     {
                       label: "Billing email",
-                      value: billingDetails?.billingContactEmail ?? "",
+                      value: billingDetails?.billing_contact_email ?? "",
                     },
                   ]}
                 />

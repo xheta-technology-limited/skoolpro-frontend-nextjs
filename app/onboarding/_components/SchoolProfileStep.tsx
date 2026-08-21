@@ -36,6 +36,7 @@ import {
   emptyKeyContact,
 } from "./fields/constants";
 import CountrySelectField from "./fields/CountrySelectField";
+import { toast } from "sonner";
 
 export type { SchoolProfileFormValues };
 export {
@@ -51,10 +52,7 @@ interface SchoolProfileStepProps {
   onCancel?: () => void;
 }
 
-const SchoolProfileStep = ({
-  onSuccess,
-  onCancel,
-}: SchoolProfileStepProps) => {
+const SchoolProfileStep = ({ onSuccess, onCancel }: SchoolProfileStepProps) => {
   const methods = useForm<SchoolProfileFormInput>({
     resolver: zodResolver(schoolProfileInputSchema),
     defaultValues: {
@@ -123,6 +121,7 @@ const SchoolProfileStep = ({
     };
     mutate(output, {
       onSuccess: (response) => {
+        console.log("response is: ", response);
         setCreatedSchool(response);
         onSuccess(output);
       },
