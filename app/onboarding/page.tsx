@@ -9,103 +9,27 @@ import PricingCard, { PricingPlan } from "./_components/PricingCard";
 import Stepper from "./_components/Stepper";
 import DetailCard from "./_components/DetailCard";
 import BillingDetailsModal from "./_components/BillingDetailsModal";
-import type { BillingDetailsFormValues } from "@/features/auth/schemas";
+import type { BillingDetailsFormValues } from "@/features/onboarding/schemas/billing-details-schema";
 import SchoolProfileStep, {
   SchoolProfileFormValues,
   SCHOOL_TYPE_OPTIONS,
   OWNERSHIP_TYPE_OPTIONS,
 } from "./_components/SchoolProfileStep";
 import { useGetPlans } from "@/features/subscriptions/api/get-plans";
-import { useOnboardSchool } from "@/features/onboarding/api/api";
-import { Button } from "@/components/ui/custom-button";
 import { Spinner } from "@/components/animations";
-import { setFormErrors } from "@/lib/helpers/set-form-errors";
-import { useForm } from "react-hook-form";
-import {
-  SchoolProfileFormInput,
-  schoolProfileInputSchema,
-} from "@/features/onboarding/school-profile-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  emptyCampus,
-  emptyContact,
-  emptyKeyContact,
-  emptyRegistration,
-} from "./_components/fields/constants";
-
-function getOptionLabel(
-  options: { label: string; value: string }[],
-  value: string | undefined
-): string {
-  return options.find((o) => o.value === value)?.label ?? value ?? "";
-}
-
-const plans: PricingPlan[] = [
-  {
-    name: "Small School",
-    description: "Core academic modules for small schools",
-    monthlyPrice: 0,
-    yearlyPrice: 0,
-    stats: [
-      { label: "Students", value: "300" },
-      { label: "Staff", value: "40" },
-      { label: "Campuses", value: "1" },
-      { label: "Storage", value: "5 GB" },
-    ],
-    moduleCount: 5,
-    features: ["Admissions", "Attendance", "Exam", "Finance", "Communication"],
-  },
-  {
-    name: "Medium School",
-    description: "Core plus common operational modules for medium schools",
-    monthlyPrice: 0,
-    yearlyPrice: 0,
-    stats: [
-      { label: "Students", value: "300" },
-      { label: "Staff", value: "40" },
-      { label: "Campuses", value: "1" },
-      { label: "Storage", value: "5 GB" },
-    ],
-    moduleCount: 8,
-    features: ["Core", "Behaviour", "Library", "Transport"],
-  },
-  {
-    name: "Large School",
-    description: "Full operational suite for large or multi-campus schools",
-    monthlyPrice: 0,
-    yearlyPrice: 0,
-    stats: [
-      { label: "Students", value: "5000" },
-      { label: "Staff", value: "600" },
-      { label: "Campuses", value: "10" },
-      { label: "Storage", value: "100 GB" },
-    ],
-    moduleCount: 12,
-    features: ["All core", "Inventory", "Hostel", "Health", "HR & payroll"],
-  },
-  {
-    name: "Enterprise",
-    description: "All modules, unlimited scale, negotiated terms",
-    monthlyPrice: 0,
-    yearlyPrice: 0,
-    stats: [
-      { label: "Students", value: "Unlimited" },
-      { label: "Staff", value: "Unlimited" },
-      { label: "Campuses", value: "Unlimited" },
-      { label: "Storage", value: "Unlimited" },
-    ],
-    moduleCount: 12,
-    features: ["Everything in Large"],
-  },
-];
+import { useSubscriptionStore } from "@/features/subscriptions/subscription-store";
 
 export default function SubscriptionsPage() {
   const [step, setStep] = useState<
-    "school-profile" | "choose-plan" | "review" | "success"
+    "school-profile" | "choose-plan" | "success"
   >("school-profile");
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
     "monthly"
   );
+  const createdSchoolReference = useSubscriptionStore(
+    (s) => s.created_school?.reference_number
+  );
+  const clearStore = useSubscriptionStore((s) => s.clearCreatedSchool);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [schoolProfileData, setSchoolProfileData] =
     useState<SchoolProfileFormValues | null>(null);
@@ -113,29 +37,6 @@ export default function SubscriptionsPage() {
   const [billingModalOpen, setBillingModalOpen] = useState(false);
   const [billingDetails, setBillingDetails] =
     useState<BillingDetailsFormValues | null>(null);
-
-  const methods = useForm<SchoolProfileFormInput>({
-    resolver: zodResolver(schoolProfileInputSchema),
-    defaultValues: {
-      ...schoolProfileData,
-      school: schoolProfileData?.school
-        ? {
-            ...schoolProfileData.school,
-            education_authorities: Array.isArray(
-              schoolProfileData.school.education_authorities
-            )
-              ? schoolProfileData.school.education_authorities.join(", ")
-              : schoolProfileData.school.education_authorities ?? "",
-          }
-        : undefined,
-      registration_numbers: schoolProfileData?.registration_numbers ?? [
-        emptyRegistration,
-      ],
-      campuses: schoolProfileData?.campuses ?? [emptyCampus],
-      contacts: schoolProfileData?.contacts ?? [emptyContact],
-      key_contacts: schoolProfileData?.key_contacts ?? [emptyKeyContact],
-    },
-  });
 
   useEffect(() => {
     if (step === "success") {
@@ -147,41 +48,12 @@ export default function SubscriptionsPage() {
     }
   }, [step]);
 
-  function handleContinueFromPlan() {
-    if (!selectedPlan || !billingDetails) return;
-    setStep("review");
-  }
-
-  const { isPending: submitPending, mutate: submitMutate } =
-    useOnboardSchool();
-
-  function handleContinueFromReview() {
-    if (!schoolProfileData) {
-      console.log("SchoolProfileData is null");
-      return;
-    }
-    submitMutate(schoolProfileData, {
-      onSuccess: () => setStep("success"),
-      onError: (res) => {
-        if (res.errors) {
-          setFormErrors(methods.setError, res.errors);
-        }
-      },
-    });
-  }
-
   const {
     isPending: isPlansPending,
     isError: isPlansError,
     data: plansData,
     refetch: refetchPlans,
   } = useGetPlans();
-
-  useEffect(() => {
-    console.log("plans data is: ", plansData);
-  }, [plansData]);
-
-  const selectedPlanData = plans.find((plan) => plan.name === selectedPlan);
 
   const selectedPlanFromApi = plansData?.find(
     (plan) => plan.key === selectedPlan
@@ -221,8 +93,7 @@ export default function SubscriptionsPage() {
           {step === "school-profile" && (
             <Suspense fallback={<div>Loading...</div>}>
               <SchoolProfileStep
-                methods={methods}
-                onContinue={(data) => {
+                onSuccess={(data) => {
                   setSchoolProfileData(data);
                   setStep("choose-plan");
                 }}
@@ -296,21 +167,22 @@ export default function SubscriptionsPage() {
               <BillingDetailsModal
                 open={billingModalOpen}
                 onOpenChange={setBillingModalOpen}
-                planName={selectedPlanFromApi?.name ?? selectedPlan ?? ""}
+                selectedPlan={selectedPlanFromApi!}
                 defaultValues={billingDetails ?? undefined}
+                setStep={() => setStep("success")}
                 onSave={(data) => setBillingDetails(data)}
               />
 
-              <div className="mt-8 flex gap-6">
+              <div className="mt-8 flex gap-6 justify-center">
                 <button
                   onClick={() => setStep("school-profile")}
-                  className="flex h-13.5 flex-1 items-center justify-center gap-2.5 rounded-[28px] border border-primary px-8 py-4"
+                  className="flex h-13.5 flex-1 max-w-80 items-center justify-center gap-2.5 rounded-[28px] border border-primary px-8 py-4"
                 >
                   <span className="text-[16px] font-normal leading-[1.2] text-primary">
                     Back
                   </span>
                 </button>
-                <button
+                {/* <button
                   onClick={handleContinueFromPlan}
                   disabled={!selectedPlan || !billingDetails}
                   className="group flex h-13.5 flex-1 items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-primary px-8 py-4 transition-colors disabled:cursor-not-allowed disabled:border-neutrals-300 disabled:bg-neutrals-300"
@@ -318,12 +190,12 @@ export default function SubscriptionsPage() {
                   <span className="text-[16px] font-normal leading-[1.2] text-white transition-colors">
                     Continue
                   </span>
-                </button>
+                </button> */}
               </div>
             </>
           )}
 
-          {step === "review" && (
+          {/* {step === "review" && (
             <>
               <h2 className="text-lg font-semibold text-neutrals-900">
                 Review and Confirm
@@ -416,11 +288,11 @@ export default function SubscriptionsPage() {
                     },
                     {
                       label: "Billing contact",
-                      value: billingDetails?.billingContactName ?? "",
+                      value: billingDetails?.billing_contact_name ?? "",
                     },
                     {
                       label: "Billing email",
-                      value: billingDetails?.billingContactEmail ?? "",
+                      value: billingDetails?.billing_contact_email ?? "",
                     },
                   ]}
                 />
@@ -445,19 +317,14 @@ export default function SubscriptionsPage() {
                 </Button>
               </div>
             </>
-          )}
+          )} */}
 
           {step === "success" && (
             <div className="flex min-h-119.75 flex-col items-center justify-center px-6 py-12">
               <div className="flex w-full max-w-161.25 flex-col items-center gap-8">
                 <div className="flex w-full flex-col items-center gap-4">
                   <div className="flex h-25 w-25 items-center justify-center">
-                    <Image
-                      src="/success.png"
-                      alt=""
-                      width={100}
-                      height={100}
-                    />
+                    <Image src="/success.png" alt="" width={100} height={100} />
                   </div>
 
                   <h2 className="wrap-break-word w-full max-w-full text-center text-[24px] font-semibold leading-[1.2] text-neutrals-900">
@@ -475,11 +342,17 @@ export default function SubscriptionsPage() {
 
                 <div className="flex h-9.5 w-66 items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-[#F5F5FF] px-4 py-2">
                   <span className="whitespace-nowrap text-center text-[18px] font-normal leading-[1.2] text-primary">
-                    Reference K-NR-924-0124
+                    Reference {createdSchoolReference}
                   </span>
                 </div>
 
-                <button className="flex h-13.5 w-66.75 items-center justify-center rounded-[28px] bg-primary px-8 py-4">
+                <button
+                  className="flex h-13.5 w-66.75 items-center justify-center rounded-[28px] bg-primary px-8 py-4"
+                  onClick={() => {
+                    //TODO: clear Store and navigate to the dashboard
+                    clearStore();
+                  }}
+                >
                   <span className="text-center text-[18px] font-normal leading-[1.2] text-base-white">
                     Proceed to Dashboard
                   </span>
