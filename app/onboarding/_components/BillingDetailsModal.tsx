@@ -150,8 +150,8 @@ const BillingDetailsModal = ({
                     />
 
                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                      <DatePicker name="start_date" label="Start date" />
-                      <DatePicker name="end_date" label="End date" />
+                      <DatePicker name="starts_on" label="Start date" />
+                      <DatePicker name="ends_on" label="End date" />
                     </div>
 
                     <Select
