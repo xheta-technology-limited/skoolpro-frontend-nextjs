@@ -1,6 +1,8 @@
 export type CreateSubscriptionRequest = {
   plan_key: string;
   status: string;
+  starts_on: string;
+  ends_on: string;
   billing_frequency: string;
   billing_contact_name: string;
   billing_contact_email: string;
@@ -17,8 +19,8 @@ export interface CreateSubscriptionResponse {
   plan: string;
   plan_key: string;
   status: string;
-  starts_on: string | null;
-  ends_on: string | null;
+  starts_on: string;
+  ends_on: string;
   billing_frequency: string;
   payment_status: string;
   billing_contact_name: string;

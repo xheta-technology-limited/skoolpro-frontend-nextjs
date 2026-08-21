@@ -9,7 +9,7 @@ import PricingCard, { PricingPlan } from "./_components/PricingCard";
 import Stepper from "./_components/Stepper";
 import DetailCard from "./_components/DetailCard";
 import BillingDetailsModal from "./_components/BillingDetailsModal";
-import type { BillingDetailsFormValues } from "@/features/auth/schemas";
+import type { BillingDetailsFormValues } from "@/features/onboarding/schemas/billing-details-schema";
 import SchoolProfileStep, {
   SchoolProfileFormValues,
   SCHOOL_TYPE_OPTIONS,
