@@ -29,6 +29,7 @@ export default function SubscriptionsPage() {
   const createdSchoolReference = useSubscriptionStore(
     (s) => s.created_school?.reference_number
   );
+  const clearStore = useSubscriptionStore((s) => s.clearCreatedSchool);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [schoolProfileData, setSchoolProfileData] =
     useState<SchoolProfileFormValues | null>(null);
@@ -345,7 +346,13 @@ export default function SubscriptionsPage() {
                   </span>
                 </div>
 
-                <button className="flex h-13.5 w-66.75 items-center justify-center rounded-[28px] bg-primary px-8 py-4">
+                <button
+                  className="flex h-13.5 w-66.75 items-center justify-center rounded-[28px] bg-primary px-8 py-4"
+                  onClick={() => {
+                    //TODO: clear Store and navigate to the dashboard
+                    clearStore();
+                  }}
+                >
                   <span className="text-center text-[18px] font-normal leading-[1.2] text-base-white">
                     Proceed to Dashboard
                   </span>

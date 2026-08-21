@@ -121,7 +121,6 @@ const SchoolProfileStep = ({ onSuccess, onCancel }: SchoolProfileStepProps) => {
     };
     mutate(output, {
       onSuccess: (response) => {
-        console.log("response is: ", response);
         setCreatedSchool(response);
         onSuccess(output);
       },

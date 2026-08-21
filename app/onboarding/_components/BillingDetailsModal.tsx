@@ -85,6 +85,9 @@ const BillingDetailsModal = ({
   const { mutate, isPending } = useCreateSubscription();
 
   const onSubmit = (data: BillingDetailsFormValues) => {
+    if (!createdSchoolID) {
+      throw new Error("School ID missing");
+    }
     mutate(
       {
         payload: { ...data, plan_key: selectedPlan.key },
@@ -105,11 +108,6 @@ const BillingDetailsModal = ({
     );
   };
 
-  useEffect(() => {
-    if (!createdSchoolID) {
-      throw new Error("School ID missing for subscription details!");
-    }
-  }, [createdSchoolID]);
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
