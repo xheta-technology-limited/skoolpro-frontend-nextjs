@@ -16,7 +16,7 @@ export const getSpinnerSize = (size: string | undefined) => {
   if (size === "sm" || size === "md") {
     spinnerSize = 16;
   }
-  if (size === "lg") {
+  if (size === "lg" || size === undefined) {
     spinnerSize = 24;
   }
   return spinnerSize;
