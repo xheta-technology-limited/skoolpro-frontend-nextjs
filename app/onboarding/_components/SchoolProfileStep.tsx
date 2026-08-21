@@ -1,12 +1,18 @@
 "use client";
 
 import { useEffect } from "react";
-import { useFieldArray, FormProvider, type UseFormReturn } from "react-hook-form";
+import { useFieldArray, FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { AddSquare, Trash } from "iconsax-reactjs";
 import {
   type SchoolProfileFormInput,
+  type SchoolProfileFormValues,
+  schoolProfileInputSchema,
 } from "@/features/onboarding/school-profile-schema";
-import { type SchoolProfileFormValues } from "@/features/onboarding/school-profile-schema";
+import { useOnboardSchool } from "@/features/onboarding/api/api";
+import { setFormErrors } from "@/lib/helpers/set-form-errors";
+import { Button } from "@/components/ui/custom-button";
+import { useSubscriptionStore } from "@/features/subscriptions/subscription-store";
 import {
   Input,
   Select,
@@ -30,6 +36,7 @@ import {
   emptyKeyContact,
 } from "./fields/constants";
 import CountrySelectField from "./fields/CountrySelectField";
+import { toast } from "sonner";
 
 export type { SchoolProfileFormValues };
 export {
@@ -41,16 +48,23 @@ export {
 } from "./fields/constants";
 
 interface SchoolProfileStepProps {
-  methods: UseFormReturn<SchoolProfileFormInput>;
-  onContinue: (data: SchoolProfileFormValues) => void;
+  onSuccess: (data: SchoolProfileFormValues) => void;
   onCancel?: () => void;
 }
 
-const SchoolProfileStep = ({
-  methods,
-  onContinue,
-  onCancel,
-}: SchoolProfileStepProps) => {
+const SchoolProfileStep = ({ onSuccess, onCancel }: SchoolProfileStepProps) => {
+  const methods = useForm<SchoolProfileFormInput>({
+    resolver: zodResolver(schoolProfileInputSchema),
+    defaultValues: {
+      registration_numbers: [emptyRegistration],
+      campuses: [emptyCampus],
+      contacts: [emptyContact],
+      key_contacts: [emptyKeyContact],
+    },
+  });
+
+  const { isPending, mutate } = useOnboardSchool();
+  const setCreatedSchool = useSubscriptionStore((s) => s.setCreatedSchool);
 
   const { handleSubmit, watch, setValue, control } = methods;
 
@@ -105,7 +119,17 @@ const SchoolProfileStep = ({
           : undefined,
       },
     };
-    onContinue(output);
+    mutate(output, {
+      onSuccess: (response) => {
+        setCreatedSchool(response);
+        onSuccess(output);
+      },
+      onError: (res) => {
+        if (res.errors) {
+          setFormErrors(methods.setError, res.errors);
+        }
+      },
+    });
   };
 
   return (
@@ -423,14 +447,14 @@ const SchoolProfileStep = ({
               Cancel
             </span>
           </button>
-          <button
+          <Button
             type="submit"
-            className="flex h-13.5 flex-1 items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-primary px-8 py-4"
+            loading={isPending}
+            className="flex-1"
+            size="lg"
           >
-            <span className="text-[16px] font-normal leading-[1.2] text-white">
-              Continue
-            </span>
-          </button>
+            Continue
+          </Button>
         </div>
       </form>
     </FormProvider>
