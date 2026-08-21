@@ -3,8 +3,8 @@ import { requiredString, emailString } from "@/lib/utils/zod-schemas";
 
 export const billingDetailsSchema = z.object({
   status: requiredString,
-  start_date: z.string().optional(),
-  end_date: z.string().optional(),
+  starts_on: requiredString,
+  ends_on: requiredString,
   billing_frequency: requiredString,
   payment_status: requiredString,
   billing_contact_name: requiredString,

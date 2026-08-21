@@ -7,7 +7,7 @@ import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import {
   billingDetailsSchema,
   type BillingDetailsFormValues,
-} from "@/features/auth/schemas";
+} from "@/features/onboarding/schemas/billing-details-schema";
 import { Input, Select, DatePicker } from "@/components/ui/form";
 import { CloseSquare } from "iconsax-reactjs";
 import { SchoolPlan } from "@/features/subscriptions/types/types";
@@ -64,8 +64,8 @@ const BillingDetailsModal = ({
     resolver: zodResolver(billingDetailsSchema),
     defaultValues: {
       status: "",
-      start_date: "",
-      end_date: "",
+      starts_on: "",
+      ends_on: "",
       billing_frequency: "",
       payment_status: "",
       billing_contact_name: "",
