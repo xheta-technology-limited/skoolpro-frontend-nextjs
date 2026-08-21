@@ -17,6 +17,7 @@ import SchoolProfileStep, {
 } from "./_components/SchoolProfileStep";
 import { useGetPlans } from "@/features/subscriptions/api/get-plans";
 import { Spinner } from "@/components/animations";
+import { useSubscriptionStore } from "@/features/subscriptions/subscription-store";
 
 export default function SubscriptionsPage() {
   const [step, setStep] = useState<
@@ -24,6 +25,9 @@ export default function SubscriptionsPage() {
   >("school-profile");
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
     "monthly"
+  );
+  const createdSchoolReference = useSubscriptionStore(
+    (s) => s.created_school?.reference_number
   );
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [schoolProfileData, setSchoolProfileData] =
@@ -337,7 +341,7 @@ export default function SubscriptionsPage() {
 
                 <div className="flex h-9.5 w-66 items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-[#F5F5FF] px-4 py-2">
                   <span className="whitespace-nowrap text-center text-[18px] font-normal leading-[1.2] text-primary">
-                    Reference K-NR-924-0124
+                    Reference {createdSchoolReference}
                   </span>
                 </div>
 

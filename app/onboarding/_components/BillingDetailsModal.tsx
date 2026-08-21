@@ -82,7 +82,6 @@ const BillingDetailsModal = ({
   const createdSchoolID = useSubscriptionStore(
     (s) => s.created_school?.school_id
   );
-  const createdSchool = useSubscriptionStore((s) => s.created_school);
   const { mutate, isPending } = useCreateSubscription();
 
   const onSubmit = (data: BillingDetailsFormValues) => {
