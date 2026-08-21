@@ -21,7 +21,7 @@ import { Spinner } from "@/components/animations";
 export default function SubscriptionsPage() {
   const [step, setStep] = useState<
     "school-profile" | "choose-plan" | "success"
-  >("choose-plan");
+  >("school-profile");
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
     "monthly"
   );
