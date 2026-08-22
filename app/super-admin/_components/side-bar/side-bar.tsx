@@ -83,11 +83,11 @@ function NavItem({
   );
 
   const rowClasses = cn(
-    "flex w-full items-center text-neutrals-800 gap-3 rounded-xl px-4 py-3 transition-colors",
+    "flex w-full items-center text-foreground gap-3 rounded-xl px-4 py-3 transition-colors",
     depth > 0 && "pl-10",
     isActive
-      ? "bg-[#F5F5FF] text-primary rounded-bl-[16px] rounded-tl-[16px] shadow-[-3px_0px_0px_0px_theme(colors.primary)]"
-      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+      ? "bg-[#F5F5FF] text-primary rounded-bl-ml rounded-tl-ml shadow-[-3px_0px_0px_0px_var(--color-primary)]"
+      : "hover:bg-muted"
   );
 
   if (isLogout) {
