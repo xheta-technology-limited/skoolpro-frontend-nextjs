@@ -1,4 +1,5 @@
-import { StatusBar } from "./_components";
+import { AdminSideBar, StatusBar } from "./_components";
+import SuperAdminProviders from "./providers";
 
 export default function Layout({
   children,
@@ -7,8 +8,14 @@ export default function Layout({
 }>) {
   return (
     <div>
-      <StatusBar />
-      {children}
+      <SuperAdminProviders>
+        <AdminSideBar />
+
+        <main className="w-full">
+          <StatusBar />
+          <div>{children}</div>
+        </main>
+      </SuperAdminProviders>
     </div>
   );
 }

@@ -5,6 +5,7 @@ export type DashboardNavigationItem = {
   href: string;
   icon: ElementType | null;
   children?: DashboardNavigationItem[];
+  keywords?: string[];
 };
 
 export const dashboardNavigation: DashboardNavigationItem[] = [
