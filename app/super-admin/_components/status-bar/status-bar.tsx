@@ -6,16 +6,20 @@ import { useUserStore } from "@/features/user/user.store";
 import { getNameInitials } from "@/lib/helpers/get-name-initials";
 import { titleCase } from "@/lib/helpers/string-to-title-case";
 import { Notification } from "iconsax-reactjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function StatusBar() {
   const [searchValue, setSearchValue] = useState("");
   const userData = useUserStore((s) => s.data);
-  const userName = `${userData.first_name} ${userData.last_name}`;
+  const userName = `${userData.first_name}`;
+
+  useEffect(() => {
+    console.log(userData);
+  }, [userData]);
   return (
-    <div className="flex py-4 items-center justify-between bg-white">
-      <div>
-        <Input search name="" value={searchValue} />
+    <div className="flex py-4 items-center justify-end md:justify-between bg-white pl-12 pr-12 md:pr-20">
+      <div className="hidden md:block">
+        <Input label="Search by name" search name="" value={searchValue} />
       </div>
       <div className="flex items-center ">
         <div className="pr-6 border-r border-r-grays-borders mr-6">
@@ -27,7 +31,11 @@ export default function StatusBar() {
             <AvatarFallback>{getNameInitials(userName)}</AvatarFallback>
           </Avatar>
 
-          <Text scale={"content"} weight={"standard"}>
+          <Text
+            className="hidden md:block"
+            scale={"content"}
+            weight={"standard"}
+          >
             {userName}
           </Text>
         </div>
