@@ -17,23 +17,12 @@ export interface PricingPlan {
 
 interface PricingCardProps {
   plan: SchoolPlan;
-  billingCycle: "monthly" | "yearly";
   isSelected: boolean;
   onSelectPlan: (planKey: string) => void;
 }
 
-const dummyMonthlyPrice = 0;
-const dummyYearlyPrice = 12;
-
-const PricingCard = ({
-  plan,
-  billingCycle,
-  isSelected,
-  onSelectPlan,
-}: PricingCardProps) => {
+const PricingCard = ({ plan, isSelected, onSelectPlan }: PricingCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const price =
-    billingCycle === "monthly" ? dummyMonthlyPrice : dummyYearlyPrice;
 
   return (
     <div
@@ -43,22 +32,11 @@ const PricingCard = ({
           : "border-transparent bg-base-white"
       }`}
     >
-      {/* header: plan name, price, billed text, description */}
+      {/* header: plan name, description */}
       <div className="flex flex-col gap-4 px-6 pt-8 pb-8">
         <h3 className="text-[16px] font-semibold leading-[1.2] text-neutrals-900">
           {plan.name}
         </h3>
-
-        <div className="flex items-center gap-2">
-          <span className="text-[40px] font-bold leading-[1.2] text-neutrals-900">
-            ${price}
-          </span>
-          <span className="text-[12px] font-normal leading-[1.2] text-neutrals-400">
-            per/month
-            <br />
-            billed {billingCycle}
-          </span>
-        </div>
 
         <p className="text-[14px] font-normal leading-[1.2] text-neutrals-900">
           {plan.description}

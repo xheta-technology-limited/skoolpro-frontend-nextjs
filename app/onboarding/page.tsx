@@ -4,7 +4,6 @@ import { Suspense, useEffect, useState } from "react";
 import Image from "next/image";
 import confetti from "canvas-confetti";
 import { AdmiralBlue11 } from "@/components/icons/logos";
-import BillingToggle from "./_components/BillingToggle";
 import PricingCard, { PricingPlan } from "./_components/PricingCard";
 import Stepper from "./_components/Stepper";
 import DetailCard from "./_components/DetailCard";
@@ -23,9 +22,6 @@ export default function SubscriptionsPage() {
   const [step, setStep] = useState<
     "school-profile" | "choose-plan" | "success"
   >("school-profile");
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">(
-    "monthly"
-  );
   const createdSchoolReference = useSubscriptionStore(
     (s) => s.created_school?.reference_number
   );
@@ -113,22 +109,6 @@ export default function SubscriptionsPage() {
                     continue.
                   </p>
                 </div>
-
-                <div className="hidden lg:block">
-                  <BillingToggle
-                    billingCycle={billingCycle}
-                    onChange={setBillingCycle}
-                  />
-                </div>
-              </div>
-
-              <div className="sticky top-0 z-20 mt-4 bg-white/95 px-4 py-4 backdrop-blur-sm lg:hidden">
-                <div className="flex justify-center">
-                  <BillingToggle
-                    billingCycle={billingCycle}
-                    onChange={setBillingCycle}
-                  />
-                </div>
               </div>
 
               {isPlansPending ? (
@@ -156,7 +136,6 @@ export default function SubscriptionsPage() {
                     <PricingCard
                       key={plan.key}
                       plan={plan}
-                      billingCycle={billingCycle}
                       isSelected={selectedPlan === plan.key}
                       onSelectPlan={handleSelectPlan}
                     />
@@ -182,142 +161,9 @@ export default function SubscriptionsPage() {
                     Back
                   </span>
                 </button>
-                {/* <button
-                  onClick={handleContinueFromPlan}
-                  disabled={!selectedPlan || !billingDetails}
-                  className="group flex h-13.5 flex-1 items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-primary px-8 py-4 transition-colors disabled:cursor-not-allowed disabled:border-neutrals-300 disabled:bg-neutrals-300"
-                >
-                  <span className="text-[16px] font-normal leading-[1.2] text-white transition-colors">
-                    Continue
-                  </span>
-                </button> */}
               </div>
             </>
           )}
-
-          {/* {step === "review" && (
-            <>
-              <h2 className="text-lg font-semibold text-neutrals-900">
-                Review and Confirm
-              </h2>
-              <p className="text-sm text-neutrals-500">
-                Confirm the subscription before it&apos;s created for{" "}
-                {schoolProfileData?.school?.registered_name || "this school"}.
-              </p>
-
-              <div className="mt-4 grid grid-cols-1 gap-8 lg:grid-cols-2">
-                <DetailCard
-                  title="School details"
-                  onEdit={() => setStep("school-profile")}
-                  fields={[
-                    {
-                      label: "School name",
-                      value:
-                        schoolProfileData?.school?.registered_name ?? "",
-                    },
-                    {
-                      label: "School type",
-                      value:
-                        schoolProfileData?.type_slugs
-                          ?.map((t) => getOptionLabel(SCHOOL_TYPE_OPTIONS, t))
-                          .join(", ") ?? "",
-                    },
-                    {
-                      label: "Ownership type",
-                      value: getOptionLabel(
-                        OWNERSHIP_TYPE_OPTIONS,
-                        schoolProfileData?.school?.ownership_type
-                      ),
-                    },
-                    {
-                      label: "Primary contact",
-                      value: primaryContact?.label ?? "",
-                    },
-                    {
-                      label: "Registration number",
-                      value: firstRegistration?.number ?? "",
-                    },
-                    {
-                      label: "School address",
-                      value: primaryCampus?.address_line_1 ?? "",
-                    },
-                    {
-                      label: "Email",
-                      value: emailContact?.value ?? "Not provided",
-                    },
-                    {
-                      label: "Phone number",
-                      value: phoneContact?.value ?? "Not provided",
-                    },
-                  ]}
-                />
-
-                <DetailCard
-                  title="Subscription"
-                  onEdit={() => setStep("choose-plan")}
-                  fields={[
-                    {
-                      label: "Plan",
-                      value: selectedPlanFromApi?.name ?? selectedPlan ?? "",
-                    },
-                    {
-                      label: "Billing",
-                      value:
-                        billingCycle === "monthly" ? "Monthly" : "Yearly",
-                    },
-                    { label: "Status", value: "Pending payment" },
-                    {
-                      label: "Students",
-                      value: selectedPlanData?.stats[0]?.value ?? "",
-                    },
-                    {
-                      label: "Staff",
-                      value: selectedPlanData?.stats[1]?.value ?? "",
-                    },
-                    {
-                      label: "Campuses",
-                      value: selectedPlanData?.stats[2]?.value ?? "",
-                    },
-                    {
-                      label: "Storage",
-                      value: selectedPlanData?.stats[3]?.value ?? "",
-                    },
-                    {
-                      label: "Modules",
-                      value: String(selectedPlanData?.moduleCount ?? ""),
-                    },
-                    {
-                      label: "Billing contact",
-                      value: billingDetails?.billing_contact_name ?? "",
-                    },
-                    {
-                      label: "Billing email",
-                      value: billingDetails?.billing_contact_email ?? "",
-                    },
-                  ]}
-                />
-              </div>
-
-              <div className="mt-8 flex gap-6">
-                <button
-                  onClick={() => setStep("choose-plan")}
-                  className="flex h-13.5 flex-1 items-center justify-center gap-2.5 rounded-[28px] border border-primary px-8 py-4"
-                >
-                  <span className="text-[16px] font-normal leading-[1.2] text-primary">
-                    Back
-                  </span>
-                </button>
-                <Button
-                  className="flex-1"
-                  onClick={handleContinueFromReview}
-                  loading={submitPending}
-                  size="lg"
-                >
-                  Continue
-                </Button>
-              </div>
-            </>
-          )} */}
 
           {step === "success" && (
             <div className="flex min-h-119.75 flex-col items-center justify-center px-6 py-12">
