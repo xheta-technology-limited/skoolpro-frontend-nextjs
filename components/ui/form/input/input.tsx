@@ -32,12 +32,26 @@ const Input = ({
   ...props
 }: InputProps) => {
   const isControlled = value !== undefined;
-  const {
-    register,
-    formState: { errors },
-  } = useFormContext();
-  const error = get(errors, name)?.message as string | undefined;
-  const fieldProps = isControlled ? { name, value, onChange } : register(name);
+
+  // Hooks must always be called in the same order, so we call this
+  // unconditionally — but we only ever *use* its output below when
+  // the component is uncontrolled. This also means the component no
+  // longer requires a FormProvider ancestor when used as controlled.
+  const formContext = useFormContext();
+
+  const error = !isControlled
+    ? (get(formContext?.formState?.errors, name)?.message as string | undefined)
+    : undefined;
+
+  const fieldProps = isControlled
+    ? { name, value, onChange }
+    : formContext?.register
+    ? formContext.register(name)
+    : { name, value, onChange };
+
+  const hasUnauthorizedServerError =
+    !isControlled &&
+    formContext?.formState?.errors?.root?.serverError?.type === "unauthorized";
 
   const [isPasswordShown, setPasswordShown] = useState(false);
   const isPasswordType = props.type === "password" && !isPasswordShown;
@@ -108,7 +122,7 @@ const Input = ({
           <span className="ml-2 text-xs text-[#C03744]">{error}</span>
         </div>
       )}
-      {errors.root?.serverError?.type === "unauthorized" && (
+      {hasUnauthorizedServerError && (
         <div className="flex">
           <XIcon size={16} color="#C03744" />{" "}
           <span className="ml-2 text-xs text-[#C03744]">
