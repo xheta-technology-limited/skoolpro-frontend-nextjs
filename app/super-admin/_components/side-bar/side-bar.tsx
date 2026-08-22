@@ -12,6 +12,7 @@ import {
 import { getNavIcon } from "./utils";
 import Image from "next/image";
 import { AdmiralBlue11 } from "@/components/icons/logos";
+import { Text } from "@/components/ui";
 
 type DashboardSidebarProps = {
   items?: DashboardNavigationItem[];
@@ -82,14 +83,13 @@ function NavItem({
   );
 
   const rowClasses = cn(
-    "flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors",
+    "flex w-full items-center text-neutrals-800 gap-3 rounded-xl px-4 py-3 transition-colors",
     depth > 0 && "pl-10",
     isActive
-      ? "bg-primary/10 text-primary"
+      ? "bg-[#F5F5FF] text-primary rounded-bl-[16px] rounded-tl-[16px] shadow-[-3px_0px_0px_0px_theme(colors.primary)]"
       : "text-muted-foreground hover:bg-muted hover:text-foreground"
   );
 
-  // Logout: a button, not a link (empty href), delegates to onLogout
   if (isLogout) {
     return (
       <li>
@@ -101,7 +101,6 @@ function NavItem({
     );
   }
 
-  // Parent item with children: expand/collapse, no navigation itself
   if (hasChildren) {
     return (
       <li>
@@ -141,8 +140,14 @@ function NavItem({
   return (
     <li>
       <Link href={item.href} className={rowClasses}>
-        <Icon className="h-6 w-6 shrink-0" />
-        <span className="truncate">{item.label}</span>
+        <Icon className="shrink-0" />
+        <Text
+          className="truncate"
+          weight={isActive ? "accent" : "standard"}
+          scale={"caption"}
+        >
+          {item.label}
+        </Text>
       </Link>
     </li>
   );

@@ -11,7 +11,7 @@ export type DashboardNavigationItem = {
 export const dashboardNavigation: DashboardNavigationItem[] = [
   {
     label: "Dashboard",
-    href: "/dashboard",
+    href: "/super-admin/dashboard",
     icon: null,
   },
   {
@@ -56,7 +56,7 @@ export const dashboardNavigation: DashboardNavigationItem[] = [
   },
   {
     label: "School Onboarding",
-    href: "/dashboard/onboarding",
+    href: "/super-admin/school-onboarding",
     icon: null,
   },
   {
