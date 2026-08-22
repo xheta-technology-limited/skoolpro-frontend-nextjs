@@ -33,6 +33,7 @@ const LoginForm = () => {
   const { mutate, isPending } = useLogin();
   const updateMFAData = useAuth((state) => state.updateData);
   const updateUserData = useUserStore((state) => state.updateData);
+  const userData = useUserStore((s) => s.data);
 
   const onSubmit = (data: loginForm) => {
     mutate(data, {
@@ -48,7 +49,6 @@ const LoginForm = () => {
           "mfa_enabled" in res &&
             res.mfa_enabled === false &&
             setModalOpen(true);
-          navigateOnLogin(res.active_role, router);
         }
       },
       onError: (res) => {
@@ -101,7 +101,7 @@ const LoginForm = () => {
       >
         <div className="flex justify-between gap-2 md:gap-6 items-center w-full">
           <Button
-            onClick={() => router.replace("/onboarding")}
+            onClick={() => navigateOnLogin(userData?.active_role || "", router)}
             variant="secondary"
             size="lg"
             className="flex-1 min-w-0"
