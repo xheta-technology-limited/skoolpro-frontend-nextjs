@@ -66,24 +66,40 @@ function NavItem({
   depth?: number;
 }) {
   const Icon = getNavIcon(item.icon, item.href);
-  const hasChildren = !!item.children?.length;
   const isLogout = item.href === "";
 
   const isActive =
     !isLogout &&
-    !hasChildren &&
     (pathname === item.href ||
       (item.href !== "/dashboard" && pathname.startsWith(item.href + "/")));
 
-  const [open, setOpen] = React.useState(
-    () => hasChildren && item.children!.some((c) => pathname.startsWith(c.href))
-  );
-
   const rowClasses = cn(
-    "flex w-full items-center text-foreground gap-3 px-4 py-3 transition-colors",
+    "relative flex w-full items-center text-foreground gap-3 px-4 py-3 transition-all",
     depth > 0 && "pl-10",
     isActive
-      ? "bg-[#F5F5FF] text-primary rounded-bl-ml rounded-tl-ml shadow-[-3px_0px_0px_0px_var(--color-primary)]"
+      ? [
+          "bg-primary-bg relative text-primary rounded-bl-ml rounded-tl-ml shadow-[-3px_0px_0px_0px_var(--color-primary)]",
+
+          "before:content-['']",
+          "before:absolute",
+          "before:bg-transparent",
+          "before:bottom-full",
+          "before:right-0",
+          "before:h-8.75",
+          "before:w-8",
+          "before:rounded-br-[18px]",
+          "before:shadow-[0_20px_0_0_#f5f5ff]",
+
+          "after:content-['']",
+          "after:absolute",
+          "after:bg-transparent",
+          "after:top-full",
+          "after:right-0",
+          "after:h-8.75",
+          "after:w-8.75",
+          "after:rounded-tr-[18px]",
+          "after:shadow-[20px_0_0_0_#f5f5ff]",
+        ]
       : "hover:bg-muted"
   );
 
@@ -94,41 +110,6 @@ function NavItem({
           <Icon className="h-6 w-6 shrink-0" />
           <span className="truncate">{item.label}</span>
         </button>
-      </li>
-    );
-  }
-
-  if (hasChildren) {
-    return (
-      <li>
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          className={rowClasses}
-          aria-expanded={open}
-        >
-          <Icon className="h-6 w-6 shrink-0" />
-          <span className="flex-1 truncate text-left">{item.label}</span>
-          <ArrowCircleDown
-            className={cn(
-              "h-4 w-4 shrink-0 transition-transform",
-              open && "rotate-180"
-            )}
-          />
-        </button>
-        {open && (
-          <ul className="mt-1 flex flex-col gap-1">
-            {item.children!.map((child) => (
-              <NavItem
-                key={child.href || child.label}
-                item={child}
-                pathname={pathname}
-                onLogout={onLogout}
-                depth={depth + 1}
-              />
-            ))}
-          </ul>
-        )}
       </li>
     );
   }
