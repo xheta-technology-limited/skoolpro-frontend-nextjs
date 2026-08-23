@@ -1,9 +1,24 @@
-import { type ElementType } from "react";
+import {
+  Home,
+  UserEdit,
+  MoneyChange,
+  Book,
+  Book1,
+  Building,
+  Hospital,
+  Bookmark,
+  Car,
+  Buildings,
+  DirectNotification,
+  Setting2,
+  type Icon,
+  LogoutCurve,
+} from "iconsax-reactjs";
 
 export type DashboardNavigationItem = {
   label: string;
   href: string;
-  icon: ElementType | null;
+  icon: Icon | null;
   children?: DashboardNavigationItem[];
   keywords?: string[];
 };
@@ -12,66 +27,66 @@ export const dashboardNavigation: DashboardNavigationItem[] = [
   {
     label: "Dashboard",
     href: "/super-admin/dashboard",
-    icon: null,
+    icon: Home,
   },
   {
     label: "User management",
-    href: "/dashboard/users",
-    icon: null,
+    href: "/super-admin/user-management",
+    icon: UserEdit,
   },
   {
     label: "Fee management",
     href: "/dashboard/fees",
-    icon: null,
+    icon: MoneyChange,
   },
   {
     label: "Curriculum management",
     href: "/dashboard/curriculum",
-    icon: null,
+    icon: Book,
   },
   {
     label: "Exam management",
     href: "/dashboard/exams",
-    icon: null,
+    icon: Book1,
   },
   {
     label: "Hostel management",
     href: "/dashboard/hostel",
-    icon: null,
+    icon: Building,
   },
   {
     label: "Health management",
     href: "/dashboard/health",
-    icon: null,
+    icon: Hospital,
   },
   {
     label: "Library management",
     href: "/dashboard/library",
-    icon: null,
+    icon: Bookmark,
   },
   {
     label: "Transport management",
     href: "/dashboard/transport",
-    icon: null,
+    icon: Car,
   },
   {
     label: "School Onboarding",
     href: "/super-admin/school-onboarding",
-    icon: null,
+    icon: Buildings,
   },
   {
     label: "Notification management",
     href: "/dashboard/notifications",
-    icon: null,
+    icon: DirectNotification,
   },
   {
     label: "Settings",
     href: "/dashboard/settings",
-    icon: null,
+    icon: Setting2,
   },
   {
     label: "Logout",
     href: "",
-    icon: null,
+    icon: LogoutCurve,
   },
 ];

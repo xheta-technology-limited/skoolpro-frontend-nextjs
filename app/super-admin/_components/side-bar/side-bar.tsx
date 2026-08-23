@@ -3,15 +3,13 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowCircleDown } from "iconsax-reactjs";
 import { cn } from "@/lib/utils";
 import {
   dashboardNavigation,
   type DashboardNavigationItem,
 } from "@/config/super-admin-navigation"; // adjust to wherever this file actually lives
-import { getNavIcon } from "./utils";
 import Image from "next/image";
-import { AdmiralBlue11, SkoolproCircle } from "@/components/icons/logos";
+import { AdmiralBlue11 } from "@/components/icons/logos";
 import { Text } from "@/components/ui";
 
 type DashboardSidebarProps = {
@@ -52,7 +50,7 @@ export default function Sidebar({
       <div className="h-6" />
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto md:pl-4 pb-6  scrollbar-none [&::-webkit-scrollbar]:hidden">
+      <nav className="flex-1 overflow-y-auto pl-1 md:pl-4 pb-6  scrollbar-none [&::-webkit-scrollbar]:hidden">
         <ul className="flex flex-col gap-8">
           {items.map((item) => (
             <NavItem
@@ -79,13 +77,10 @@ function NavItem({
   onLogout?: () => void;
   depth?: number;
 }) {
-  const Icon = getNavIcon(item.icon, item.href);
+  const Icon = item.icon;
   const isLogout = item.href === "";
 
-  const isActive =
-    !isLogout &&
-    (pathname === item.href ||
-      (item.href !== "/dashboard" && pathname.startsWith(item.href + "/")));
+  const isActive = !isLogout && pathname.includes(item.href);
 
   const rowClasses = cn(
     "relative flex w-full items-center justify-center md:justify-start text-foreground gap-3 px-4 py-3 transition-all",
@@ -122,7 +117,9 @@ function NavItem({
     return (
       <li>
         <button type="button" onClick={onLogout} className={rowClasses}>
-          <Icon className="h-6 w-6 shrink-0" />
+          {Icon && (
+            <Icon variant="Bulk" size={24} className="h-6 w-6 shrink-0" />
+          )}
           <span className="sr-only truncate md:not-sr-only">{item.label}</span>
         </button>
       </li>
@@ -133,7 +130,7 @@ function NavItem({
   return (
     <li>
       <Link href={item.href} className={rowClasses}>
-        <Icon className="shrink-0" />
+        {Icon && <Icon variant="Bulk" size={24} className="shrink-0" />}
         <Text
           className="sr-only truncate md:not-sr-only"
           weight={isActive ? "accent" : "standard"}
