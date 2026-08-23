@@ -30,10 +30,7 @@ export default function Sidebar({
 
   return (
     <aside
-      className={cn(
-        "flex h-screen py-8 w-72 flex-col border-r border-border bg-white",
-        className
-      )}
+      className={cn("flex h-screen py-8 w-72 flex-col bg-white", className)}
     >
       {/* Logo */}
       <AdmiralBlue11 height={51} width={199} />
@@ -41,7 +38,7 @@ export default function Sidebar({
       <div className="h-6" />
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto px-4 pb-6">
+      <nav className="flex-1 overflow-y-auto pl-4 pb-6  scrollbar-none [&::-webkit-scrollbar]:hidden">
         <ul className="flex flex-col gap-8">
           {items.map((item) => (
             <NavItem
@@ -83,7 +80,7 @@ function NavItem({
   );
 
   const rowClasses = cn(
-    "flex w-full items-center text-foreground gap-3 rounded-xl px-4 py-3 transition-colors",
+    "flex w-full items-center text-foreground gap-3 px-4 py-3 transition-colors",
     depth > 0 && "pl-10",
     isActive
       ? "bg-[#F5F5FF] text-primary rounded-bl-ml rounded-tl-ml shadow-[-3px_0px_0px_0px_var(--color-primary)]"

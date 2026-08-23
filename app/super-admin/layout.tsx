@@ -11,9 +11,11 @@ export default function Layout({
       <SuperAdminProviders>
         <AdminSideBar />
 
-        <main className="w-full">
+        <main className="w-full flex flex-col">
           <StatusBar />
-          <div>{children}</div>
+          <div className="w-full flex-1 pl-12 py-8 bg-primary-bg">
+            <div className="xl:m-auto max-w-254">{children}</div>
+          </div>
         </main>
       </SuperAdminProviders>
     </div>
