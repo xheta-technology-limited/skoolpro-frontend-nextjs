@@ -67,7 +67,7 @@
   --color-error-200: #c03744;
   --color-error-300: #8c1823;
 
-  ---color-grays-borders: #f0ebfb;
+  --color-grays-borders: #f0ebfb;
 
   /* spacing */
   --spacing-base: 1rem; /* 16px */

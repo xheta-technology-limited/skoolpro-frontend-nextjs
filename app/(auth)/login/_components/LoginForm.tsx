@@ -38,7 +38,6 @@ const LoginForm = () => {
   const onSubmit = (data: loginForm) => {
     mutate(data, {
       onSuccess: (res) => {
-        console.log("respose: ", res);
         if ("mfa_required" in res) {
           updateMFAData("challenge_id", res.challenge_id);
           updateMFAData("available_methods", res.available_methods);

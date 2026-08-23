@@ -14,17 +14,15 @@ import { Text } from "@/components/ui";
 
 type DashboardSidebarProps = {
   items?: DashboardNavigationItem[];
-  /** Called when the user clicks the "Logout" entry (href === "") */
-  onLogout?: () => void;
   className?: string;
 };
 
 export default function Sidebar({
   items = dashboardNavigation,
-  onLogout,
   className,
 }: DashboardSidebarProps) {
   const pathname = usePathname();
+  const onLogout = () => console.log("TODO: implement logout fn");
 
   return (
     <aside
@@ -132,7 +130,7 @@ function NavItem({
       <Link href={item.href} className={rowClasses}>
         {Icon && <Icon variant="Bulk" size={24} className="shrink-0" />}
         <Text
-          className="sr-only truncate md:not-sr-only"
+          className="truncate hidden md:inline"
           weight={isActive ? "accent" : "standard"}
           scale={"caption"}
         >
