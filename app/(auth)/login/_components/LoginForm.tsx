@@ -47,23 +47,19 @@ const LoginForm = () => {
     retry: false,
   });
 
-  const checkSchoolAndProceed = async () => {
+  const checkSchoolAndProceed = async (mfa: boolean) => {
     setIsCheckingSchool(true);
     try {
       const { data: schoolProfile, error } = await refetchSchoolProfile();
-      const hasSchool =
-        !!schoolProfile?.data && "id" in schoolProfile.data;
-      if (hasSchool) {
+      if (schoolProfile) {
         updateSchoolProfileData(schoolProfile);
         setModalOpen(true);
-      } else if (
-        !error ||
-        (error instanceof ApiError && error.status === 404)
-      ) {
+      } else if (error && error instanceof ApiError && error.status === 404) {
         router.replace("/onboarding");
       }
     } finally {
       setIsCheckingSchool(false);
+      setModalOpen(true);
     }
   };
 
@@ -77,7 +73,7 @@ const LoginForm = () => {
         }
         if ("first_name" in res) {
           updateUserData(res);
-          checkSchoolAndProceed();
+          checkSchoolAndProceed(res.mfa_enabled);
         }
       },
       onError: (res) => {

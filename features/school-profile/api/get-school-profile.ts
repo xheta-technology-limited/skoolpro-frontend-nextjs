@@ -10,7 +10,7 @@ import { ServerErrorResponse } from "@/types/api";
 import { SchoolProfile } from "../types/school-profile";
 
 export const getSchoolProfile = (): Promise<SchoolProfile> => {
-  return api.get("/school");
+  return api.get("school");
 };
 
 export const useGetSchoolProfile = (
