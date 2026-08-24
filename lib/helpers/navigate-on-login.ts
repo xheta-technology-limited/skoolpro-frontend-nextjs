@@ -1,7 +1,7 @@
 type Role = "super-admin";
 
 const roleRoutes: Record<Role, string> = {
-  "super-admin": "/super-admin/school-onboarding", //TODO: change this to dashboard
+  "super-admin": "/super-admin/school-onboarding/school-record", //TODO: change this to dashboard
 };
 
 type RouterLike = {
