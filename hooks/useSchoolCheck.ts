@@ -7,6 +7,7 @@ import { ApiError } from "@/lib/api";
 export const useSchoolCheck = () => {
   const [isCheckingSchool, setIsCheckingSchool] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [hasSchoolCheckError, setHasSchoolCheckError] = useState(false);
   const router = useProgressRouter();
   const updateSchoolProfileData = useSchoolProfileStore(
     (state) => state.updateData
@@ -18,6 +19,7 @@ export const useSchoolCheck = () => {
 
   const checkSchoolAndProceed = useCallback(async () => {
     setIsCheckingSchool(true);
+    setHasSchoolCheckError(false);
     try {
       const { data: schoolProfile, error } = await refetchSchoolProfile();
       if (schoolProfile) {
@@ -25,11 +27,22 @@ export const useSchoolCheck = () => {
         setModalOpen(true);
       } else if (error && error instanceof ApiError && error.status === 404) {
         router.replace("/onboarding");
+      } else {
+        setHasSchoolCheckError(true);
       }
+    } catch {
+      setHasSchoolCheckError(true);
     } finally {
       setIsCheckingSchool(false);
     }
   }, [refetchSchoolProfile, router, updateSchoolProfileData]);
 
-  return { isCheckingSchool, isModalOpen, setModalOpen, checkSchoolAndProceed };
+  return {
+    isCheckingSchool,
+    isModalOpen,
+    setModalOpen,
+    hasSchoolCheckError,
+    setHasSchoolCheckError,
+    checkSchoolAndProceed,
+  };
 };
