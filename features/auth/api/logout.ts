@@ -4,7 +4,7 @@ import { ServerErrorResponse } from "@/types/api";
 import { resetAllStores } from "@/lib/store-registry";
 
 export const logout = (): Promise<void> => {
-  return api.post("/logout");
+  return api.post("auth/logout");
 };
 
 export const useLogout = () => {
@@ -15,6 +15,7 @@ export const useLogout = () => {
     onSuccess: () => {
       resetAllStores();
       queryClient.clear();
+      window.location.href = "/login";
     },
   });
 };

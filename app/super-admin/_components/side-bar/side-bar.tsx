@@ -11,6 +11,7 @@ import {
 import Image from "next/image";
 import { AdmiralBlue11 } from "@/components/icons/logos";
 import { Text } from "@/components/ui";
+import { useLogout } from "@/features/auth/api/logout";
 
 type DashboardSidebarProps = {
   items?: DashboardNavigationItem[];
@@ -22,7 +23,7 @@ export default function Sidebar({
   className,
 }: DashboardSidebarProps) {
   const pathname = usePathname();
-  const onLogout = () => console.log("TODO: implement logout fn");
+  const { mutate: logout, isPending: isLoggingOut } = useLogout();
 
   return (
     <aside
@@ -55,7 +56,8 @@ export default function Sidebar({
               key={item.href || item.label}
               item={item}
               pathname={pathname}
-              onLogout={onLogout}
+              onLogout={() => logout()}
+              isLoggingOut={isLoggingOut}
             />
           ))}
         </ul>
@@ -68,11 +70,13 @@ function NavItem({
   item,
   pathname,
   onLogout,
+  isLoggingOut,
   depth = 0,
 }: {
   item: DashboardNavigationItem;
   pathname: string;
   onLogout?: () => void;
+  isLoggingOut?: boolean;
   depth?: number;
 }) {
   const Icon = item.icon;
@@ -114,7 +118,12 @@ function NavItem({
   if (isLogout) {
     return (
       <li>
-        <button type="button" onClick={onLogout} className={rowClasses}>
+        <button
+          type="button"
+          onClick={onLogout}
+          disabled={isLoggingOut}
+          className={cn(rowClasses, isLoggingOut && "opacity-60")}
+        >
           {Icon && (
             <Icon variant="Bulk" size={24} className="h-6 w-6 shrink-0" />
           )}
