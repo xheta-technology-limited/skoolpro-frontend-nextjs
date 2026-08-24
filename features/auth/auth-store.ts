@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { MFAMethod } from "./types/types";
 import { keyof } from "zod";
+import { registerStoreReset } from "@/lib/store-registry";
 
 type MfaData = {
   challenge_id?: string;
@@ -29,6 +30,8 @@ export const useAuth = create<authStore>()(
   )
 );
 
+registerStoreReset(useAuth.getState().clearData);
+
 //RESET PASSWORD STORE
 type ResetPasswordData = {
   login: string;
@@ -53,3 +56,5 @@ export const useResetPasswordStore = create<ResetPasswordStoreType>()(
     { name: "sp-forgot-password-store" }
   )
 );
+
+registerStoreReset(useResetPasswordStore.getState().clearData);

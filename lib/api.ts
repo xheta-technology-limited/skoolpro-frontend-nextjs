@@ -89,13 +89,13 @@ async function request<T>(
         typeof window !== "undefined"
           ? (window.location.href = "/login")
           : redirect("/login");
-        throw new ApiError(err.message, err?.errors);
+        throw new ApiError(err.message, res.status, err?.errors);
       }
       if (typeof window !== "undefined") {
         toast.error(err.message);
       }
 
-      throw new ApiError(err.message, err?.errors);
+      throw new ApiError(err.message, res.status, err?.errors);
     }
 
     return res.status === 204
@@ -134,12 +134,14 @@ export const api = {
   ) => request<T>(path, { ...options, method: "DELETE" }),
 };
 
-class ApiError extends Error {
+export class ApiError extends Error {
+  status?: number;
   errors: unknown;
 
-  constructor(message: string, errors?: unknown) {
+  constructor(message: string, status?: number, errors?: unknown) {
     super(message);
     this.name = "ApiError";
+    this.status = status;
     this.errors = errors;
   }
 }

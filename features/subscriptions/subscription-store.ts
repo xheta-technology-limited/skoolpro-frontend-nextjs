@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { BeginOnboardingResponse } from "@/features/onboarding/types/types";
+import { registerStoreReset } from "@/lib/store-registry";
 
 type SubscriptionStore = {
   created_school: BeginOnboardingResponse | null;
@@ -18,3 +19,5 @@ export const useSubscriptionStore = create<SubscriptionStore>()(
     { name: "sp-subscription-store" }
   )
 );
+
+registerStoreReset(useSubscriptionStore.getState().clearCreatedSchool);

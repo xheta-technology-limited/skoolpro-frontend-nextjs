@@ -1,19 +1,19 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { UserStore as UserStoreType } from "./types/user";
+import { SchoolProfile as SchoolProfileType } from "./types/school-profile";
 import { registerStoreReset } from "@/lib/store-registry";
 
-type UserStore = {
-  data: Partial<UserStoreType>;
-  updateField: <K extends keyof UserStoreType>(
+type SchoolProfileStore = {
+  data: Partial<SchoolProfileType>;
+  updateField: <K extends keyof SchoolProfileType>(
     fieldName: K,
-    value: UserStoreType[K]
+    value: SchoolProfileType[K]
   ) => void;
   clearData: () => void;
-  updateData: (user: UserStoreType) => void;
+  updateData: (user: SchoolProfileType) => void;
 };
 
-export const useUserStore = create<UserStore>()(
+export const useUserStore = create<SchoolProfileStore>()(
   persist(
     (set) => ({
       data: {},
@@ -22,7 +22,7 @@ export const useUserStore = create<UserStore>()(
       clearData: () => set(() => ({ data: {} })),
       updateData: (value) => set(() => ({ data: value })),
     }),
-    { name: "sp-user-store" }
+    { name: "sp-school-profile-store" }
   )
 );
 

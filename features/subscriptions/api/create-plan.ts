@@ -4,7 +4,7 @@ import {
   CreateSubscriptionParams,
   CreateSubscriptionResponse,
 } from "../types/api";
-import { ServerErrorResponse } from "@/features/auth/types/api/shared";
+import { ServerErrorResponse } from "@/types/api";
 
 export const createSubscription = (
   param: CreateSubscriptionParams

@@ -18,9 +18,15 @@ import { useAuth } from "../../../../features/auth/auth-store";
 import { useUserStore } from "@/features/user/user.store";
 import { useProgressRouter } from "@/features/page-loader";
 import { setFormErrors } from "@/lib/helpers/set-form-errors";
+import { navigateOnLogin } from "@/lib/helpers/navigate-on-login";
+import { useGetSchoolProfile } from "@/features/school-profile/api/get-school-profile";
+import { useUserStore as useSchoolProfileStore } from "@/features/school-profile/school-profile.store";
+import { Spinner } from "@/components/animations";
+import { ApiError } from "@/lib/api";
 
 const LoginForm = () => {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isCheckingSchool, setIsCheckingSchool] = useState(false);
   const router = useProgressRouter();
   const methods = useForm<LoginFormData>({
     defaultValues: {
@@ -32,23 +38,46 @@ const LoginForm = () => {
   const { mutate, isPending } = useLogin();
   const updateMFAData = useAuth((state) => state.updateData);
   const updateUserData = useUserStore((state) => state.updateData);
+  const userData = useUserStore((s) => s.data);
+  const updateSchoolProfileData = useSchoolProfileStore(
+    (state) => state.updateData
+  );
+  const { refetch: refetchSchoolProfile } = useGetSchoolProfile({
+    enabled: false,
+    retry: false,
+  });
+
+  const checkSchoolAndProceed = async () => {
+    setIsCheckingSchool(true);
+    try {
+      const { data: schoolProfile, error } = await refetchSchoolProfile();
+      const hasSchool =
+        !!schoolProfile?.data && "id" in schoolProfile.data;
+      if (hasSchool) {
+        updateSchoolProfileData(schoolProfile);
+        setModalOpen(true);
+      } else if (
+        !error ||
+        (error instanceof ApiError && error.status === 404)
+      ) {
+        router.replace("/onboarding");
+      }
+    } finally {
+      setIsCheckingSchool(false);
+    }
+  };
 
   const onSubmit = (data: loginForm) => {
     mutate(data, {
       onSuccess: (res) => {
-        console.log("respose: ", res);
         if ("mfa_required" in res) {
-          if (process.env.NEXT_PUBLIC_ENV === "development") {
-            router.replace("/onboarding");
-            return;
-          }
           updateMFAData("challenge_id", res.challenge_id);
           updateMFAData("available_methods", res.available_methods);
           router.replace("/mfa");
         }
-        if ("mfa_enabled" in res) {
+        if ("first_name" in res) {
           updateUserData(res);
-          res.mfa_enabled === false && setModalOpen(true);
+          checkSchoolAndProceed();
         }
       },
       onError: (res) => {
@@ -94,6 +123,12 @@ const LoginForm = () => {
           </Button>
         </form>
       </FormProvider>
+      {isCheckingSchool && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 bg-white">
+          <Spinner size={48} />
+          <Text scale="content">Checking school availability</Text>
+        </div>
+      )}
       <SuccessModal
         subheading="Your login is successful. Kindly click the button to proceed."
         isOpen={isModalOpen}
@@ -101,7 +136,7 @@ const LoginForm = () => {
       >
         <div className="flex justify-between gap-2 md:gap-6 items-center w-full">
           <Button
-            onClick={() => router.replace("/onboarding")}
+            onClick={() => navigateOnLogin(userData?.active_role || "", router)}
             variant="secondary"
             size="lg"
             className="flex-1 min-w-0"
