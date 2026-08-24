@@ -18,6 +18,7 @@ import { useAuth } from "../../../../features/auth/auth-store";
 import { useUserStore } from "@/features/user/user.store";
 import { useProgressRouter } from "@/features/page-loader";
 import { setFormErrors } from "@/lib/helpers/set-form-errors";
+import { navigateOnLogin } from "@/lib/helpers/navigate-on-login";
 
 const LoginForm = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -32,23 +33,21 @@ const LoginForm = () => {
   const { mutate, isPending } = useLogin();
   const updateMFAData = useAuth((state) => state.updateData);
   const updateUserData = useUserStore((state) => state.updateData);
+  const userData = useUserStore((s) => s.data);
 
   const onSubmit = (data: loginForm) => {
     mutate(data, {
       onSuccess: (res) => {
-        console.log("respose: ", res);
         if ("mfa_required" in res) {
-          if (process.env.NEXT_PUBLIC_ENV === "development") {
-            router.replace("/onboarding");
-            return;
-          }
           updateMFAData("challenge_id", res.challenge_id);
           updateMFAData("available_methods", res.available_methods);
           router.replace("/mfa");
         }
-        if ("mfa_enabled" in res) {
+        if ("first_name" in res) {
           updateUserData(res);
-          res.mfa_enabled === false && setModalOpen(true);
+          "mfa_enabled" in res &&
+            res.mfa_enabled === false &&
+            setModalOpen(true);
         }
       },
       onError: (res) => {
@@ -101,7 +100,7 @@ const LoginForm = () => {
       >
         <div className="flex justify-between gap-2 md:gap-6 items-center w-full">
           <Button
-            onClick={() => router.replace("/onboarding")}
+            onClick={() => navigateOnLogin(userData?.active_role || "", router)}
             variant="secondary"
             size="lg"
             className="flex-1 min-w-0"

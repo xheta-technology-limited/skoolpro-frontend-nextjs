@@ -32,11 +32,6 @@ const Input = ({
   ...props
 }: InputProps) => {
   const isControlled = value !== undefined;
-
-  // Hooks must always be called in the same order, so we call this
-  // unconditionally — but we only ever *use* its output below when
-  // the component is uncontrolled. This also means the component no
-  // longer requires a FormProvider ancestor when used as controlled.
   const formContext = useFormContext();
 
   const error = !isControlled
