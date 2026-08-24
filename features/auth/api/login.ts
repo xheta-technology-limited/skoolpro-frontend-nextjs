@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { authKeys } from "./query-keys";
 import type { LoginRequest, LoginResponse } from "../types/api/login";
-import { ServerErrorResponse } from "../types/api/shared";
+import { ServerErrorResponse } from "@/types/api";
 
 export const getCsrfCookie = (): Promise<void> => {
   return api.get("/sanctum/csrf-cookie");
