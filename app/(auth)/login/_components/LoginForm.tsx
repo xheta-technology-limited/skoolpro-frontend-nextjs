@@ -22,6 +22,7 @@ import { navigateOnLogin } from "@/lib/helpers/navigate-on-login";
 import { useGetSchoolProfile } from "@/features/school-profile/api/get-school-profile";
 import { useUserStore as useSchoolProfileStore } from "@/features/school-profile/school-profile.store";
 import { Spinner } from "@/components/animations";
+import { ApiError } from "@/lib/api";
 
 const LoginForm = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -48,17 +49,18 @@ const LoginForm = () => {
   const checkSchoolAndProceed = async () => {
     setIsCheckingSchool(true);
     try {
-      const { data: schoolProfile } = await refetchSchoolProfile();
+      const { data: schoolProfile, error } = await refetchSchoolProfile();
       const hasSchool =
         !!schoolProfile?.data && "id" in schoolProfile.data;
       if (hasSchool) {
         updateSchoolProfileData(schoolProfile);
         setModalOpen(true);
-      } else {
+      } else if (
+        !error ||
+        (error instanceof ApiError && error.status === 404)
+      ) {
         router.replace("/onboarding");
       }
-    } catch {
-      router.replace("/onboarding");
     } finally {
       setIsCheckingSchool(false);
     }
