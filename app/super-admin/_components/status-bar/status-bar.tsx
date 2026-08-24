@@ -1,7 +1,9 @@
 "use client";
+import { ModuleSearch } from "@/components/common";
 import { Text } from "@/components/ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/form";
+import { dashboardNavigation } from "@/config/super-admin-navigation";
 import { useUserStore } from "@/features/user/user.store";
 import { getNameInitials } from "@/lib/helpers/get-name-initials";
 import { titleCase } from "@/lib/helpers/string-to-title-case";
@@ -19,7 +21,7 @@ export default function StatusBar() {
   return (
     <div className="flex py-4 items-center justify-end md:justify-between bg-white pl-12 pr-12 md:pr-20">
       <div className="hidden md:block">
-        <Input label="Search by name" search name="" value={searchValue} />
+        <ModuleSearch items={dashboardNavigation} />
       </div>
       <div className="flex items-center ">
         <div className="pr-6 border-r border-r-grays-borders mr-6">

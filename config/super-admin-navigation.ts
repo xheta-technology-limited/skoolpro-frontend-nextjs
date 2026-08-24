@@ -73,6 +73,18 @@ export const dashboardNavigation: DashboardNavigationItem[] = [
     label: "School Onboarding",
     href: "/super-admin/school-onboarding",
     icon: Buildings,
+    children: [
+      {
+        label: "School Record",
+        href: "/super-admin/school-onboarding/school-record",
+        icon: null,
+      },
+      {
+        label: "Academic Year",
+        href: "/super-admin/school-onboarding/academic-year",
+        icon: null,
+      },
+    ],
   },
   {
     label: "Notification management",
