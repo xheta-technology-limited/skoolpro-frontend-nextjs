@@ -9,7 +9,7 @@ import {
 import { AxiosError } from "axios";
 import { MFAMethod } from "../types/types";
 import { LoginData } from "../types/api/login";
-import { ServerErrorResponse } from "../types/api/shared";
+import { ServerErrorResponse } from "@/types/api";
 
 //setup mfa
 export const authenticatorSetup = (): Promise<AuthenticatorSetupResponse> => {
