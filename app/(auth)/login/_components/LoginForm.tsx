@@ -44,6 +44,7 @@ const LoginForm = () => {
   );
   const { refetch: refetchSchoolProfile } = useGetSchoolProfile({
     enabled: false,
+    retry: false,
   });
 
   const checkSchoolAndProceed = async () => {
