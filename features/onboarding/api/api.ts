@@ -1,7 +1,7 @@
 import { api } from "@/lib/api";
 import { useMutation } from "@tanstack/react-query";
 import { BeginOnboardingResponse } from "../types/types";
-import { ServerErrorResponse } from "@/features/auth/types/api/shared";
+import { ServerErrorResponse } from "@/types/api";
 import { SchoolProfileFormValues } from "../school-profile-schema";
 
 export const onboardSchool = (
