@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { SchoolProfile as SchoolProfileType } from "./types/school-profile";
+import { registerStoreReset } from "@/lib/store-registry";
 
 type SchoolProfileStore = {
   data: Partial<SchoolProfileType>;
@@ -24,3 +25,5 @@ export const useUserStore = create<SchoolProfileStore>()(
     { name: "sp-school-profile-store" }
   )
 );
+
+registerStoreReset(useUserStore.getState().clearData);

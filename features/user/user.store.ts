@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { UserStore as UserStoreType } from "./types/user";
+import { registerStoreReset } from "@/lib/store-registry";
 
 type UserStore = {
   data: Partial<UserStoreType>;
@@ -24,3 +25,5 @@ export const useUserStore = create<UserStore>()(
     { name: "sp-user-store" }
   )
 );
+
+registerStoreReset(useUserStore.getState().clearData);
