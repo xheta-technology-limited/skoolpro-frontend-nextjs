@@ -11,11 +11,7 @@ import {
   schoolRecordSchema,
   type SchoolRecordFormValues,
 } from "@/lib/utils/school-record-schema";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface SchoolLicenseFile {
   name: string;
@@ -76,9 +72,8 @@ export default function SchoolRecordPage() {
   const [mode, setMode] = useState<"view" | "edit">("view");
   const [savedValues, setSavedValues] =
     useState<SchoolRecordFormValues>(initialValues);
-  const [licenseFiles, setLicenseFiles] = useState<SchoolLicenseFile[]>(
-    initialLicenseFiles
-  );
+  const [licenseFiles, setLicenseFiles] =
+    useState<SchoolLicenseFile[]>(initialLicenseFiles);
 
   const methods = useForm<SchoolRecordFormValues>({
     resolver: zodResolver(schoolRecordSchema),
@@ -138,7 +133,7 @@ export default function SchoolRecordPage() {
 
   const rows: [
     (typeof schoolDetailFields)[0],
-    (typeof schoolDetailFields)[0] | undefined,
+    (typeof schoolDetailFields)[0] | undefined
   ][] = [];
   for (let i = 0; i < schoolDetailFields.length; i += 2) {
     rows.push([schoolDetailFields[i], schoolDetailFields[i + 1]]);
@@ -155,15 +150,13 @@ export default function SchoolRecordPage() {
           <div className="flex min-h-41 w-full flex-col items-start justify-between gap-4 rounded-2xl border border-primary-100 bg-[#F5F5FF] px-4 py-6 sm:flex-row sm:items-center sm:px-12 sm:py-8">
             <div className="flex items-center gap-4">
               <Avatar className="h-25 w-25 shrink-0">
-  <AvatarImage
-    src={schoolProfile.avatarUrl}
-    alt=""
-    className="object-cover"
-  />
-  <AvatarFallback className="bg-neutrals-100">
-    S
-  </AvatarFallback>
-</Avatar>
+                <AvatarImage
+                  src={schoolProfile.avatarUrl}
+                  alt=""
+                  className="object-cover"
+                />
+                <AvatarFallback className="bg-neutrals-100">S</AvatarFallback>
+              </Avatar>
               <div className="flex flex-col gap-1">
                 <span className="text-[16px] font-semibold leading-[1.2] text-primary">
                   {schoolProfile.name}
@@ -206,7 +199,10 @@ export default function SchoolRecordPage() {
         </div>
       ) : (
         <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-6"
+          >
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <Input name="schoolName" label="School name" />
               <Input name="displayName" label="Display name" />
@@ -253,7 +249,11 @@ export default function SchoolRecordPage() {
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <Input name="motto" label="School motto" />
-              <TextArea name="description" label="Description" maxLength={300} />
+              <TextArea
+                name="description"
+                label="Description"
+                maxLength={300}
+              />
             </div>
 
             <span className="text-[16px] font-normal leading-6 text-[#645D72] [font-family:var(--font-inter)]">
@@ -274,11 +274,15 @@ export default function SchoolRecordPage() {
 
               <label className="flex h-17.5 w-full max-w-82.25 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border border-dashed p-4 text-center bg-[#F9F6FF] border-[#713EDD] sm:w-82.25">
                 <input type="file" className="hidden" />
-                <DocumentUpload size={20} variant="Bulk" className="text-primary-700" />
+                <DocumentUpload
+                  size={20}
+                  variant="Bulk"
+                  className="text-primary-700"
+                />
                 <span className="font-lora text-[11px] font-normal leading-[1.2] text-neutrals-700 sm:whitespace-nowrap">
                   Drag and drop or{" "}
-                  <span className="font-semibold text-primary">Browse</span>{" "}
-                  to upload school letterhead
+                  <span className="font-semibold text-primary">Browse</span> to
+                  upload school letterhead
                 </span>
               </label>
             </div>
