@@ -27,8 +27,8 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
       data-slot="table-header"
       className={cn(
         "mb-1 py-2.5 px-4 bg-white text-[0.75rem] md:text-[0.875rem] font-semibold",
-        "[&>tr>th:first-child]:rounded-tl-ml [&>tr>th:first-child]:border [&>tr>th:first-child]:border-r-0",
-        "[&>tr>th:last-child]:rounded-tr-ml [&>tr>th:last-child]:border [&>tr>th:last-child]:border-l-0",
+        "[&>tr>th:first-child]:rounded-tl-ml [&>tr>th:first-child]:border [&>tr>th:first-child]:border-r-0 [&>tr>th:first-child]:pl-4",
+        "[&>tr>th:last-child]:rounded-tr-ml [&>tr>th:last-child]:border [&>tr>th:last-child]:border-l-0 [&>tr>th:last-child]:pr-4",
         className
       )}
       {...props}
@@ -64,8 +64,8 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
     <tr
       data-slot="table-row"
       className={cn(
-        "transition-colors hover:bg-white/50 has-aria-expanded:bg-white data-[state=selected]:bg-white/50",
-        "[&>td]:border-b [&>td]:border-neutrals-100",
+        "transition-colors hover:bg-white/50 bg-white has-aria-expanded:bg-white data-[state=selected]:bg-white/50",
+        "[&>td]:border-b [&>td]:border-neutrals-100 [&>td:first-child]:pl-4 [&>td]:py-4",
         "text-[0.875rem] md:text-[1rem]",
         className
       )}
@@ -100,6 +100,18 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   );
 }
 
+function TableWrapper({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      className={cn(
+        "overflow-hidden border-b border-b-grays-borders rounded-b-ml",
+        className
+      )}
+      {...props}
+    ></div>
+  );
+}
+
 function TableCaption({
   className,
   ...props
@@ -122,4 +134,5 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  TableWrapper,
 };
