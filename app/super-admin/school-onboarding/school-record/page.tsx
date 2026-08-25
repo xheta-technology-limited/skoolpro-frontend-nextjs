@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit, DocumentUpload } from "iconsax-reactjs";
@@ -219,15 +219,35 @@ export default function SchoolRecordPage() {
     reset(formValues);
   }, [formValues, reset]);
 
+  const licenseFilesRef = useRef<SchoolLicenseFile[]>([]);
+
+  useEffect(() => {
+    licenseFilesRef.current = licenseFiles;
+  }, [licenseFiles]);
+
+  useEffect(() => {
+    return () => {
+      licenseFilesRef.current.forEach((file) => {
+        URL.revokeObjectURL(file.url);
+      });
+    };
+  }, []);
+
   function enterEditMode() {
     reset(formValues);
     setMode("edit");
   }
 
   function removeLicenseFile(name: string) {
-    setLicenseFiles((previous) =>
-      previous.filter((file) => file.name !== name)
-    );
+    setLicenseFiles((previous) => {
+      const fileToRemove = previous.find((file) => file.name === name);
+
+      if (fileToRemove) {
+        URL.revokeObjectURL(fileToRemove.url);
+      }
+
+      return previous.filter((file) => file.name !== name);
+    });
   }
 
   function handleLicenseUpload(
@@ -248,10 +268,19 @@ export default function SchoolRecordPage() {
     setLicenseFiles((previous) => {
       const existingNames = new Set(previous.map((file) => file.name));
 
-      return [
-        ...previous,
-        ...newFiles.filter((file) => !existingNames.has(file.name)),
-      ];
+      const filesToAdd: SchoolLicenseFile[] = [];
+
+      for (const file of newFiles) {
+        if (existingNames.has(file.name)) {
+          URL.revokeObjectURL(file.url);
+          continue;
+        }
+
+        existingNames.add(file.name);
+        filesToAdd.push(file);
+      }
+
+      return [...previous, ...filesToAdd];
     });
 
     event.target.value = "";
@@ -692,7 +721,7 @@ export default function SchoolRecordPage() {
                 />
               ))}
 
-              <label className="flex h-17.5 w-full max-w-82.25 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-[#713EDD] bg-[#F9F6FF] p-4 text-center sm:w-82.25 focus-within:outline focus-within:outline-2 focus-within:outline-primary">
+              <label className="flex h-17.5 w-full max-w-82.25 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-[#713EDD] bg-[#F9F6FF] p-4 text-center sm:w-82.25 focus-within:outline focus-within:outline-primary">
                 <input
                   type="file"
                   className="sr-only"
