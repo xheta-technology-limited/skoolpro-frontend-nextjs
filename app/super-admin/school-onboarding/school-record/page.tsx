@@ -29,6 +29,7 @@ interface SchoolLicenseFile {
 }
 
 interface Contact {
+  id: string;
   type: string;
   label: string;
   value: string;
@@ -36,10 +37,12 @@ interface Contact {
 }
 
 interface Campus {
+  id: string;
   name: string;
   is_primary: boolean;
   city: string;
   country_code: string;
+  opening_status: string;
 }
 
 function getOptionLabel(
@@ -259,49 +262,116 @@ export default function SchoolRecordPage() {
       return;
     }
 
-    const updatedContacts = (profile.contacts ?? []).map((contact) => {
-      const type = contact.type.toLowerCase();
-      const label = contact.label.toLowerCase();
+    // --- Contacts: update the primary existing entry per category, or
+    // append a new contact if none exists yet, so submitted values are
+    // never silently discarded. ---
+    const existingContacts = profile.contacts ?? [];
 
-      if (type === "email") {
-        return {
-          ...contact,
-          value: values.email,
+    const contactCategories: {
+      matches: (contact: Contact) => boolean;
+      value: string;
+      fallback: { type: string; label: string };
+    }[] = [
+      {
+        matches: (contact) => contact.type.toLowerCase() === "email",
+        value: values.email,
+        fallback: { type: "email", label: "Email" },
+      },
+      {
+        matches: (contact) =>
+          ["phone", "telephone", "mobile"].includes(
+            contact.type.toLowerCase()
+          ),
+        value: values.phoneNumber,
+        fallback: { type: "phone", label: "Phone" },
+      },
+      {
+        matches: (contact) =>
+          contact.label.toLowerCase().includes("emergency"),
+        value: values.emergencyPhoneNumber,
+        fallback: { type: "phone", label: "Emergency phone number" },
+      },
+      {
+        matches: (contact) =>
+          ["website", "web"].includes(contact.type.toLowerCase()),
+        value: values.website,
+        fallback: { type: "website", label: "Website" },
+      },
+      {
+        matches: (contact) =>
+          ["social_media", "social-media", "social"].includes(
+            contact.type.toLowerCase()
+          ),
+        value: values.socialMediaHandle,
+        fallback: { type: "social_media", label: "Social media" },
+      },
+    ];
+
+    let updatedContacts: Contact[] = [...existingContacts];
+    const newContacts: Contact[] = [];
+
+    for (const category of contactCategories) {
+      const primaryIndex = updatedContacts.findIndex(
+        (contact) => category.matches(contact) && contact.is_primary
+      );
+
+      const matchIndex =
+        primaryIndex !== -1
+          ? primaryIndex
+          : updatedContacts.findIndex((contact) => category.matches(contact));
+
+      if (matchIndex !== -1) {
+        updatedContacts[matchIndex] = {
+          ...updatedContacts[matchIndex],
+          value: category.value,
         };
+      } else if (category.value) {
+        newContacts.push({
+          id: "",
+          type: category.fallback.type,
+          label: category.fallback.label,
+          value: category.value,
+          is_primary: true,
+        });
       }
+    }
 
-      if (["phone", "telephone", "mobile"].includes(type)) {
-        return {
-          ...contact,
-          value: values.phoneNumber,
-        };
-      }
+    updatedContacts = [...updatedContacts, ...newContacts];
 
-      if (label.includes("emergency")) {
-        return {
-          ...contact,
-          value: values.emergencyPhoneNumber,
-        };
-      }
+    // --- Campuses: persist the editable address back onto the primary
+    // campus, preserving all other campus fields and entries. ---
+    const existingCampuses = profile.campuses ?? [];
+    const primaryCampusIndex = existingCampuses.findIndex(
+      (campus) => campus.is_primary
+    );
+    const targetCampusIndex =
+      primaryCampusIndex !== -1 ? primaryCampusIndex : 0;
 
-      if (["website", "web"].includes(type)) {
-        return {
-          ...contact,
-          value: values.website,
-        };
-      }
+    const [addressCity, addressCountryCode] = values.address
+      .split(",")
+      .map((part) => part.trim());
 
-      if (
-        ["social_media", "social-media", "social"].includes(type)
-      ) {
-        return {
-          ...contact,
-          value: values.socialMediaHandle,
-        };
-      }
-
-      return contact;
-    });
+    const updatedCampuses: Campus[] =
+      existingCampuses.length > 0
+        ? existingCampuses.map((campus, index) =>
+            index === targetCampusIndex
+              ? {
+                  ...campus,
+                  city: addressCity ?? campus.city,
+                  country_code: addressCountryCode ?? campus.country_code,
+                }
+              : campus
+          )
+        : [
+            {
+              id: "",
+              name: "",
+              is_primary: true,
+              city: addressCity ?? "",
+              country_code: addressCountryCode ?? "",
+              opening_status: "",
+            },
+          ];
 
     const updatedRegistrationNumbers = (
       profile.registration_numbers ?? []
@@ -332,6 +402,7 @@ export default function SchoolRecordPage() {
       contacts: updatedContacts,
       registration_numbers: updatedRegistrationNumbers,
       types: updatedTypes,
+      campuses: updatedCampuses,
     };
 
     updateData({
