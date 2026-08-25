@@ -11,7 +11,10 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
     >
       <table
         data-slot="table"
-        className={cn("w-full caption-bottom text-xs", className)}
+        className={cn(
+          "w-full border-separate border-spacing-0 caption-bottom text-xs",
+          className
+        )}
         {...props}
       />
     </div>
@@ -23,7 +26,9 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
     <thead
       data-slot="table-header"
       className={cn(
-        "border-grays-borders mb-1 py-2.5 px-4 bg-white border rounded-t-ml text-[0.75rem] md:text-[0.875rem] font-semibold",
+        "mb-1 py-2.5 px-4 bg-white text-[0.75rem] md:text-[0.875rem] font-semibold",
+        "[&>tr>th:first-child]:rounded-tl-ml [&>tr>th:first-child]:border [&>tr>th:first-child]:border-r-0",
+        "[&>tr>th:last-child]:rounded-tr-ml [&>tr>th:last-child]:border [&>tr>th:last-child]:border-l-0",
         className
       )}
       {...props}
@@ -74,7 +79,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0",
+        "h-10 px-2 border-neutrals-100 bg-white text-left align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0",
         className
       )}
       {...props}
