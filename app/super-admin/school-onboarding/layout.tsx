@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/custom-button";
 import { AddSquare } from "iconsax-reactjs";
-import TabsNav from "../_components/tabs/tabs-nav"; 
+import TabsNav from "../../../components/common/tabs/tabs-nav"; 
 
 const SCHOOL_ONBOARDING_TABS = [
   { label: "School record", href: "/super-admin/school-onboarding/school-record" },
