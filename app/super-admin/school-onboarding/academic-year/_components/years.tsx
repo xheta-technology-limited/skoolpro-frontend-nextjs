@@ -62,7 +62,7 @@ export default function AcademicYears() {
 
             <TableBody>
               {Array.from({ length: 5 }).map((_, index) => (
-                <TableRow>
+                <TableRow key={index}>
                   <TableCell>First Term</TableCell>
                   <TableCell>17/08/2026</TableCell>
                   <TableCell>17/08/2026</TableCell>

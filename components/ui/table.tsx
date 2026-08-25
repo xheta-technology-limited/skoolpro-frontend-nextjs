@@ -12,7 +12,7 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
       <table
         data-slot="table"
         className={cn(
-          "w-full border-separate border-spacing-0 caption-bottom text-xs",
+          "w-full border-separate border-spacing-0 border-spacing-y-0.5 caption-bottom text-xs",
           className
         )}
         {...props}
@@ -29,6 +29,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
         "mb-1 py-2.5 px-4 bg-white text-[0.75rem] md:text-[0.875rem] font-semibold",
         "[&>tr>th:first-child]:rounded-tl-ml [&>tr>th:first-child]:border [&>tr>th:first-child]:border-r-0 [&>tr>th:first-child]:pl-4",
         "[&>tr>th:last-child]:rounded-tr-ml [&>tr>th:last-child]:border [&>tr>th:last-child]:border-l-0 [&>tr>th:last-child]:pr-4",
+        "[&>tr>th]:relative [&>tr>th]:after:absolute [&>tr>th]:after:bottom-0 [&>tr>th]:after:left-0 [&>tr>th]:after:w-full [&>tr>th]:after:h-1 [&>tr>th]:after:bg-primary-bg [&>tr>th]:after:content-['']",
         className
       )}
       {...props}
