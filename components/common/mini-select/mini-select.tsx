@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ArrowDown } from "iconsax-reactjs";
 
 type Item = {
   label: string;
@@ -15,11 +16,15 @@ type Item = {
 interface Props {
   label: string;
   items: Item[];
+  defaultValue?: string;
 }
 export default function MiniSelector({ items, label }: Props) {
   return (
     <Select items={items}>
-      <SelectTrigger className="max-w-fit bg-white border border-grays-borders">
+      <SelectTrigger
+        icon={<ArrowDown variant="Bulk" size={12} />}
+        className="max-w-fit bg-white border border-grays-borders"
+      >
         <SelectValue
           className={"text-[0.75rem] md:text-[0.875rem] text-neutrals-700"}
         />
