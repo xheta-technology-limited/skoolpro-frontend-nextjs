@@ -621,10 +621,10 @@ export default function SchoolRecordPage() {
                 />
               ))}
 
-              <label className="flex h-17.5 w-full max-w-82.25 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-[#713EDD] bg-[#F9F6FF] p-4 text-center sm:w-82.25">
+              <label className="flex h-17.5 w-full max-w-82.25 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-[#713EDD] bg-[#F9F6FF] p-4 text-center sm:w-82.25 focus-within:outline focus-within:outline-2 focus-within:outline-primary">
                 <input
                   type="file"
-                  className="hidden"
+                  className="sr-only"
                   accept=".pdf,.png,.jpg,.jpeg"
                   multiple
                   onChange={handleLicenseUpload}
