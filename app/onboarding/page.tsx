@@ -4,15 +4,12 @@ import { Suspense, useEffect, useState } from "react";
 import Image from "next/image";
 import confetti from "canvas-confetti";
 import { AdmiralBlue11 } from "@/components/icons/logos";
-import PricingCard, { PricingPlan } from "./_components/PricingCard";
+import PricingCard from "./_components/PricingCard";
 import Stepper from "./_components/Stepper";
-import DetailCard from "./_components/DetailCard";
 import BillingDetailsModal from "./_components/BillingDetailsModal";
 import type { BillingDetailsFormValues } from "@/features/onboarding/schemas/billing-details-schema";
 import SchoolProfileStep, {
   SchoolProfileFormValues,
-  SCHOOL_TYPE_OPTIONS,
-  OWNERSHIP_TYPE_OPTIONS,
 } from "./_components/SchoolProfileStep";
 import { useGetPlans } from "@/features/subscriptions/api/get-plans";
 import { Spinner } from "@/components/animations";
@@ -60,22 +57,9 @@ export default function SubscriptionsPage() {
     setBillingModalOpen(true);
   }
 
-  const primaryCampus =
-    schoolProfileData?.campuses?.find((c) => c.is_primary) ??
-    schoolProfileData?.campuses?.[0];
-  const primaryContact =
-    schoolProfileData?.contacts?.find((c) => c.is_primary) ??
-    schoolProfileData?.contacts?.[0];
-  const emailContact = schoolProfileData?.contacts?.find(
-    (c) => c.type === "email"
-  );
-  const phoneContact = schoolProfileData?.contacts?.find(
-    (c) => c.type === "phone"
-  );
-  const firstRegistration = schoolProfileData?.registration_numbers?.[0];
 
   return (
-    <div className="min-h-screen bg-[#f5f5ff]">
+    <div className="min-h-screen bg-primary-bg">
       <div className="mx-4 py-16 sm:mx-8 md:mx-16 lg:mx-20 xl:mx-25">
         <div className="flex justify-center">
           <AdmiralBlue11 width={200} height={51} />
@@ -143,14 +127,16 @@ export default function SubscriptionsPage() {
                 </div>
               )}
 
-              <BillingDetailsModal
-                open={billingModalOpen}
-                onOpenChange={setBillingModalOpen}
-                selectedPlan={selectedPlanFromApi!}
-                defaultValues={billingDetails ?? undefined}
-                setStep={() => setStep("success")}
-                onSave={(data) => setBillingDetails(data)}
-              />
+              {selectedPlanFromApi && (
+                <BillingDetailsModal
+                  open={billingModalOpen}
+                  onOpenChange={setBillingModalOpen}
+                  selectedPlan={selectedPlanFromApi}
+                  defaultValues={billingDetails ?? undefined}
+                  setStep={() => setStep("success")}
+                  onSave={(data) => setBillingDetails(data)}
+                />
+              )}
 
               <div className="mt-8 flex gap-6 justify-center">
                 <button
@@ -186,7 +172,7 @@ export default function SubscriptionsPage() {
                   </p>
                 </div>
 
-                <div className="flex h-9.5 w-66 items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-[#F5F5FF] px-4 py-2">
+                <div className="flex h-9.5 w-66 items-center justify-center gap-2.5 rounded-[28px] border border-primary bg-primary-bg px-4 py-2">
                   <span className="whitespace-nowrap text-center text-[18px] font-normal leading-[1.2] text-primary">
                     Reference {createdSchoolReference}
                   </span>
