@@ -14,7 +14,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SESSION_TYPE_OPTIONS } from "../constants";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
-import { useEffect } from "react";
 
 export default function CreateAcademicYear() {
   const router = useProgressRouter();
@@ -22,9 +21,9 @@ export default function CreateAcademicYear() {
   const methods = useForm<AcademicYearFormData>({
     defaultValues: {
       terms: [
-        { name: "First Term", starts_on: "", ends_on: "" },
-        { name: "Second Term", starts_on: "", ends_on: "" },
-        { name: "Third Term", starts_on: "", ends_on: "" },
+        { name: "", starts_on: "", ends_on: "" },
+        { name: "", starts_on: "", ends_on: "" },
+        { name: "", starts_on: "", ends_on: "" },
       ],
     },
     resolver: zodResolver(academicYearSchema),
@@ -56,7 +55,7 @@ export default function CreateAcademicYear() {
             onSubmit={methods.handleSubmit(onSubmit)}
           >
             <Input name="name" label="Enter academic year name" />
-            <div className="flex gap-4 w-full">
+            <div className="flex gap-4 *:flex-1">
               <DatePicker name="starts_on" label="Start date" />
               <DatePicker name="ends_on" label="End date" />
             </div>
@@ -71,28 +70,39 @@ export default function CreateAcademicYear() {
             {fields.map((field, index) => (
               <div key={field.id} className="flex flex-col gap-4">
                 <Input
-                  name={`terms.${index}.name`}
-                  label={`Enter ${field.name}`}
+                  name={`terms[${index}].name`}
+                  label={`Enter ${["first", "second", "third"][index]} term`}
                 />
-                <div className="flex gap-4">
+                <div className="flex gap-4 *:flex-1">
                   <DatePicker
-                    name={`terms.${index}.starts_on`}
+                    name={`terms[${index}].starts_on`}
                     label="Start date"
                   />
                   <DatePicker
-                    name={`terms.${index}.ends_on`}
+                    name={`terms[${index}].ends_on`}
                     label="End date"
                   />
                 </div>
               </div>
             ))}
 
-            <Button
-              size="lg"
-              className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
-            >
-              Create Academic Year
-            </Button>
+            <div className="flex *:flex-1 gap-6">
+              <Button
+                type="button"
+                variant="secondary"
+                size="lg"
+                className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+              >
+                Continue
+              </Button>
+            </div>
           </form>
         </FormProvider>
       </FormModal>
