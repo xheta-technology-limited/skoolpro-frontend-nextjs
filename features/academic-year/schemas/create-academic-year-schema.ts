@@ -16,7 +16,7 @@ export const academicYearSchema = z
 
     // status: z.enum(["upcoming", "current", "archived"]).default("upcoming"),
 
-    is_default_for_enrolment: z.boolean().default(false),
+    //is_default_for_enrolment: z.boolean().default(false),
 
     terms: z.array(termSchema).optional(),
   })

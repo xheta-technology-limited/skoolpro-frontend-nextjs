@@ -19,9 +19,12 @@ export default function SchoolOnboardingLayout({
   searchParams,
 }: {
   children: React.ReactNode;
-  searchParams: { open?: string };
+  searchParams: { open?: string; step?: string };
 }) {
-  const isOpen = searchParams.open === "true";
+  const isModalOpen = searchParams.open === "true";
+
+  const isFirstModalOpen = isModalOpen && searchParams.step === "1";
+
   return (
     <div className="min-h-screen w-full">
       <div className="flex w-full flex-col gap-4 sm:h-12 sm:flex-row sm:items-center sm:justify-between">
