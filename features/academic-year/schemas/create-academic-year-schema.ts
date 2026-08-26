@@ -21,14 +21,14 @@ export const academicYearSchema = z
     terms: z.array(termSchema).optional(),
   })
   .refine((data) => data.ends_on >= data.starts_on, {
-    message: "ends_on must be greater than or equal to starts_on",
+    message: "End date must be greater than or equal to start date",
     path: ["ends_on"],
   })
   .refine(
     (data) =>
       !data.terms || data.terms.every((term) => term.ends_on >= term.starts_on),
     {
-      message: "Term ends_on must be greater than or equal to starts_on",
+      message: "Term end date must be greater than or equal to start date",
       path: ["terms"],
     }
   );

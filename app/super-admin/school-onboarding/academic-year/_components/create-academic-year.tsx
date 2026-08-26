@@ -34,7 +34,9 @@ export default function CreateAcademicYear() {
     name: "terms",
   });
   const onSubmit = () => {
-    alert("clicked fr fr");
+    router.push(
+      "/super-admin/school-onboarding/academic-year?open=true&step=2"
+    );
   };
   const open = searchParams.get("open");
   const current = searchParams.get("step");
@@ -60,7 +62,9 @@ export default function CreateAcademicYear() {
               <DatePicker name="ends_on" label="End date" />
             </div>
 
-            <Text scale={"content"}>Session type</Text>
+            <Text className="text-neutrals-700" scale={"content"}>
+              Session type
+            </Text>
             <Select
               options={SESSION_TYPE_OPTIONS}
               name="session_type"
@@ -92,6 +96,9 @@ export default function CreateAcademicYear() {
                 variant="secondary"
                 size="lg"
                 className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+                onClick={() =>
+                  router.replace("/super-admin/school-onboarding/academic-year")
+                }
               >
                 Cancel
               </Button>
