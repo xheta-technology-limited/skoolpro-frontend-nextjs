@@ -12,7 +12,7 @@ import LicenseFileRow from "./_components/LicenseFileRow";
 import {
   schoolRecordSchema,
   type SchoolRecordFormValues,
-} from "@/lib/utils/school-record-schema";
+} from "@/app/super-admin/school-onboarding/school-record/schema/school-record-schema";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useUserStore } from "@/features/school-profile/school-profile.store";
