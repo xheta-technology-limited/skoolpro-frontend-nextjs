@@ -12,6 +12,7 @@ import {
   TableWrapper,
 } from "@/components/ui/table";
 import { MiniSelector } from "@/components/common";
+import CreateAcademicYear from "./create-academic-year";
 
 const headRow = ["Name", "Start", "End", "Status", "Action"];
 export default function AcademicYears() {
@@ -81,6 +82,8 @@ export default function AcademicYears() {
           </Table>
         </TableWrapper>
       </div>
+
+      <CreateAcademicYear />
     </>
   );
 }

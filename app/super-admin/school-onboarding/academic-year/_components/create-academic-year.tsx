@@ -1,7 +1,11 @@
+"use client";
 import { FormProvider, useForm, useFieldArray } from "react-hook-form";
 import { Text } from "@/components/ui";
 import { DatePicker, Input, Select } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
+import { useSearchParams } from "next/navigation";
+import { AddSquare } from "iconsax-reactjs";
+
 import {
   AcademicYearFormData,
   academicYearSchema,
@@ -10,9 +14,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SESSION_TYPE_OPTIONS } from "../constants";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
+import { useEffect } from "react";
 
-export default function CreateAcademicYear({ isOpen }: { isOpen: boolean }) {
+export default function CreateAcademicYear() {
   const router = useProgressRouter();
+  const searchParams = useSearchParams();
   const methods = useForm<AcademicYearFormData>({
     defaultValues: {
       terms: [
@@ -31,6 +37,9 @@ export default function CreateAcademicYear({ isOpen }: { isOpen: boolean }) {
   const onSubmit = () => {
     alert("clicked fr fr");
   };
+  const open = searchParams.get("open");
+  const current = searchParams.get("step");
+  const isOpen = open === "true" && current === "1";
 
   return (
     <>
@@ -43,11 +52,11 @@ export default function CreateAcademicYear({ isOpen }: { isOpen: boolean }) {
       >
         <FormProvider {...methods}>
           <form
-            className="flex flex-col sm:h-auto gap-6 w-125"
+            className="flex flex-col sm:h-auto gap-6 w-full"
             onSubmit={methods.handleSubmit(onSubmit)}
           >
             <Input name="name" label="Enter academic year name" />
-            <div className="flex gap-4">
+            <div className="flex gap-4 w-full">
               <DatePicker name="starts_on" label="Start date" />
               <DatePicker name="ends_on" label="End date" />
             </div>
@@ -61,7 +70,10 @@ export default function CreateAcademicYear({ isOpen }: { isOpen: boolean }) {
 
             {fields.map((field, index) => (
               <div key={field.id} className="flex flex-col gap-4">
-                <Input name={`terms.${index}.name`} label="Enter term name" />
+                <Input
+                  name={`terms.${index}.name`}
+                  label={`Enter ${field.name}`}
+                />
                 <div className="flex gap-4">
                   <DatePicker
                     name={`terms.${index}.starts_on`}
@@ -85,5 +97,23 @@ export default function CreateAcademicYear({ isOpen }: { isOpen: boolean }) {
         </FormProvider>
       </FormModal>
     </>
+  );
+}
+
+export function OpenModalButton() {
+  const router = useProgressRouter();
+  return (
+    <Button
+      size="lg"
+      className="h-12 w-full gap-2 rounded-[28px] px-8 py-3.5 sm:w-auto sm:min-w-68.5"
+      onClick={() =>
+        router.push(
+          "/super-admin/school-onboarding/academic-year?open=true&step=1"
+        )
+      }
+    >
+      <AddSquare variant="Bulk" size={20} />
+      <span>Create Academic Year</span>
+    </Button>
   );
 }
