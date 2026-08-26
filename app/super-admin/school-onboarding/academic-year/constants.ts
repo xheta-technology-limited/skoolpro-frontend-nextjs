@@ -61,3 +61,8 @@ export const dummyData: AcademicYear = {
   created_at: "2026-08-01T09:00:00+00:00",
   updated_at: "2026-08-01T09:00:00+00:00",
 };
+
+export const SESSION_TYPE_OPTIONS = [
+  { value: "term", label: "Term" },
+  { value: "semester", label: "Semester" },
+];
