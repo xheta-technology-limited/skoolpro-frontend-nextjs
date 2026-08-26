@@ -36,7 +36,7 @@ export default function AcademicYears() {
       <div className="mb-4 flex justify-between text-neutrals-text-body-light-1 text-[1rem] items-center">
         <span>TERM</span>
         <Button variant="secondary" className="text-primary">
-          <Add variant="Bulk" size={16} />
+          <Add size={16} />
           <Text weight={"standard"} scale={"caption"}>
             Edit
           </Text>
