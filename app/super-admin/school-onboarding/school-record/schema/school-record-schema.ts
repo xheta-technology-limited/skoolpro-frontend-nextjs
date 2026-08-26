@@ -1,24 +1,20 @@
 import * as z from "zod";
-import {
-  requiredString,
-  phoneString,
-  emailString,
-  optionalPhoneString,
-} from "@/lib/utils/zod-schemas";
 
 export const schoolRecordSchema = z.object({
-  schoolName: requiredString,
-  displayName: requiredString,
-  registrationNumber: requiredString,
-  schoolTypes: z.array(z.string()).min(1, "Select at least one school type"),
-  ownershipType: requiredString,
-  dateOfEstablishment: requiredString,
+  schoolName: z.string(),
+  displayName: z.string().min(1, "Display name is required"),
+  registrationNumber: z.string(),
+  schoolTypes: z
+    .array(z.string())
+    .min(1, "Select at least one school type"),
+  ownershipType: z.string(),
+  dateOfEstablishment: z.string(),
 
-  email: emailString,
-  address: requiredString,
-  phoneNumber: phoneString,
+  email: z.string(),
+  address: z.string(),
+  phoneNumber: z.string(),
 
-  emergencyPhoneNumber: optionalPhoneString,
+  emergencyPhoneNumber: z.string(),
 
   website: z.string(),
   socialMediaHandle: z.string(),
@@ -26,4 +22,6 @@ export const schoolRecordSchema = z.object({
   description: z.string(),
 });
 
-export type SchoolRecordFormValues = z.infer<typeof schoolRecordSchema>;
+export type SchoolRecordFormValues = z.infer<
+  typeof schoolRecordSchema
+>;
