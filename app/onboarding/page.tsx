@@ -143,14 +143,16 @@ export default function SubscriptionsPage() {
                 </div>
               )}
 
-              <BillingDetailsModal
-                open={billingModalOpen}
-                onOpenChange={setBillingModalOpen}
-                selectedPlan={selectedPlanFromApi!}
-                defaultValues={billingDetails ?? undefined}
-                setStep={() => setStep("success")}
-                onSave={(data) => setBillingDetails(data)}
-              />
+              {selectedPlanFromApi && (
+                <BillingDetailsModal
+                  open={billingModalOpen}
+                  onOpenChange={setBillingModalOpen}
+                  selectedPlan={selectedPlanFromApi}
+                  defaultValues={billingDetails ?? undefined}
+                  setStep={() => setStep("success")}
+                  onSave={(data) => setBillingDetails(data)}
+                />
+              )}
 
               <div className="mt-8 flex gap-6 justify-center">
                 <button
