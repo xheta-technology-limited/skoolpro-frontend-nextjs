@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit, DocumentUpload } from "iconsax-reactjs";
@@ -21,126 +22,100 @@ import {
 } from "@/app/super-admin/school-onboarding/school-record/schema/school-record-schema";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
 import { useUserStore } from "@/features/school-profile/school-profile.store";
+
+import { useGetSchoolProfile } from "@/features/school-profile/api/get-school-profile";
+
+import { schoolProfileKeys } from "@/features/school-profile/api/query-keys";
+
+import { api } from "@/lib/api";
+import { ServerErrorResponse } from "@/types/api";
 
 import {
   SCHOOL_TYPE_OPTIONS,
   OWNERSHIP_TYPE_OPTIONS,
 } from "@/app/onboarding/_components/SchoolProfileStep";
 
-interface SchoolLicenseFile {
-  name: string;
-  sizeLabel: string;
-  url: string;
-}
+import type {
+  Campus,
+  SchoolLicenseFile,
+  UpdateCampusPayload,
+  UpdateRegistrationNumberPayload,
+  UpdateSchoolProfilePayload,
+  Contact,
+} from "./types";
 
-interface Contact {
-  id: string;
-  type: string;
-  label: string;
-  value: string;
-  is_primary: boolean;
-}
-
-interface Campus {
-  id: string;
-  name: string;
-  is_primary: boolean;
-  city: string;
-  country_code: string;
-  opening_status: string;
-}
-
-function getOptionLabel(
-  options: { label: string; value: string }[],
-  value: string | undefined
-): string {
-  return options.find((option) => option.value === value)?.label ?? value ?? "";
-}
-
-function getPrimaryContact(contacts: Contact[], types: string[]): string {
-  const normalizedTypes = types.map((type) => type.toLowerCase());
-
-  const primary = contacts.find(
-    (contact) =>
-      normalizedTypes.includes(contact.type.toLowerCase()) && contact.is_primary
-  );
-
-  if (primary) {
-    return primary.value;
-  }
-
-  return (
-    contacts.find((contact) =>
-      normalizedTypes.includes(contact.type.toLowerCase())
-    )?.value ?? ""
-  );
-}
-
-function getContactByLabel(contacts: Contact[], labels: string[]): string {
-  const normalizedLabels = labels.map((label) => label.toLowerCase());
-
-  return (
-    contacts.find((contact) =>
-      normalizedLabels.includes(contact.label.toLowerCase())
-    )?.value ?? ""
-  );
-}
-
-function getSchoolTypes(
-  types: { slug: string; is_active: boolean }[]
-): string[] {
-  return types.filter((type) => type.is_active).map((type) => type.slug);
-}
-
-function getAddress(campuses: Campus[]): string {
-  const campus = campuses.find((campus) => campus.is_primary) ?? campuses[0];
-
-  if (!campus) {
-    return "";
-  }
-
-  return [campus.city, campus.country_code].filter(Boolean).join(", ");
-}
-
-function getInitials(name: string): string {
-  return (
-    name
-      .split(" ")
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((word) => word[0])
-      .join("")
-      .toUpperCase() || "S"
-  );
-}
-
-function toDateOnly(value: string | undefined): string {
-  if (!value) {
-    return "";
-  }
-
-  return value.split("T")[0];
-}
-
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) {
-    return `${bytes} B`;
-  }
-
-  if (bytes < 1024 * 1024) {
-    return `${(bytes / 1024).toFixed(1)} KB`;
-  }
-
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
+import {
+  formatFileSize,
+  getAddress,
+  getContactByLabel,
+  getInitials,
+  getOptionLabel,
+  getPrimaryContact,
+  getSchoolTypes,
+  toDateOnly,
+} from "./utils";
 
 export default function SchoolRecordPage() {
   const [mode, setMode] = useState<"view" | "edit">("view");
   const [licenseFiles, setLicenseFiles] = useState<SchoolLicenseFile[]>([]);
 
-  const profile = useUserStore((state) => state.data.data);
+  const profile = useUserStore((state) => state.data);
   const updateData = useUserStore((state) => state.updateData);
+
+  const queryClient = useQueryClient();
+
+  const { data: schoolProfile } = useGetSchoolProfile();
+
+  useEffect(() => {
+    if (schoolProfile) {
+      updateData(schoolProfile);
+    }
+  }, [schoolProfile, updateData]);
+
+  const updateSchoolMutation = useMutation<
+    typeof profile,
+    ServerErrorResponse,
+    {
+      schoolId: string;
+      data: UpdateSchoolProfilePayload;
+    }
+  >({
+    mutationFn: ({ schoolId, data }) => api.put(`schools/${schoolId}`, data),
+  });
+
+  const updateCampusMutation = useMutation<
+    Campus,
+    ServerErrorResponse,
+    {
+      schoolId: string;
+      campusId: string;
+      data: UpdateCampusPayload;
+    }
+  >({
+    mutationFn: ({ schoolId, campusId, data }) =>
+      api.put(`schools/${schoolId}/campuses/${campusId}`, data),
+  });
+
+  /*
+   * PUT /schools/{school}/registration-numbers/{registration}
+   */
+  const updateRegistrationMutation = useMutation<
+    unknown,
+    ServerErrorResponse,
+    {
+      schoolId: string;
+      registrationId: string;
+      data: UpdateRegistrationNumberPayload;
+    }
+  >({
+    mutationFn: ({ schoolId, registrationId, data }) =>
+      api.put(
+        `schools/${schoolId}/registration-numbers/${registrationId}`,
+        data
+      ),
+  });
 
   const formValues = useMemo<SchoolRecordFormValues>(() => {
     if (!profile) {
@@ -162,14 +137,19 @@ export default function SchoolRecordPage() {
       };
     }
 
-    const contacts = profile.contacts ?? [];
+    const contacts: Contact[] = profile.contacts ?? [];
 
     return {
       schoolName: profile.registered_name ?? "",
+
       displayName: profile.display_name ?? "",
+
       registrationNumber: profile.registration_numbers?.[0]?.number ?? "",
+
       schoolTypes: getSchoolTypes(profile.types ?? []),
+
       ownershipType: profile.ownership_type ?? "",
+
       dateOfEstablishment: toDateOnly(profile.founding_date),
 
       email: getPrimaryContact(contacts, ["email"]),
@@ -197,6 +177,7 @@ export default function SchoolRecordPage() {
       ]),
 
       motto: profile.motto ?? "",
+
       description: profile.description ?? "",
     };
   }, [profile]);
@@ -206,7 +187,11 @@ export default function SchoolRecordPage() {
     defaultValues: formValues,
   });
 
-  const { handleSubmit, reset } = methods;
+  const {
+    handleSubmit,
+    reset,
+    formState: { isSubmitting },
+  } = methods;
 
   useEffect(() => {
     reset(formValues);
@@ -277,155 +262,66 @@ export default function SchoolRecordPage() {
     event.target.value = "";
   }
 
-  const onSubmit = (values: SchoolRecordFormValues) => {
-    if (!profile) {
+  const onSubmit = async (values: SchoolRecordFormValues) => {
+    if (!profile?.id) {
       return;
     }
 
-    // --- Contacts: update the primary existing entry per category, or
-    // append a new contact if none exists yet, so submitted values are
-    // never silently discarded. ---
-    const existingContacts = profile.contacts ?? [];
+    try {
+      await updateSchoolMutation.mutateAsync({
+        schoolId: profile.id,
 
-    const contactCategories: {
-      matches: (contact: Contact) => boolean;
-      value: string;
-      fallback: { type: string; label: string };
-    }[] = [
-      {
-        matches: (contact) => contact.type.toLowerCase() === "email",
-        value: values.email,
-        fallback: { type: "email", label: "Email" },
-      },
-      {
-        matches: (contact) =>
-          ["phone", "telephone", "mobile"].includes(contact.type.toLowerCase()),
-        value: values.phoneNumber,
-        fallback: { type: "phone", label: "Phone" },
-      },
-      {
-        matches: (contact) => contact.label.toLowerCase().includes("emergency"),
-        value: values.emergencyPhoneNumber,
-        fallback: { type: "phone", label: "Emergency phone number" },
-      },
-      {
-        matches: (contact) =>
-          ["website", "web"].includes(contact.type.toLowerCase()),
-        value: values.website,
-        fallback: { type: "website", label: "Website" },
-      },
-      {
-        matches: (contact) =>
-          ["social_media", "social-media", "social"].includes(
-            contact.type.toLowerCase()
-          ),
-        value: values.socialMediaHandle,
-        fallback: { type: "social_media", label: "Social media" },
-      },
-    ];
+        data: {
+          registered_name: values.schoolName,
+          display_name: values.displayName,
+          ownership_type: values.ownershipType,
+          founding_date: values.dateOfEstablishment,
+          description: values.description,
+          motto: values.motto,
+          type_slugs: values.schoolTypes,
+        },
+      });
 
-    let updatedContacts: Contact[] = [...existingContacts];
-    const newContacts: Contact[] = [];
+      const primaryCampus =
+        profile.campuses?.find((campus) => campus.is_primary) ??
+        profile.campuses?.[0];
 
-    for (const category of contactCategories) {
-      const primaryIndex = updatedContacts.findIndex(
-        (contact) => category.matches(contact) && contact.is_primary
-      );
-
-      const matchIndex =
-        primaryIndex !== -1
-          ? primaryIndex
-          : updatedContacts.findIndex((contact) => category.matches(contact));
-
-      if (matchIndex !== -1) {
-        updatedContacts[matchIndex] = {
-          ...updatedContacts[matchIndex],
-          value: category.value,
-        };
-      } else if (category.value) {
-        newContacts.push({
-          id: "",
-          type: category.fallback.type,
-          label: category.fallback.label,
-          value: category.value,
-          is_primary: true,
+      if (primaryCampus) {
+        await updateCampusMutation.mutateAsync({
+          schoolId: profile.id,
+          campusId: primaryCampus.id,
+          data: {
+            name: primaryCampus.name,
+            address_line_1: values.address,
+            country_code: primaryCampus.country_code,
+          },
         });
       }
+
+      const registrationNumber = profile.registration_numbers?.[0];
+
+      if (registrationNumber) {
+        await updateRegistrationMutation.mutateAsync({
+          schoolId: profile.id,
+
+          registrationId: registrationNumber.id,
+
+          data: {
+            country_code: registrationNumber.country_code,
+            number: values.registrationNumber,
+          },
+        });
+      }
+
+      await queryClient.invalidateQueries({
+        queryKey: schoolProfileKeys.all,
+      });
+
+      // Only leave edit mode after every request succeeded.
+      setMode("view");
+    } catch (error) {
+      console.error("Failed to update school profile:", error);
     }
-
-    updatedContacts = [...updatedContacts, ...newContacts];
-
-    // --- Campuses: persist the editable address back onto the primary
-    // campus, preserving all other campus fields and entries. ---
-    const existingCampuses = profile.campuses ?? [];
-    const primaryCampusIndex = existingCampuses.findIndex(
-      (campus) => campus.is_primary
-    );
-    const targetCampusIndex =
-      primaryCampusIndex !== -1 ? primaryCampusIndex : 0;
-
-    const [addressCity, addressCountryCode] = values.address
-      .split(",")
-      .map((part) => part.trim());
-
-    const updatedCampuses: Campus[] =
-      existingCampuses.length > 0
-        ? existingCampuses.map((campus, index) =>
-            index === targetCampusIndex
-              ? {
-                  ...campus,
-                  city: addressCity ?? campus.city,
-                  country_code: addressCountryCode ?? campus.country_code,
-                }
-              : campus
-          )
-        : [
-            {
-              id: "",
-              name: "",
-              is_primary: true,
-              city: addressCity ?? "",
-              country_code: addressCountryCode ?? "",
-              opening_status: "",
-            },
-          ];
-
-    const updatedRegistrationNumbers = (profile.registration_numbers ?? []).map(
-      (registration, index) =>
-        index === 0
-          ? {
-              ...registration,
-              number: values.registrationNumber,
-            }
-          : registration
-    );
-
-    const selectedSlugs = values.schoolTypes;
-
-    const updatedTypes = (profile.types ?? []).map((type) => ({
-      ...type,
-      is_active: selectedSlugs.includes(type.slug),
-    }));
-
-    const updatedProfile = {
-      ...profile,
-      registered_name: values.schoolName,
-      display_name: values.displayName,
-      ownership_type: values.ownershipType,
-      founding_date: values.dateOfEstablishment,
-      description: values.description,
-      motto: values.motto,
-      contacts: updatedContacts,
-      registration_numbers: updatedRegistrationNumbers,
-      types: updatedTypes,
-      campuses: updatedCampuses,
-    };
-
-    updateData({
-      data: updatedProfile,
-    });
-
-    setMode("view");
   };
 
   const schoolDetailFields: {
@@ -507,6 +403,12 @@ export default function SchoolRecordPage() {
   const email = getPrimaryContact(profile?.contacts ?? [], ["email"]);
 
   const address = getAddress(profile?.campuses ?? []);
+
+  const isSaving =
+    isSubmitting ||
+    updateSchoolMutation.isPending ||
+    updateCampusMutation.isPending ||
+    updateRegistrationMutation.isPending;
 
   return (
     <div className="flex flex-col gap-6 p-4 sm:p-8">
@@ -606,24 +508,29 @@ export default function SchoolRecordPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <Input name="email" label="Email address" />
+              <Input name="email" label="Email address" disabled />
 
               <Input name="address" label="School address" />
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <Input name="phoneNumber" label="Phone number" />
+              <Input name="phoneNumber" label="Phone number" disabled />
 
               <Input
                 name="emergencyPhoneNumber"
                 label="Emergency phone number"
+                disabled
               />
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <Input name="website" label="School website" />
+              <Input name="website" label="School website" disabled />
 
-              <Input name="socialMediaHandle" label="Social media handle" />
+              <Input
+                name="socialMediaHandle"
+                label="Social media handle"
+                disabled
+              />
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -678,10 +585,11 @@ export default function SchoolRecordPage() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="flex h-12 w-32 items-center justify-center rounded-[28px] bg-primary px-8 py-3"
+                disabled={isSaving}
+                className="flex h-12 w-32 items-center justify-center rounded-[28px] bg-primary px-8 py-3 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <span className="text-[16px] font-normal leading-[1.2] text-white">
-                  Save
+                  {isSaving ? "Saving..." : "Save"}
                 </span>
               </button>
             </div>
