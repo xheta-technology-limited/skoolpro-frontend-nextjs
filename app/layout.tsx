@@ -73,13 +73,13 @@ export default function RootLayout({
         jetbrainsMono.variable
       )}
     >
-      <body className="min-h-full">
+      <body className="h-full overflow-hidden">
         <Suspense fallback={null}>
           <PageLoader />
         </Suspense>
         <PageLoaderListener />
         <Providers>
-          <div className="mx-auto flex flex-col min-h-full">
+          <div className="mx-auto flex h-full flex-col overflow-hidden">
             {children}
           </div>
         </Providers>
