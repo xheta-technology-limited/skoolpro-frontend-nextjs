@@ -3,8 +3,8 @@ import { AdmiralBlue11 } from "@/components/icons/logos";
 import Link from "next/link";
 import Image from "next/image";
 import { Text } from "@/components/ui";
-import InfoText from "./otp-text";
-import OTPForm from "./form";
+import InfoText from "./_components/otp-text";
+import OTPForm from "./_components/form";
 
 export default function MFALogin() {
   return (

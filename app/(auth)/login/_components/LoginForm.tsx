@@ -12,21 +12,16 @@ import {
   userSchema,
 } from "@/features/auth/schemas/login-form-schema";
 import { useLogin } from "@/features/auth/api/login";
-import { useState } from "react";
 import SuccessModal from "@/components/common/successModal/modal";
 import { useAuth } from "../../../../features/auth/auth-store";
 import { useUserStore } from "@/features/user/user.store";
 import { useProgressRouter } from "@/features/page-loader";
 import { setFormErrors } from "@/lib/helpers/set-form-errors";
 import { navigateOnLogin } from "@/lib/helpers/navigate-on-login";
-import { useGetSchoolProfile } from "@/features/school-profile/api/get-school-profile";
-import { useUserStore as useSchoolProfileStore } from "@/features/school-profile/school-profile.store";
 import { Spinner } from "@/components/animations";
-import { ApiError } from "@/lib/api";
+import { useSchoolCheck } from "@/hooks/useSchoolCheck";
 
 const LoginForm = () => {
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [isCheckingSchool, setIsCheckingSchool] = useState(false);
   const router = useProgressRouter();
   const methods = useForm<LoginFormData>({
     defaultValues: {
@@ -39,29 +34,8 @@ const LoginForm = () => {
   const updateMFAData = useAuth((state) => state.updateData);
   const updateUserData = useUserStore((state) => state.updateData);
   const userData = useUserStore((s) => s.data);
-  const updateSchoolProfileData = useSchoolProfileStore(
-    (state) => state.updateData
-  );
-  const { refetch: refetchSchoolProfile } = useGetSchoolProfile({
-    enabled: false,
-    retry: false,
-  });
-
-  const checkSchoolAndProceed = async (mfa: boolean) => {
-    setIsCheckingSchool(true);
-    try {
-      const { data: schoolProfile, error } = await refetchSchoolProfile();
-      if (schoolProfile) {
-        updateSchoolProfileData(schoolProfile);
-        setModalOpen(true);
-      } else if (error && error instanceof ApiError && error.status === 404) {
-        router.replace("/onboarding");
-      }
-    } finally {
-      setIsCheckingSchool(false);
-      setModalOpen(true);
-    }
-  };
+  const { isCheckingSchool, isModalOpen, setModalOpen, checkSchoolAndProceed } =
+    useSchoolCheck();
 
   const onSubmit = (data: loginForm) => {
     mutate(data, {
@@ -73,7 +47,7 @@ const LoginForm = () => {
         }
         if ("first_name" in res) {
           updateUserData(res);
-          checkSchoolAndProceed(res.mfa_enabled);
+          checkSchoolAndProceed();
         }
       },
       onError: (res) => {

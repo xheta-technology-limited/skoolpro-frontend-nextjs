@@ -34,15 +34,15 @@ const Input = ({
   const isControlled = value !== undefined;
   const formContext = useFormContext();
 
-  const error = !isControlled
-    ? (get(formContext?.formState?.errors, name)?.message as string | undefined)
-    : undefined;
-
   const fieldProps = isControlled
     ? { name, value, onChange }
     : formContext?.register
     ? formContext.register(name)
     : { name, value, onChange };
+
+  const error = get(formContext?.formState?.errors, name)?.message as
+    | string
+    | undefined;
 
   const hasUnauthorizedServerError =
     !isControlled &&

@@ -22,6 +22,7 @@ export type SchoolProfile = {
     id: string;
     name: string;
     is_primary: boolean;
+    address_line_1: string | null;
     city: string;
     country_code: string;
     opening_status: string;

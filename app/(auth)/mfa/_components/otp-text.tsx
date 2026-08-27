@@ -1,6 +1,6 @@
 "use client";
 import { Text } from "@/components/ui";
-import { useAuth } from "../../../features/auth/auth-store";
+import { useAuth } from "../../../../features/auth/auth-store";
 import { MFAMethod } from "@/features/auth/types/types";
 
 export default function InfoText() {
