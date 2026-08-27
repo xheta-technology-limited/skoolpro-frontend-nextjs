@@ -1,7 +1,4 @@
-import { Button } from "@/components/ui/custom-button";
-import { AddSquare } from "iconsax-reactjs";
 import TabsNav from "../../../components/common/tabs/tabs-nav";
-import { redirect } from "next/navigation";
 import { OpenModalButton } from "./academic-year/_components/create-academic-year";
 
 const SCHOOL_ONBOARDING_TABS = [

@@ -123,11 +123,12 @@ export function OpenModalButton() {
     <Button
       size="lg"
       className="h-12 w-full gap-2 rounded-[28px] px-8 py-3.5 sm:w-auto sm:min-w-68.5"
-      onClick={() =>
+      onClick={() => {
+        alert("Check if a year exists first in production");
         router.push(
           "/super-admin/school-onboarding/academic-year?open=true&step=1"
-        )
-      }
+        );
+      }}
     >
       <AddSquare variant="Bulk" size={20} />
       <span>Create Academic Year</span>

@@ -34,7 +34,7 @@ export default function CreateEducationStructure() {
   return (
     <>
       <FormModal
-        title="Create Academic Year"
+        title="Create Education Structure"
         open={isOpen}
         onOpenChange={() =>
           router.replace("/super-admin/school-onboarding/academic-year")
@@ -54,7 +54,7 @@ export default function CreateEducationStructure() {
               isActive={true}
             />
             <LadderSelect
-              name="Nigerian Ladder"
+              name="British Ladder"
               info={[
                 "Nursery",
                 "Primary",
@@ -163,12 +163,13 @@ function LadderSelect({
       <Text className="text-primary" weight={"standard"} scale={"content"}>
         {name}
       </Text>
-      <div className="flex items-center gap-4 max-w-full flex-wrap">
+      <div className="flex items-center gap-2 max-w-full flex-wrap">
         {info.map((inf) => (
           <Text
-            className="text-[0.75rem]"
+            className="text-[0.75rem] tracking-tight leading-none"
             weight={"standard"}
             scale={"caption"}
+            key={inf}
           >
             {inf}
           </Text>
