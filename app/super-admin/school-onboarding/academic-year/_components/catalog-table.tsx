@@ -37,7 +37,13 @@ export default function CatalogTable() {
 
           <TableBody>
             {Array.from({ length: 5 }).map((_, index) => (
-              <TableRow key={index} className="text-neutrals-900">
+              <TableRow
+                key={index}
+                className={clsx(
+                  "text-neutrals-900",
+                  index === 4 && "[&>td]:border-b-0"
+                )}
+              >
                 <TableCell>English</TableCell>
                 <TableCell>ENG</TableCell>
                 <TableCell>All</TableCell>

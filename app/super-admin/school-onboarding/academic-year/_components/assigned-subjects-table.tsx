@@ -16,7 +16,7 @@ export default function AssignedSubjectsTable() {
   //return spinner if loading
   return (
     <>
-      <TableWrapper>
+      <TableWrapper className="mb-4">
         <Table>
           <TableHeader className="[&>tr>th]:after:bg-transparent [&>tr>th]:after:content-[none]">
             <TableRow>
@@ -37,7 +37,13 @@ export default function AssignedSubjectsTable() {
 
           <TableBody>
             {Array.from({ length: 5 }).map((_, index) => (
-              <TableRow key={index} className="text-neutrals-900">
+              <TableRow
+                key={index}
+                className={clsx(
+                  "text-neutrals-900",
+                  index === 4 && "[&>td]:border-b-0"
+                )}
+              >
                 <TableCell>English</TableCell>
                 <TableCell>Whole class</TableCell>
                 <TableCell>Yes</TableCell>
