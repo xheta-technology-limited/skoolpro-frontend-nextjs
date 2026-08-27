@@ -67,7 +67,7 @@ export default function CreateSubjects() {
               onSubmit={methods.handleSubmit(addSubject)}
             >
               <Input name="arm_name" label="Arm Name" />
-              <Input name="arm_name" label="Arm Code" />
+              <Input name="arm_code" label="Arm Code" />
               <Select name="name" options={DUMMY_CAMPUSES} label="Campus" />
               <Select
                 name="code"
