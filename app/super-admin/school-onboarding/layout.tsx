@@ -32,7 +32,7 @@ export default function SchoolOnboardingLayout({
 
       <TabsNav tabs={SCHOOL_ONBOARDING_TABS} className="mt-6" />
 
-      <div className="mb-8 w-full min-h-[calc(100vh-14rem)] rounded-2xl border border-grays-borders bg-white">
+      <div className="mb-8 w-full rounded-2xl border border-grays-borders bg-white">
         {children}
       </div>
     </div>
