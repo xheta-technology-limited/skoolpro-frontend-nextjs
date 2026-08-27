@@ -6,6 +6,9 @@ import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit, DocumentUpload } from "iconsax-reactjs";
 
+import { toast } from "sonner";
+import { Button } from "@/components/ui/custom-button";
+
 import {
   Input,
   Select,
@@ -286,6 +289,9 @@ export default function SchoolRecordPage() {
       return;
     }
 
+    const failures: string[] = [];
+    let anySucceeded = false;
+
     try {
       await updateSchoolMutation.mutateAsync({
         schoolId: profile.id,
@@ -300,13 +306,18 @@ export default function SchoolRecordPage() {
           type_slugs: values.schoolTypes,
         },
       });
+      anySucceeded = true;
+    } catch (error) {
+      console.error("Failed to update school details:", error);
+      failures.push("School details");
+    }
 
-      const primaryCampus =
-        profile.campuses?.find(
-          (campus) => campus.is_primary
-        ) ?? profile.campuses?.[0];
+    const primaryCampus =
+      profile.campuses?.find((campus) => campus.is_primary) ??
+      profile.campuses?.[0];
 
-      if (primaryCampus) {
+    if (primaryCampus) {
+      try {
         await updateCampusMutation.mutateAsync({
           schoolId: profile.id,
           campusId: primaryCampus.id,
@@ -316,12 +327,17 @@ export default function SchoolRecordPage() {
             country_code: primaryCampus.country_code,
           },
         });
+        anySucceeded = true;
+      } catch (error) {
+        console.error("Failed to update campus address:", error);
+        failures.push("School address");
       }
+    }
 
-      const registrationNumber =
-        profile.registration_numbers?.[0];
+    const registrationNumber = profile.registration_numbers?.[0];
 
-      if (registrationNumber) {
+    if (registrationNumber) {
+      try {
         await updateRegistrationMutation.mutateAsync({
           schoolId: profile.id,
 
@@ -332,20 +348,36 @@ export default function SchoolRecordPage() {
             number: values.registrationNumber,
           },
         });
+        anySucceeded = true;
+      } catch (error) {
+        console.error("Failed to update registration number:", error);
+        failures.push("Registration number");
       }
+    }
 
+    if (anySucceeded) {
       await queryClient.invalidateQueries({
         queryKey: schoolProfileKeys.all,
       });
-
-      // Only leave edit mode after every request succeeded.
-      setMode("view");
-    } catch (error) {
-      console.error(
-        "Failed to update school profile:",
-        error
-      );
     }
+
+    if (failures.length === 0) {
+      toast.success("School record updated successfully.");
+      setMode("view");
+      return;
+    }
+
+    if (anySucceeded) {
+      toast.warning(
+        `Some details were saved, but ${failures.join(", ")} failed to update. Please try again.`
+      );
+      // Stay in edit mode so the person can retry the failed section(s)
+      // without losing anything, and doesn't see the form silently
+      // "succeed" when part of the save actually failed.
+      return;
+    }
+
+    toast.error("Failed to update school record. Please try again.");
   };
 
   const schoolDetailFields: {
@@ -460,23 +492,23 @@ export default function SchoolRecordPage() {
           </span>
 
           <div className="flex min-h-41 w-full flex-col items-start justify-between gap-4 rounded-2xl border border-primary-100 bg-primary-bg px-4 py-6 sm:flex-row sm:items-center sm:px-12 sm:py-8">
-            <div className="flex items-center gap-4">
+            <div className="flex w-full min-w-0 items-center gap-4">
               <Avatar className="h-25 w-25 shrink-0">
                 <AvatarFallback className="bg-neutrals-100">
                   {getInitials(schoolName)}
                 </AvatarFallback>
               </Avatar>
 
-              <div className="flex flex-col gap-1">
-                <span className="text-[16px] font-semibold leading-[1.2] text-primary">
+              <div className="flex min-w-0 flex-col gap-1">
+                <span className="truncate text-[16px] font-semibold leading-[1.2] text-primary">
                   {schoolName}
                 </span>
 
-                <span className="text-[14px] font-normal leading-[1.2] text-neutrals-700">
+                <span className="truncate text-[14px] font-normal leading-[1.2] text-neutrals-700">
                   {email}
                 </span>
 
-                <span className="text-[14px] font-normal leading-[1.2] text-neutrals-700">
+                <span className="truncate text-[14px] font-normal leading-[1.2] text-neutrals-700">
                   {address}
                 </span>
               </div>
@@ -485,7 +517,7 @@ export default function SchoolRecordPage() {
             <button
               type="button"
               onClick={enterEditMode}
-              className="flex h-14 w-full items-center justify-center gap-2 rounded-[28px] border border-primary bg-base-white px-8 py-4 sm:w-32.25"
+              className="flex h-14 w-full shrink-0 items-center justify-center gap-2 rounded-[28px] border border-primary bg-base-white px-8 py-4 sm:w-32.25"
             >
               <Edit
                 size={24}
@@ -508,7 +540,7 @@ export default function SchoolRecordPage() {
       {mode === "view" ? (
         <div className="flex w-full flex-col gap-4 rounded-2xl bg-primary-bg p-2">
           {rows.map(([left, right], index) => (
-            <div key={index} className="flex gap-2">
+            <div key={index} className="flex w-full min-w-0 gap-2">
               <DetailField
                 label={left.label}
                 value={left.value}
@@ -667,15 +699,9 @@ export default function SchoolRecordPage() {
             </div>
 
             <div className="flex justify-end">
-              <button
-                type="submit"
-                disabled={isSaving}
-                className="flex h-12 w-32 items-center justify-center rounded-[28px] bg-primary px-8 py-3 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <span className="text-[16px] font-normal leading-[1.2] text-white">
-                  {isSaving ? "Saving..." : "Save"}
-                </span>
-              </button>
+              <Button type="submit" loading={isSaving} className="w-32">
+                {isSaving ? "Saving" : "Save"}
+              </Button>
             </div>
           </form>
         </FormProvider>
