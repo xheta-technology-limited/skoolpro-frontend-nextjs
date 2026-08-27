@@ -1,3 +1,4 @@
+import FilterIcon from "@/components/icons/filter-icon";
 import {
   Select,
   SelectContent,
@@ -22,9 +23,7 @@ export default function MiniSelector({ items, label, ...props }: Props) {
   return (
     <Select items={items} {...props}>
       <SelectTrigger
-        icon={
-          <ArrowDown3 variant="Bulk" size={12} className="text-neutrals-700" />
-        }
+        icon={<FilterIcon fontSize={12} />}
         className="max-w-fit bg-white border border-grays-borders rounded-[12px]"
       >
         <SelectValue

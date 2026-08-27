@@ -1,0 +1,126 @@
+type AcademicYear = {
+  id: string;
+  school_id: string;
+  name: string;
+  slug: string;
+  session_type: string;
+  session_type_label: string;
+  starts_on: string;
+  ends_on: string;
+  status: string;
+  is_default_for_enrolment: boolean;
+  generated_from_year_id: string | null;
+  approved_at: string | null;
+  is_draft: boolean;
+  terms: {
+    id: string;
+    school_id: string;
+    academic_year_id: string;
+    name: string;
+    slug: string;
+    sequence: number;
+    starts_on: string;
+    ends_on: string;
+    status: string;
+    created_at: string;
+    updated_at: string;
+  }[];
+  created_at: string;
+  updated_at: string;
+};
+
+export const dummyData: AcademicYear = {
+  id: "9c1a2b3c-0001-4a1b-8c2d-0000000year1",
+  school_id: "0a0a0a0a-0000-4000-8000-00000000scho",
+  name: "2026 / 2027",
+  slug: "2026-2027",
+  session_type: "term",
+  session_type_label: "Term",
+  starts_on: "2026-09-01",
+  ends_on: "2027-07-31",
+  status: "current",
+  is_default_for_enrolment: true,
+  generated_from_year_id: null,
+  approved_at: null,
+  is_draft: false,
+  terms: [
+    {
+      id: "1a1a1a1a-0001-4000-8000-0000000term1",
+      school_id: "0a0a0a0a-0000-4000-8000-00000000scho",
+      academic_year_id: "9c1a2b3c-0001-4a1b-8c2d-0000000year1",
+      name: "First Term",
+      slug: "first-term",
+      sequence: 1,
+      starts_on: "2026-09-01",
+      ends_on: "2026-12-15",
+      status: "current",
+      created_at: "2026-08-01T09:00:00+00:00",
+      updated_at: "2026-08-01T09:00:00+00:00",
+    },
+  ],
+  created_at: "2026-08-01T09:00:00+00:00",
+  updated_at: "2026-08-01T09:00:00+00:00",
+};
+
+export const SESSION_TYPE_OPTIONS = [
+  { value: "term", label: "Term" },
+  { value: "semester", label: "Semester" },
+];
+
+export const DUMMY_CLASSES = [
+  { value: "ss2", label: "SS2" },
+  { value: "ss3", label: "SS3" },
+];
+
+export const DUMMY_CAMPUSES = [
+  { value: "main", label: "Main Campus" },
+  { value: "annex", label: "Annex Campus" },
+];
+
+export const DUMMY_CLASS_TEACHERS = [
+  { value: "teacher-1", label: "Mr. John Doe" },
+  { value: "teacher-2", label: "Mrs. Jane Smith" },
+  { value: "teacher-3", label: "Ms. Ada Obi" },
+];
+
+export const DUMMY_CLASS_STATUSES = [
+  { value: "active", label: "Active" },
+  { value: "inactive", label: "Inactive" },
+  { value: "pending", label: "Pending" },
+];
+
+export type Arm = {
+  arm: string;
+  name: string;
+  teacher: string;
+  capacity: number;
+  campus: string;
+  branch: string;
+};
+
+export const DUMMY_ARMS: Arm[] = [
+  {
+    arm: "A",
+    name: "SS1 A",
+    teacher: "Mr. John Doe",
+    capacity: 40,
+    campus: "Main Campus",
+    branch: "Morning",
+  },
+  {
+    arm: "B",
+    name: "SS1 B",
+    teacher: "Mrs. Jane Smith",
+    capacity: 38,
+    campus: "Main Campus",
+    branch: "Morning",
+  },
+  {
+    arm: "C",
+    name: "SS1 C",
+    teacher: "Ms. Ada Obi",
+    capacity: 42,
+    campus: "Annex Campus",
+    branch: "Afternoon",
+  },
+];

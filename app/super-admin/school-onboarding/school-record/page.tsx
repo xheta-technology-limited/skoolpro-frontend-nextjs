@@ -16,7 +16,6 @@ import {
   TextArea,
   Checkbox,
 } from "@/components/ui/form";
-
 import DetailField from "@/app/onboarding/_components/DetailField";
 import LicenseFileRow from "./_components/LicenseFileRow";
 
@@ -63,9 +62,7 @@ import {
 
 export default function SchoolRecordPage() {
   const [mode, setMode] = useState<"view" | "edit">("view");
-  const [licenseFiles, setLicenseFiles] = useState<
-    SchoolLicenseFile[]
-  >([]);
+  const [licenseFiles, setLicenseFiles] = useState<SchoolLicenseFile[]>([]);
 
   const profile = useUserStore((state) => state.data);
   const updateData = useUserStore((state) => state.updateData);
@@ -88,8 +85,7 @@ export default function SchoolRecordPage() {
       data: UpdateSchoolProfilePayload;
     }
   >({
-    mutationFn: ({ schoolId, data }) =>
-      api.put(`schools/${schoolId}`, data),
+    mutationFn: ({ schoolId, data }) => api.put(`schools/${schoolId}`, data),
   });
 
   const updateCampusMutation = useMutation<
@@ -102,10 +98,7 @@ export default function SchoolRecordPage() {
     }
   >({
     mutationFn: ({ schoolId, campusId, data }) =>
-      api.put(
-        `schools/${schoolId}/campuses/${campusId}`,
-        data
-      ),
+      api.put(`schools/${schoolId}/campuses/${campusId}`, data),
   });
 
   /*
@@ -154,8 +147,7 @@ export default function SchoolRecordPage() {
 
       displayName: profile.display_name ?? "",
 
-      registrationNumber:
-        profile.registration_numbers?.[0]?.number ?? "",
+      registrationNumber: profile.registration_numbers?.[0]?.number ?? "",
 
       schoolTypes: getSchoolTypes(profile.types ?? []),
 
@@ -179,10 +171,7 @@ export default function SchoolRecordPage() {
         "emergency phone number",
       ]),
 
-      website: getPrimaryContact(contacts, [
-        "website",
-        "web",
-      ]),
+      website: getPrimaryContact(contacts, ["website", "web"]),
 
       socialMediaHandle: getPrimaryContact(contacts, [
         "social_media",
@@ -232,9 +221,7 @@ export default function SchoolRecordPage() {
 
   function removeLicenseFile(name: string) {
     setLicenseFiles((previous) => {
-      const fileToRemove = previous.find(
-        (file) => file.name === name
-      );
+      const fileToRemove = previous.find((file) => file.name === name);
 
       if (fileToRemove) {
         URL.revokeObjectURL(fileToRemove.url);
@@ -244,9 +231,7 @@ export default function SchoolRecordPage() {
     });
   }
 
-  function handleLicenseUpload(
-    event: React.ChangeEvent<HTMLInputElement>
-  ) {
+  function handleLicenseUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(event.target.files ?? []);
 
     if (!files.length) {
@@ -260,9 +245,7 @@ export default function SchoolRecordPage() {
     }));
 
     setLicenseFiles((previous) => {
-      const existingNames = new Set(
-        previous.map((file) => file.name)
-      );
+      const existingNames = new Set(previous.map((file) => file.name));
 
       const filesToAdd: SchoolLicenseFile[] = [];
 
@@ -282,9 +265,7 @@ export default function SchoolRecordPage() {
     event.target.value = "";
   }
 
-  const onSubmit = async (
-    values: SchoolRecordFormValues
-  ) => {
+  const onSubmit = async (values: SchoolRecordFormValues) => {
     if (!profile?.id) {
       return;
     }
@@ -369,7 +350,9 @@ export default function SchoolRecordPage() {
 
     if (anySucceeded) {
       toast.warning(
-        `Some details were saved, but ${failures.join(", ")} failed to update. Please try again.`
+        `Some details were saved, but ${failures.join(
+          ", "
+        )} failed to update. Please try again.`
       );
       // Stay in edit mode so the person can retry the failed section(s)
       // without losing anything, and doesn't see the form silently
@@ -399,17 +382,12 @@ export default function SchoolRecordPage() {
     {
       label: "School type",
       value: formValues.schoolTypes
-        .map((type) =>
-          getOptionLabel(SCHOOL_TYPE_OPTIONS, type)
-        )
+        .map((type) => getOptionLabel(SCHOOL_TYPE_OPTIONS, type))
         .join(", "),
     },
     {
       label: "Ownership type",
-      value: getOptionLabel(
-        OWNERSHIP_TYPE_OPTIONS,
-        formValues.ownershipType
-      ),
+      value: getOptionLabel(OWNERSHIP_TYPE_OPTIONS, formValues.ownershipType),
     },
     {
       label: "Date of establishment",
@@ -454,26 +432,14 @@ export default function SchoolRecordPage() {
     (typeof schoolDetailFields)[0] | undefined
   ][] = [];
 
-  for (
-    let index = 0;
-    index < schoolDetailFields.length;
-    index += 2
-  ) {
-    rows.push([
-      schoolDetailFields[index],
-      schoolDetailFields[index + 1],
-    ]);
+  for (let index = 0; index < schoolDetailFields.length; index += 2) {
+    rows.push([schoolDetailFields[index], schoolDetailFields[index + 1]]);
   }
 
   const schoolName =
-    profile?.display_name ||
-    profile?.registered_name ||
-    "School";
+    profile?.display_name || profile?.registered_name || "School";
 
-  const email = getPrimaryContact(
-    profile?.contacts ?? [],
-    ["email"]
-  );
+  const email = getPrimaryContact(profile?.contacts ?? [], ["email"]);
 
   const address = getAddress(profile?.campuses ?? []);
 
@@ -519,11 +485,7 @@ export default function SchoolRecordPage() {
               onClick={enterEditMode}
               className="flex h-14 w-full shrink-0 items-center justify-center gap-2 rounded-[28px] border border-primary bg-base-white px-8 py-4 sm:w-32.25"
             >
-              <Edit
-                size={24}
-                variant="Bulk"
-                color="#010081"
-              />
+              <Edit size={24} variant="Bulk" color="#010081" />
 
               <span className="text-[18px] font-normal leading-[1.2] text-primary">
                 Edit
@@ -541,17 +503,9 @@ export default function SchoolRecordPage() {
         <div className="flex w-full flex-col gap-4 rounded-2xl bg-primary-bg p-2">
           {rows.map(([left, right], index) => (
             <div key={index} className="flex w-full min-w-0 gap-2">
-              <DetailField
-                label={left.label}
-                value={left.value}
-              />
+              <DetailField label={left.label} value={left.value} />
 
-              {right && (
-                <DetailField
-                  label={right.label}
-                  value={right.value}
-                />
-              )}
+              {right && <DetailField label={right.label} value={right.value} />}
             </div>
           ))}
         </div>
@@ -562,22 +516,13 @@ export default function SchoolRecordPage() {
             className="flex flex-col gap-6"
           >
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <Input
-                name="schoolName"
-                label="School name"
-              />
+              <Input name="schoolName" label="School name" />
 
-              <Input
-                name="displayName"
-                label="Display name"
-              />
+              <Input name="displayName" label="Display name" />
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <Input
-                name="registrationNumber"
-                label="Registration number"
-              />
+              <Input name="registrationNumber" label="Registration number" />
 
               <div className="[&>div>button:first-child]:bg-primary-bg!">
                 <Checkbox
@@ -602,24 +547,13 @@ export default function SchoolRecordPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <Input
-                name="email"
-                label="Email address"
-                disabled
-              />
+              <Input name="email" label="Email address" disabled />
 
-              <Input
-                name="address"
-                label="School address"
-              />
+              <Input name="address" label="School address" />
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <Input
-                name="phoneNumber"
-                label="Phone number"
-                disabled
-              />
+              <Input name="phoneNumber" label="Phone number" disabled />
 
               <Input
                 name="emergencyPhoneNumber"
@@ -629,11 +563,7 @@ export default function SchoolRecordPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <Input
-                name="website"
-                label="School website"
-                disabled
-              />
+              <Input name="website" label="School website" disabled />
 
               <Input
                 name="socialMediaHandle"
@@ -643,10 +573,7 @@ export default function SchoolRecordPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <Input
-                name="motto"
-                label="School motto"
-              />
+              <Input name="motto" label="School motto" />
 
               <TextArea
                 name="description"
@@ -667,9 +594,7 @@ export default function SchoolRecordPage() {
                   sizeLabel={file.sizeLabel}
                   url={file.url}
                   mode="edit"
-                  onRemove={() =>
-                    removeLicenseFile(file.name)
-                  }
+                  onRemove={() => removeLicenseFile(file.name)}
                 />
               ))}
 
@@ -690,10 +615,8 @@ export default function SchoolRecordPage() {
 
                 <span className="font-lora text-[11px] font-normal leading-[1.2] text-neutrals-700 sm:whitespace-nowrap">
                   Drag and drop or{" "}
-                  <span className="font-semibold text-primary">
-                    Browse
-                  </span>{" "}
-                  to upload school letterhead
+                  <span className="font-semibold text-primary">Browse</span> to
+                  upload school letterhead
                 </span>
               </label>
             </div>
