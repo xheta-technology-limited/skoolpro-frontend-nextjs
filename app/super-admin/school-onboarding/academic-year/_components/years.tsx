@@ -16,6 +16,7 @@ import CreateAcademicYear from "./create-academic-year";
 import CreateEducationStructure from "./create-education-structure";
 import CreateClassSections from "./create-class-sections";
 import CreateSubjects from "./create-subjects";
+import ReviewAcademicYear from "./review-modal";
 
 const headRow = ["Name", "Start", "End", "Status", "Action"];
 export default function AcademicYears() {
@@ -90,6 +91,7 @@ export default function AcademicYears() {
       <CreateEducationStructure />
       <CreateClassSections />
       <CreateSubjects />
+      <ReviewAcademicYear />
     </>
   );
 }

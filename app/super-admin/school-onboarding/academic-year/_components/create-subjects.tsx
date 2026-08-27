@@ -7,24 +7,16 @@ import { useSearchParams } from "next/navigation";
 import { AddSquare } from "iconsax-reactjs";
 
 import {
-  AcademicYearFormData,
-  academicYearSchema,
   ClassSectionsFormData,
   classSectionsSchema,
 } from "@/features/academic-year";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  type Arm,
-  DUMMY_CAMPUSES,
-  DUMMY_CLASSES,
-  DUMMY_CLASS_STATUSES,
-  DUMMY_CLASS_TEACHERS,
-  DUMMY_ARMS,
-} from "../constants";
+import { DUMMY_CAMPUSES, DUMMY_CLASS_TEACHERS } from "../constants";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import CatalogTable from "./catalog-table";
 import AssignedSubjectsTable from "./assigned-subjects-table";
+import { SuccessModal } from "@/components/common";
 
 export default function CreateSubjects() {
   const router = useProgressRouter();
@@ -35,14 +27,25 @@ export default function CreateSubjects() {
   });
   const levelController = useForm<{ class: string }>();
 
-  const onSubmit = () => {
+  const finish = () => {
     router.push(
-      "/super-admin/school-onboarding/academic-year?open=true&step=preview"
+      "/super-admin/school-onboarding/academic-year?open=true&step=success"
     );
   };
   const open = searchParams.get("open");
   const current = searchParams.get("step");
   const isOpen = open === "true" && current === "4";
+  const isSuccess = open === "true" && current === "success";
+
+  const onCloseSuccessModal = () =>
+    router.push("/super-admin/school-onboarding/academic-year");
+
+  const addSubject = () => {
+    alert("Do some API stuff");
+  };
+  const assignSubject = () => {
+    alert("Also do some API stuff");
+  };
 
   return (
     <>
@@ -59,9 +62,9 @@ export default function CreateSubjects() {
           </Text>
           <FormProvider {...methods}>
             <form
-              id="create-class-section-form"
+              id="add-subject-form"
               className="sm:h-auto gap-4 w-full grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]"
-              onSubmit={methods.handleSubmit(onSubmit)}
+              onSubmit={methods.handleSubmit(addSubject)}
             >
               <Input name="arm_name" label="Arm Name" />
               <Input name="arm_name" label="Arm Code" />
@@ -73,7 +76,8 @@ export default function CreateSubjects() {
               />
             </form>
             <Button
-              type="button"
+              type="submit"
+              form="add-subject-form"
               variant="secondary"
               size="sm"
               className="justify-self-end max-w-fit ml-auto"
@@ -98,9 +102,9 @@ export default function CreateSubjects() {
             </Text>
             <FormProvider {...methods}>
               <form
-                id="create-class-section-form"
+                id="assign-subject-form"
                 className="sm:h-auto gap-4 w-full grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]"
-                onSubmit={methods.handleSubmit(onSubmit)}
+                onSubmit={methods.handleSubmit(assignSubject)}
               >
                 <Select name="name" options={DUMMY_CAMPUSES} label="Campus" />
                 <Select
@@ -122,7 +126,8 @@ export default function CreateSubjects() {
                 />
               </form>
               <Button
-                type="button"
+                type="submit"
+                form="assign-subject-form"
                 variant="secondary"
                 size="sm"
                 className="justify-self-end max-w-fit ml-auto"
@@ -155,6 +160,7 @@ export default function CreateSubjects() {
               Cancel
             </Button>
             <Button
+              onClick={finish}
               size="lg"
               className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
             >
@@ -163,6 +169,17 @@ export default function CreateSubjects() {
           </div>
         </div>
       </FormModal>
+
+      <SuccessModal
+        onClose={onCloseSuccessModal}
+        isOpen={isSuccess}
+        heading="Successful"
+        subheading="Academic setup has been added successfully."
+      >
+        <Button size="lg" onClick={onCloseSuccessModal}>
+          Dismiss
+        </Button>
+      </SuccessModal>
     </>
   );
 }
