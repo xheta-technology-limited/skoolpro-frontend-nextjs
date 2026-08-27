@@ -1,5 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import clsx from "clsx";
+import { twMerge as tw } from "tailwind-merge";
 
 export const textVariants = cva(
   "tracking-normal leading-[1.2] text-neutrals-1000",
@@ -58,9 +59,8 @@ const Text = <T extends React.ElementType = "p">({
       : weight;
   return (
     <Component
-      className={clsx(
-        textVariants({ scale, weight: resolvedWeight }),
-        className
+      className={tw(
+        clsx(textVariants({ scale, weight: resolvedWeight }), className)
       )}
       {...props}
     >
