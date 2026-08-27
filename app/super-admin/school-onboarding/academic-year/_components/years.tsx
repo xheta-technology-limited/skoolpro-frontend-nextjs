@@ -14,6 +14,7 @@ import {
 import { MiniSelector } from "@/components/common";
 import CreateAcademicYear from "./create-academic-year";
 import CreateEducationStructure from "./create-education-structure";
+import CreateClassSections from "./create-class-sections";
 
 const headRow = ["Name", "Start", "End", "Status", "Action"];
 export default function AcademicYears() {
@@ -86,6 +87,7 @@ export default function AcademicYears() {
 
       <CreateAcademicYear />
       <CreateEducationStructure />
+      <CreateClassSections />
     </>
   );
 }
