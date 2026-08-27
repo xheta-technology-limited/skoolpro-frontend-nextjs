@@ -1,22 +1,15 @@
 "use client";
 import { FormProvider, useForm, useFieldArray } from "react-hook-form";
 import { Text } from "@/components/ui";
-import {
-  CompactCheckbox,
-  DatePicker,
-  Input,
-  Select,
-} from "@/components/ui/form";
+import { CompactCheckbox } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
 import { useSearchParams } from "next/navigation";
-import { AddSquare } from "iconsax-reactjs";
 
 import {
-  AcademicYearFormData,
-  academicYearSchema,
+  EducationStructureFormData,
+  educationStructureSchema,
 } from "@/features/academic-year";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SESSION_TYPE_OPTIONS } from "../constants";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import clsx from "clsx";
@@ -24,20 +17,15 @@ import clsx from "clsx";
 export default function CreateEducationStructure() {
   const router = useProgressRouter();
   const searchParams = useSearchParams();
-  const methods = useForm<AcademicYearFormData>({
-    //TODO: make one for education structure
-    defaultValues: {
-      terms: [
-        { name: "", starts_on: "", ends_on: "" },
-        { name: "", starts_on: "", ends_on: "" },
-        { name: "", starts_on: "", ends_on: "" },
-      ],
-    },
-    resolver: zodResolver(academicYearSchema), //TODO: change this. Make a schema for this
+  const methods = useForm<EducationStructureFormData>({
+    defaultValues: {},
+    resolver: zodResolver(educationStructureSchema),
   });
 
   const onSubmit = () => {
-    alert("clicked fr fr");
+    router.push(
+      "/super-admin/school-onboarding/academic-year?open=true&step=3"
+    );
   };
   const open = searchParams.get("open");
   const current = searchParams.get("step");
@@ -52,8 +40,8 @@ export default function CreateEducationStructure() {
           router.replace("/super-admin/school-onboarding/academic-year")
         }
       >
-        <div className="flex flex-col gap-8">
-          <div className="flex gap-4">
+        <div className="flex flex-col gap-4 max-w-full">
+          <div className="flex gap-4 *:flex-1">
             <LadderSelect
               name="Nigerian Ladder"
               info={[
@@ -76,27 +64,41 @@ export default function CreateEducationStructure() {
               ]}
             />
           </div>
-          <Text scale={"content"}>Stages School Offer</Text>
+          <Text className="text-neutrals-700" scale={"content"}>
+            Stages School Offer
+          </Text>
           <FormProvider {...methods}>
             <form
-              className="flex flex-col sm:h-auto gap-6 w-full bg-primary-bg"
+              className="flex flex-col sm:h-auto gap-6 rounded-ml p-2 w-full bg-primary-bg"
               onSubmit={methods.handleSubmit(onSubmit)}
-              id="le-form"
+              id="create-education-structure-form"
             >
               <CompactCheckbox
-                label="primary"
-                name="something dumb for now"
-                id="sumdumb"
+                label="Primary"
+                name="stages"
+                id="primary"
+                value="primary"
               />
+
               <CompactCheckbox
-                label="second"
-                name="something dumb fo"
-                id="sumstupb"
+                label="Junior Secondary"
+                name="stages"
+                id="junior-secondary"
+                value="junior_secondary"
+              />
+
+              <CompactCheckbox
+                label="Senior Secondary"
+                name="stages"
+                id="senior-secondary"
+                value="senior_secondary"
               />
             </form>
           </FormProvider>
 
-          <Text scale={"content"}>Resulting ladder</Text>
+          <Text className="text-neutrals-700" scale={"content"}>
+            Resulting ladder
+          </Text>
 
           {Array.from({ length: 5 }).map((_, index) => (
             <Ladder
@@ -117,6 +119,9 @@ export default function CreateEducationStructure() {
               variant="secondary"
               size="lg"
               className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+              onClick={() =>
+                router.replace("/super-admin/school-onboarding/academic-year")
+              }
             >
               Cancel
             </Button>
@@ -124,6 +129,7 @@ export default function CreateEducationStructure() {
               type="submit"
               size="lg"
               className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+              form="create-education-structure-form"
             >
               Continue
             </Button>
@@ -138,19 +144,26 @@ interface LadderSelectProps {
   name: string;
   info: string[];
   isActive?: boolean;
+  className?: string;
 }
-function LadderSelect({ name, info, isActive = false }: LadderSelectProps) {
+function LadderSelect({
+  name,
+  info,
+  isActive = false,
+  className,
+}: LadderSelectProps) {
   return (
     <div
       className={clsx(
-        "flex flex-col gap-2 rounded-ml bg-base-white border p-4 ",
-        isActive && "border-primary"
+        "flex flex-col gap-2 rounded-ml bg-base-white border p-4  hover:cursor-pointer",
+        isActive && "border-primary",
+        className
       )}
     >
       <Text className="text-primary" weight={"standard"} scale={"content"}>
         {name}
       </Text>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 max-w-full flex-wrap">
         {info.map((inf) => (
           <Text
             className="text-[0.75rem]"
@@ -173,11 +186,17 @@ interface LadderProps {
   name: string;
   stage: number;
   items: LadderItem[];
+  className?: string;
 }
-function Ladder({ name, stage, items }: LadderProps) {
+function Ladder({ name, stage, items, className }: LadderProps) {
   return (
-    <div className="rounded-ml pb-4 flex flex-col gap-4 border border-primary-100">
-      <div className="flex w-full justify-between bg-primary-bg border border-primary">
+    <div
+      className={clsx(
+        "rounded-ml pb-4 flex flex-col gap-4 border border-grays-borders",
+        className
+      )}
+    >
+      <div className="flex w-full justify-between bg-primary-bg border border-grays-borders px-4 py-2 rounded-tl-ml rounded-tr-ml">
         <Text
           className="text-neutrals-text-body-light-1"
           weight={"accent"}
@@ -185,7 +204,11 @@ function Ladder({ name, stage, items }: LadderProps) {
         >
           {name}
         </Text>
-        <Text weight={"standard"} scale={"caption"}>
+        <Text
+          className="text-neutrals-text-body-light-1"
+          weight={"standard"}
+          scale={"caption"}
+        >
           Stage {stage}
         </Text>
       </div>
@@ -193,7 +216,11 @@ function Ladder({ name, stage, items }: LadderProps) {
       <div className="flex-1 px-5 flex flex-col gap-4">
         {items.map((item) => (
           <div className="border border-grays-borders rounded-[8px] flex justify-between p-4">
-            <Text weight={"standard"} scale={"caption"}>
+            <Text
+              className="text-neutrals-900"
+              weight={"standard"}
+              scale={"caption"}
+            >
               {item.name}
             </Text>
             <Text

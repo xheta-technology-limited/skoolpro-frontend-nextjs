@@ -2,15 +2,15 @@ import { z } from "zod";
 
 const termSchema = z.object({
   name: z.string(),
-  starts_on: z.iso.datetime(),
-  ends_on: z.iso.datetime(),
+  starts_on: z.iso.datetime("Please enter a valid date"),
+  ends_on: z.iso.datetime("Please enter a valid date"),
 });
 
 export const academicYearSchema = z
   .object({
     name: z.string(),
-    starts_on: z.iso.datetime(),
-    ends_on: z.iso.datetime(),
+    starts_on: z.iso.datetime("Please enter a valid date"),
+    ends_on: z.iso.datetime("Please enter a valid date"),
 
     session_type: z.enum(["term", "semester"]).optional(),
 
