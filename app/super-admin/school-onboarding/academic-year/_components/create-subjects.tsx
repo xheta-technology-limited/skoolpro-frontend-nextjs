@@ -23,6 +23,8 @@ import {
 } from "../constants";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
+import CatalogTable from "./catalog-table";
+import AssignedSubjectsTable from "./assigned-subjects-table";
 
 export default function CreateSubjects() {
   const router = useProgressRouter();
@@ -89,10 +91,10 @@ export default function CreateSubjects() {
           <Text className="text-neutrals-700" scale={"content"}>
             Subject catalog
           </Text>
-          ////Table goes here
+          <CatalogTable />
           <>
             <Text className="text-neutrals-700" scale={"content"}>
-              Add a subject
+              Assign subject to a level
             </Text>
             <FormProvider {...methods}>
               <form
@@ -131,26 +133,15 @@ export default function CreateSubjects() {
                   weight={"standard"}
                   scale={"caption"}
                 >
-                  Add Subject
+                  Assign Subject
                 </Text>
               </Button>
             </FormProvider>
           </>
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            className="justify-self-end max-w-fit ml-auto"
-          >
-            <AddSquare variant="Bulk" size={16} className="text-primary" />
-            <Text
-              className="text-primary"
-              weight={"standard"}
-              scale={"caption"}
-            >
-              Add Arm
-            </Text>
-          </Button>
+          <Text className="text-neutrals-700" scale={"content"}>
+            Assigned to class_name_here
+          </Text>
+          <AssignedSubjectsTable />
           <div className="flex *:flex-1 gap-6">
             <Button
               type="button"
