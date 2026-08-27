@@ -30,7 +30,8 @@ export default function CompactCheckbox({
   } = useFormContext();
 
   const error = errors[name]?.message as string | undefined;
-  const checked = !!useWatch({ control, name });
+  const value = useWatch({ control, name });
+  const checked = Array.isArray(value) ? value.includes(props.value) : !!value;
 
   return (
     <>
