@@ -34,9 +34,7 @@ export default function CreateClassSections() {
   const levelController = useForm<{ class: string }>();
 
   const onSubmit = () => {
-    router.push(
-      "/super-admin/school-onboarding/academic-year?open=true&step=4"
-    );
+    alert("did that shit");
   };
   const open = searchParams.get("open");
   const current = searchParams.get("step");
@@ -80,22 +78,23 @@ export default function CreateClassSections() {
               onSubmit={methods.handleSubmit(onSubmit)}
             >
               <Input name="arm_name" label="Arm Name" />
-              <Input name="arm_name" label="Arm Code" />
-              <Select name="name" options={DUMMY_CAMPUSES} label="Campus" />
+              <Input name="arm_code" label="Arm Code" />
+              <Select name="campus" options={DUMMY_CAMPUSES} label="Campus" />
               <Select
-                name="code"
+                name="class_teacher"
                 options={DUMMY_CLASS_TEACHERS}
                 label="Class Teacher"
               />
               <Input name="class_capacity" label="Class Capacity" />
               <Select
-                name="status"
+                name="class_status"
                 options={DUMMY_CLASS_STATUSES}
                 label="Class Status"
               />
             </form>
             <Button
-              type="button"
+              type="submit"
+              form="create-class-section-form"
               variant="secondary"
               size="sm"
               className="justify-self-end max-w-fit ml-auto"
@@ -122,8 +121,11 @@ export default function CreateClassSections() {
                 Cancel
               </Button>
               <Button
-                type="submit"
-                form="create-class-section-form"
+                onClick={() =>
+                  router.push(
+                    "/super-admin/school-onboarding/academic-year?open=true&step=4"
+                  )
+                }
                 size="lg"
                 className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
               >
