@@ -19,3 +19,7 @@ export {
   type EducationPresetStage,
   type EducationPresetLevel,
 } from "./types/api/presets";
+export {
+  type ApplyEducationPresetResponse,
+  type ApplyEducationPresetLevel,
+} from "./types/api/presets";

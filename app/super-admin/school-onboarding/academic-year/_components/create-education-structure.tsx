@@ -16,6 +16,7 @@ import clsx from "clsx";
 import { useListPresets } from "@/features/academic-year/api/list-presets";
 import { Spinner } from "@/components/animations";
 import { useEffect, useState } from "react";
+import { useApplyEducationPreset } from "@/features/academic-year/api/apply-preset";
 
 export default function CreateEducationStructure() {
   const router = useProgressRouter();
@@ -27,11 +28,15 @@ export default function CreateEducationStructure() {
   const [activeLadder, setActiveLadder] = useState("");
 
   const { data, isFetching, isLoading, isError, refetch } = useListPresets();
+  const { mutate, isPending } = useApplyEducationPreset(activeLadder);
 
-  const onSubmit = () => {
-    router.push(
-      "/super-admin/school-onboarding/academic-year?open=true&step=3"
-    );
+  const onSubmit = (data: EducationStructureFormData) => {
+    mutate(data, {
+      onSuccess: () =>
+        router.push(
+          "/super-admin/school-onboarding/academic-year?open=true&step=3"
+        ),
+    });
   };
   const open = searchParams.get("open");
   const current = searchParams.get("step");
@@ -86,26 +91,15 @@ export default function CreateEducationStructure() {
                 onSubmit={methods.handleSubmit(onSubmit)}
                 id="create-education-structure-form"
               >
-                <CompactCheckbox
-                  label="Primary"
-                  name="stages"
-                  id="primary"
-                  value="primary"
-                />
-
-                <CompactCheckbox
-                  label="Junior Secondary"
-                  name="stages"
-                  id="junior-secondary"
-                  value="junior_secondary"
-                />
-
-                <CompactCheckbox
-                  label="Senior Secondary"
-                  name="stages"
-                  id="senior-secondary"
-                  value="senior_secondary"
-                />
+                {selectedLadder?.stages.map((stage) => (
+                  <CompactCheckbox
+                    key={stage.code}
+                    label={stage.name}
+                    name="include_stages"
+                    id={stage.code}
+                    value={stage.name}
+                  />
+                ))}
               </form>
             </FormProvider>
 
@@ -137,6 +131,7 @@ export default function CreateEducationStructure() {
               </Button>
               <Button
                 type="submit"
+                loading={isPending}
                 size="lg"
                 className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
                 form="create-education-structure-form"
