@@ -313,7 +313,7 @@ export default function SchoolRecordPage() {
 
   const schoolId: string = profile.id;
 
-  const schoolName = profile.display_name || profile.registered_name || "School";
+  const schoolName = profile.registered_name || "School";
   const email = getPrimaryContact(profile.contacts ?? [], ["email"]);
   const address = getAddress(profile.campuses ?? []);
 
