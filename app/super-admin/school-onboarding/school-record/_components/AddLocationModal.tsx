@@ -25,7 +25,16 @@ const addLocationSchema = z.object({
   postalCode: z.string().min(1, "Postal code is required"),
   landmark: z.string().optional(),
   timezone: z.string().min(1, "Timezone is required"),
-  studentCapacity: z.string().optional(),
+  studentCapacity: z
+    .string()
+    .optional()
+    .refine(
+      (value) =>
+        value === undefined ||
+        value.trim() === "" ||
+        Number.isFinite(Number(value)),
+      "Student capacity must be a number"
+    ),
   isPrimary: z.boolean(),
 });
 
@@ -87,9 +96,11 @@ export default function AddLocationModal({
         country_code: countryCode,
         landmark: values.landmark || undefined,
         timezone: values.timezone,
-        student_capacity: values.studentCapacity
-          ? Number(values.studentCapacity)
-          : undefined,
+        student_capacity:
+      values.studentCapacity === undefined ||
+      values.studentCapacity.trim() === ""
+        ? null
+        : Number(values.studentCapacity),
       }),
   });
 

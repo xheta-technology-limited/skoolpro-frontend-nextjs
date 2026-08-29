@@ -26,7 +26,16 @@ const editLocationSchema = z.object({
   postalCode: z.string().min(1, "Postal code is required"),
   landmark: z.string().optional(),
   timezone: z.string().min(1, "Timezone is required"),
-  studentCapacity: z.string().optional(),
+  studentCapacity: z
+    .string()
+    .optional()
+    .refine(
+      (value) =>
+        value === undefined ||
+        value.trim() === "" ||
+        Number.isFinite(Number(value)),
+      "Student capacity must be a number"
+    ),
   isPrimary: z.boolean(),
 });
 
@@ -114,9 +123,11 @@ export default function EditLocationModal({
       if (dirtyFields.landmark) payload.landmark = values.landmark || undefined;
       if (dirtyFields.timezone) payload.timezone = values.timezone;
       if (dirtyFields.studentCapacity) {
-        payload.student_capacity = values.studentCapacity
-          ? Number(values.studentCapacity)
-          : undefined;
+        payload.student_capacity =
+          values.studentCapacity === undefined ||
+          values.studentCapacity.trim() === ""
+            ? null
+            : Number(values.studentCapacity);
       }
 
       return api.put(`schools/${schoolId}/campuses/${campus.id}`, payload);
