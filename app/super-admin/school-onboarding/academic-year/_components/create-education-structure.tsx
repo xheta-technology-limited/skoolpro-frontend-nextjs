@@ -13,6 +13,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import clsx from "clsx";
+import { useListPresets } from "@/features/academic-year/api/list-presets";
+import { Spinner } from "@/components/animations";
+import { useEffect, useState } from "react";
 
 export default function CreateEducationStructure() {
   const router = useProgressRouter();
@@ -21,6 +24,9 @@ export default function CreateEducationStructure() {
     defaultValues: {},
     resolver: zodResolver(educationStructureSchema),
   });
+  const [activeLadder, setActiveLadder] = useState("");
+
+  const { data, isFetching, isLoading, isError, refetch } = useListPresets();
 
   const onSubmit = () => {
     router.push(
@@ -31,6 +37,14 @@ export default function CreateEducationStructure() {
   const current = searchParams.get("step");
   const isOpen = open === "true" && current === "2";
 
+  const selectedLadder = data?.find((d) => d.key === activeLadder);
+
+  useEffect(() => {
+    if (data && data.length !== 0) {
+      setActiveLadder(data[0].key);
+    }
+  }, [data]);
+
   return (
     <>
       <FormModal
@@ -40,101 +54,98 @@ export default function CreateEducationStructure() {
           router.replace("/super-admin/school-onboarding/academic-year")
         }
       >
-        <div className="flex flex-col gap-4 max-w-full">
-          <div className="flex gap-4 *:flex-1">
-            <LadderSelect
-              name="Nigerian Ladder"
-              info={[
-                "Nursery",
-                "Primary",
-                "Junior secondary",
-                "Senior",
-                "14 levels",
-              ]}
-              isActive={true}
-            />
-            <LadderSelect
-              name="British Ladder"
-              info={[
-                "Nursery",
-                "Primary",
-                "Junior secondary",
-                "Senior",
-                "14 levels",
-              ]}
-            />
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Spinner size={48} />
           </div>
-          <Text className="text-neutrals-700" scale={"content"}>
-            Stages School Offer
-          </Text>
-          <FormProvider {...methods}>
-            <form
-              className="flex flex-col sm:h-auto gap-6 rounded-ml p-2 w-full bg-primary-bg"
-              onSubmit={methods.handleSubmit(onSubmit)}
-              id="create-education-structure-form"
-            >
-              <CompactCheckbox
-                label="Primary"
-                name="stages"
-                id="primary"
-                value="primary"
-              />
-
-              <CompactCheckbox
-                label="Junior Secondary"
-                name="stages"
-                id="junior-secondary"
-                value="junior_secondary"
-              />
-
-              <CompactCheckbox
-                label="Senior Secondary"
-                name="stages"
-                id="senior-secondary"
-                value="senior_secondary"
-              />
-            </form>
-          </FormProvider>
-
-          <Text className="text-neutrals-700" scale={"content"}>
-            Resulting ladder
-          </Text>
-
-          {Array.from({ length: 5 }).map((_, index) => (
-            <Ladder
-              key={index}
-              name="Primary"
-              stage={index}
-              items={[
-                { name: "Foofoo", age: 45 },
-                { name: "She", age: 78 },
-                { name: "Whodat?", age: 90 },
-              ]}
-            />
-          ))}
-
-          <div className="flex *:flex-1 gap-6">
-            <Button
-              type="button"
-              variant="secondary"
-              size="lg"
-              className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
-              onClick={() =>
-                router.replace("/super-admin/school-onboarding/academic-year")
-              }
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
-              form="create-education-structure-form"
-            >
-              Continue
+        ) : isError ? (
+          <div className="flex justify-center items-center">
+            <Button loading={isFetching} size="lg" onClick={() => refetch}>
+              Retry
             </Button>
           </div>
-        </div>
+        ) : (
+          <div className="flex flex-col gap-4 max-w-full">
+            <div className="flex gap-4 *:flex-1">
+              {data?.map((ladder) => (
+                <LadderSelect
+                  key={ladder.key}
+                  name={ladder.label.split("(")[0]}
+                  info={ladder.label}
+                  isActive={activeLadder === ladder.key}
+                  onClick={() => setActiveLadder(ladder.key)}
+                />
+              ))}
+            </div>
+            <Text className="text-neutrals-700" scale={"content"}>
+              Stages School Offer
+            </Text>
+            <FormProvider {...methods}>
+              <form
+                className="flex flex-col sm:h-auto gap-6 rounded-ml p-2 w-full bg-primary-bg"
+                onSubmit={methods.handleSubmit(onSubmit)}
+                id="create-education-structure-form"
+              >
+                <CompactCheckbox
+                  label="Primary"
+                  name="stages"
+                  id="primary"
+                  value="primary"
+                />
+
+                <CompactCheckbox
+                  label="Junior Secondary"
+                  name="stages"
+                  id="junior-secondary"
+                  value="junior_secondary"
+                />
+
+                <CompactCheckbox
+                  label="Senior Secondary"
+                  name="stages"
+                  id="senior-secondary"
+                  value="senior_secondary"
+                />
+              </form>
+            </FormProvider>
+
+            <Text className="text-neutrals-700" scale={"content"}>
+              Resulting ladder
+            </Text>
+
+            {selectedLadder &&
+              selectedLadder.stages.map((ladder, index) => (
+                <Ladder
+                  key={`${ladder.school_type_slug}-${ladder.name}`}
+                  name={ladder.name}
+                  stage={index + 1} //backend didn't provide this so I wing it
+                  items={ladder.levels}
+                />
+              ))}
+
+            <div className="flex *:flex-1 gap-6">
+              <Button
+                type="button"
+                variant="secondary"
+                size="lg"
+                className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+                onClick={() =>
+                  router.replace("/super-admin/school-onboarding/academic-year")
+                }
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+                form="create-education-structure-form"
+              >
+                Continue
+              </Button>
+            </div>
+          </div>
+        )}
       </FormModal>
     </>
   );
@@ -142,8 +153,9 @@ export default function CreateEducationStructure() {
 
 interface LadderSelectProps {
   name: string;
-  info: string[];
-  isActive?: boolean;
+  info: string;
+  isActive: boolean;
+  onClick: () => void;
   className?: string;
 }
 function LadderSelect({
@@ -151,20 +163,35 @@ function LadderSelect({
   info,
   isActive = false,
   className,
+  onClick,
 }: LadderSelectProps) {
+  const parseString = (value: string): string[] => {
+    const match = value.match(/\(([^)]*)\)/);
+
+    if (!match) return [];
+
+    return match[1].split("/");
+  };
+  const parsedInfo = parseString(info);
+
   return (
     <div
+      onClick={onClick}
       className={clsx(
         "flex flex-col gap-2 rounded-ml bg-base-white border p-4  hover:cursor-pointer",
         isActive && "border-primary",
         className
       )}
     >
-      <Text className="text-primary" weight={"standard"} scale={"content"}>
+      <Text
+        className={clsx(isActive ? "text-primary" : "text-neutrals-800")}
+        weight={"standard"}
+        scale={"content"}
+      >
         {name}
       </Text>
       <div className="flex items-center gap-2 max-w-full flex-wrap">
-        {info.map((inf) => (
+        {parsedInfo.map((inf) => (
           <Text
             className="text-[0.75rem] tracking-tight leading-none"
             weight={"standard"}
@@ -181,7 +208,7 @@ function LadderSelect({
 
 interface LadderItem {
   name: string;
-  age: number;
+  typical_entry_age: number;
 }
 interface LadderProps {
   name: string;
@@ -216,7 +243,10 @@ function Ladder({ name, stage, items, className }: LadderProps) {
 
       <div className="flex-1 px-5 flex flex-col gap-4">
         {items.map((item) => (
-          <div className="border border-grays-borders rounded-[8px] flex justify-between p-4">
+          <div
+            key={item.name}
+            className="border border-grays-borders rounded-[8px] flex justify-between p-4"
+          >
             <Text
               className="text-neutrals-900"
               weight={"standard"}
@@ -228,7 +258,7 @@ function Ladder({ name, stage, items, className }: LadderProps) {
               className="text-[0.75rem] text-neutrals-700"
               weight={"standard"}
               scale={"caption"}
-            >{`Age ${item.age}`}</Text>
+            >{`Age ${item.typical_entry_age}`}</Text>
           </div>
         ))}
       </div>

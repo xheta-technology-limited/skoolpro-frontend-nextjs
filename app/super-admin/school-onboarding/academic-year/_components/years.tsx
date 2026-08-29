@@ -22,6 +22,7 @@ import { useGetAcademicYears } from "@/features/academic-year/api/list-academic-
 import { Spinner } from "@/components/animations";
 import { NoData } from "@/components/icons";
 import { AcademicYear } from "@/features/academic-year";
+import { titleCase } from "@/lib/helpers/string-to-title-case";
 
 const headRow = ["Name", "Start", "End", "Status", "Action"];
 export default function AcademicYears() {
@@ -113,7 +114,7 @@ const Year = ({ year }: YearProps) => {
                   <TableCell>{term.name}</TableCell>
                   <TableCell>{term.starts_on}</TableCell>
                   <TableCell>{term.ends_on}</TableCell>
-                  <TableCell>{term.status}</TableCell>
+                  <TableCell>{titleCase(term.status)}</TableCell>
                   <TableCell>
                     <MiniSelector
                       items={[

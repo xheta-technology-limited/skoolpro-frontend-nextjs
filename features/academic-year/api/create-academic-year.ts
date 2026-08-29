@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import { authKeys } from "./query-keys";
+import { academicYearKeys } from "./query-keys";
 import type { AcademicYearFormData } from "../schemas/create-academic-year-schema";
 import { ServerErrorResponse } from "@/types/api";
 import { AcademicYear } from "../types/api/academic-year";
@@ -19,7 +19,7 @@ export const useCreateAcademicYear = () => {
       return createAcademicYear(data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: authKeys.all });
+      queryClient.invalidateQueries({ queryKey: academicYearKeys.all });
     },
   });
 };

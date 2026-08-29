@@ -14,3 +14,8 @@ export {
 } from "./schemas/create-class-sections-scema";
 
 export { type AcademicYear } from "./types/api/academic-year";
+export {
+  type EducationPreset,
+  type EducationPresetStage,
+  type EducationPresetLevel,
+} from "./types/api/presets";
