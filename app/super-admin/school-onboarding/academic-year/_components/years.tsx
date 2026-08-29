@@ -44,20 +44,16 @@ export default function AcademicYears() {
           subTitle="You haven't created any academic years, click the button above to make one"
           className="w-97.5 h-143.75"
         />
+        <Modals />
       </div>
     );
   }
   return (
     <>
       {data?.map((year) => (
-        <Year year={year} />
+        <Year year={year} key={year.id} />
       ))}
-
-      <CreateAcademicYear />
-      <CreateEducationStructure />
-      <CreateClassSections />
-      <CreateSubjects />
-      <ReviewAcademicYear />
+      <Modals />
     </>
   );
 }
@@ -133,5 +129,17 @@ const Year = ({ year }: YearProps) => {
         </TableWrapper>
       </div>
     </div>
+  );
+};
+
+const Modals = () => {
+  return (
+    <>
+      <CreateAcademicYear />
+      <CreateEducationStructure />
+      <CreateClassSections />
+      <CreateSubjects />
+      <ReviewAcademicYear />
+    </>
   );
 };

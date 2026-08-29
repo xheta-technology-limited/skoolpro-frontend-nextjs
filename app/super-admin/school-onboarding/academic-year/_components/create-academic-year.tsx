@@ -14,6 +14,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SESSION_TYPE_OPTIONS } from "../constants";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
+import { useCreateAcademicYear } from "@/features/academic-year/api/create-academic-year";
+import { setFormErrors } from "@/lib/helpers/set-form-errors";
 
 export default function CreateAcademicYear() {
   const router = useProgressRouter();
@@ -29,14 +31,20 @@ export default function CreateAcademicYear() {
     resolver: zodResolver(academicYearSchema),
   });
 
+  const { mutate, isPending, isSuccess } = useCreateAcademicYear();
+
   const { fields } = useFieldArray({
     control: methods.control,
     name: "terms",
   });
-  const onSubmit = () => {
-    router.push(
-      "/super-admin/school-onboarding/academic-year?open=true&step=2"
-    );
+  const onSubmit = (data: AcademicYearFormData) => {
+    mutate(data, {
+      onSuccess: () =>
+        router.replace(
+          "/super-admin/school-onboarding/academic-year?open=true&step=2"
+        ),
+      onError: (res) => setFormErrors(methods.setError, res.errors),
+    });
   };
   const open = searchParams.get("open");
   const current = searchParams.get("step");
@@ -103,6 +111,7 @@ export default function CreateAcademicYear() {
                 Cancel
               </Button>
               <Button
+                loading={isPending}
                 type="submit"
                 size="lg"
                 className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
