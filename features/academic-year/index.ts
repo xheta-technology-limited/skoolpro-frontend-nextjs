@@ -12,3 +12,5 @@ export {
   classSectionsSchema,
   type ClassSectionsFormData,
 } from "./schemas/create-class-sections-scema";
+
+export { type AcademicYear } from "./types/api/academic-year";

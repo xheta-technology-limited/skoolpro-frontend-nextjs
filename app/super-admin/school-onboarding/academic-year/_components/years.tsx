@@ -1,3 +1,4 @@
+"use client";
 import { Text } from "@/components/ui";
 import { dummyData } from "../constants";
 import { Button } from "@/components/ui/custom-button";
@@ -17,16 +18,61 @@ import CreateEducationStructure from "./create-education-structure";
 import CreateClassSections from "./create-class-sections";
 import CreateSubjects from "./create-subjects";
 import ReviewAcademicYear from "./review-modal";
+import { useGetAcademicYears } from "@/features/academic-year/api/list-academic-years";
+import { Spinner } from "@/components/animations";
+import { NoData } from "@/components/icons";
+import { AcademicYear } from "@/features/academic-year";
 
 const headRow = ["Name", "Start", "End", "Status", "Action"];
 export default function AcademicYears() {
+  const { data, isPending } = useGetAcademicYears();
+
+  if (isPending) {
+    return (
+      <div className="w-full flex items-center justify-center py-7">
+        <Spinner size={70} />
+      </div>
+    );
+  }
+
+  if (data && data.length === 0) {
+    return (
+      <div className="w-fit mx-auto">
+        {" "}
+        <NoData
+          title="No Academic Years"
+          subTitle="You haven't created any academic years, click the button above to make one"
+          className="w-97.5 h-143.75"
+        />
+      </div>
+    );
+  }
   return (
     <>
+      {data?.map((year) => (
+        <Year year={year} />
+      ))}
+
+      <CreateAcademicYear />
+      <CreateEducationStructure />
+      <CreateClassSections />
+      <CreateSubjects />
+      <ReviewAcademicYear />
+    </>
+  );
+}
+
+interface YearProps {
+  year: AcademicYear;
+}
+const Year = ({ year }: YearProps) => {
+  return (
+    <div>
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center">
           <span className="bg-secondary-700 h-4 w-4 rounded-full inline-block mr-2" />
           <Text weight={"accent"} scale={"highlight"}>
-            {dummyData.name.toUpperCase()}
+            {year.name.toUpperCase()}
           </Text>
         </div>
 
@@ -66,12 +112,12 @@ export default function AcademicYears() {
             </TableHeader>
 
             <TableBody>
-              {Array.from({ length: 5 }).map((_, index) => (
-                <TableRow key={index}>
-                  <TableCell>First Term</TableCell>
-                  <TableCell>17/08/2026</TableCell>
-                  <TableCell>17/08/2026</TableCell>
-                  <TableCell>Current</TableCell>
+              {year.terms.map((term, index) => (
+                <TableRow key={term.id}>
+                  <TableCell>{term.name}</TableCell>
+                  <TableCell>{term.starts_on}</TableCell>
+                  <TableCell>{term.ends_on}</TableCell>
+                  <TableCell>{term.status}</TableCell>
                   <TableCell>
                     <MiniSelector
                       items={[
@@ -86,12 +132,6 @@ export default function AcademicYears() {
           </Table>
         </TableWrapper>
       </div>
-
-      <CreateAcademicYear />
-      <CreateEducationStructure />
-      <CreateClassSections />
-      <CreateSubjects />
-      <ReviewAcademicYear />
-    </>
+    </div>
   );
-}
+};
