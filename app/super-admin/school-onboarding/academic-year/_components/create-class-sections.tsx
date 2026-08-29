@@ -6,12 +6,7 @@ import { Button } from "@/components/ui/custom-button";
 import { useSearchParams } from "next/navigation";
 import { AddSquare } from "iconsax-reactjs";
 
-import {
-  AcademicYearFormData,
-  academicYearSchema,
-  ClassSectionsFormData,
-  classSectionsSchema,
-} from "@/features/academic-year";
+import { classSectionsSchema } from "@/features/academic-year";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   type Arm,
@@ -23,18 +18,31 @@ import {
 } from "../constants";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
+import { useState } from "react";
+import { useListLevels } from "@/features/academic-year/api/list-levels";
+import { CreateArmFormData } from "@/features/academic-year/schemas/create-arm";
+import { useCreateArm } from "@/features/academic-year/api/create-arm";
+import { toast } from "sonner";
+import { setFormErrors } from "@/lib/helpers/set-form-errors";
 
 export default function CreateClassSections() {
   const router = useProgressRouter();
   const searchParams = useSearchParams();
-  const methods = useForm<ClassSectionsFormData>({
+  const methods = useForm<CreateArmFormData>({
     defaultValues: {},
     resolver: zodResolver(classSectionsSchema),
   });
   const levelController = useForm<{ class: string }>();
+  const [activeLevel, setActiveLevel] = useState("");
+  const { mutate, isPending } = useCreateArm(activeLevel);
 
-  const onSubmit = () => {
-    alert("did that shit");
+  const { data, isFetching } = useListLevels();
+
+  const onSubmit = (data: CreateArmFormData) => {
+    mutate(data, {
+      onSuccess: () => toast.success("Arm added successfully"),
+      onError: (res) => setFormErrors(methods.setError, res.errors),
+    });
   };
   const open = searchParams.get("open");
   const current = searchParams.get("step");
@@ -77,17 +85,21 @@ export default function CreateClassSections() {
               className="sm:h-auto gap-4 w-full grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]"
               onSubmit={methods.handleSubmit(onSubmit)}
             >
-              <Input name="arm_name" label="Arm Name" />
-              <Input name="arm_code" label="Arm Code" />
-              <Select name="campus" options={DUMMY_CAMPUSES} label="Campus" />
+              <Input name="name" label="Arm Name" />
+              <Input name="code" label="Arm Code" />
               <Select
-                name="class_teacher"
+                name="campus_id"
+                options={DUMMY_CAMPUSES}
+                label="Campus"
+              />
+              <Select
+                name="staff_id"
                 options={DUMMY_CLASS_TEACHERS}
                 label="Class Teacher"
               />
-              <Input name="class_capacity" label="Class Capacity" />
+              <Input name="capacity" label="Class Capacity" />
               <Select
-                name="class_status"
+                name="is_active"
                 options={DUMMY_CLASS_STATUSES}
                 label="Class Status"
               />
