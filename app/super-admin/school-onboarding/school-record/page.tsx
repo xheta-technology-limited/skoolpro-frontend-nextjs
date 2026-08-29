@@ -282,7 +282,9 @@ export default function SchoolRecordPage() {
       } catch (error) {
         console.error("Failed to update issuing authority/country:", error);
         failures.push("Registration details");
-      }
+      } 
+    } else {
+      failures.push("Registration details");
     }
 
     if (anySucceeded) {
