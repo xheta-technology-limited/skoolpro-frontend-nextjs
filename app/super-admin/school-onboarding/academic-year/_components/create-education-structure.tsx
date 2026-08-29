@@ -17,6 +17,7 @@ import { useListPresets } from "@/features/academic-year/api/list-presets";
 import { Spinner } from "@/components/animations";
 import { useEffect, useState } from "react";
 import { useApplyEducationPreset } from "@/features/academic-year/api/apply-preset";
+import { splitAtSlash } from "@/lib/helpers/get-text-in-parentheses";
 
 export default function CreateEducationStructure() {
   const router = useProgressRouter();
@@ -160,14 +161,7 @@ function LadderSelect({
   className,
   onClick,
 }: LadderSelectProps) {
-  const parseString = (value: string): string[] => {
-    const match = value.match(/\(([^)]*)\)/);
-
-    if (!match) return [];
-
-    return match[1].split("/");
-  };
-  const parsedInfo = parseString(info);
+  const parsedInfo = splitAtSlash(info);
 
   return (
     <div

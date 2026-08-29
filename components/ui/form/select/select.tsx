@@ -94,11 +94,7 @@ const Select = ({
 
   if (isControlled || !formContext?.control) {
     return (
-      <SelectInner
-        {...innerProps}
-        value={value}
-        onValueChange={onChange}
-      />
+      <SelectInner {...innerProps} value={value} onValueChange={onChange} />
     );
   }
 
@@ -160,12 +156,10 @@ const SelectInner = ({
     return options.filter((o) =>
       o.label.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [searchTerm]);
+  }, [searchTerm, options]);
 
   const isFloating =
-    isOpen ||
-    Boolean(selectedOption) ||
-    (searchable && searchTerm.length > 0);
+    isOpen || Boolean(selectedOption) || (searchable && searchTerm.length > 0);
 
   const isDisabled = disabled || isLoading;
 
@@ -275,7 +269,9 @@ const SelectInner = ({
         </span>
       )}
 
-      {icon && <div className="absolute right-13.75 top-[0.843rem]">{icon}</div>}
+      {icon && (
+        <div className="absolute right-13.75 top-[0.843rem]">{icon}</div>
+      )}
 
       <button
         type="button"

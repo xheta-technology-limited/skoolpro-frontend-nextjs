@@ -59,39 +59,3 @@ export const DUMMY_CLASS_STATUSES = [
   { value: "inactive", label: "Inactive" },
   { value: "pending", label: "Pending" },
 ];
-
-export type Arm = {
-  arm: string;
-  name: string;
-  teacher: string;
-  capacity: number;
-  campus: string;
-  branch: string;
-};
-
-export const DUMMY_ARMS: Arm[] = [
-  {
-    arm: "A",
-    name: "SS1 A",
-    teacher: "Mr. John Doe",
-    capacity: 40,
-    campus: "Main Campus",
-    branch: "Morning",
-  },
-  {
-    arm: "B",
-    name: "SS1 B",
-    teacher: "Mrs. Jane Smith",
-    capacity: 38,
-    campus: "Main Campus",
-    branch: "Morning",
-  },
-  {
-    arm: "C",
-    name: "SS1 C",
-    teacher: "Ms. Ada Obi",
-    capacity: 42,
-    campus: "Annex Campus",
-    branch: "Afternoon",
-  },
-];

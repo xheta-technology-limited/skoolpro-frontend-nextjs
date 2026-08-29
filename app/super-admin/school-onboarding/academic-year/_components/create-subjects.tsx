@@ -5,11 +5,6 @@ import { DatePicker, Input, Select } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
 import { useSearchParams } from "next/navigation";
 import { AddSquare } from "iconsax-reactjs";
-
-import {
-  ClassSectionsFormData,
-  classSectionsSchema,
-} from "@/features/academic-year";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DUMMY_CAMPUSES, DUMMY_CLASS_TEACHERS } from "../constants";
 import FormModal from "@/components/ui/form-modal";
@@ -21,9 +16,10 @@ import { SuccessModal } from "@/components/common";
 export default function CreateSubjects() {
   const router = useProgressRouter();
   const searchParams = useSearchParams();
-  const methods = useForm<ClassSectionsFormData>({
+  const methods = useForm<any>({
+    //placeholder, change when implementing api
     defaultValues: {},
-    resolver: zodResolver(classSectionsSchema),
+    // resolver: zodResolver(),
   });
   const levelController = useForm<{ class: string }>();
 

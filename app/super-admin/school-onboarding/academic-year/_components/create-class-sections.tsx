@@ -6,37 +6,42 @@ import { Button } from "@/components/ui/custom-button";
 import { useSearchParams } from "next/navigation";
 import { AddSquare } from "iconsax-reactjs";
 
-import { classSectionsSchema } from "@/features/academic-year";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  type Arm,
   DUMMY_CAMPUSES,
-  DUMMY_CLASSES,
   DUMMY_CLASS_STATUSES,
   DUMMY_CLASS_TEACHERS,
-  DUMMY_ARMS,
 } from "../constants";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useListLevels } from "@/features/academic-year/api/list-levels";
-import { CreateArmFormData } from "@/features/academic-year/schemas/create-arm";
+import {
+  CreateArmFormData,
+  createArmSchema,
+} from "@/features/academic-year/schemas/create-arm";
 import { useCreateArm } from "@/features/academic-year/api/create-arm";
 import { toast } from "sonner";
 import { setFormErrors } from "@/lib/helpers/set-form-errors";
+import { useListArms } from "@/features/academic-year/api/list-arms";
+import { Spinner } from "@/components/animations";
+import { EducationArm } from "@/features/academic-year";
+import { getTextInParentheses } from "@/lib/helpers/get-text-in-parentheses";
 
 export default function CreateClassSections() {
   const router = useProgressRouter();
   const searchParams = useSearchParams();
   const methods = useForm<CreateArmFormData>({
     defaultValues: {},
-    resolver: zodResolver(classSectionsSchema),
+    resolver: zodResolver(createArmSchema),
   });
-  const levelController = useForm<{ class: string }>();
   const [activeLevel, setActiveLevel] = useState("");
   const { mutate, isPending } = useCreateArm(activeLevel);
-
-  const { data, isFetching } = useListLevels();
+  const { data: armsData, isFetching: isArmsFetching } = useListArms(
+    activeLevel,
+    { refetchOnWindowFocus: false, enabled: !!activeLevel }
+  );
+  const { data, isFetching } = useListLevels({ refetchOnWindowFocus: false });
 
   const onSubmit = (data: CreateArmFormData) => {
     mutate(data, {
@@ -47,6 +52,17 @@ export default function CreateClassSections() {
   const open = searchParams.get("open");
   const current = searchParams.get("step");
   const isOpen = open === "true" && current === "3";
+
+  const levelOptions =
+    data?.map((level) => ({
+      label: `${level.name} - ${level.stage.name}`,
+      value: level.id,
+    })) ?? [];
+  const activeLevelLabel = activeLevel
+    ? levelOptions
+        .find((level) => level.value === activeLevel)
+        ?.label.split("-")[0]
+    : "";
 
   return (
     <>
@@ -61,90 +77,125 @@ export default function CreateClassSections() {
           <Text className="text-neutrals-700" scale={"content"}>
             Level
           </Text>
-          <FormProvider {...levelController}>
-            <form>
-              <Select
-                options={DUMMY_CLASSES}
-                name="class"
-                label="Select Class"
-              />
-            </form>
-          </FormProvider>
-          <Text className="text-neutrals-700" scale={"content"}>
-            Arms of $use_watch_label_goes_here
-          </Text>
-          {DUMMY_ARMS.map((arm) => (
-            <Arm key={arm.name} arm={arm} />
-          ))}
-          <Text className="text-neutrals-700" scale={"content"}>
-            Add an arm to $use_watch_label_goes_here
-          </Text>
-          <FormProvider {...methods}>
-            <form
-              id="create-class-section-form"
-              className="sm:h-auto gap-4 w-full grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]"
-              onSubmit={methods.handleSubmit(onSubmit)}
-            >
-              <Input name="name" label="Arm Name" />
-              <Input name="code" label="Arm Code" />
-              <Select
-                name="campus_id"
-                options={DUMMY_CAMPUSES}
-                label="Campus"
-              />
-              <Select
-                name="staff_id"
-                options={DUMMY_CLASS_TEACHERS}
-                label="Class Teacher"
-              />
-              <Input name="capacity" label="Class Capacity" />
-              <Select
-                name="is_active"
-                options={DUMMY_CLASS_STATUSES}
-                label="Class Status"
-              />
-            </form>
-            <Button
-              type="submit"
-              form="create-class-section-form"
-              variant="secondary"
-              size="sm"
-              className="justify-self-end max-w-fit ml-auto"
-            >
-              <AddSquare variant="Bulk" size={16} className="text-primary" />
-              <Text
-                className="text-primary"
-                weight={"standard"}
-                scale={"caption"}
-              >
-                Add Arm
+
+          <Select
+            options={levelOptions}
+            name="class"
+            label="Select Class"
+            isLoading={isFetching}
+            isLoadingText="Fetching levels"
+            onChange={(e) => setActiveLevel(e)}
+            value={activeLevel}
+          />
+          {activeLevel && (
+            <>
+              {armsData && armsData.length > 0 && (
+                <>
+                  <div className="flex gap-1 items-center">
+                    <Text className="text-neutrals-700" scale={"content"}>
+                      Arms of {activeLevelLabel}
+                    </Text>
+                    {isArmsFetching && <Spinner size={16} color={"#9f9c9c"} />}
+                  </div>
+
+                  {armsData?.map((arm) => (
+                    <Arm key={arm.name} arm={arm} />
+                  ))}
+                </>
+              )}
+
+              <Text className="text-neutrals-700" scale={"content"}>
+                Add an arm to {activeLevelLabel}
               </Text>
-            </Button>
-            <div className="flex *:flex-1 gap-6">
-              <Button
-                type="button"
-                variant="secondary"
-                size="lg"
-                className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
-                onClick={() =>
-                  router.replace("/super-admin/school-onboarding/academic-year")
-                }
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() =>
-                  router.push(
-                    "/super-admin/school-onboarding/academic-year?open=true&step=4"
-                  )
-                }
-                size="lg"
-                className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
-              >
-                Continue
-              </Button>
-            </div>
-          </FormProvider>
+              <FormProvider {...methods}>
+                <form
+                  id="create-class-section-form"
+                  className="sm:h-auto gap-4 w-full grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]"
+                  onSubmit={methods.handleSubmit(onSubmit)}
+                >
+                  <Input
+                    name="name"
+                    label="Arm Name"
+                    info="Unique within the level"
+                  />
+                  <Input
+                    name="code"
+                    label="Arm Code"
+                    info="Unique within the level"
+                  />
+                  <Select
+                    name="campus_id"
+                    options={DUMMY_CAMPUSES}
+                    label="Campus"
+                    info="Empty picks primary campus"
+                  />
+                  <Select
+                    name="staff_id"
+                    options={DUMMY_CLASS_TEACHERS}
+                    label="Class Teacher"
+                    info="Staff picker"
+                  />
+                  <Input
+                    name="capacity"
+                    label="Class Capacity"
+                    info="Must be greater than 1"
+                  />
+                  <Select
+                    name="is_active"
+                    options={DUMMY_CLASS_STATUSES}
+                    label="Class Status"
+                    info="Is this class active or not"
+                  />
+                </form>
+                <Button
+                  type="submit"
+                  form="create-class-section-form"
+                  variant="secondary"
+                  size="sm"
+                  className="justify-self-end max-w-fit ml-auto"
+                >
+                  <AddSquare
+                    variant="Bulk"
+                    size={16}
+                    className="text-primary"
+                  />
+                  <Text
+                    className="text-primary"
+                    weight={"standard"}
+                    scale={"caption"}
+                  >
+                    Add Arm
+                  </Text>
+                </Button>
+                <div className="flex *:flex-1 gap-6">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="lg"
+                    className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+                    onClick={() =>
+                      router.replace(
+                        "/super-admin/school-onboarding/academic-year"
+                      )
+                    }
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      router.push(
+                        "/super-admin/school-onboarding/academic-year?open=true&step=4"
+                      )
+                    }
+                    size="lg"
+                    className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+                  >
+                    Continue
+                  </Button>
+                </div>
+              </FormProvider>
+            </>
+          )}
         </div>
       </FormModal>
     </>
@@ -152,25 +203,24 @@ export default function CreateClassSections() {
 }
 
 interface ArmProps {
-  arm: Arm;
+  arm: EducationArm;
 }
 function Arm({ arm }: ArmProps) {
-  const { arm: code, name, branch, campus, teacher, capacity } = arm;
   return (
     <div className="border border-grays-borders rounded-[8px] flex items-center gap-3 p-4">
       <div className="bg-primary-100 rounded-[8px] p-2">
         <Text weight={"bold"} scale={"caption"}>
-          {code}
+          {arm.name.split(" ")[0]}
         </Text>
       </div>
       <div className="flex gap-1 flex-col">
         <div className="flex gap-3">
           <Text className="text-neutrals-900 font-normal" scale={"caption"}>
-            {name}
+            {arm.level.name}
           </Text>
 
           <Text scale={"caption"} className="text-[0.75rem] text-neutrals-700">
-            {`• ${branch}`}
+            {`• ${getTextInParentheses(arm.name)}`}
           </Text>
         </div>
 
@@ -179,18 +229,18 @@ function Arm({ arm }: ArmProps) {
             weight={"standard"}
             scale={"caption"}
             className="text-[0.75rem] text-neutrals-700"
-          >{`Class teacher: ${teacher}`}</Text>
+          >{`Class teacher: ${"empty for now"}`}</Text>
           <Text
             weight={"standard"}
             scale={"caption"}
             className="text-[0.75rem] text-neutrals-700"
-          >{`Capacity: ${capacity}`}</Text>
+          >{`Capacity: ${arm.capacity}`}</Text>
           <Text
             weight={"standard"}
             scale={"caption"}
             className="text-[0.75rem] text-neutrals-700"
           >
-            {campus}
+            {"Empty for now"}
           </Text>
         </div>
       </div>
