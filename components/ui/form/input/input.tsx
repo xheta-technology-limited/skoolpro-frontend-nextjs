@@ -17,6 +17,7 @@ type InputProps = {
   isLoading?: boolean;
   isWarning?: boolean;
   icon?: React.ReactNode;
+  info?: string;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 const Input = ({
@@ -26,6 +27,7 @@ const Input = ({
   isLoading,
   isWarning,
   icon,
+  info,
   value,
   search,
   onChange,
@@ -130,6 +132,12 @@ const Input = ({
         <div className="flex gap-1">
           <Spinner size={16} color={"#9f9c9c"} />
           <span className="text-xs text-neutrals-400">Loading</span>
+        </div>
+      )}
+
+      {info && (
+        <div className="flex">
+          <span className="text-xs text-neutrals-400">{info}</span>
         </div>
       )}
     </div>
