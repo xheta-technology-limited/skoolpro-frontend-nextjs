@@ -21,6 +21,7 @@ type SelectProps = {
   disabled?: boolean;
   isSuccess?: boolean;
   isLoading?: boolean;
+  isLoadingText?: string;
   isWarning?: boolean;
   icon?: React.ReactNode;
 };
@@ -33,6 +34,7 @@ const Select = ({
   placeholder,
   disabled,
   isLoading,
+  isLoadingText = "Loading",
   icon,
 }: SelectProps) => {
   const {
@@ -81,8 +83,10 @@ const Select = ({
           Boolean(selectedOption) ||
           (searchable && searchTerm.length > 0);
 
+        const isDisabled = disabled || isLoading;
+
         const openList = () => {
-          if (disabled) return;
+          if (isDisabled) return;
           setIsOpen(true);
           setHighlightIndex(0);
           if (searchable) {
@@ -98,7 +102,7 @@ const Select = ({
         };
 
         const handleKeyDown = (e: React.KeyboardEvent) => {
-          if (disabled) return;
+          if (isDisabled) return;
 
           if (!isOpen && (e.key === "ArrowDown" || e.key === "Enter")) {
             e.preventDefault();
@@ -141,7 +145,7 @@ const Select = ({
                 }}
                 onFocus={openList}
                 onKeyDown={handleKeyDown}
-                disabled={disabled}
+                disabled={isDisabled}
                 placeholder=" "
                 className={clsx(
                   icon && "pr-13.75",
@@ -153,7 +157,7 @@ const Select = ({
             ) : (
               <button
                 type="button"
-                disabled={disabled}
+                disabled={isDisabled}
                 onClick={() => (isOpen ? setIsOpen(false) : openList())}
                 onKeyDown={handleKeyDown}
                 className={clsx(
@@ -175,7 +179,7 @@ const Select = ({
                   ? "top-0 text-[0.75rem]"
                   : "top-4 text-[0.875rem] md:text-[1rem]",
                 "left-ml",
-                disabled && "text-neutrals-100"
+                isDisabled && "text-neutrals-100"
               )}
             >
               {label}
@@ -194,7 +198,7 @@ const Select = ({
             <button
               type="button"
               tabIndex={-1}
-              disabled={disabled}
+              disabled={isDisabled}
               onClick={() => (isOpen ? setIsOpen(false) : openList())}
               className="absolute right-5 top-[0.843rem] disabled:text-neutrals-100"
             >
@@ -249,7 +253,10 @@ const Select = ({
 
             {isLoading && (
               <div className="flex gap-1">
-                <Spinner />
+                <Spinner size={16} color={"#9f9c9c"} />
+                <span className="text-xs text-neutrals-400">
+                  {isLoadingText}
+                </span>
               </div>
             )}
           </div>
