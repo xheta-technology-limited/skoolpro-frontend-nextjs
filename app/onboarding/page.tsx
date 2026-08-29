@@ -59,7 +59,7 @@ export default function SubscriptionsPage() {
 
 
   return (
-    <div className="min-h-screen bg-primary-bg">
+    <div className="min-h-screen overflow-y-auto bg-primary-bg">
       <div className="mx-4 py-16 sm:mx-8 md:mx-16 lg:mx-20 xl:mx-25">
         <div className="flex justify-center">
           <AdmiralBlue11 width={200} height={51} />
