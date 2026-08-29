@@ -101,14 +101,16 @@ export default function RecordTableSection({
               ))}
 
               <div className="flex items-center justify-between gap-2">
-                <button
-                  type="button"
-                  onClick={() => onEditRow?.(row.id)}
-                  className="flex h-6.5 w-fit items-center gap-1 rounded-xl border border-grays-borders py-1.5 pl-2 pr-2 text-[13px] font-normal text-neutrals-700 transition-opacity duration-300 ease-out"
-                >
-                  <Edit size={16} variant="Bulk" color="#5a5555" />
-                  Edit
-                </button>
+                {onEditRow && (
+                  <button
+                    type="button"
+                    onClick={() => onEditRow(row.id)}
+                    className="flex h-6.5 w-fit items-center gap-1 rounded-xl border border-grays-borders py-1.5 pl-2 pr-2 text-[13px] font-normal text-neutrals-700 transition-opacity duration-300 ease-out"
+                  >
+                    <Edit size={16} variant="Bulk" color="#5a5555" />
+                    Edit
+                  </button>
+                )}
 
                 {/* Never show delete on the first row — at least one
                     record must always remain in the list. */}
