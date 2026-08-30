@@ -35,7 +35,7 @@ export default function AssignedSubjectsTable({
       <div className="flex items-center gap-1">
         <Text className="text-neutrals-700" scale={"content"}>
           {`Assigned to ${
-            levelOptions.find((l) => l.value === selectedLevel) || ""
+            levelOptions.find((l) => l.value === selectedLevel)?.label || ""
           }`}
         </Text>
         {isPending && <Spinner size={16} color={"#9f9c9c"} />}

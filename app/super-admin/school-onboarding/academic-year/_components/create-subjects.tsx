@@ -130,8 +130,10 @@ export default function CreateSubjects() {
       is_active:
         isActive === "true" ? true : isActive === "false" ? false : undefined,
     };
-    assignMutate({ subjectId: selectedSubjectID, data: cleaned });
-    alert("Also do some API stuff");
+    assignMutate(
+      { subjectId: selectedSubjectID, data: cleaned },
+      { onSuccess: () => toast.success("Assigned successfully") }
+    );
   };
 
   return (
@@ -214,7 +216,7 @@ export default function CreateSubjects() {
                 <Select
                   name="class_section_id"
                   options={armsOptions}
-                  isLoading={isArmsDataPending}
+                  isLoading={isArmsDataPending && !!selectedLevel}
                   isLoadingText="Fetching classes"
                   label="Applies to"
                 />

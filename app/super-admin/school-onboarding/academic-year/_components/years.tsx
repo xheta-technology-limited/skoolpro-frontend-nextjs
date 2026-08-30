@@ -45,7 +45,7 @@ export default function AcademicYears() {
           subTitle="You haven't created any academic years, click the button above to make one"
           className="w-97.5 h-143.75"
         />
-        <Modals />
+        <Modals data={data} />
       </div>
     );
   }
@@ -54,7 +54,7 @@ export default function AcademicYears() {
       {data?.map((year) => (
         <Year year={year} key={year.id} />
       ))}
-      <Modals />
+      <Modals data={data} />
     </>
   );
 }
@@ -64,7 +64,7 @@ interface YearProps {
 }
 const Year = ({ year }: YearProps) => {
   return (
-    <div>
+    <div className="mb-16">
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center">
           <span className="bg-secondary-700 h-4 w-4 rounded-full inline-block mr-2" />
@@ -133,11 +133,11 @@ const Year = ({ year }: YearProps) => {
   );
 };
 
-const Modals = () => {
+const Modals = ({ data }: { data: AcademicYear[] | undefined }) => {
   return (
     <>
       <CreateAcademicYear />
-      <CreateEducationStructure />
+      <CreateEducationStructure data={data} />
       <CreateClassSections />
       <CreateSubjects />
       <ReviewAcademicYear />

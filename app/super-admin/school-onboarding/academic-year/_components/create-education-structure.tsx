@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/custom-button";
 import { useSearchParams } from "next/navigation";
 
 import {
+  AcademicYear,
   EducationStructureFormData,
   educationStructureSchema,
 } from "@/features/academic-year";
@@ -19,7 +20,10 @@ import { useEffect, useState } from "react";
 import { useApplyEducationPreset } from "@/features/academic-year/api/apply-preset";
 import { splitAtSlash } from "@/lib/helpers/get-text-in-parentheses";
 
-export default function CreateEducationStructure() {
+interface Props {
+  data: AcademicYear[] | undefined;
+}
+export default function CreateEducationStructure({ data: yearData }: Props) {
   const router = useProgressRouter();
   const searchParams = useSearchParams();
   const methods = useForm<EducationStructureFormData>({
@@ -45,6 +49,14 @@ export default function CreateEducationStructure() {
 
   const selectedLadder = data?.find((d) => d.key === activeLadder);
 
+  const alreadyHasStructure = yearData && yearData.length > 0;
+  useEffect(() => {
+    if (alreadyHasStructure) {
+      router.push(
+        "/super-admin/school-onboarding/academic-year?open=true&step=3"
+      );
+    }
+  }, []);
   useEffect(() => {
     if (data && data.length !== 0) {
       setActiveLadder(data[0].key);
