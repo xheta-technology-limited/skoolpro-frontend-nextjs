@@ -55,7 +55,6 @@ export const DUMMY_CLASS_TEACHERS = [
 ];
 
 export const DUMMY_CLASS_STATUSES = [
-  { value: "active", label: "Active" },
-  { value: "inactive", label: "Inactive" },
-  { value: "pending", label: "Pending" },
+  { value: "true", label: "Active" },
+  { value: "false", label: "Inactive" },
 ];

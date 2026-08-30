@@ -8,7 +8,7 @@ export const createArm = (
   data: CreateArmFormData,
   level: string
 ): Promise<null> => {
-  return api.post(`education/levels/${level}/section`, data);
+  return api.post(`education/levels/${level}/sections`, data);
 };
 
 export const useCreateArm = (level: string) => {
