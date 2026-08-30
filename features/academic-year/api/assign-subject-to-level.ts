@@ -1,25 +1,27 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import { academicYearKeys } from "./query-keys";
-import type { AcademicYearFormData } from "../schemas/create-academic-year-schema";
+import { assignedSubjectKeys } from "./query-keys";
 import { ServerErrorResponse } from "@/types/api";
-import { AcademicYear } from "../types/api/academic-year";
+import { AssignSubjectFormData } from "../schemas/assign-subject-schema";
+import { SubjectAssignmentResponse } from "../types/api/subject-assignments";
 
-export const createAcademicYear = (
-  data: AcademicYearFormData
-): Promise<AcademicYear> => {
-  return api.post("academic-years", data);
-};
+export const assignSubjectToLevel = (
+  subjectId: string,
+  data: AssignSubjectFormData
+): Promise<SubjectAssignmentResponse> =>
+  api.post(`subjects/${subjectId}/assignments`, data);
 
-export const useCreateAcademicYear = () => {
+export const useAssignSubjectToLevel = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<AcademicYear, ServerErrorResponse, AcademicYearFormData>({
-    mutationFn: (data) => {
-      return createAcademicYear(data);
-    },
+  return useMutation<
+    SubjectAssignmentResponse,
+    ServerErrorResponse,
+    { subjectId: string; data: AssignSubjectFormData }
+  >({
+    mutationFn: ({ subjectId, data }) => assignSubjectToLevel(subjectId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: academicYearKeys.all });
+      queryClient.invalidateQueries({ queryKey: assignedSubjectKeys.all });
     },
   });
 };

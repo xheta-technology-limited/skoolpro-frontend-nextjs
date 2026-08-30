@@ -1,5 +1,10 @@
 "use client";
-import { FormProvider, useForm, useFieldArray } from "react-hook-form";
+import {
+  FormProvider,
+  useForm,
+  useFieldArray,
+  useWatch,
+} from "react-hook-form";
 import { Text } from "@/components/ui";
 import { Checkbox, DatePicker, Input, Select } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
@@ -26,10 +31,20 @@ import {
   AssignSubjectFormData,
   assignSubjectSchema,
 } from "@/features/academic-year/schemas/assign-subject-schema";
+import { useListLevels } from "@/features/academic-year/api/list-levels";
+import { useEffect } from "react";
+import { useListLevelSubjectAssignments } from "@/features/academic-year/api/list-level-overview";
+import { useListArms } from "@/features/academic-year/api/list-arms";
+import { useAssignSubjectToLevel } from "@/features/academic-year/api/assign-subject-to-level";
+import { titleCase } from "@/lib/helpers/string-to-title-case";
 
 export default function CreateSubjects() {
   const router = useProgressRouter();
   const searchParams = useSearchParams();
+  const open = searchParams.get("open");
+  const current = searchParams.get("step");
+  const isOpen = open === "true" && current === "4";
+  const isSuccess = open === "true" && current === "success";
   const addSubjectMethods = useForm<CreateSubjectRequest>({
     //placeholder, change when implementing api
     defaultValues: {},
@@ -61,21 +76,61 @@ export default function CreateSubjects() {
     undefined,
     { refetchOnWindowFocus: false }
   );
+  const subjectOptions =
+    subjects?.map((s) => ({ value: s.id, label: titleCase(s.name) })) || [];
+  const { data: levels, isPending: isLevelsPending } = useListLevels({
+    refetchOnWindowFocus: false,
+  });
+  const selectedSubjectID = useWatch({
+    control: assignSubjectMethods.control,
+    name: "subject_id",
+  });
+  const levelOptions =
+    levels?.map((lev) => ({ value: lev.id, label: lev.name })) || [];
+  const selectedLevel = useWatch({
+    control: assignSubjectMethods.control,
+    name: "education_level_id",
+  });
+
+  const { mutate: assignMutate, isPending: isAssignPending } =
+    useAssignSubjectToLevel();
+
+  const { data: levelOverviewData, isPending: isLevelOverviewDataPending } =
+    useListLevelSubjectAssignments(selectedLevel, {
+      refetchOnWindowFocus: false,
+      enabled: !!selectedLevel,
+    });
+  const { data: armsData, isPending: isArmsDataPending } = useListArms(
+    selectedLevel,
+    { refetchOnWindowFocus: false, enabled: !!selectedLevel }
+  );
+  const armsOptions =
+    armsData?.map((a) => ({ value: a.id, label: a.name })) || [];
 
   const finish = () => {
     router.push(
       "/super-admin/school-onboarding/academic-year?open=true&step=success"
     );
   };
-  const open = searchParams.get("open");
-  const current = searchParams.get("step");
-  const isOpen = open === "true" && current === "4";
-  const isSuccess = open === "true" && current === "success";
 
   const onCloseSuccessModal = () =>
     router.push("/super-admin/school-onboarding/academic-year");
 
-  const assignSubject = () => {
+  const assignSubject = (data: AssignSubjectFormData) => {
+    const isCompulsory = data.is_compulsory;
+    const isActive = data.is_active;
+    const cleaned = {
+      ...data,
+      is_compulsory:
+        isCompulsory === "true"
+          ? true
+          : isCompulsory === "false"
+          ? false
+          : undefined,
+      is_active:
+        isActive === "true" ? true : isActive === "false" ? false : undefined,
+    };
+    assignMutate({ subjectId: selectedSubjectID, data: cleaned });
     alert("Also do some API stuff");
   };
 
@@ -143,26 +198,50 @@ export default function CreateSubjects() {
                 className="sm:h-auto gap-4 w-full grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]"
                 onSubmit={assignSubjectMethods.handleSubmit(assignSubject)}
               >
-                <Select name="name" options={DUMMY_CAMPUSES} label="Campus" />
+                <Select
+                  name="subject_id"
+                  options={subjectOptions}
+                  label="Select subject"
+                  isLoading={isSubjectsPending}
+                />
                 <Select
                   name="education_level_id"
-                  options={[]}
+                  options={levelOptions}
+                  isLoading={isLevelsPending}
+                  isLoadingText="Fetching classes"
                   label="Select class"
                 />
                 <Select
                   name="class_section_id"
-                  options={[]}
+                  options={armsOptions}
+                  isLoading={isArmsDataPending}
+                  isLoadingText="Fetching classes"
                   label="Applies to"
                 />
-                <Select name="is_compulsory" options={[]} label="Compulsory" />
-                <Select name="pass_mark" options={[]} label="Pass mark" />
-                <Select name="is_active" options={[]} label="Active" />
+                <Select
+                  name="is_compulsory"
+                  options={[
+                    { value: "true", label: "Compulsory" },
+                    { value: "false", label: "Not Compulsory" },
+                  ]}
+                  label="Compulsory"
+                />
+                <Input name="pass_mark" label="Pass mark" />
+                <Select
+                  name="is_active"
+                  options={[
+                    { value: "true", label: "Active" },
+                    { value: "false", label: "Inactive" },
+                  ]}
+                  label="Active"
+                />
               </form>
               <Button
                 type="submit"
                 form="assign-subject-form"
                 variant="secondary"
                 size="sm"
+                loading={isAssignPending}
                 className="justify-self-end max-w-fit ml-auto"
               >
                 <AddSquare variant="Bulk" size={16} className="text-primary" />
@@ -176,10 +255,14 @@ export default function CreateSubjects() {
               </Button>
             </FormProvider>
           </>
-          <Text className="text-neutrals-700" scale={"content"}>
-            Assigned to class_name_here
-          </Text>
-          <AssignedSubjectsTable />
+
+          <AssignedSubjectsTable
+            data={levelOverviewData}
+            isPending={isLevelOverviewDataPending}
+            levelOptions={levelOptions}
+            selectedLevel={selectedLevel}
+          />
+
           <div className="flex *:flex-1 gap-6">
             <Button
               type="button"

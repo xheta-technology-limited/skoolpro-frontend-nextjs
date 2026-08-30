@@ -27,3 +27,8 @@ export const schoolSubjectKeys = {
   all: ["school-subjects"] as const,
   detail: (id: string) => ["school-subjects", id] as const,
 };
+
+export const assignedSubjectKeys = {
+  all: ["assigned-subjects"] as const,
+  detail: (level: string) => ["assigned-subjects", level] as const,
+};
