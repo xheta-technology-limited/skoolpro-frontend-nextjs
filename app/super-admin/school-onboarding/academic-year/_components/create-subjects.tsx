@@ -22,6 +22,10 @@ import { setFormErrors } from "@/lib/helpers/set-form-errors";
 import { toast } from "sonner";
 import { useListSubjects } from "@/features/academic-year/api/list-subjects";
 import { Spinner } from "@/components/animations";
+import {
+  AssignSubjectFormData,
+  assignSubjectSchema,
+} from "@/features/academic-year/schemas/assign-subject-schema";
 
 export default function CreateSubjects() {
   const router = useProgressRouter();
@@ -32,10 +36,10 @@ export default function CreateSubjects() {
     resolver: zodResolver(createSubjectSchema),
   });
 
-  const assignSubjectMethods = useForm<any>({
+  const assignSubjectMethods = useForm<AssignSubjectFormData>({
     //placeholder, change when implementing api
     defaultValues: {},
-    // resolver: zodResolver(),
+    resolver: zodResolver(assignSubjectSchema),
   });
 
   const { data: stages, isPending: isStagesPending } = useListStages({
@@ -133,7 +137,7 @@ export default function CreateSubjects() {
             <Text className="text-neutrals-700" scale={"content"}>
               Assign subject to a level
             </Text>
-            <FormProvider {...addSubjectMethods}>
+            <FormProvider {...assignSubjectMethods}>
               <form
                 id="assign-subject-form"
                 className="sm:h-auto gap-4 w-full grid grid-cols-1 md:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]"
@@ -141,22 +145,18 @@ export default function CreateSubjects() {
               >
                 <Select name="name" options={DUMMY_CAMPUSES} label="Campus" />
                 <Select
-                  name="code"
-                  options={DUMMY_CLASS_TEACHERS}
-                  label="Class Teacher"
+                  name="education_level_id"
+                  options={[]}
+                  label="Select class"
                 />
-                <Select name="name" options={DUMMY_CAMPUSES} label="Campus" />
                 <Select
-                  name="code"
-                  options={DUMMY_CLASS_TEACHERS}
-                  label="Class Teacher"
+                  name="class_section_id"
+                  options={[]}
+                  label="Applies to"
                 />
-                <Select name="name" options={DUMMY_CAMPUSES} label="Campus" />
-                <Select
-                  name="code"
-                  options={DUMMY_CLASS_TEACHERS}
-                  label="Class Teacher"
-                />
+                <Select name="is_compulsory" options={[]} label="Compulsory" />
+                <Select name="pass_mark" options={[]} label="Pass mark" />
+                <Select name="is_active" options={[]} label="Active" />
               </form>
               <Button
                 type="submit"
