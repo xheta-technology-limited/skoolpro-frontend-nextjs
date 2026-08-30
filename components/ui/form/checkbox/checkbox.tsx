@@ -4,6 +4,7 @@ import { XIcon } from "@phosphor-icons/react";
 import { ArrowSquareDown, TickSquare } from "iconsax-reactjs";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
+import { Spinner } from "@/components/animations";
 
 export type CheckboxOption = {
   label: string;
@@ -16,9 +17,21 @@ type CheckboxProps = {
   options: CheckboxOption[];
   max?: number;
   disabled?: boolean;
+  isLoading?: boolean;
+  isLoadingText?: string;
+  info?: string;
 };
 
-const Checkbox = ({ name, label, options, max, disabled }: CheckboxProps) => {
+const Checkbox = ({
+  name,
+  label,
+  options,
+  max,
+  disabled,
+  isLoading,
+  isLoadingText = "Loading",
+  info,
+}: CheckboxProps) => {
   const {
     control,
     formState: { errors },
@@ -53,7 +66,7 @@ const Checkbox = ({ name, label, options, max, disabled }: CheckboxProps) => {
         const isFloating = isOpen || selectedOptions.length > 0;
 
         const toggleOption = (option: CheckboxOption) => {
-          if (disabled) return;
+          if (isDisabled) return;
           const isSelected = value.includes(option.value);
           if (isSelected) {
             field.onChange(value.filter((v) => v !== option.value));
@@ -63,13 +76,14 @@ const Checkbox = ({ name, label, options, max, disabled }: CheckboxProps) => {
           field.onChange([...value, option.value]);
         };
 
+        const isDisabled = disabled || isLoading;
         const isMaxedOut = max !== undefined && value.length >= max;
 
         return (
           <div className="relative" ref={containerRef}>
             <button
               type="button"
-              disabled={disabled}
+              disabled={isDisabled}
               onClick={() => (isOpen ? setIsOpen(false) : setIsOpen(true))}
               className={clsx(
                 "pr-13.75",
@@ -95,7 +109,7 @@ const Checkbox = ({ name, label, options, max, disabled }: CheckboxProps) => {
                   ? "top-0 text-[0.75rem]"
                   : "top-4 text-[0.875rem] md:text-[1rem]",
                 "left-ml",
-                disabled && "text-neutrals-100"
+                isDisabled && "text-neutrals-100"
               )}
             >
               {label}
@@ -104,7 +118,7 @@ const Checkbox = ({ name, label, options, max, disabled }: CheckboxProps) => {
             <button
               type="button"
               tabIndex={-1}
-              disabled={disabled}
+              disabled={isDisabled}
               onClick={() => (isOpen ? setIsOpen(false) : setIsOpen(true))}
               className="absolute right-5 top-[0.843rem] disabled:text-neutrals-100"
             >
@@ -123,7 +137,7 @@ const Checkbox = ({ name, label, options, max, disabled }: CheckboxProps) => {
                 {options.map((option) => {
                   const isSelected = value.includes(option.value);
                   const isOptionDisabled =
-                    disabled || (!isSelected && isMaxedOut);
+                    isDisabled || (!isSelected && isMaxedOut);
                   return (
                     <li
                       key={option.value}
@@ -164,6 +178,21 @@ const Checkbox = ({ name, label, options, max, disabled }: CheckboxProps) => {
                 <XIcon size={16} color="#C03744" />{" "}
                 <span className="ml-2 text-xs text-error-200">{error}</span>
               </>
+            )}
+
+            {isLoading && (
+              <div className="flex gap-1">
+                <Spinner size={16} color={"#9f9c9c"} />
+                <span className="text-xs text-neutrals-400">
+                  {isLoadingText}
+                </span>
+              </div>
+            )}
+
+            {info && (
+              <div className="flex">
+                <span className="text-xs text-neutrals-400">{info}</span>
+              </div>
             )}
           </div>
         );
