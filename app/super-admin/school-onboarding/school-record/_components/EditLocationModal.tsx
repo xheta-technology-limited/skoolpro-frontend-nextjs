@@ -65,15 +65,6 @@ export default function EditLocationModal({
   const methods = useForm<EditLocationValues>({
     resolver: zodResolver(editLocationSchema),
     defaultValues: {
-      name: "",
-      code: "",
-      addressLine1: "",
-      city: "",
-      stateProvince: "",
-      postalCode: "",
-      landmark: "",
-      timezone: "",
-      studentCapacity: "",
       isPrimary: false,
     },
   });

@@ -48,9 +48,6 @@ export default function AddContactModal({
   const methods = useForm<AddContactValues>({
     resolver: zodResolver(addContactSchema),
     defaultValues: {
-      type: "",
-      label: "",
-      value: "",
       isPrimary: false,
     },
   });

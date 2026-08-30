@@ -42,9 +42,6 @@ export default function EditContactModal({
   const methods = useForm<EditContactValues>({
     resolver: zodResolver(editContactSchema),
     defaultValues: {
-      type: "",
-      label: "",
-      value: "",
       isPrimary: false,
     },
   });

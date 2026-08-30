@@ -1,4 +1,5 @@
 import { Edit, AddSquare, Trash } from "iconsax-reactjs";
+import { Button } from "@/components/ui/custom-button";
 
 export interface RecordTableColumn {
   key: string;
@@ -41,16 +42,15 @@ export default function RecordTableSection({
         </span>
 
         {onAdd && (
-          <button
+          <Button
             type="button"
+            variant="secondary"
+            size="sm"
             onClick={onAdd}
-            className="flex items-center gap-2 rounded-[28px] border border-primary bg-base-white py-2 pl-6 pr-6 text-[13px] font-normal text-primary"
+            leftIcon={<AddSquare size={16} variant="Bulk" color="#010081" />}
           >
-            <span>
-              <AddSquare size={16} variant="Bulk" color="#010081" />
-            </span>
-            <span>Add</span>
-          </button>
+            Add
+          </Button>
         )}
       </div>
 
@@ -94,7 +94,7 @@ export default function RecordTableSection({
               {columns.map((column) => (
                 <span
                   key={column.key}
-                  className="min-w-0 truncate pr-2 text-[13px] font-normal leading-[1.2] text-neutrals-800"
+                  className="min-w-0 truncate pr-2 text-[13px] font-normal leading-[1.2] text-neutrals-900"
                 >
                   {row.cells[column.key] || "—"}
                 </span>

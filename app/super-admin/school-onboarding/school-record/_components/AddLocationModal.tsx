@@ -64,15 +64,6 @@ export default function AddLocationModal({
   const methods = useForm<AddLocationValues>({
     resolver: zodResolver(addLocationSchema),
     defaultValues: {
-      name: "",
-      code: "",
-      addressLine1: "",
-      city: "",
-      stateProvince: "",
-      postalCode: "",
-      landmark: "",
-      timezone: "",
-      studentCapacity: "",
       isPrimary: false,
     },
   });

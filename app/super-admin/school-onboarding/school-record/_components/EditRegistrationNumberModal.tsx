@@ -48,12 +48,7 @@ export default function EditRegistrationNumberModal({
 
   const methods = useForm<EditRegistrationNumberValues>({
     resolver: zodResolver(editRegistrationNumberSchema),
-    defaultValues: {
-      number: "",
-      countryCode: "",
-      issuingAuthority: "",
-      expiryDate: "",
-    },
+    defaultValues: {},
   });
 
   const { handleSubmit, reset, formState } = methods;

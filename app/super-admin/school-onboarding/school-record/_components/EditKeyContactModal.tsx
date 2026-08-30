@@ -48,11 +48,6 @@ export default function EditKeyContactModal({
   const methods = useForm<EditKeyContactValues>({
     resolver: zodResolver(editKeyContactSchema),
     defaultValues: {
-      roleType: "",
-      fullName: "",
-      jobTitle: "",
-      email: "",
-      phone: "",
       isPrimary: false,
     },
   });

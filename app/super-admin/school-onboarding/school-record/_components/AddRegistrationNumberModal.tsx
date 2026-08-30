@@ -42,12 +42,7 @@ export default function AddRegistrationNumberModal({
 
   const methods = useForm<AddRegistrationNumberValues>({
     resolver: zodResolver(addRegistrationNumberSchema),
-    defaultValues: {
-      number: "",
-      countryCode: "",
-      issuingAuthority: "",
-      expiryDate: "",
-    },
+    defaultValues: {},
   });
 
   const { handleSubmit, reset, formState } = methods;

@@ -34,6 +34,7 @@ import { schoolProfileKeys } from "@/features/school-profile/api/query-keys";
 
 import { api } from "@/lib/api";
 import { ServerErrorResponse } from "@/types/api";
+import { titleCase } from "@/lib/helpers/string-to-title-case";
 
 import {
   SCHOOL_TYPE_OPTIONS,
@@ -341,20 +342,28 @@ export default function SchoolRecordPage() {
     },
   }));
 
+  // titleCase applied only to `type` here — it's a backend enum value
+  // (email / phone / social_media / website). label/value/assigned are
+  // free text or an email/phone number, so they're left raw: running
+  // titleCase on an email would capitalize its first letter and break
+  // it visually (tsc@gmail.com -> Tsc@gmail.com).
   const contactRows: RecordTableRow[] = (profile.contacts ?? []).map((contact) => ({
     id: contact.id,
     cells: {
-      type: contact.type,
+      type: titleCase(contact.type),
       label: contact.label,
       value: contact.value,
       assigned: contact.is_primary ? "Primary" : "Secondary",
     },
   }));
 
+  // Same reasoning as contactRows: `role` is a backend enum
+  // (academic_contact, executive_sponsor, etc.) so it gets titleCase.
+  // name/title/email are free text or an actual email — left raw.
   const keyContactRows: RecordTableRow[] = (profile.key_contacts ?? []).map((contact) => ({
     id: contact.id,
     cells: {
-      role: contact.role_type,
+      role: titleCase(contact.role_type),
       name: contact.full_name,
       title: contact.job_title,
       email: contact.email,
@@ -377,7 +386,7 @@ export default function SchoolRecordPage() {
     <div className="flex flex-col gap-4 p-4 sm:p-8">
       {mode === "view" && (
         <>
-          <span className="text-[16px] font-normal leading-6 text-[#645D72] [font-family:var(--font-inter)]">
+          <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1 [font-family:var(--font-inter)]">
             SCHOOL IDENTITY
           </span>
 
@@ -404,16 +413,16 @@ export default function SchoolRecordPage() {
               </div>
             </div>
 
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="lg"
               onClick={enterEditMode}
-              className="flex h-14 w-full shrink-0 items-center justify-center gap-2 rounded-[28px] border border-primary bg-base-white px-8 py-4 lg:w-32.25"
+              leftIcon={<Edit size={24} variant="Bulk" color="#010081" />}
+              className="w-full shrink-0 lg:w-32.25"
             >
-              <Edit size={24} variant="Bulk" color="#010081" />
-              <span className="text-[18px] font-normal leading-[1.2] text-primary">
-                Edit
-              </span>
-            </button>
+              Edit
+            </Button>
           </div>
 
           <RecordTableSection
@@ -496,7 +505,7 @@ export default function SchoolRecordPage() {
 
       {mode === "edit" && (
         <>
-          <span className="text-[16px] font-normal leading-6 text-[#645D72] [font-family:var(--font-inter)]">
+          <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1 [font-family:var(--font-inter)]">
             SCHOOL IDENTITY
           </span>
 
@@ -536,7 +545,7 @@ export default function SchoolRecordPage() {
               <TextArea name="motto" label="School motto" maxLength={200} />
 
               <div className="flex justify-end">
-                <Button type="submit" loading={isSaving} className="w-32">
+                <Button type="submit" loading={isSaving} size="lg">
                   {isSaving ? "Saving" : "Save"}
                 </Button>
               </div>

@@ -41,11 +41,6 @@ export default function AddKeyContactModal({
   const methods = useForm<AddKeyContactValues>({
     resolver: zodResolver(addKeyContactSchema),
     defaultValues: {
-      roleType: "",
-      fullName: "",
-      jobTitle: "",
-      email: "",
-      phone: "",
       isPrimary: false,
     },
   });
