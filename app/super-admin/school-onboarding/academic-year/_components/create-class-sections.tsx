@@ -48,7 +48,10 @@ export default function CreateClassSections() {
     mutate(
       { ...data, is_active: data.is_active === "true" ? true : false },
       {
-        onSuccess: () => toast.success("Arm added successfully"),
+        onSuccess: () => {
+          methods.reset();
+          toast.success("Arm added successfully");
+        },
         onError: (res) => setFormErrors(methods.setError, res.errors),
       }
     );
@@ -215,7 +218,7 @@ function Arm({ arm }: ArmProps) {
     <div className="border border-grays-borders rounded-[8px] flex items-center gap-3 p-4">
       <div className="bg-primary-100 rounded-[8px] p-2">
         <Text weight={"bold"} scale={"caption"}>
-          {singledOutLetter(arm.code)}
+          {singledOutLetter(arm.code)?.toUpperCase()}
         </Text>
       </div>
       <div className="flex gap-1 flex-col">
