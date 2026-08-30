@@ -25,3 +25,7 @@ export {
 } from "./types/api/levels";
 
 export { type EducationArm, type EducationArmLevel } from "./types/api/arms";
+
+export { type EducationStage } from "./types/api/stages";
+
+export { type Subject } from "./types/api/subjects";
