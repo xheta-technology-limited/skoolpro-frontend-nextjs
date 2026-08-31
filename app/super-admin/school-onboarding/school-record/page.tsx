@@ -518,8 +518,8 @@ export default function SchoolRecordPage() {
             columns={[
               { key: "primary", label: "Primary color", isColor: true },
               { key: "secondary", label: "Secondary color", isColor: true },
-              { key: "accent", label: "Tertiary color", isColor: true },
-              { key: "text", label: "Accent color", isColor: true },
+              { key: "tertiary", label: "Tertiary color", isColor: true },
+              { key: "accent", label: "Accent color", isColor: true },
             ]}
             rows={colorCodeRows}
             onEditRow={() => setIsEditColorCodeOpen(true)}

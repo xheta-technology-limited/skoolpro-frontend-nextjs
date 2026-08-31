@@ -27,6 +27,10 @@ const ROLE_TYPE_OPTIONS = [
   { label: "Technical contact", value: "technical_contact" },
   { label: "Finance contact", value: "finance_contact" },
   { label: "Academic contact", value: "academic_contact" },
+  { label: "Data protection contact", value: "data_protection_contact" },
+  { label: "Escalation level 1", value: "escalation_level_1" },
+  { label: "Escalation level 2", value: "escalation_level_2" },
+  { label: "Escalation level 3", value: "escalation_level_3" },
 ];
 
 const editKeyContactSchema = z.object({

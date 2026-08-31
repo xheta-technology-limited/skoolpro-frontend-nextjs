@@ -19,13 +19,40 @@ import type { UpdateSchoolProfilePayload } from "../types";
 const HEX_COLOR_REGEX = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
 
 const editColorCodeSchema = z.object({
-  primaryColor: z.string().regex(HEX_COLOR_REGEX, "Enter a valid hex color"),
+  primaryColor: z
+    .string()
+    .optional()
+    .refine(
+      (value) => !value || HEX_COLOR_REGEX.test(value),
+      "Enter a valid hex color"
+    ),
   primaryColorSwatch: z.string().optional(),
-  secondaryColor: z.string().regex(HEX_COLOR_REGEX, "Enter a valid hex color"),
+
+  secondaryColor: z
+    .string()
+    .optional()
+    .refine(
+      (value) => !value || HEX_COLOR_REGEX.test(value),
+      "Enter a valid hex color"
+    ),
   secondaryColorSwatch: z.string().optional(),
-  accentColor: z.string().regex(HEX_COLOR_REGEX, "Enter a valid hex color"),
+
+  accentColor: z
+    .string()
+    .optional()
+    .refine(
+      (value) => !value || HEX_COLOR_REGEX.test(value),
+      "Enter a valid hex color"
+    ),
   accentColorSwatch: z.string().optional(),
-  textColor: z.string().regex(HEX_COLOR_REGEX, "Enter a valid hex color"),
+
+  textColor: z
+    .string()
+    .optional()
+    .refine(
+      (value) => !value || HEX_COLOR_REGEX.test(value),
+      "Enter a valid hex color"
+    ),
   textColorSwatch: z.string().optional(),
 });
 
@@ -64,14 +91,14 @@ export default function EditColorCodeModal({
   useEffect(() => {
     if (profile && open) {
       reset({
-        primaryColor: profile.primary_color ?? "",
-        primaryColorSwatch: profile.primary_color ?? "",
-        secondaryColor: profile.secondary_color ?? "",
-        secondaryColorSwatch: profile.secondary_color ?? "",
-        accentColor: profile.accent_color ?? "",
-        accentColorSwatch: profile.accent_color ?? "",
-        textColor: profile.text_color ?? "",
-        textColorSwatch: profile.text_color ?? "",
+        primaryColor: profile.primary_color ?? undefined,
+        primaryColorSwatch: profile.primary_color ?? undefined,
+        secondaryColor: profile.secondary_color ?? undefined,
+        secondaryColorSwatch: profile.secondary_color ?? undefined,
+        accentColor: profile.accent_color ?? undefined,
+        accentColorSwatch: profile.accent_color ?? undefined,
+        textColor: profile.text_color ?? undefined,
+        textColorSwatch: profile.text_color ?? undefined,
       });
     }
   }, [profile, open, reset]);
@@ -90,12 +117,15 @@ export default function EditColorCodeModal({
     if (dirtyFields.primaryColor) {
       payload.primary_color = values.primaryColor;
     }
+
     if (dirtyFields.secondaryColor) {
       payload.secondary_color = values.secondaryColor;
     }
+
     if (dirtyFields.accentColor) {
       payload.accent_color = values.accentColor;
     }
+
     if (dirtyFields.textColor) {
       payload.text_color = values.textColor;
     }
@@ -133,8 +163,8 @@ export default function EditColorCodeModal({
         >
           <ColorField name="primaryColor" label="Primary color" />
           <ColorField name="secondaryColor" label="Secondary color" />
-          <ColorField name="accentColor" label="Tertiary color" />
-          <ColorField name="textColor" label="Accent color" />
+          <ColorField name="tertiaryColor" label="Tertiary color" />
+          <ColorField name="accentColor" label="Accent color" />
 
           <div className="flex gap-4 pt-2">
             <button
