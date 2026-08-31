@@ -21,6 +21,7 @@ import {
   createArmSchema,
 } from "@/features/academic-year/schemas/create-arm";
 import { useCreateArm } from "@/features/academic-year/api/create-arm";
+import { useUpdateArm } from "@/features/academic-year/api/update-arm";
 import { toast } from "sonner";
 import { setFormErrors } from "@/lib/helpers/set-form-errors";
 import { useListArms } from "@/features/academic-year/api/list-arms";
@@ -37,24 +38,68 @@ export default function CreateClassSections() {
     resolver: zodResolver(createArmSchema),
   });
   const [activeLevel, setActiveLevel] = useState("");
-  const { mutate, isPending } = useCreateArm(activeLevel);
+  const editId = searchParams.get("editId");
+  const isEditMode = !!editId;
+
+  const { mutate: createMutate, isPending: isCreatePending } =
+    useCreateArm(activeLevel);
+  const { mutate: updateMutate, isPending: isUpdatePending } =
+    useUpdateArm(activeLevel);
+  const isPending = isCreatePending || isUpdatePending;
+
   const { data: armsData, isFetching: isArmsFetching } = useListArms(
     activeLevel,
     { refetchOnWindowFocus: false, enabled: !!activeLevel }
   );
   const { data, isFetching } = useListLevels({ refetchOnWindowFocus: false });
 
+  const editArm = isEditMode
+    ? armsData?.find((arm) => arm.id === editId)
+    : undefined;
+
+  useEffect(() => {
+    if (isEditMode && editArm) {
+      methods.reset({
+        name: editArm.name,
+        code: editArm.code,
+        campus_id: editArm.campus_id ?? "",
+        staff_id: editArm.staff_id,
+        capacity: editArm.capacity != null ? String(editArm.capacity) : "",
+        is_active: editArm.is_active ? "true" : "false",
+      });
+    } else if (!isEditMode) {
+      methods.reset();
+    }
+  }, [isEditMode, editArm, methods]);
+
   const onSubmit = (data: CreateArmFormData) => {
-    mutate(
-      { ...data, is_active: data.is_active === "true" ? true : false },
-      {
-        onSuccess: () => {
-          methods.reset();
-          toast.success("Arm added successfully");
-        },
-        onError: (res) => setFormErrors(methods.setError, res.errors),
-      }
-    );
+    const payload = { ...data, is_active: data.is_active === "true" };
+    if (isEditMode && editId) {
+      updateMutate(
+        { armId: editId, level: activeLevel, data: payload },
+        {
+          onSuccess: () => {
+            methods.reset();
+            router.replace(
+              "/super-admin/school-onboarding/academic-year?open=true&step=3"
+            );
+            toast.success("Arm updated successfully");
+          },
+          onError: (res) => setFormErrors(methods.setError, res.errors),
+        }
+      );
+    } else {
+      createMutate(
+        { ...data, is_active: data.is_active === "true" ? true : false },
+        {
+          onSuccess: () => {
+            methods.reset();
+            toast.success("Arm added successfully");
+          },
+          onError: (res) => setFormErrors(methods.setError, res.errors),
+        }
+      );
+    }
   };
   const open = searchParams.get("open");
   const current = searchParams.get("step");
@@ -91,7 +136,14 @@ export default function CreateClassSections() {
             label="Select Class"
             isLoading={isFetching}
             isLoadingText="Fetching levels"
-            onChange={(e) => setActiveLevel(e)}
+            onChange={(e) => {
+              setActiveLevel(e);
+              if (isEditMode) {
+                router.replace(
+                  "/super-admin/school-onboarding/academic-year?open=true&step=3"
+                );
+              }
+            }}
             value={activeLevel}
           />
           {activeLevel && (
@@ -106,7 +158,15 @@ export default function CreateClassSections() {
                   </div>
 
                   {armsData?.map((arm) => (
-                    <Arm key={arm.name} arm={arm} />
+                    <Arm
+                      key={arm.id}
+                      arm={arm}
+                      onEdit={() =>
+                        router.push(
+                          `/super-admin/school-onboarding/academic-year?open=true&step=3&editId=${arm.id}`
+                        )
+                      }
+                    />
                   ))}
                 </>
               )}
@@ -172,7 +232,7 @@ export default function CreateClassSections() {
                     weight={"standard"}
                     scale={"caption"}
                   >
-                    Add Arm
+                    {isEditMode ? "Save Arm" : "Add Arm"}
                   </Text>
                 </Button>
                 <div className="flex *:flex-1 gap-6">
@@ -212,8 +272,9 @@ export default function CreateClassSections() {
 
 interface ArmProps {
   arm: EducationArm;
+  onEdit: () => void;
 }
-function Arm({ arm }: ArmProps) {
+function Arm({ arm, onEdit }: ArmProps) {
   return (
     <div className="border border-grays-borders rounded-[8px] flex items-center gap-3 p-4">
       <div className="bg-primary-100 rounded-[8px] p-2">
@@ -221,7 +282,7 @@ function Arm({ arm }: ArmProps) {
           {singledOutLetter(arm.code)?.toUpperCase()}
         </Text>
       </div>
-      <div className="flex gap-1 flex-col">
+      <div className="flex gap-1 flex-col flex-1">
         <div className="flex gap-3">
           <Text className="text-neutrals-900 font-normal" scale={"caption"}>
             {arm.level.name}
@@ -252,6 +313,16 @@ function Arm({ arm }: ArmProps) {
           </Text>
         </div>
       </div>
+      <Button
+        variant="secondary"
+        size="sm"
+        className="text-primary ml-auto"
+        onClick={onEdit}
+      >
+        <Text weight={"standard"} scale={"caption"}>
+          Edit
+        </Text>
+      </Button>
     </div>
   );
 }

@@ -94,7 +94,7 @@ export default function CreateAcademicYear() {
         {
           onSuccess: () =>
             router.replace(
-              `/super-admin/school-onboarding/academic-year?open=true&step=2&editId=${editId}`
+              "/super-admin/school-onboarding/academic-year?open=true&step=3"
             ),
           onError: (res) => setFormErrors(methods.setError, res.errors),
         }
