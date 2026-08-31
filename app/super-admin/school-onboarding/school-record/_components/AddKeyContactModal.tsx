@@ -1,13 +1,19 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, FormProvider, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
+import { toast } from "sonner";
 import FormModal from "@/components/ui/form-modal";
 import { Input, Select } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
 import ToggleField from "@/app/onboarding/_components/fields/ToggleField";
+
+import { api } from "@/lib/api";
+import { ServerErrorResponse } from "@/types/api";
+import { schoolProfileKeys } from "@/features/school-profile/api/query-keys";
 
 const ROLE_TYPE_OPTIONS = [
   { label: "Primary contact", value: "primary_contact" },
@@ -16,6 +22,10 @@ const ROLE_TYPE_OPTIONS = [
   { label: "Technical contact", value: "technical_contact" },
   { label: "Finance contact", value: "finance_contact" },
   { label: "Academic contact", value: "academic_contact" },
+  { label: "Data protection contact", value: "data_protection_contact" },
+  { label: "Escalation level 1", value: "escalation_level_1" },
+  { label: "Escalation level 2", value: "escalation_level_2" },
+  { label: "Escalation level 3", value: "escalation_level_3" },
 ];
 
 const addKeyContactSchema = z.object({
@@ -29,15 +39,28 @@ const addKeyContactSchema = z.object({
 
 type AddKeyContactValues = z.infer<typeof addKeyContactSchema>;
 
+interface AddKeyContactPayload {
+  role_type: string;
+  full_name: string;
+  job_title: string;
+  email: string;
+  phone?: string;
+  has_decision_making_authority: boolean;
+}
+
 interface AddKeyContactModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  schoolId: string;
 }
 
 export default function AddKeyContactModal({
   open,
   onOpenChange,
+  schoolId,
 }: AddKeyContactModalProps) {
+  const queryClient = useQueryClient();
+
   const methods = useForm<AddKeyContactValues>({
     resolver: zodResolver(addKeyContactSchema),
     defaultValues: {
@@ -47,10 +70,37 @@ export default function AddKeyContactModal({
 
   const { handleSubmit, reset, control, formState } = methods;
 
-  const onSubmit = async () => {
-    console.log("TODO: no add-key-contact endpoint yet — nothing was saved");
-    reset();
-    onOpenChange(false);
+  const createKeyContactMutation = useMutation<
+    unknown,
+    ServerErrorResponse,
+    AddKeyContactPayload
+  >({
+    mutationFn: (data) => api.post(`schools/${schoolId}/key-contacts`, data),
+  });
+
+  const onSubmit = async (values: AddKeyContactValues) => {
+    const payload: AddKeyContactPayload = {
+      role_type: values.roleType,
+      full_name: values.fullName,
+      job_title: values.jobTitle,
+      email: values.email,
+      has_decision_making_authority: values.isPrimary,
+    };
+
+    if (values.phone) {
+      payload.phone = values.phone;
+    }
+
+    try {
+      await createKeyContactMutation.mutateAsync(payload);
+      await queryClient.invalidateQueries({ queryKey: schoolProfileKeys.all });
+      toast.success("Key contact added successfully.");
+      reset();
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Failed to add key contact:", error);
+      toast.error("Failed to add key contact. Please try again.");
+    }
   };
 
   function handleOpenChange(nextOpen: boolean) {
@@ -110,7 +160,9 @@ export default function AddKeyContactModal({
 
             <Button
               type="submit"
-              loading={formState.isSubmitting}
+              loading={
+                formState.isSubmitting || createKeyContactMutation.isPending
+              }
               className="h-14 flex-1 rounded-[28px]"
             >
               Add Key Contact

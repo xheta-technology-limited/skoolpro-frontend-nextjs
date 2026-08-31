@@ -23,6 +23,11 @@ export type UpdateSchoolProfilePayload = {
   description?: string;
   motto?: string;
   type_slugs?: string[];
+  primary_color?: string;
+  secondary_color?: string;
+  accent_color?: string;
+  text_color?: string;
+
 };
 
 export type UpdateCampusPayload = {

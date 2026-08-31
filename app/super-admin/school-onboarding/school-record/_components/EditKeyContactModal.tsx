@@ -1,14 +1,20 @@
 "use client";
 
 import { useEffect } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, FormProvider, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
+import { toast } from "sonner";
 import FormModal from "@/components/ui/form-modal";
 import { Input, Select } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
 import ToggleField from "@/app/onboarding/_components/fields/ToggleField";
+
+import { api } from "@/lib/api";
+import { ServerErrorResponse } from "@/types/api";
+import { schoolProfileKeys } from "@/features/school-profile/api/query-keys";
 
 import type { SchoolProfile } from "@/features/school-profile/types/school-profile";
 
@@ -34,17 +40,30 @@ const editKeyContactSchema = z.object({
 
 type EditKeyContactValues = z.infer<typeof editKeyContactSchema>;
 
+interface UpdateKeyContactPayload {
+  role_type?: string;
+  full_name?: string;
+  job_title?: string;
+  email?: string;
+  phone?: string;
+  has_decision_making_authority?: boolean;
+}
+
 interface EditKeyContactModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  schoolId: string;
   keyContact: KeyContact | null;
 }
 
 export default function EditKeyContactModal({
   open,
   onOpenChange,
+  schoolId,
   keyContact,
 }: EditKeyContactModalProps) {
+  const queryClient = useQueryClient();
+
   const methods = useForm<EditKeyContactValues>({
     resolver: zodResolver(editKeyContactSchema),
     defaultValues: {
@@ -53,6 +72,7 @@ export default function EditKeyContactModal({
   });
 
   const { handleSubmit, reset, control, formState } = methods;
+  const { dirtyFields } = formState;
 
   useEffect(() => {
     if (keyContact && open) {
@@ -67,9 +87,70 @@ export default function EditKeyContactModal({
     }
   }, [keyContact, open, reset]);
 
-  const onSubmit = async () => {
-    console.log("TODO: no edit-key-contact endpoint yet — nothing was saved");
-    onOpenChange(false);
+  const updateKeyContactMutation = useMutation<
+    unknown,
+    ServerErrorResponse,
+    {
+      keyContactId: string;
+      data: UpdateKeyContactPayload;
+    }
+  >({
+    mutationFn: ({ keyContactId, data }) =>
+      api.put(`schools/${schoolId}/key-contacts/${keyContactId}`, data),
+  });
+
+  const onSubmit = async (values: EditKeyContactValues) => {
+    if (!keyContact) {
+      return;
+    }
+
+    const payload: UpdateKeyContactPayload = {};
+
+    if (dirtyFields.roleType) {
+      payload.role_type = values.roleType;
+    }
+
+    if (dirtyFields.fullName) {
+      payload.full_name = values.fullName;
+    }
+
+    if (dirtyFields.jobTitle) {
+      payload.job_title = values.jobTitle;
+    }
+
+    if (dirtyFields.email) {
+      payload.email = values.email;
+    }
+
+    if (dirtyFields.phone) {
+      payload.phone = values.phone;
+    }
+
+    if (dirtyFields.isPrimary) {
+      payload.has_decision_making_authority = values.isPrimary;
+    }
+
+    if (Object.keys(payload).length === 0) {
+      onOpenChange(false);
+      return;
+    }
+
+    try {
+      await updateKeyContactMutation.mutateAsync({
+        keyContactId: keyContact.id,
+        data: payload,
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: schoolProfileKeys.all,
+      });
+
+      toast.success("Key contact updated successfully.");
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Failed to update key contact:", error);
+      toast.error("Failed to update key contact. Please try again.");
+    }
   };
 
   function handleOpenChange(nextOpen: boolean) {
@@ -126,7 +207,10 @@ export default function EditKeyContactModal({
 
             <Button
               type="submit"
-              loading={formState.isSubmitting}
+              loading={
+                formState.isSubmitting ||
+                updateKeyContactMutation.isPending
+              }
               className="h-14 flex-1 rounded-[28px]"
             >
               Save Changes
