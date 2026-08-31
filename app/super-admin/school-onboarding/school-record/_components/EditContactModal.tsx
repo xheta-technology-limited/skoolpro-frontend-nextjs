@@ -1,15 +1,20 @@
 "use client";
 
 import { useEffect } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, FormProvider, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
+import { toast } from "sonner";
 import FormModal from "@/components/ui/form-modal";
 import { Input, Select } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
 import ToggleField from "@/app/onboarding/_components/fields/ToggleField";
 
+import { api } from "@/lib/api";
+import { ServerErrorResponse } from "@/types/api";
+import { schoolProfileKeys } from "@/features/school-profile/api/query-keys";
 import type { Contact } from "../types";
 
 const CONTACT_TYPE_OPTIONS = [
@@ -28,17 +33,28 @@ const editContactSchema = z.object({
 
 type EditContactValues = z.infer<typeof editContactSchema>;
 
+interface UpdateContactPayload {
+  type?: string;
+  label?: string;
+  value?: string;
+  is_primary?: boolean;
+}
+
 interface EditContactModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  schoolId: string;
   contact: Contact | null;
 }
 
 export default function EditContactModal({
   open,
   onOpenChange,
+  schoolId,
   contact,
 }: EditContactModalProps) {
+  const queryClient = useQueryClient();
+
   const methods = useForm<EditContactValues>({
     resolver: zodResolver(editContactSchema),
     defaultValues: {
@@ -47,6 +63,7 @@ export default function EditContactModal({
   });
 
   const { handleSubmit, reset, control, formState } = methods;
+  const { dirtyFields } = formState;
 
   useEffect(() => {
     if (contact && open) {
@@ -59,9 +76,52 @@ export default function EditContactModal({
     }
   }, [contact, open, reset]);
 
-  const onSubmit = async () => {
-    console.log("TODO: no edit-contact endpoint yet — nothing was saved");
-    onOpenChange(false);
+  const updateContactMutation = useMutation<
+    unknown,
+    ServerErrorResponse,
+    { contactId: string; data: UpdateContactPayload }
+  >({
+    mutationFn: ({ contactId, data }) =>
+      api.put(`schools/${schoolId}/contacts/${contactId}`, data),
+  });
+
+  const onSubmit = async (values: EditContactValues) => {
+    if (!contact) {
+      return;
+    }
+
+    const payload: UpdateContactPayload = {};
+
+    if (dirtyFields.type) {
+      payload.type = values.type;
+    }
+    if (dirtyFields.label) {
+      payload.label = values.label;
+    }
+    if (dirtyFields.value) {
+      payload.value = values.value;
+    }
+    if (dirtyFields.isPrimary) {
+      payload.is_primary = values.isPrimary;
+    }
+
+    if (Object.keys(payload).length === 0) {
+      onOpenChange(false);
+      return;
+    }
+
+    try {
+      await updateContactMutation.mutateAsync({
+        contactId: contact.id,
+        data: payload,
+      });
+      await queryClient.invalidateQueries({ queryKey: schoolProfileKeys.all });
+      toast.success("Contact updated successfully.");
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Failed to update contact:", error);
+      toast.error("Failed to update contact. Please try again.");
+    }
   };
 
   function handleOpenChange(nextOpen: boolean) {
@@ -110,7 +170,7 @@ export default function EditContactModal({
 
             <Button
               type="submit"
-              loading={formState.isSubmitting}
+              loading={formState.isSubmitting || updateContactMutation.isPending}
               className="h-14 flex-1 rounded-[28px]"
             >
               Save Changes

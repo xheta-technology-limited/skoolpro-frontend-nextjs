@@ -22,6 +22,7 @@ import AddContactModal from "./_components/AddContactModal";
 import EditContactModal from "./_components/EditContactModal";
 import AddKeyContactModal from "./_components/AddKeyContactModal";
 import EditKeyContactModal from "./_components/EditKeyContactModal";
+import EditColorCodeModal from "./_components/EditColorCodeModal";
 
 import {
   schoolIdentitySchema,
@@ -65,6 +66,7 @@ export default function SchoolRecordPage() {
   const [editingKeyContactId, setEditingKeyContactId] = useState<
     string | null
   >(null);
+  const [isEditColorCodeOpen, setIsEditColorCodeOpen] = useState(false);
 
   const profile = useUserStore((state) => state.data);
   const updateData = useUserStore((state) => state.updateData);
@@ -180,6 +182,33 @@ export default function SchoolRecordPage() {
     }
   }
 
+  const deleteKeyContactMutation = useMutation<
+    unknown,
+    ServerErrorResponse,
+    { schoolId: string; keyContactId: string }
+  >({
+    mutationFn: ({ schoolId, keyContactId }) =>
+      api.delete(`schools/${schoolId}/key-contacts/${keyContactId}`),
+  });
+
+  async function handleDeleteKeyContact(keyContactId: string) {
+    if (!profile?.id) {
+      return;
+    }
+
+    try {
+      await deleteKeyContactMutation.mutateAsync({
+        schoolId: profile.id,
+        keyContactId,
+      });
+      await queryClient.invalidateQueries({ queryKey: schoolProfileKeys.all });
+      toast.success("Key contact deleted.");
+    } catch (error) {
+      console.error("Failed to delete key contact:", error);
+      toast.error("Failed to delete key contact. Please try again.");
+    }
+  }
+
   const deletingRegistrationId = deleteRegistrationMutation.isPending
     ? (deleteRegistrationMutation.variables?.registrationId ?? null)
     : null;
@@ -190,6 +219,10 @@ export default function SchoolRecordPage() {
 
   const deletingContactId = deleteContactMutation.isPending
     ? (deleteContactMutation.variables?.contactId ?? null)
+    : null;
+
+  const deletingKeyContactId = deleteKeyContactMutation.isPending
+    ? (deleteKeyContactMutation.variables?.keyContactId ?? null)
     : null;
 
   const formValues = useMemo<SchoolIdentityFormValues>(() => {
@@ -341,13 +374,7 @@ export default function SchoolRecordPage() {
       postalCode: campus.postal_code ?? "",
     },
   }));
-
-  // titleCase applied only to `type` here — it's a backend enum value
-  // (email / phone / social_media / website). label/value/assigned are
-  // free text or an email/phone number, so they're left raw: running
-  // titleCase on an email would capitalize its first letter and break
-  // it visually (tsc@gmail.com -> Tsc@gmail.com).
-  const contactRows: RecordTableRow[] = (profile.contacts ?? []).map((contact) => ({
+ const contactRows: RecordTableRow[] = (profile.contacts ?? []).map((contact) => ({
     id: contact.id,
     cells: {
       type: titleCase(contact.type),
@@ -357,10 +384,7 @@ export default function SchoolRecordPage() {
     },
   }));
 
-  // Same reasoning as contactRows: `role` is a backend enum
-  // (academic_contact, executive_sponsor, etc.) so it gets titleCase.
-  // name/title/email are free text or an actual email — left raw.
-  const keyContactRows: RecordTableRow[] = (profile.key_contacts ?? []).map((contact) => ({
+   const keyContactRows: RecordTableRow[] = (profile.key_contacts ?? []).map((contact) => ({
     id: contact.id,
     cells: {
       role: titleCase(contact.role_type),
@@ -484,21 +508,21 @@ export default function SchoolRecordPage() {
             rows={keyContactRows}
             onAdd={() => setIsAddKeyContactOpen(true)}
             onEditRow={(rowId) => setEditingKeyContactId(rowId)}
-            onDeleteRow={() =>
-              console.log("TODO: no delete-key-contact endpoint wired yet")
-            }
+            onDeleteRow={handleDeleteKeyContact}
+            deletingRowId={deletingKeyContactId}
             emptyLabel="No key contacts added yet"
           />
 
           <RecordTableSection
             title="Color code"
             columns={[
-              { key: "primary", label: "Primary color" },
-              { key: "secondary", label: "Secondary color" },
-              { key: "accent", label: "Tertiary color" },
-              { key: "text", label: "Accent color" },
+              { key: "primary", label: "Primary color", isColor: true },
+              { key: "secondary", label: "Secondary color", isColor: true },
+              { key: "tertiary", label: "Tertiary color", isColor: true },
+              { key: "accent", label: "Accent color", isColor: true },
             ]}
             rows={colorCodeRows}
+            onEditRow={() => setIsEditColorCodeOpen(true)}
           />
         </>
       )}
@@ -614,6 +638,7 @@ export default function SchoolRecordPage() {
             setEditingContactId(null);
           }
         }}
+        schoolId={schoolId}
         contact={
           profile.contacts?.find(
             (contact) => contact.id === editingContactId
@@ -624,6 +649,7 @@ export default function SchoolRecordPage() {
       <AddKeyContactModal
         open={isAddKeyContactOpen}
         onOpenChange={setIsAddKeyContactOpen}
+        schoolId={schoolId}
       />
 
       <EditKeyContactModal
@@ -633,11 +659,24 @@ export default function SchoolRecordPage() {
             setEditingKeyContactId(null);
           }
         }}
+        schoolId={schoolId}
         keyContact={
           profile.key_contacts?.find(
             (contact) => contact.id === editingKeyContactId
           ) ?? null
         }
+      />
+
+      <EditColorCodeModal
+        open={isEditColorCodeOpen}
+        onOpenChange={setIsEditColorCodeOpen}
+        schoolId={schoolId}
+        profile={{
+          primary_color: profile.primary_color ?? null,
+          secondary_color: profile.secondary_color ?? null,
+          accent_color: profile.accent_color ?? null,
+          text_color: profile.text_color ?? null,
+        }}
       />
     </div>
   );
