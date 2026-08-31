@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/custom-button";
 export interface RecordTableColumn {
   key: string;
   label: string;
+  isColor?: boolean;
 }
 
 export interface RecordTableRow {
@@ -91,14 +92,27 @@ export default function RecordTableSection({
               }`}
               style={{ gridTemplateColumns: gridTemplate }}
             >
-              {columns.map((column) => (
-                <span
-                  key={column.key}
-                  className="min-w-0 truncate pr-2 text-[13px] font-normal leading-[1.2] text-neutrals-900"
-                >
-                  {row.cells[column.key] || "—"}
-                </span>
-              ))}
+              {columns.map((column) => {
+                const value = row.cells[column.key];
+
+                return (
+                  <span
+                    key={column.key}
+                    className="flex min-w-0 items-center gap-2 pr-2"
+                  >
+                    {column.isColor && value && (
+                      <span
+                        className="h-3.5 w-3.5 shrink-0 rounded-[4px] border border-neutrals-100"
+                        style={{ backgroundColor: value }}
+                        aria-hidden="true"
+                      />
+                    )}
+                    <span className="truncate text-[13px] font-normal leading-[1.2] text-neutrals-900">
+                      {value || "—"}
+                    </span>
+                  </span>
+                );
+              })}
 
               <div className="flex items-center justify-between gap-2">
                 {onEditRow && (
@@ -112,9 +126,7 @@ export default function RecordTableSection({
                   </button>
                 )}
 
-                {/* Never show delete on the first row — at least one
-                    record must always remain in the list. */}
-                {index !== 0 && onDeleteRow && (
+                {rows.length > 1 && onDeleteRow && (
                   <button
                     type="button"
                     onClick={() => onDeleteRow(row.id)}
