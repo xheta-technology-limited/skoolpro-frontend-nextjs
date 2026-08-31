@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import { FormProvider, useForm, useFieldArray } from "react-hook-form";
 import { Text } from "@/components/ui";
 import { DatePicker, Input, Select } from "@/components/ui/form";
@@ -11,13 +12,21 @@ import {
   academicYearSchema,
 } from "@/features/academic-year";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SESSION_TYPE_OPTIONS } from "../constants";
+import { SESSION_TYPE_OPTIONS } from "../../constants";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
+import { useCreateAcademicYear } from "@/features/academic-year/api/create-academic-year";
+import { useUpdateAcademicYear } from "@/features/academic-year/api/update-academic-year";
+import { useGetAcademicYears } from "@/features/academic-year/api/list-academic-years";
+import { setFormErrors } from "@/lib/helpers/set-form-errors";
+import { StepIcon } from "../modal-img";
 
 export default function CreateAcademicYear() {
   const router = useProgressRouter();
   const searchParams = useSearchParams();
+  const editId = searchParams.get("editId");
+  const isEditMode = !!editId;
+
   const methods = useForm<AcademicYearFormData>({
     defaultValues: {
       terms: [
@@ -29,24 +38,93 @@ export default function CreateAcademicYear() {
     resolver: zodResolver(academicYearSchema),
   });
 
+  const { reset } = methods;
+
+  const toISODateTime = (dateStr: string) =>
+    dateStr.includes("T") ? dateStr : `${dateStr}T00:00:00.000Z`;
+
+  const { data: academicYears } = useGetAcademicYears();
+  const editYear = isEditMode
+    ? academicYears?.find((y) => y.id === editId)
+    : undefined;
+
+  useEffect(() => {
+    if (isEditMode && editYear) {
+      reset({
+        name: editYear.name,
+        starts_on: toISODateTime(editYear.starts_on),
+        ends_on: toISODateTime(editYear.ends_on),
+        session_type: editYear.session_type as "term" | "semester",
+        terms: editYear.terms.map((term) => ({
+          name: term.name,
+          starts_on: toISODateTime(term.starts_on),
+          ends_on: toISODateTime(term.ends_on),
+        })),
+      });
+    } else if (!isEditMode) {
+      reset({
+        name: "",
+        starts_on: "",
+        ends_on: "",
+        session_type: undefined,
+        terms: [
+          { name: "", starts_on: "", ends_on: "" },
+          { name: "", starts_on: "", ends_on: "" },
+          { name: "", starts_on: "", ends_on: "" },
+        ],
+      });
+    }
+  }, [isEditMode, editYear, reset]);
+
+  const { mutate: createMutate, isPending: isCreatePending } =
+    useCreateAcademicYear();
+  const { mutate: updateMutate, isPending: isUpdatePending } =
+    useUpdateAcademicYear();
+
+  const isPending = isCreatePending || isUpdatePending;
+
   const { fields } = useFieldArray({
     control: methods.control,
     name: "terms",
   });
-  const onSubmit = () => {
-    router.push(
-      "/super-admin/school-onboarding/academic-year?open=true&step=2"
-    );
+
+  const onSubmit = (data: AcademicYearFormData) => {
+    if (isEditMode && editId) {
+      updateMutate(
+        { yearId: editId, data },
+        {
+          onSuccess: () =>
+            router.replace(
+              "/super-admin/school-onboarding/academic-year?open=true&step=3"
+            ),
+          onError: (res) => setFormErrors(methods.setError, res.errors),
+        }
+      );
+    } else {
+      createMutate(data, {
+        onSuccess: () =>
+          router.replace(
+            "/super-admin/school-onboarding/academic-year?open=true&step=2"
+          ),
+        onError: (res) => setFormErrors(methods.setError, res.errors),
+      });
+    }
   };
+
   const open = searchParams.get("open");
   const current = searchParams.get("step");
   const isOpen = open === "true" && current === "1";
 
+  const handleClose = () => {
+    router.replace("/super-admin/school-onboarding/academic-year");
+  };
+
   return (
     <>
       <FormModal
-        title="Create Academic Year"
+        title={isEditMode ? "Edit Academic Year" : "Create Academic Year"}
         open={isOpen}
+        icon={<StepIcon stage={1} />}
         onOpenChange={() =>
           router.replace("/super-admin/school-onboarding/academic-year")
         }
@@ -96,18 +174,17 @@ export default function CreateAcademicYear() {
                 variant="secondary"
                 size="lg"
                 className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
-                onClick={() =>
-                  router.replace("/super-admin/school-onboarding/academic-year")
-                }
+                onClick={handleClose}
               >
                 Cancel
               </Button>
               <Button
+                loading={isPending}
                 type="submit"
                 size="lg"
                 className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
               >
-                Continue
+                {isEditMode ? "Save Changes" : "Continue"}
               </Button>
             </div>
           </form>

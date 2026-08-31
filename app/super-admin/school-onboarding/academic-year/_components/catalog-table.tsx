@@ -8,14 +8,31 @@ import {
   TableRow,
   TableWrapper,
 } from "@/components/ui/table";
+import { Subject } from "@/features/academic-year";
+import { Text } from "@/components/ui";
 import clsx from "clsx";
+import { Spinner } from "@/components/animations";
 
 const columns = ["Subject", "Code", "Department", "Stages"];
-export default function CatalogTable() {
+interface Props {
+  data: Subject[] | undefined;
+  isSubjectsPending: boolean;
+}
+export default function CatalogTable({ data, isSubjectsPending }: Props) {
   //call api here
   //return spinner if loading
+  if (!data) {
+    return null;
+  }
   return (
     <>
+      <div className="flex items-center gap-1">
+        <Text className="text-neutrals-700" scale={"content"}>
+          Subject catalog
+        </Text>
+        {isSubjectsPending && <Spinner size={16} color={"#9f9c9c"} />}
+      </div>
+
       <TableWrapper>
         <Table>
           <TableHeader className="[&>tr>th]:after:bg-transparent [&>tr>th]:after:content-[none]">
@@ -36,18 +53,20 @@ export default function CatalogTable() {
           </TableHeader>
 
           <TableBody>
-            {Array.from({ length: 5 }).map((_, index) => (
+            {data.map((s, index) => (
               <TableRow
-                key={index}
+                key={s.id}
                 className={clsx(
                   "text-neutrals-900",
                   index === 4 && "[&>td]:border-b-0"
                 )}
               >
-                <TableCell>English</TableCell>
-                <TableCell>ENG</TableCell>
-                <TableCell>All</TableCell>
-                <TableCell>All</TableCell>
+                <TableCell>{s.name}</TableCell>
+                <TableCell>{s.code}</TableCell>
+                <TableCell>{s.department}</TableCell>
+                <TableCell>
+                  {s.intended_stages.map((stage) => stage.name).join(", ")}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

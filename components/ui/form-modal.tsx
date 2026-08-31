@@ -10,6 +10,7 @@ interface FormModalProps {
   title: string;
   children: ReactNode;
   maxWidth?: string;
+  icon?: ReactNode;
 }
 
 const FormModal = ({
@@ -18,6 +19,7 @@ const FormModal = ({
   title,
   children,
   maxWidth = "max-w-175.25",
+  icon,
 }: FormModalProps) => {
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
@@ -37,6 +39,7 @@ const FormModal = ({
               <DialogPrimitive.Title className="text-[24px] font-semibold leading-[1.2] text-neutrals-900">
                 {title}
               </DialogPrimitive.Title>
+              {icon && <div className="shrink-0">{icon}</div>}
             </div>
 
             {children}

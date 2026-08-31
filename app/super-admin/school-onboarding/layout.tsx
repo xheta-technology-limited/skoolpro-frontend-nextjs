@@ -1,5 +1,5 @@
 import TabsNav from "../../../components/common/tabs/tabs-nav";
-import { OpenModalButton } from "./academic-year/_components/create-academic-year";
+import { OpenModalButton } from "./academic-year/_components/modals/create-academic-year";
 
 const SCHOOL_ONBOARDING_TABS = [
   {
@@ -15,10 +15,8 @@ const SCHOOL_ONBOARDING_TABS = [
 
 export default function SchoolOnboardingLayout({
   children,
-  searchParams,
 }: {
   children: React.ReactNode;
-  searchParams: { open?: string; step?: string };
 }) {
   return (
     <div className="min-h-screen w-full">

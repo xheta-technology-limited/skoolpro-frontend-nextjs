@@ -2,15 +2,18 @@ export const SCHOOL_TYPE_OPTIONS = [
   { label: "Nursery", value: "nursery" },
   { label: "Primary", value: "primary" },
   { label: "Secondary", value: "secondary" },
-  { label: "Sixth form", value: "sixth_form" },
+  { label: "Sixth form", value: "sixth-form" },
   { label: "College", value: "college" },
-  { label: "Vocational institution", value: "vocational_institution" },
-  { label: "Special education school", value: "special_education_school" },
-  { label: "Faith based school", value: "faith_based_school" },
-  { label: "Boarding school", value: "boarding_school" },
-  { label: "Day school", value: "day_school" },
-  { label: "Government school", value: "government_school" },
-  { label: "Private school", value: "private_school" },
+  { label: "Vocational institution", value: "vocational" },
+  { label: "Special education school", value: "special-education" },
+  { label: "Faith based school", value: "faith-based" },
+  { label: "International", value: "international"},
+  { label: "Boarding school", value: "boarding" },
+  { label: "Day school", value: "day" },
+  { label: "Mixed day/boarding", value: "mixed-dayboarding"},
+  { label: "Government school", value: "government" },
+  { label: "Private school", value: "private" },
+  { label: "Other", value: "other"},
 ];
 
 export const OWNERSHIP_TYPE_OPTIONS = [
@@ -22,7 +25,7 @@ export const OWNERSHIP_TYPE_OPTIONS = [
   { label: "Government", value: "government" },
   { label: "Community organization", value: "community_organization" },
   { label: "Partnership", value: "partnership" },
-  { label: "Others", value: "others" },
+  { label: "Other", value: "other" },
 ];
 
 export const CONTACT_TYPE_OPTIONS = [
