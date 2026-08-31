@@ -15,10 +15,8 @@ const SCHOOL_ONBOARDING_TABS = [
 
 export default function SchoolOnboardingLayout({
   children,
-  searchParams,
 }: {
   children: React.ReactNode;
-  searchParams: { open?: string; step?: string };
 }) {
   return (
     <div className="min-h-screen w-full">
