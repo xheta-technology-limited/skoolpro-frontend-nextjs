@@ -24,6 +24,7 @@ import { NoData } from "@/components/icons";
 import { AcademicYear } from "@/features/academic-year";
 import { titleCase } from "@/lib/helpers/string-to-title-case";
 import { useSetCurrentTerm } from "@/features/academic-year/api/set-term-to-current";
+import { useSetCurrentYear } from "@/features/academic-year/api/set-year-to-current";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -36,9 +37,23 @@ export default function AcademicYears() {
     isPending: isCurrentTermMutatePending,
   } = useSetCurrentTerm(termToMutate);
 
+  const [yearToMutate, setYearToMutate] = useState("");
+  const {
+    mutate: setCurrentYearMutate,
+    isPending: isCurrentYearMutatePending,
+  } = useSetCurrentYear(yearToMutate);
+
   const setCurrentTerm = (termID: string) => {
     setTermToMutate(termID);
     setCurrentTermMutate(
+      {},
+      { onSuccess: () => toast.success("Data updated successfully") }
+    );
+  };
+
+  const setCurrentYear = (yearID: string) => {
+    setYearToMutate(yearID);
+    setCurrentYearMutate(
       {},
       { onSuccess: () => toast.success("Data updated successfully") }
     );
@@ -73,6 +88,9 @@ export default function AcademicYears() {
           onSetCurrentTerm={setCurrentTerm}
           termToMutate={termToMutate}
           isCurrentTermMutatePending={isCurrentTermMutatePending}
+          onSetCurrentYear={setCurrentYear}
+          yearToMutate={yearToMutate}
+          isCurrentYearMutatePending={isCurrentYearMutatePending}
         />
       ))}
       <Modals data={data} />
@@ -85,16 +103,23 @@ interface YearProps {
   onSetCurrentTerm: (termID: string) => void;
   termToMutate: string;
   isCurrentTermMutatePending: boolean;
+  onSetCurrentYear: (yearID: string) => void;
+  yearToMutate: string;
+  isCurrentYearMutatePending: boolean;
 }
 const Year = ({
   year,
   onSetCurrentTerm,
   termToMutate,
   isCurrentTermMutatePending,
+  onSetCurrentYear,
+  yearToMutate,
+  isCurrentYearMutatePending,
 }: YearProps) => {
   const isPending = (id: string) => {
     return termToMutate === id && isCurrentTermMutatePending;
   };
+  const isYearPending = yearToMutate === year.id && isCurrentYearMutatePending;
   return (
     <div className="mb-16">
       <div className="flex justify-between items-center mb-8">
@@ -106,6 +131,9 @@ const Year = ({
         </div>
 
         <MiniSelector
+          disabled={isYearPending}
+          onValueChange={() => onSetCurrentYear(year.id)}
+          value={year.status === "current" ? "active" : "inactive"}
           items={[
             { label: "Active", value: "active" },
             { label: "Inactive", value: "inactive" },
@@ -143,7 +171,7 @@ const Year = ({
             <TableBody>
               {year.terms.map((term, index) => (
                 <TableRow key={term.id}>
-                  <TableCell>{term.name}</TableCell>
+                  <TableCell>{titleCase(term.name)}</TableCell>
                   <TableCell>{term.starts_on}</TableCell>
                   <TableCell>{term.ends_on}</TableCell>
                   <TableCell>{titleCase(term.status)}</TableCell>
