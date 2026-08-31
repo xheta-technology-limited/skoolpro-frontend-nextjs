@@ -92,9 +92,6 @@ const Year = ({
   termToMutate,
   isCurrentTermMutatePending,
 }: YearProps) => {
-  const valueChange = (e: unknown) => {
-    onSetCurrentTerm(year.id);
-  };
   const isPending = (id: string) => {
     return termToMutate === id && isCurrentTermMutatePending;
   };
@@ -153,7 +150,7 @@ const Year = ({
                   <TableCell>
                     <MiniSelector
                       disabled={isPending(term.id)}
-                      onValueChange={(e) => valueChange(e)}
+                      onValueChange={() => onSetCurrentTerm(term.id)}
                       value={term.status === "current" ? "current" : "inactive"}
                       items={[
                         { label: "Active", value: "current" },
