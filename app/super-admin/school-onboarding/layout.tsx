@@ -1,5 +1,5 @@
 import TabsNav from "../../../components/common/tabs/tabs-nav";
-import { OpenModalButton } from "./academic-year/_components/create-academic-year";
+import { OpenModalButton } from "./academic-year/_components/modals/create-academic-year";
 
 const SCHOOL_ONBOARDING_TABS = [
   {

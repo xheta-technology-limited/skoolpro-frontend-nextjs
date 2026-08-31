@@ -11,11 +11,11 @@ import { Button } from "@/components/ui/custom-button";
 import { useSearchParams } from "next/navigation";
 import { AddSquare } from "iconsax-reactjs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DUMMY_CAMPUSES, DUMMY_CLASS_TEACHERS } from "../constants";
+import { DUMMY_CAMPUSES, DUMMY_CLASS_TEACHERS } from "../../constants";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
-import CatalogTable from "./catalog-table";
-import AssignedSubjectsTable from "./assigned-subjects-table";
+import CatalogTable from "../catalog-table";
+import AssignedSubjectsTable from "../assigned-subjects-table";
 import { SuccessModal } from "@/components/common";
 import { useListStages } from "@/features/academic-year/api/list-stages";
 import { useCreateSubject } from "@/features/academic-year/api/create-subject";
@@ -37,7 +37,7 @@ import { useListLevelSubjectAssignments } from "@/features/academic-year/api/lis
 import { useListArms } from "@/features/academic-year/api/list-arms";
 import { useAssignSubjectToLevel } from "@/features/academic-year/api/assign-subject-to-level";
 import { titleCase } from "@/lib/helpers/string-to-title-case";
-import { StepIcon } from "./modal-img";
+import { StepIcon } from "../modal-img";
 
 export default function CreateSubjects() {
   const router = useProgressRouter();

@@ -11,7 +11,7 @@ import {
   DUMMY_CAMPUSES,
   DUMMY_CLASS_STATUSES,
   DUMMY_CLASS_TEACHERS,
-} from "../constants";
+} from "../../constants";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { useEffect, useState } from "react";
@@ -29,7 +29,7 @@ import { Spinner } from "@/components/animations";
 import { EducationArm } from "@/features/academic-year";
 import { getTextInParentheses } from "@/lib/helpers/get-text-in-parentheses";
 import { singledOutLetter } from "@/lib/helpers/single-out-letter";
-import { StepIcon } from "./modal-img";
+import { StepIcon } from "../modal-img";
 
 export default function CreateClassSections() {
   const router = useProgressRouter();

@@ -12,14 +12,14 @@ import {
   academicYearSchema,
 } from "@/features/academic-year";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SESSION_TYPE_OPTIONS } from "../constants";
+import { SESSION_TYPE_OPTIONS } from "../../constants";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { useCreateAcademicYear } from "@/features/academic-year/api/create-academic-year";
 import { useUpdateAcademicYear } from "@/features/academic-year/api/update-academic-year";
 import { useGetAcademicYears } from "@/features/academic-year/api/list-academic-years";
 import { setFormErrors } from "@/lib/helpers/set-form-errors";
-import { StepIcon } from "./modal-img";
+import { StepIcon } from "../modal-img";
 
 export default function CreateAcademicYear() {
   const router = useProgressRouter();

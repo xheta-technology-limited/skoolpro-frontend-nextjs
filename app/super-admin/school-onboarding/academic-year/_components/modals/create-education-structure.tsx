@@ -19,7 +19,7 @@ import { Spinner } from "@/components/animations";
 import { useEffect, useState } from "react";
 import { useApplyEducationPreset } from "@/features/academic-year/api/apply-preset";
 import { splitAtSlash } from "@/lib/helpers/get-text-in-parentheses";
-import { StepIcon } from "./modal-img";
+import { StepIcon } from "../modal-img";
 
 interface Props {
   data: AcademicYear[] | undefined;
@@ -80,7 +80,7 @@ export default function CreateEducationStructure({ data: yearData }: Props) {
           </div>
         ) : isError ? (
           <div className="flex justify-center items-center">
-            <Button loading={isFetching} size="lg" onClick={() => refetch}>
+            <Button loading={isFetching} size="lg" onClick={() => refetch()}>
               Retry
             </Button>
           </div>

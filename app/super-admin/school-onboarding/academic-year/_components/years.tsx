@@ -13,11 +13,11 @@ import {
   TableWrapper,
 } from "@/components/ui/table";
 import { MiniSelector } from "@/components/common";
-import CreateAcademicYear from "./create-academic-year";
-import CreateEducationStructure from "./create-education-structure";
-import CreateClassSections from "./create-class-sections";
-import CreateSubjects from "./create-subjects";
-import ReviewAcademicYear from "./review-modal";
+import CreateAcademicYear from "./modals/create-academic-year";
+import CreateEducationStructure from "./modals/create-education-structure";
+import CreateClassSections from "./modals/create-class-sections";
+import CreateSubjects from "./modals/create-subjects";
+import ReviewAcademicYear from "./modals/review-modal";
 import { useGetAcademicYears } from "@/features/academic-year/api/list-academic-years";
 import { Spinner } from "@/components/animations";
 import { NoData } from "@/components/icons";
