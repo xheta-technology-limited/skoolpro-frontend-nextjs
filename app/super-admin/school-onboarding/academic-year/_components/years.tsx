@@ -27,6 +27,7 @@ import { useSetCurrentTerm } from "@/features/academic-year/api/set-term-to-curr
 import { useSetCurrentYear } from "@/features/academic-year/api/set-year-to-current";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useProgressRouter } from "@/features/page-loader";
 
 const headRow = ["Name", "Start", "End", "Status", "Action"];
 export default function AcademicYears() {
@@ -138,6 +139,7 @@ const Year = ({
   yearToMutate,
   isCurrentYearMutatePending,
 }: YearProps) => {
+  const router = useProgressRouter();
   const isPending = (id: string) => {
     return termToMutate === id && isCurrentTermMutatePending;
   };
@@ -165,7 +167,15 @@ const Year = ({
 
       <div className="mb-4 flex justify-between text-neutrals-text-body-light-1 text-[1rem] items-center">
         <span>TERM</span>
-        <Button variant="secondary" className="text-primary">
+        <Button
+          variant="secondary"
+          className="text-primary"
+          onClick={() =>
+            router.push(
+              `/super-admin/school-onboarding/academic-year?open=true&step=1&editId=${year.id}`
+            )
+          }
+        >
           <Add size={16} />
           <Text weight={"standard"} scale={"caption"}>
             Edit
