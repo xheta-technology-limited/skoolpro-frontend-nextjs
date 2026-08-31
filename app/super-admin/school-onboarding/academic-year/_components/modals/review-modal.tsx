@@ -11,7 +11,7 @@ import {
   academicYearSchema,
 } from "@/features/academic-year";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SESSION_TYPE_OPTIONS } from "../constants";
+import { SESSION_TYPE_OPTIONS } from "../../constants";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 

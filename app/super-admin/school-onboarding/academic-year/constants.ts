@@ -1,33 +1,4 @@
-type AcademicYear = {
-  id: string;
-  school_id: string;
-  name: string;
-  slug: string;
-  session_type: string;
-  session_type_label: string;
-  starts_on: string;
-  ends_on: string;
-  status: string;
-  is_default_for_enrolment: boolean;
-  generated_from_year_id: string | null;
-  approved_at: string | null;
-  is_draft: boolean;
-  terms: {
-    id: string;
-    school_id: string;
-    academic_year_id: string;
-    name: string;
-    slug: string;
-    sequence: number;
-    starts_on: string;
-    ends_on: string;
-    status: string;
-    created_at: string;
-    updated_at: string;
-  }[];
-  created_at: string;
-  updated_at: string;
-};
+import { AcademicYear } from "@/features/academic-year";
 
 export const dummyData: AcademicYear = {
   id: "9c1a2b3c-0001-4a1b-8c2d-0000000year1",
@@ -84,43 +55,6 @@ export const DUMMY_CLASS_TEACHERS = [
 ];
 
 export const DUMMY_CLASS_STATUSES = [
-  { value: "active", label: "Active" },
-  { value: "inactive", label: "Inactive" },
-  { value: "pending", label: "Pending" },
-];
-
-export type Arm = {
-  arm: string;
-  name: string;
-  teacher: string;
-  capacity: number;
-  campus: string;
-  branch: string;
-};
-
-export const DUMMY_ARMS: Arm[] = [
-  {
-    arm: "A",
-    name: "SS1 A",
-    teacher: "Mr. John Doe",
-    capacity: 40,
-    campus: "Main Campus",
-    branch: "Morning",
-  },
-  {
-    arm: "B",
-    name: "SS1 B",
-    teacher: "Mrs. Jane Smith",
-    capacity: 38,
-    campus: "Main Campus",
-    branch: "Morning",
-  },
-  {
-    arm: "C",
-    name: "SS1 C",
-    teacher: "Ms. Ada Obi",
-    capacity: 42,
-    campus: "Annex Campus",
-    branch: "Afternoon",
-  },
+  { value: "true", label: "Active" },
+  { value: "false", label: "Inactive" },
 ];

@@ -1,3 +1,4 @@
+import { requiredString } from "@/lib/utils/zod-schemas";
 import { z } from "zod";
 
 const termSchema = z.object({
@@ -8,7 +9,7 @@ const termSchema = z.object({
 
 export const academicYearSchema = z
   .object({
-    name: z.string(),
+    name: requiredString,
     starts_on: z.iso.datetime("Please enter a valid date"),
     ends_on: z.iso.datetime("Please enter a valid date"),
 
