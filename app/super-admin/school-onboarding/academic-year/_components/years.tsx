@@ -24,7 +24,7 @@ import { NoData } from "@/components/icons";
 import { AcademicYear } from "@/features/academic-year";
 import { titleCase } from "@/lib/helpers/string-to-title-case";
 import { useSetCurrentTerm } from "@/features/academic-year/api/set-term-to-current";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 const headRow = ["Name", "Start", "End", "Status", "Action"];
@@ -36,16 +36,13 @@ export default function AcademicYears() {
     isPending: isCurrentTermMutatePending,
   } = useSetCurrentTerm(termToMutate);
 
-  useEffect(() => {
-    if (!termToMutate) {
-      console.log("NOTHING");
-      return;
-    }
+  const setCurrentTerm = (termID: string) => {
+    setTermToMutate(termID);
     setCurrentTermMutate(
       {},
       { onSuccess: () => toast.success("Data updated successfully") }
     );
-  }, [termToMutate]);
+  };
   if (isPending) {
     return (
       <div className="w-full flex items-center justify-center py-7">
@@ -73,7 +70,7 @@ export default function AcademicYears() {
         <Year
           year={year}
           key={year.id}
-          setTermToMutate={setTermToMutate}
+          onSetCurrentTerm={setCurrentTerm}
           termToMutate={termToMutate}
           isCurrentTermMutatePending={isCurrentTermMutatePending}
         />
@@ -85,19 +82,21 @@ export default function AcademicYears() {
 
 interface YearProps {
   year: AcademicYear;
-  setTermToMutate: Dispatch<SetStateAction<string>>;
+  onSetCurrentTerm: (termID: string) => void;
   termToMutate: string;
   isCurrentTermMutatePending: boolean;
 }
 const Year = ({
   year,
-  setTermToMutate,
+  onSetCurrentTerm,
   termToMutate,
   isCurrentTermMutatePending,
 }: YearProps) => {
   const valueChange = (e: unknown) => {
-    const d = e as string;
-    setTermToMutate(d);
+    onSetCurrentTerm(year.id);
+  };
+  const isPending = (id: string) => {
+    return termToMutate === id && isCurrentTermMutatePending;
   };
   return (
     <div className="mb-16">
@@ -153,9 +152,7 @@ const Year = ({
                   <TableCell>{titleCase(term.status)}</TableCell>
                   <TableCell>
                     <MiniSelector
-                      disabled={
-                        termToMutate === term.id && isCurrentTermMutatePending
-                      }
+                      disabled={isPending(term.id)}
                       onValueChange={(e) => valueChange(e)}
                       value={term.status === "current" ? "current" : "inactive"}
                       items={[
