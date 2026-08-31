@@ -29,6 +29,7 @@ import { Spinner } from "@/components/animations";
 import { EducationArm } from "@/features/academic-year";
 import { getTextInParentheses } from "@/lib/helpers/get-text-in-parentheses";
 import { singledOutLetter } from "@/lib/helpers/single-out-letter";
+import { StepIcon } from "./modal-img";
 
 export default function CreateClassSections() {
   const router = useProgressRouter();
@@ -120,6 +121,7 @@ export default function CreateClassSections() {
     <>
       <FormModal
         title="Create Class Sections"
+        icon={<StepIcon stage={3} />}
         open={isOpen}
         onOpenChange={() =>
           router.replace("/super-admin/school-onboarding/academic-year")

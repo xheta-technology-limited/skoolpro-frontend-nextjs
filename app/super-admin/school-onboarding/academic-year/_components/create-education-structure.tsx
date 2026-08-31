@@ -19,6 +19,7 @@ import { Spinner } from "@/components/animations";
 import { useEffect, useState } from "react";
 import { useApplyEducationPreset } from "@/features/academic-year/api/apply-preset";
 import { splitAtSlash } from "@/lib/helpers/get-text-in-parentheses";
+import { StepIcon } from "./modal-img";
 
 interface Props {
   data: AcademicYear[] | undefined;
@@ -67,6 +68,7 @@ export default function CreateEducationStructure({ data: yearData }: Props) {
     <>
       <FormModal
         title="Create Education Structure"
+        icon={<StepIcon stage={2} />}
         open={isOpen}
         onOpenChange={() =>
           router.replace("/super-admin/school-onboarding/academic-year")

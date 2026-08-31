@@ -19,6 +19,7 @@ import { useCreateAcademicYear } from "@/features/academic-year/api/create-acade
 import { useUpdateAcademicYear } from "@/features/academic-year/api/update-academic-year";
 import { useGetAcademicYears } from "@/features/academic-year/api/list-academic-years";
 import { setFormErrors } from "@/lib/helpers/set-form-errors";
+import { StepIcon } from "./modal-img";
 
 export default function CreateAcademicYear() {
   const router = useProgressRouter();
@@ -123,7 +124,10 @@ export default function CreateAcademicYear() {
       <FormModal
         title={isEditMode ? "Edit Academic Year" : "Create Academic Year"}
         open={isOpen}
-        onOpenChange={handleClose}
+        icon={<StepIcon stage={1} />}
+        onOpenChange={() =>
+          router.replace("/super-admin/school-onboarding/academic-year")
+        }
       >
         <FormProvider {...methods}>
           <form

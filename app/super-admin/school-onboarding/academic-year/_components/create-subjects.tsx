@@ -37,6 +37,7 @@ import { useListLevelSubjectAssignments } from "@/features/academic-year/api/lis
 import { useListArms } from "@/features/academic-year/api/list-arms";
 import { useAssignSubjectToLevel } from "@/features/academic-year/api/assign-subject-to-level";
 import { titleCase } from "@/lib/helpers/string-to-title-case";
+import { StepIcon } from "./modal-img";
 
 export default function CreateSubjects() {
   const router = useProgressRouter();
@@ -140,6 +141,7 @@ export default function CreateSubjects() {
     <>
       <FormModal
         title="Create Subjects"
+        icon={<StepIcon stage={4} />}
         open={isOpen}
         onOpenChange={() =>
           router.replace("/super-admin/school-onboarding/academic-year")
