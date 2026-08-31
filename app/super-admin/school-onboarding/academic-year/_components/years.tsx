@@ -30,7 +30,7 @@ import { toast } from "sonner";
 
 const headRow = ["Name", "Start", "End", "Status", "Action"];
 export default function AcademicYears() {
-  const { data, isPending } = useGetAcademicYears();
+  const { data, isPending, error, refetch, isFetching } = useGetAcademicYears();
   const [termToMutate, setTermToMutate] = useState("");
   const {
     mutate: setCurrentTermMutate,
@@ -65,9 +65,30 @@ export default function AcademicYears() {
       </div>
     );
   }
+  if (error) {
+    return (
+      <div className="w-fit mx-auto">
+        {" "}
+        <NoData
+          variant="signal"
+          title="Something went Wrong"
+          subTitle={error.message || ""}
+          className="w-97.5 h-143.75"
+        />
+        <Button
+          className="mt-3 w-full"
+          loading={isFetching}
+          onClick={() => refetch()}
+          size="lg"
+        >
+          Retry
+        </Button>
+        <Modals data={data} />
+      </div>
+    );
+  }
 
-  if (true) {
-    // if (data && data.length === 0) {
+  if (data && data.length === 0) {
     return (
       <div className="w-fit mx-auto">
         {" "}
