@@ -66,7 +66,8 @@ export default function AcademicYears() {
     );
   }
 
-  if (data && data.length === 0) {
+  if (true) {
+    // if (data && data.length === 0) {
     return (
       <div className="w-fit mx-auto">
         {" "}
