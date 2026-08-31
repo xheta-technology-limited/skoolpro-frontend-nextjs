@@ -51,7 +51,7 @@ export default function CreateEducationStructure({ data: yearData }: Props) {
 
   const alreadyHasStructure = yearData && yearData.length > 0;
   useEffect(() => {
-    if (alreadyHasStructure) {
+    if (isOpen && alreadyHasStructure) {
       router.push(
         "/super-admin/school-onboarding/academic-year?open=true&step=3"
       );

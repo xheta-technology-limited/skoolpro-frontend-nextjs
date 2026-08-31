@@ -23,11 +23,29 @@ import { Spinner } from "@/components/animations";
 import { NoData } from "@/components/icons";
 import { AcademicYear } from "@/features/academic-year";
 import { titleCase } from "@/lib/helpers/string-to-title-case";
+import { useSetCurrentTerm } from "@/features/academic-year/api/set-term-to-current";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const headRow = ["Name", "Start", "End", "Status", "Action"];
 export default function AcademicYears() {
   const { data, isPending } = useGetAcademicYears();
+  const [termToMutate, setTermToMutate] = useState("");
+  const {
+    mutate: setCurrentTermMutate,
+    isPending: isCurrentTermMutatePending,
+  } = useSetCurrentTerm(termToMutate);
 
+  useEffect(() => {
+    if (!termToMutate) {
+      console.log("NOTHING");
+      return;
+    }
+    setCurrentTermMutate(
+      {},
+      { onSuccess: () => toast.success("Data updated successfully") }
+    );
+  }, [termToMutate]);
   if (isPending) {
     return (
       <div className="w-full flex items-center justify-center py-7">
@@ -52,7 +70,13 @@ export default function AcademicYears() {
   return (
     <>
       {data?.map((year) => (
-        <Year year={year} key={year.id} />
+        <Year
+          year={year}
+          key={year.id}
+          setTermToMutate={setTermToMutate}
+          termToMutate={termToMutate}
+          isCurrentTermMutatePending={isCurrentTermMutatePending}
+        />
       ))}
       <Modals data={data} />
     </>
@@ -61,8 +85,20 @@ export default function AcademicYears() {
 
 interface YearProps {
   year: AcademicYear;
+  setTermToMutate: Dispatch<SetStateAction<string>>;
+  termToMutate: string;
+  isCurrentTermMutatePending: boolean;
 }
-const Year = ({ year }: YearProps) => {
+const Year = ({
+  year,
+  setTermToMutate,
+  termToMutate,
+  isCurrentTermMutatePending,
+}: YearProps) => {
+  const valueChange = (e: unknown) => {
+    const d = e as string;
+    setTermToMutate(d);
+  };
   return (
     <div className="mb-16">
       <div className="flex justify-between items-center mb-8">
@@ -117,8 +153,13 @@ const Year = ({ year }: YearProps) => {
                   <TableCell>{titleCase(term.status)}</TableCell>
                   <TableCell>
                     <MiniSelector
+                      disabled={
+                        termToMutate === term.id && isCurrentTermMutatePending
+                      }
+                      onValueChange={(e) => valueChange(e)}
+                      value={term.status === "current" ? "current" : "inactive"}
                       items={[
-                        { label: "Active", value: "active" },
+                        { label: "Active", value: "current" },
                         { label: "Inactive", value: "inactive" },
                       ]}
                     />
