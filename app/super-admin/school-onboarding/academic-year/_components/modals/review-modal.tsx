@@ -21,26 +21,19 @@ import { useDiscardDraft } from "@/features/academic-year/api/discard-draft";
 import { Spinner } from "@/components/animations";
 import { AcademicYear } from "@/features/academic-year";
 import { toast } from "sonner";
+import { generateFormDate } from "@/lib/helpers/generate-form-date";
 
 const MAX_YEARS = new Date().getFullYear() + 3;
 
 const toFormData = (year: AcademicYear): AcademicYearFormData => ({
   name: year.name,
-  starts_on: year.starts_on.includes("T")
-    ? year.starts_on
-    : `${year.starts_on}T00:00:00.000Z`,
-  ends_on: year.ends_on.includes("T")
-    ? year.ends_on
-    : `${year.ends_on}T00:00:00.000Z`,
+  starts_on: generateFormDate(year.starts_on),
+  ends_on: generateFormDate(year.ends_on),
   session_type: year.session_type as "term" | "semester",
   terms: year.terms.map((term) => ({
     name: term.name,
-    starts_on: term.starts_on.includes("T")
-      ? term.starts_on
-      : `${term.starts_on}T00:00:00.000Z`,
-    ends_on: term.ends_on.includes("T")
-      ? term.ends_on
-      : `${term.ends_on}T00:00:00.000Z`,
+    starts_on: generateFormDate(term.starts_on),
+    ends_on: generateFormDate(term.ends_on),
   })),
 });
 
