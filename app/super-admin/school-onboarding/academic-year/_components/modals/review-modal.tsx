@@ -40,8 +40,8 @@ export default function ReviewAcademicYear() {
     alert("Do some api stuff and redirect step 1");
   };
   const open = searchParams.get("open");
-  const current = searchParams.get("step");
-  const isOpen = open === "true" && current === "review-draft";
+  const id = searchParams.get("id");
+  const isOpen = open === "true" && id !== "";
 
   return (
     <>
