@@ -21,6 +21,8 @@ import { Spinner } from "@/components/animations";
 import { AcademicYear } from "@/features/academic-year";
 import { toast } from "sonner";
 
+const MAX_YEARS = new Date().getFullYear() + 3;
+
 const toFormData = (year: AcademicYear): AcademicYearFormData => ({
   name: year.name,
   starts_on: year.starts_on.includes("T")
@@ -150,8 +152,16 @@ export default function ReviewAcademicYear() {
             >
               <Input name="name" label="Enter academic year name" />
               <div className="flex gap-4 *:flex-1">
-                <DatePicker name="starts_on" label="Start date" />
-                <DatePicker name="ends_on" label="End date" />
+                <DatePicker
+                  name="starts_on"
+                  label="Start date"
+                  maxYears={MAX_YEARS}
+                />
+                <DatePicker
+                  name="ends_on"
+                  label="End date"
+                  maxYears={MAX_YEARS}
+                />
               </div>
 
               <Text className="text-neutrals-700" scale={"content"}>
@@ -173,10 +183,12 @@ export default function ReviewAcademicYear() {
                     <DatePicker
                       name={`terms[${index}].starts_on`}
                       label="Start date"
+                      maxYears={MAX_YEARS}
                     />
                     <DatePicker
                       name={`terms[${index}].ends_on`}
                       label="End date"
+                      maxYears={MAX_YEARS}
                     />
                   </div>
                 </div>
