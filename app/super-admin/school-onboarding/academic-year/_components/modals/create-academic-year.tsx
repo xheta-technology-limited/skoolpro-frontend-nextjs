@@ -20,6 +20,7 @@ import { useUpdateAcademicYear } from "@/features/academic-year/api/update-acade
 import { useGetAcademicYears } from "@/features/academic-year/api/list-academic-years";
 import { setFormErrors } from "@/lib/helpers/set-form-errors";
 import { StepIcon } from "../modal-img";
+import { useAcademicYearStore } from "@/features/academic-year/academic-year.store";
 
 export default function CreateAcademicYear() {
   const router = useProgressRouter();
@@ -196,15 +197,24 @@ export default function CreateAcademicYear() {
 
 export function OpenModalButton() {
   const router = useProgressRouter();
+  const lastAcademicYear = useAcademicYearStore(
+    (state) => state.lastAcademicYear
+  );
   return (
     <Button
       size="lg"
       className="h-12 w-full gap-2 rounded-[28px] px-8 py-3.5 sm:w-auto sm:min-w-68.5"
       onClick={() => {
-        alert("Check if a year exists first in production");
-        router.push(
-          "/super-admin/school-onboarding/academic-year?open=true&step=1"
-        );
+        if (lastAcademicYear) {
+          router.push(
+            `/super-admin/school-onboarding/academic-year?open=true&id=${lastAcademicYear.id}`
+          );
+        } else {
+          alert("Check if a year exists first in production");
+          router.push(
+            "/super-admin/school-onboarding/academic-year?open=true&step=1"
+          );
+        }
       }}
     >
       <AddSquare variant="Bulk" size={20} />
