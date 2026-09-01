@@ -11,9 +11,10 @@ type Props = {
   name: string;
   label?: string;
   isWarning?: boolean;
+  maxYears?: number;
 };
 
-export default function DatePicker({ name, label, isWarning }: Props) {
+export default function DatePicker({ name, label, isWarning, maxYears }: Props) {
   const {
     control,
     formState: { errors },
@@ -37,6 +38,7 @@ export default function DatePicker({ name, label, isWarning }: Props) {
             <CalendarContents
               open={open}
               setOpen={setOpen}
+              maxYears={maxYears}
               selected={field.value ? new Date(field.value) : undefined}
               onSelect={(date) => {
                 if (!date) return;
@@ -55,12 +57,14 @@ type CalendarProps = {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
   selected?: Date;
+  maxYears?: number;
 };
 const CalendarContents = ({
   onSelect,
   open,
   setOpen,
   selected,
+  maxYears,
 }: CalendarProps) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -82,6 +86,7 @@ const CalendarContents = ({
           selected={selected}
           defaultMonth={selected}
           captionLayout="dropdown"
+          endMonth={maxYears ? new Date(maxYears, 11, 1) : undefined}
           onSelect={(date) => {
             onSelect(date);
             setOpen(false);
