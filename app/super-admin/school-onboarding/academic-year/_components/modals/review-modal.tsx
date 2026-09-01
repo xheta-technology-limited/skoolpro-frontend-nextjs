@@ -17,6 +17,7 @@ import { useProgressRouter } from "@/features/page-loader";
 import { useGenerateAcademicYearDraft } from "@/features/academic-year/api/generate-academic-year-draft";
 import { useApproveAcademicYearDraft } from "@/features/academic-year/api/approve-academic-year-draft";
 import { useUpdateAcademicYear } from "@/features/academic-year/api/update-academic-year";
+import { useDiscardDraft } from "@/features/academic-year/api/discard-draft";
 import { Spinner } from "@/components/animations";
 import { AcademicYear } from "@/features/academic-year";
 import { toast } from "sonner";
@@ -68,6 +69,8 @@ export default function ReviewAcademicYear() {
     useUpdateAcademicYear();
   const { mutate: approveMutate, isPending: isApprovePending } =
     useApproveAcademicYearDraft();
+  const { mutate: discardMutate, isPending: isDiscardPending } =
+    useDiscardDraft();
 
   const open = searchParams.get("open");
   const id = searchParams.get("id");
@@ -128,7 +131,20 @@ export default function ReviewAcademicYear() {
     }
   };
   const discard = () => {
-    alert("Do some api stuff and redirect step 1");
+    if (!data) {
+      return;
+    }
+    discardMutate(
+      { academicYearID: data.id },
+      {
+        onSuccess: () => {
+          toast.success("Draft discarded");
+          router.replace(
+            "/super-admin/school-onboarding/academic-year?open=true&step=1"
+          );
+        },
+      }
+    );
   };
 
   return (
@@ -201,6 +217,7 @@ export default function ReviewAcademicYear() {
                   size="lg"
                   className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
                   onClick={discard}
+                  loading={isDiscardPending}
                 >
                   Discard
                 </Button>

@@ -210,7 +210,6 @@ export function OpenModalButton() {
             `/super-admin/school-onboarding/academic-year?open=true&id=${lastAcademicYear.id}`
           );
         } else {
-          alert("Check if a year exists first in production");
           router.push(
             "/super-admin/school-onboarding/academic-year?open=true&step=1"
           );
