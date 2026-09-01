@@ -197,12 +197,14 @@ export default function CreateAcademicYear() {
 
 export function OpenModalButton() {
   const router = useProgressRouter();
+  const { isPending } = useGetAcademicYears();
   const lastAcademicYear = useAcademicYearStore(
     (state) => state.lastAcademicYear
   );
   return (
     <Button
       size="lg"
+      disabled={isPending}
       className="h-12 w-full gap-2 rounded-[28px] px-8 py-3.5 sm:w-auto sm:min-w-68.5"
       onClick={() => {
         if (lastAcademicYear) {

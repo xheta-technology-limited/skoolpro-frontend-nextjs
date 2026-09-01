@@ -71,9 +71,17 @@ export default function ReviewAcademicYear() {
 
   useEffect(() => {
     if (isOpen && id) {
-      generateMutate({ academicYearID: id });
+      generateMutate(
+        { academicYearID: id },
+        {
+          onError: () =>
+            router.replace(
+              "/super-admin/school-onboarding/academic-year?open=true&step=1"
+            ),
+        }
+      );
     }
-  }, [isOpen, id, generateMutate]);
+  }, [isOpen, id, generateMutate, router]);
 
   useEffect(() => {
     if (data) {
