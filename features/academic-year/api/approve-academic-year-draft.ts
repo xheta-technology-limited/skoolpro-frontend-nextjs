@@ -10,7 +10,7 @@ type ApproveAcademicYearDraftVariables = {
 export const approveAcademicYearDraft = ({
   academicYearID,
 }: ApproveAcademicYearDraftVariables): Promise<null> => {
-  return api.get(`academic-years/${academicYearID}/approve`);
+  return api.post(`academic-years/${academicYearID}/approve`);
 };
 
 export const useApproveAcademicYearDraft = () => {

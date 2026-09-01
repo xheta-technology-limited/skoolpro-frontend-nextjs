@@ -15,8 +15,31 @@ import { SESSION_TYPE_OPTIONS } from "../../constants";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { useGenerateAcademicYearDraft } from "@/features/academic-year/api/generate-academic-year-draft";
+import { useApproveAcademicYearDraft } from "@/features/academic-year/api/approve-academic-year-draft";
+import { useUpdateAcademicYear } from "@/features/academic-year/api/update-academic-year";
 import { Spinner } from "@/components/animations";
-import { StepIcon } from "../modal-img";
+import { AcademicYear } from "@/features/academic-year";
+import { toast } from "sonner";
+
+const toFormData = (year: AcademicYear): AcademicYearFormData => ({
+  name: year.name,
+  starts_on: year.starts_on.includes("T")
+    ? year.starts_on
+    : `${year.starts_on}T00:00:00.000Z`,
+  ends_on: year.ends_on.includes("T")
+    ? year.ends_on
+    : `${year.ends_on}T00:00:00.000Z`,
+  session_type: year.session_type as "term" | "semester",
+  terms: year.terms.map((term) => ({
+    name: term.name,
+    starts_on: term.starts_on.includes("T")
+      ? term.starts_on
+      : `${term.starts_on}T00:00:00.000Z`,
+    ends_on: term.ends_on.includes("T")
+      ? term.ends_on
+      : `${term.ends_on}T00:00:00.000Z`,
+  })),
+});
 
 export default function ReviewAcademicYear() {
   const router = useProgressRouter();
@@ -34,7 +57,15 @@ export default function ReviewAcademicYear() {
 
   const { reset } = methods;
 
-  const { mutate, isPending, data } = useGenerateAcademicYearDraft();
+  const {
+    mutate: generateMutate,
+    isPending: isGeneratePending,
+    data,
+  } = useGenerateAcademicYearDraft();
+  const { mutate: updateMutate, isPending: isUpdatePending } =
+    useUpdateAcademicYear();
+  const { mutate: approveMutate, isPending: isApprovePending } =
+    useApproveAcademicYearDraft();
 
   const open = searchParams.get("open");
   const id = searchParams.get("id");
@@ -42,23 +73,13 @@ export default function ReviewAcademicYear() {
 
   useEffect(() => {
     if (isOpen && id) {
-      mutate({ academicYearID: id });
+      generateMutate({ academicYearID: id });
     }
-  }, [isOpen, id, mutate]);
+  }, [isOpen, id, generateMutate]);
 
   useEffect(() => {
     if (data) {
-      reset({
-        name: data.name,
-        starts_on: data.starts_on,
-        ends_on: data.ends_on,
-        session_type: data.session_type as "term" | "semester",
-        terms: data.terms.map((term) => ({
-          name: term.name,
-          starts_on: term.starts_on,
-          ends_on: term.ends_on,
-        })),
-      });
+      reset(toFormData(data));
     }
   }, [data, reset]);
 
@@ -66,8 +87,43 @@ export default function ReviewAcademicYear() {
     control: methods.control,
     name: "terms",
   });
-  const onSubmit = () => {
-    alert("Do some api stuff");
+  const onSubmit = (values: AcademicYearFormData) => {
+    if (!data) {
+      return;
+    }
+    const original = toFormData(data);
+    const hasChanges = JSON.stringify(values) !== JSON.stringify(original);
+    if (hasChanges) {
+      updateMutate(
+        { yearId: data.id, data: values },
+        {
+          onSuccess: () =>
+            approveMutate(
+              { academicYearID: data.id },
+              {
+                onSuccess: () => {
+                  toast.success(
+                    "Academic year updated and approved successfully"
+                  );
+                  router.replace(
+                    "/super-admin/school-onboarding/academic-year"
+                  );
+                },
+              }
+            ),
+        }
+      );
+    } else {
+      approveMutate(
+        { academicYearID: data.id },
+        {
+          onSuccess: () => {
+            toast.success("Academic year approved and added successfully");
+            router.replace("/super-admin/school-onboarding/academic-year");
+          },
+        }
+      );
+    }
   };
   const discard = () => {
     alert("Do some api stuff and redirect step 1");
@@ -82,7 +138,7 @@ export default function ReviewAcademicYear() {
           router.replace("/super-admin/school-onboarding/academic-year")
         }
       >
-        {isPending ? (
+        {isGeneratePending ? (
           <div className="flex items-center justify-center py-12">
             <Spinner size={48} />
           </div>
@@ -140,6 +196,7 @@ export default function ReviewAcademicYear() {
                   type="submit"
                   size="lg"
                   className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+                  loading={isUpdatePending || isApprovePending}
                 >
                   Approve
                 </Button>

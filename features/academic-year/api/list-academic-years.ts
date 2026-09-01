@@ -21,7 +21,7 @@ export const useGetAcademicYears = () => {
 
   useEffect(() => {
     if (query.data && query.data.length > 0) {
-      setLastAcademicYear(query.data[query.data.length - 1]);
+      setLastAcademicYear(query.data[0]);
     }
   }, [query.data]);
 
