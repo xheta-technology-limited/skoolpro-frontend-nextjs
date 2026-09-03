@@ -1,7 +1,7 @@
 "use client";
-import { FormProvider, useForm, useFieldArray } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { Text } from "@/components/ui";
-import { DatePicker, Input, Select } from "@/components/ui/form";
+import { Input, Select } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
 import { useSearchParams } from "next/navigation";
 import { AddSquare } from "iconsax-reactjs";
@@ -11,7 +11,7 @@ import {
   DUMMY_CAMPUSES,
   DUMMY_CLASS_STATUSES,
   DUMMY_CLASS_TEACHERS,
-} from "../../constants";
+} from "../../../constants";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { useEffect, useState } from "react";
@@ -26,10 +26,11 @@ import { toast } from "sonner";
 import { setFormErrors } from "@/lib/helpers/set-form-errors";
 import { useListArms } from "@/features/academic-year/api/list-arms";
 import { Spinner } from "@/components/animations";
-import { EducationArm } from "@/features/academic-year";
-import { getTextInParentheses } from "@/lib/helpers/get-text-in-parentheses";
-import { singledOutLetter } from "@/lib/helpers/single-out-letter";
-import { StepIcon } from "../modal-img";
+import { StepIcon } from "../../modal-img";
+import { DragDropProvider } from "@dnd-kit/react";
+import { isSortable } from "@dnd-kit/react/sortable";
+import { useReorderArm } from "@/features/academic-year/api/reorder-arm";
+import { DroppableColumn } from "./column";
 
 export default function CreateClassSections() {
   const router = useProgressRouter();
@@ -53,6 +54,7 @@ export default function CreateClassSections() {
     { refetchOnWindowFocus: false, enabled: !!activeLevel }
   );
   const { data, isFetching } = useListLevels({ refetchOnWindowFocus: false });
+  const { mutate: reorderMutate, isPending: reorderPending } = useReorderArm();
 
   const editArm = isEditMode
     ? armsData?.find((arm) => arm.id === editId)
@@ -154,22 +156,32 @@ export default function CreateClassSections() {
                 <>
                   <div className="flex gap-1 items-center">
                     <Text className="text-neutrals-700" scale={"content"}>
-                      Arms of {activeLevelLabel}
+                      Arms of {activeLevelLabel} - Drag to reorder
                     </Text>
                     {isArmsFetching && <Spinner size={16} color={"#9f9c9c"} />}
                   </div>
+                  <DragDropProvider
+                    onDragEnd={({ canceled, operation }) => {
+                      if (canceled) return;
 
-                  {armsData?.map((arm) => (
-                    <Arm
-                      key={arm.id}
-                      arm={arm}
-                      onEdit={() =>
-                        router.push(
-                          `/super-admin/school-onboarding/academic-year?open=true&step=3&editId=${arm.id}`
-                        )
-                      }
+                      const { source } = operation;
+                      if (!isSortable(source)) return;
+
+                      const { index, initialIndex } = source;
+                      if (index === initialIndex) return; // no actual move
+
+                      reorderMutate({
+                        armID: source.id as string,
+                        payload: { position: index + 1 }, // 1-based
+                      });
+                    }}
+                  >
+                    <DroppableColumn
+                      reorderPending={reorderPending}
+                      router={router}
+                      armsData={armsData}
                     />
-                  ))}
+                  </DragDropProvider>
                 </>
               )}
 
@@ -269,62 +281,5 @@ export default function CreateClassSections() {
         </div>
       </FormModal>
     </>
-  );
-}
-
-interface ArmProps {
-  arm: EducationArm;
-  onEdit: () => void;
-}
-function Arm({ arm, onEdit }: ArmProps) {
-  return (
-    <div className="border border-grays-borders rounded-[8px] flex items-center gap-3 p-4">
-      <div className="bg-primary-100 rounded-[8px] p-2">
-        <Text weight={"bold"} scale={"caption"}>
-          {singledOutLetter(arm.code)?.toUpperCase()}
-        </Text>
-      </div>
-      <div className="flex gap-1 flex-col flex-1">
-        <div className="flex gap-3">
-          <Text className="text-neutrals-900 font-normal" scale={"caption"}>
-            {arm.level.name}
-          </Text>
-
-          <Text scale={"caption"} className="text-[0.75rem] text-neutrals-700">
-            {`• ${getTextInParentheses(arm.name)}`}
-          </Text>
-        </div>
-
-        <div className="flex items-center flex-wrap gap-3">
-          <Text
-            weight={"standard"}
-            scale={"caption"}
-            className="text-[0.75rem] text-neutrals-700"
-          >{`Class teacher: ${"empty for now"}`}</Text>
-          <Text
-            weight={"standard"}
-            scale={"caption"}
-            className="text-[0.75rem] text-neutrals-700"
-          >{`Capacity: ${arm.capacity}`}</Text>
-          <Text
-            weight={"standard"}
-            scale={"caption"}
-            className="text-[0.75rem] text-neutrals-700"
-          >
-            {"Empty for now"}
-          </Text>
-        </div>
-      </div>
-      <Button
-        variant="secondary"
-        size="sm"
-        className="text-primary ml-auto"
-        onClick={onEdit}
-      >
-        <Text weight={"standard"} scale={"caption"}>
-          Edit
-        </Text>
-      </Button>
-    </div>
   );
 }
