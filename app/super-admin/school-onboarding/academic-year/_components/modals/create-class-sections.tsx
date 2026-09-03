@@ -30,6 +30,11 @@ import { EducationArm } from "@/features/academic-year";
 import { getTextInParentheses } from "@/lib/helpers/get-text-in-parentheses";
 import { singledOutLetter } from "@/lib/helpers/single-out-letter";
 import { StepIcon } from "../modal-img";
+import { DragDropProvider, useDraggable, useDroppable } from "@dnd-kit/react";
+import { CollisionPriority } from "@dnd-kit/abstract";
+import { useSortable } from "@dnd-kit/react/sortable";
+import { NavigateOptions } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { useReorderArm } from "@/features/academic-year/api/reorder-arm";
 
 export default function CreateClassSections() {
   const router = useProgressRouter();
@@ -53,6 +58,7 @@ export default function CreateClassSections() {
     { refetchOnWindowFocus: false, enabled: !!activeLevel }
   );
   const { data, isFetching } = useListLevels({ refetchOnWindowFocus: false });
+  const { mutate: reorderMutate, isPending: reorderPending } = useReorderArm();
 
   const editArm = isEditMode
     ? armsData?.find((arm) => arm.id === editId)
@@ -158,18 +164,13 @@ export default function CreateClassSections() {
                     </Text>
                     {isArmsFetching && <Spinner size={16} color={"#9f9c9c"} />}
                   </div>
-
-                  {armsData?.map((arm) => (
-                    <Arm
-                      key={arm.id}
-                      arm={arm}
-                      onEdit={() =>
-                        router.push(
-                          `/super-admin/school-onboarding/academic-year?open=true&step=3&editId=${arm.id}`
-                        )
-                      }
-                    />
-                  ))}
+                  <DragDropProvider
+                    onDragEnd={({ operation }) => {
+                      const {} = operation;
+                    }}
+                  >
+                    <DroppableColumn router={router} armsData={armsData} />
+                  </DragDropProvider>
                 </>
               )}
 
@@ -275,10 +276,23 @@ export default function CreateClassSections() {
 interface ArmProps {
   arm: EducationArm;
   onEdit: () => void;
+  index: number;
 }
-function Arm({ arm, onEdit }: ArmProps) {
+function Arm({ arm, onEdit, index }: ArmProps) {
+  const { ref, isDragging } = useSortable({
+    id: arm.id,
+    index,
+    type: "arm",
+    accept: "arm",
+    group: "column",
+  });
+
   return (
-    <div className="border border-grays-borders rounded-[8px] flex items-center gap-3 p-4">
+    <div
+      ref={ref}
+      data-dragging={isDragging}
+      className="border border-grays-borders rounded-[8px] flex items-center gap-3 p-4"
+    >
       <div className="bg-primary-100 rounded-[8px] p-2">
         <Text weight={"bold"} scale={"caption"}>
           {singledOutLetter(arm.code)?.toUpperCase()}
@@ -325,6 +339,44 @@ function Arm({ arm, onEdit }: ArmProps) {
           Edit
         </Text>
       </Button>
+    </div>
+  );
+}
+
+interface ColumnProps {
+  armsData: EducationArm[] | undefined;
+  router: {
+    push: (href: string, options?: NavigateOptions | undefined) => void;
+    replace: (
+      href: string,
+      options?: Parameters<(href: string, options?: NavigateOptions) => void>[1]
+    ) => void;
+    back: () => void;
+    forward: () => void;
+    refresh: () => void;
+  };
+}
+function DroppableColumn({ armsData, router }: ColumnProps) {
+  const { ref } = useDroppable({
+    id: "arms-droppable",
+    type: "column",
+    accept: "arm",
+    collisionPriority: CollisionPriority.Low,
+  });
+  return (
+    <div className="flex flex-col gap-1" ref={ref}>
+      {armsData?.map((arm, index) => (
+        <Arm
+          key={arm.id}
+          index={index}
+          arm={arm}
+          onEdit={() =>
+            router.push(
+              `/super-admin/school-onboarding/academic-year?open=true&step=3&editId=${arm.id}`
+            )
+          }
+        />
+      ))}
     </div>
   );
 }
