@@ -1,7 +1,7 @@
 "use client";
-import { FormProvider, useForm, useFieldArray } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { Text } from "@/components/ui";
-import { DatePicker, Input, Select } from "@/components/ui/form";
+import { Input, Select } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
 import { useSearchParams } from "next/navigation";
 import { AddSquare } from "iconsax-reactjs";
@@ -11,7 +11,7 @@ import {
   DUMMY_CAMPUSES,
   DUMMY_CLASS_STATUSES,
   DUMMY_CLASS_TEACHERS,
-} from "../../constants";
+} from "../../../constants";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { useEffect, useState } from "react";
@@ -26,15 +26,11 @@ import { toast } from "sonner";
 import { setFormErrors } from "@/lib/helpers/set-form-errors";
 import { useListArms } from "@/features/academic-year/api/list-arms";
 import { Spinner } from "@/components/animations";
-import { EducationArm } from "@/features/academic-year";
-import { getTextInParentheses } from "@/lib/helpers/get-text-in-parentheses";
-import { singledOutLetter } from "@/lib/helpers/single-out-letter";
-import { StepIcon } from "../modal-img";
-import { DragDropProvider, useDraggable, useDroppable } from "@dnd-kit/react";
-import { CollisionPriority } from "@dnd-kit/abstract";
-import { useSortable, isSortable } from "@dnd-kit/react/sortable";
-import { NavigateOptions } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { StepIcon } from "../../modal-img";
+import { DragDropProvider } from "@dnd-kit/react";
+import { isSortable } from "@dnd-kit/react/sortable";
 import { useReorderArm } from "@/features/academic-year/api/reorder-arm";
+import { DroppableColumn } from "./column";
 
 export default function CreateClassSections() {
   const router = useProgressRouter();
@@ -281,113 +277,5 @@ export default function CreateClassSections() {
         </div>
       </FormModal>
     </>
-  );
-}
-
-interface ArmProps {
-  arm: EducationArm;
-  onEdit: () => void;
-  index: number;
-}
-function Arm({ arm, onEdit, index }: ArmProps) {
-  const { ref, isDragging } = useSortable({
-    id: arm.id,
-    index,
-    type: "arm",
-    accept: "arm",
-    group: "column",
-  });
-
-  return (
-    <div
-      ref={ref}
-      data-dragging={isDragging}
-      className="border bg-white border-grays-borders rounded-[8px] flex items-center gap-3 p-4"
-    >
-      <div className="bg-primary-100 rounded-[8px] p-2">
-        <Text weight={"bold"} scale={"caption"}>
-          {singledOutLetter(arm.code)?.toUpperCase()}
-        </Text>
-      </div>
-      <div className="flex gap-1 flex-col flex-1">
-        <div className="flex gap-3">
-          <Text className="text-neutrals-900 font-normal" scale={"caption"}>
-            {arm.level.name}
-          </Text>
-
-          <Text scale={"caption"} className="text-[0.75rem] text-neutrals-700">
-            {`• ${getTextInParentheses(arm.name)}`}
-          </Text>
-        </div>
-
-        <div className="flex items-center flex-wrap gap-3">
-          <Text
-            weight={"standard"}
-            scale={"caption"}
-            className="text-[0.75rem] text-neutrals-700"
-          >{`Class teacher: ${"empty for now"}`}</Text>
-          <Text
-            weight={"standard"}
-            scale={"caption"}
-            className="text-[0.75rem] text-neutrals-700"
-          >{`Capacity: ${arm.capacity}`}</Text>
-          <Text
-            weight={"standard"}
-            scale={"caption"}
-            className="text-[0.75rem] text-neutrals-700"
-          >
-            {"Empty for now"}
-          </Text>
-        </div>
-      </div>
-      <Button
-        variant="secondary"
-        size="sm"
-        className="text-primary ml-auto"
-        onClick={onEdit}
-      >
-        <Text weight={"standard"} scale={"caption"}>
-          Edit
-        </Text>
-      </Button>
-    </div>
-  );
-}
-
-interface ColumnProps {
-  armsData: EducationArm[] | undefined;
-  router: {
-    push: (href: string, options?: NavigateOptions | undefined) => void;
-    replace: (
-      href: string,
-      options?: Parameters<(href: string, options?: NavigateOptions) => void>[1]
-    ) => void;
-    back: () => void;
-    forward: () => void;
-    refresh: () => void;
-  };
-}
-function DroppableColumn({ armsData, router }: ColumnProps) {
-  const { ref } = useDroppable({
-    id: "arms-droppable",
-    type: "column",
-    accept: "arm",
-    collisionPriority: CollisionPriority.Low,
-  });
-  return (
-    <div className="flex flex-col gap-1" ref={ref}>
-      {armsData?.map((arm, index) => (
-        <Arm
-          key={arm.id}
-          index={index}
-          arm={arm}
-          onEdit={() =>
-            router.push(
-              `/super-admin/school-onboarding/academic-year?open=true&step=3&editId=${arm.id}`
-            )
-          }
-        />
-      ))}
-    </div>
   );
 }

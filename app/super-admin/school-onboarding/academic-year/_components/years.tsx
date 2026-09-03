@@ -15,7 +15,7 @@ import {
 import { MiniSelector } from "@/components/common";
 import CreateAcademicYear from "./modals/create-academic-year";
 import CreateEducationStructure from "./modals/create-education-structure";
-import CreateClassSections from "./modals/create-class-sections";
+import CreateClassSections from "./modals/create-class-sections/create-class-sections";
 import CreateSubjects from "./modals/create-subjects";
 import ReviewAcademicYear from "./modals/review-modal";
 import { useGetAcademicYears } from "@/features/academic-year/api/list-academic-years";
