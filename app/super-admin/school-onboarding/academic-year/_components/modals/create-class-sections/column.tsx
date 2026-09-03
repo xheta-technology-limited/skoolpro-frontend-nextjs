@@ -16,8 +16,13 @@ interface ColumnProps {
     forward: () => void;
     refresh: () => void;
   };
+  reorderPending: boolean;
 }
-export function DroppableColumn({ armsData, router }: ColumnProps) {
+export function DroppableColumn({
+  armsData,
+  router,
+  reorderPending,
+}: ColumnProps) {
   const { ref } = useDroppable({
     id: "arms-droppable",
     type: "column",
@@ -28,6 +33,7 @@ export function DroppableColumn({ armsData, router }: ColumnProps) {
     <div className="flex flex-col gap-1" ref={ref}>
       {armsData?.map((arm, index) => (
         <Arm
+          reorderPending={reorderPending}
           key={arm.id}
           index={index}
           arm={arm}

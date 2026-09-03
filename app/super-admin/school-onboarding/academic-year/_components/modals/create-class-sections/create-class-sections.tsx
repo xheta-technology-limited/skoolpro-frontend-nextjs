@@ -176,7 +176,11 @@ export default function CreateClassSections() {
                       });
                     }}
                   >
-                    <DroppableColumn router={router} armsData={armsData} />
+                    <DroppableColumn
+                      reorderPending={reorderPending}
+                      router={router}
+                      armsData={armsData}
+                    />
                   </DragDropProvider>
                 </>
               )}

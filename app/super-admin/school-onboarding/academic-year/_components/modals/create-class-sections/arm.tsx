@@ -9,14 +9,16 @@ export interface ArmProps {
   arm: EducationArm;
   onEdit: () => void;
   index: number;
+  reorderPending: boolean;
 }
-export function Arm({ arm, onEdit, index }: ArmProps) {
+export function Arm({ arm, onEdit, index, reorderPending }: ArmProps) {
   const { ref, isDragging } = useSortable({
     id: arm.id,
     index,
     type: "arm",
     accept: "arm",
     group: "column",
+    disabled: reorderPending,
   });
 
   return (
