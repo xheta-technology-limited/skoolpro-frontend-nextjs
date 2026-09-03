@@ -153,16 +153,16 @@ export default function CreateAcademicYear() {
             {fields.map((field, index) => (
               <div key={field.id} className="flex flex-col gap-4">
                 <Input
-                  name={`terms[${index}].name`}
+                  name={`terms.${index}.name`}
                   label={`Enter ${["first", "second", "third"][index]} term`}
                 />
                 <div className="flex gap-4 *:flex-1">
                   <DatePicker
-                    name={`terms[${index}].starts_on`}
+                    name={`terms.${index}.starts_on`}
                     label="Start date"
                   />
                   <DatePicker
-                    name={`terms[${index}].ends_on`}
+                    name={`terms.${index}.ends_on`}
                     label="End date"
                   />
                 </div>
