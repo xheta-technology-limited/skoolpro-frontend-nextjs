@@ -32,7 +32,7 @@ import { singledOutLetter } from "@/lib/helpers/single-out-letter";
 import { StepIcon } from "../modal-img";
 import { DragDropProvider, useDraggable, useDroppable } from "@dnd-kit/react";
 import { CollisionPriority } from "@dnd-kit/abstract";
-import { useSortable } from "@dnd-kit/react/sortable";
+import { useSortable, isSortable } from "@dnd-kit/react/sortable";
 import { NavigateOptions } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useReorderArm } from "@/features/academic-year/api/reorder-arm";
 
@@ -160,13 +160,24 @@ export default function CreateClassSections() {
                 <>
                   <div className="flex gap-1 items-center">
                     <Text className="text-neutrals-700" scale={"content"}>
-                      Arms of {activeLevelLabel}
+                      Arms of {activeLevelLabel} - Drag to reorder
                     </Text>
                     {isArmsFetching && <Spinner size={16} color={"#9f9c9c"} />}
                   </div>
                   <DragDropProvider
-                    onDragEnd={({ operation }) => {
-                      const {} = operation;
+                    onDragEnd={({ canceled, operation }) => {
+                      if (canceled) return;
+
+                      const { source } = operation;
+                      if (!isSortable(source)) return;
+
+                      const { index, initialIndex } = source;
+                      if (index === initialIndex) return; // no actual move
+
+                      reorderMutate({
+                        armID: source.id as string,
+                        payload: { position: index + 1 }, // 1-based
+                      });
                     }}
                   >
                     <DroppableColumn router={router} armsData={armsData} />
@@ -291,7 +302,7 @@ function Arm({ arm, onEdit, index }: ArmProps) {
     <div
       ref={ref}
       data-dragging={isDragging}
-      className="border border-grays-borders rounded-[8px] flex items-center gap-3 p-4"
+      className="border bg-white border-grays-borders rounded-[8px] flex items-center gap-3 p-4"
     >
       <div className="bg-primary-100 rounded-[8px] p-2">
         <Text weight={"bold"} scale={"caption"}>
