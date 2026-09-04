@@ -85,12 +85,18 @@ export default function SubscriptionsPage() {
   ];
 
   function handleUpgradeSubscription() {
-    setIsUpgradeModalOpen(true);
+  if (!subscription?.id) {
+    return;
   }
+  setIsUpgradeModalOpen(true);
+}
 
-  function handleEditBilling() {
-    setIsBillingModalOpen(true);
+function handleEditBilling() {
+  if (!subscription?.id) {
+    return;
   }
+  setIsBillingModalOpen(true);
+}
 
   return (
     <div className="flex flex-col gap-6 p-5.5">
