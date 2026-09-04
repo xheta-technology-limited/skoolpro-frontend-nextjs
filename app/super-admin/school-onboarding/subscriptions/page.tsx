@@ -26,7 +26,10 @@ export default function SubscriptionsPage() {
       .join(", ") ?? "";
 
   const subscriptionFields = [
-    { label: "Plan", value: subscription?.plan ?? "" },
+    {
+      label: "Plan",
+      value: subscription?.plan ? titleCase(subscription.plan) : "",
+    },
     {
       label: "Billing",
       value: subscription?.billing_frequency
