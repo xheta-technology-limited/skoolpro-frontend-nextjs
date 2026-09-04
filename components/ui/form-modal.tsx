@@ -7,7 +7,8 @@ import { CloseSquare } from "iconsax-reactjs";
 interface FormModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  title: string;
+ 
+  title: ReactNode;
   children: ReactNode;
   maxWidth?: string;
   icon?: ReactNode;
@@ -35,7 +36,7 @@ const FormModal = ({
               <span className="sr-only">Close</span>
             </DialogPrimitive.Close>
 
-            <div className="flex min-h-15 w-full items-center justify-between text-left">
+            <div className="flex w-full items-center justify-between text-left">
               <DialogPrimitive.Title className="text-[24px] font-semibold leading-[1.2] text-neutrals-900">
                 {title}
               </DialogPrimitive.Title>

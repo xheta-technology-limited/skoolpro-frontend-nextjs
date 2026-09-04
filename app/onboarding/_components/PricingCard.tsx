@@ -19,14 +19,25 @@ interface PricingCardProps {
   plan: SchoolPlan;
   isSelected: boolean;
   onSelectPlan: (planKey: string) => void;
+
+  heightClassName?: string;
+
+  maxVisibleModules?: number;
 }
 
-const PricingCard = ({ plan, isSelected, onSelectPlan }: PricingCardProps) => {
+const PricingCard = ({
+  plan,
+  isSelected,
+  onSelectPlan,
+  heightClassName = "lg:min-h-152.5",
+  maxVisibleModules = Infinity,
+}: PricingCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const visibleModules = plan.module_keys.slice(0, maxVisibleModules);
 
   return (
     <div
-      className={`flex h-full w-full flex-col rounded-[30px] border-2 transition-colors lg:max-w-75 lg:min-h-152.5 ${
+      className={`flex h-full w-full flex-col rounded-[30px] border-2 transition-colors lg:max-w-75 ${heightClassName} ${
         isSelected
           ? "border-primary bg-primary-100/40"
           : "border-transparent bg-base-white"
@@ -82,7 +93,7 @@ const PricingCard = ({ plan, isSelected, onSelectPlan }: PricingCardProps) => {
           </span>
 
           <ul className="flex flex-col gap-3">
-            {plan.module_keys.map((feature) => (
+            {visibleModules.map((feature) => (
               <li
                 key={feature}
                 className="flex items-center gap-2 text-[14px] font-light leading-[1.2] text-neutrals-800"

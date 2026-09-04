@@ -84,6 +84,11 @@ export const dashboardNavigation: DashboardNavigationItem[] = [
         href: "/super-admin/school-onboarding/academic-year",
         icon: null,
       },
+      {
+        label: "Subscriptions",
+        href: "/super-admin/school-onboarding/subscriptions",
+        icon: null,
+      },
     ],
   },
   {

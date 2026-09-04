@@ -11,6 +11,10 @@ const SCHOOL_ONBOARDING_TABS = [
     href: "/super-admin/school-onboarding/academic-year",
   },
   { label: "Timetable", href: "/super-admin/school-onboarding/timetable" },
+  {
+    label: "Subscriptions",
+    href: "/super-admin/school-onboarding/subscriptions",
+  },
 ];
 
 export default function SchoolOnboardingLayout({

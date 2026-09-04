@@ -129,7 +129,7 @@ const BillingDetailsModal = ({
             <input
               readOnly
               value={selectedPlan.name}
-              className="h-14 w-full min-w-0 rounded-2xl bg-[#F5F5FF] px-5 text-[16px] text-neutrals-900"
+              className="h-14 w-full min-w-0 rounded-2xl bg-primary-bg px-5 text-[16px] text-neutrals-900"
             />
 
             <Select
