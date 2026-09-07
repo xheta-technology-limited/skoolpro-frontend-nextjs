@@ -13,6 +13,7 @@ import {
   Setting2,
   type Icon,
   LogoutCurve,
+  UserOctagon,
 } from "iconsax-reactjs";
 
 export type DashboardNavigationItem = {
@@ -33,6 +34,13 @@ export const dashboardNavigation: DashboardNavigationItem[] = [
     label: "User management",
     href: "/super-admin/user-management",
     icon: UserEdit,
+    children: [
+      {
+        label: "Staff Management",
+        href: "/super-admin/user-management/staff-management",
+        icon: UserOctagon,
+      },
+    ],
   },
   {
     label: "Fee management",
