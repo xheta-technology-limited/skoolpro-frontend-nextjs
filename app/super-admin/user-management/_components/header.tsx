@@ -21,7 +21,7 @@ export default function Header({
   const router = useProgressRouter();
   return (
     <div className="flex justify-between items-center flex-wrap md:min-w-xl lg:min-w-2xl mb-6 gap-4">
-      <div
+      <button
         onClick={() => router.back()}
         className="flex gap-3 cursor-pointer items-center"
       >
@@ -29,7 +29,7 @@ export default function Header({
         <Text weight={"accent"} scale={"feature"} className="text-neutrals-900">
           User management
         </Text>
-      </div>
+      </button>
 
       <div className="flex gap-4 items-center">
         <Button
