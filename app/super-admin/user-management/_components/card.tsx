@@ -1,9 +1,8 @@
+"use client";
 import { ArrowRight3, UserOctagon } from "iconsax-reactjs";
 import { Text } from "@/components/ui";
-import Link from "next/link";
 import { Group } from "../constants";
-
-import { cn } from "@/lib/utils";
+import { useProgressRouter } from "@/features/page-loader";
 
 interface Props {
   group: Group;
@@ -11,8 +10,9 @@ interface Props {
 }
 
 export default function ManagementCard({ group, className }: Props) {
+  const router = useProgressRouter();
   return (
-    <Link href={group.pageUrl} className={cn("block", className)}>
+    <div onClick={() => router.push(group.pageUrl)} className={className}>
       <div className="bg-white rounded-ml p-4">
         <div className="flex items-center gap-4">
           <div className="h-11.25 w-11.25 bg-base-white rounded-[9px] p-2.5">
@@ -38,6 +38,6 @@ export default function ManagementCard({ group, className }: Props) {
           <ArrowRight3 variant="Bulk" size={24} className="text-primary" />
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
