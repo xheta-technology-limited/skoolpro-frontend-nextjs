@@ -14,20 +14,18 @@ import {
 import clsx from "clsx";
 import { SearchInput } from "@/components/ui/form/input";
 import { Pagination } from "@/components/common";
+import AddStaff from "./_components/add-staff";
+import { useProgressRouter } from "@/features/page-loader";
+import { HEADROW } from "./constants";
 
 export default function StaffManagement() {
+  const router = useProgressRouter();
   const exportStaff = () => alert("export clicked");
-  const addStaff = () => alert("add clicked");
+  const addStaff = () =>
+    router.push(
+      "/super-admin/user-management/staff-management?add-modal=true&current=1"
+    );
   const importStaff = () => alert("import clicked");
-  const headRow = [
-    "Name",
-    "Email address",
-    "Staff no.",
-    "Category",
-    "Department",
-    "Employment",
-    "Status",
-  ];
 
   return (
     <div className="flex flex-col h-full">
@@ -58,7 +56,7 @@ export default function StaffManagement() {
         <Table className="m-0">
           <TableHeader className="[&>tr>th:first-child]:!rounded-none [&>tr>th:first-child]:!border-0 [&>tr>th:first-child]:!pl-4 [&>tr>th:last-child]:!rounded-none [&>tr>th:last-child]:!border-0 [&>tr>th:last-child]:!pr-4">
             <TableRow>
-              {headRow.map((col, index) => {
+              {HEADROW.map((col, index) => {
                 return (
                   <TableHead className={clsx("text-neutrals-700")} key={col}>
                     {col}
@@ -94,6 +92,8 @@ export default function StaffManagement() {
           onPageChange={() => alert("nope")}
         />
       </div>
+
+      <AddStaff />
     </div>
   );
 }
