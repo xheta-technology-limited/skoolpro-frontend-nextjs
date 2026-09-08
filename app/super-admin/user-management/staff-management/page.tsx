@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import clsx from "clsx";
 import { SearchInput } from "@/components/ui/form/input";
+import { Pagination } from "@/components/common";
 
 export default function StaffManagement() {
   const exportStaff = () => alert("export clicked");
@@ -85,7 +86,14 @@ export default function StaffManagement() {
         </Table>
       </div>
 
-      <div>Pagination would go here</div>
+      <div className="overflow-hidden rounded-b-ml">
+        <Pagination
+          currentPage={3}
+          totalItems={500}
+          pageSize={14}
+          onPageChange={() => alert("nope")}
+        />
+      </div>
     </div>
   );
 }
