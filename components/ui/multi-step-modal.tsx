@@ -27,7 +27,7 @@ const MultiStepFormModal = ({
   currentStep,
   totalSteps,
 }: MultiStepFormModalProps) => {
-  const progress = (currentStep / totalSteps) * 100;
+  const progress = Math.min((currentStep / totalSteps) * 100, 100);
 
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
