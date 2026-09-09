@@ -17,6 +17,7 @@ import { Pagination } from "@/components/common";
 import AddStaff from "./_components/add-staff";
 import { useProgressRouter } from "@/features/page-loader";
 import { HEADROW } from "./constants";
+import ImportStaff from "./_components/import-user";
 
 export default function StaffManagement() {
   const router = useProgressRouter();
@@ -25,7 +26,10 @@ export default function StaffManagement() {
     router.push(
       "/super-admin/user-management/staff-management?add-modal=true&current=1"
     );
-  const importStaff = () => alert("import clicked");
+  const importStaff = () =>
+    router.push(
+      "/super-admin/user-management/staff-management?import-modal=true&current=1"
+    );
 
   return (
     <div className="flex flex-col h-full">
@@ -94,6 +98,7 @@ export default function StaffManagement() {
       </div>
 
       <AddStaff />
+      <ImportStaff />
     </div>
   );
 }
