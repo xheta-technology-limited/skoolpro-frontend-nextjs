@@ -18,7 +18,7 @@ interface FormModalProps {
   maxWidth?: string;
   icon?: ReactNode;
 
-  /** Pass this to show the step progress ring (e.g. { current: 1, total: 2 }). */
+  /** Pass this to show step progress ring (e.g. { current: 1, total: 2 }). */
   step?: FormModalStep;
 }
 
