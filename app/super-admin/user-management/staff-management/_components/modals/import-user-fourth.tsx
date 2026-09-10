@@ -30,7 +30,7 @@ export default function FourthModal() {
 
   const open = searchParams.get("import-modal");
   const current = searchParams.get("current");
-  const isOpen = open === "true" && current === "3";
+  const isOpen = open === "true" && current === "4";
 
   const validRows = "Nan";
 
@@ -55,16 +55,16 @@ export default function FourthModal() {
           <Text scale={"content"} className="text-neutrals-900">
             Import complete
           </Text>
-          <Text scale={"caption"} mobile className="text-neutrals-700">
+          <Text scale={"caption"} mobile className="text-neutrals-700 mb-4">
             The valid rows are now staff records. Each row imported in its own
             transaction, so one failure never blocks the rest.
           </Text>
-        </div>
 
-        <div className="flex gap-4 items-center mb-8">
-          <StatusBadge variant="green" data="12 Valid" />
-          <StatusBadge variant="orange" data="2 Duplicates" />
-          <StatusBadge variant="red" data="1 Invalid" />
+          <div className="flex gap-4 items-center">
+            <StatusBadge variant="green" data="12 Valid" />
+            <StatusBadge variant="orange" data="2 Duplicates" />
+            <StatusBadge variant="red" data="1 Invalid" />
+          </div>
         </div>
 
         <TableWrapper className="mb-4">
@@ -78,9 +78,7 @@ export default function FourthModal() {
                     index === jobSummary.length - 1 && "[&>td]:border-b-0"
                   )}
                 >
-                  <TableCell className="text-neutrals-500">
-                    {row.label}
-                  </TableCell>
+                  <TableCell>{row.label}</TableCell>
                   <TableCell>{row.value}</TableCell>
                 </TableRow>
               ))}
@@ -88,38 +86,42 @@ export default function FourthModal() {
           </Table>
         </TableWrapper>
 
-        <div className="flex gap-6 items-center *:flex-1 mb-8">
+        <div>
+          <div className="flex gap-6 items-center *:flex-1 mb-8">
+            <Button
+              type="button"
+              variant="secondary"
+              size="lg"
+              className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+              onClick={() =>
+                router.push(
+                  "/super-admin/user-management/staff-management?import-modal=true&current=1"
+                )
+              }
+            >
+              Import another File
+            </Button>
+            <Button
+              // loading={isPending}
+              //   type="submit"
+              size="lg"
+              className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+              onClick={handleClose}
+            >
+              View Staff Directory
+            </Button>
+          </div>
+
           <Button
-            type="button"
-            variant="secondary"
-            size="lg"
-            className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
-            onClick={() =>
-              router.push(
-                "/super-admin/user-management/staff-management?import-modal=true&current=1"
-              )
-            }
+            onClick={() => alert("not implemented")}
+            variant="tertiary"
+            className="border-0 m-auto"
           >
-            Import another File
-          </Button>
-          <Button
-            // loading={isPending}
-            //   type="submit"
-            size="lg"
-            className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
-            onClick={handleClose}
-          >
-            View Staff Directory
+            <Text scale={"highlight"} className="text-error-200">
+              Roll back this import
+            </Text>
           </Button>
         </div>
-
-        <Button
-          onClick={() => alert("not implemented")}
-          variant="tertiary"
-          className="text-error-200 border-0 m-auto"
-        >
-          Roll back this import
-        </Button>
       </>
     </FormModal>
   );

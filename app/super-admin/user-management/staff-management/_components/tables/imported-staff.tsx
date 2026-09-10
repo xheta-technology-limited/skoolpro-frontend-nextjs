@@ -46,13 +46,13 @@ export default function ImportedTable({ dataToMap }: Props) {
                   index === 4 && "[&>td]:border-b-0"
                 )}
               >
-                <TableCell>{titleCase(staff.name)}</TableCell>
-                <TableCell>{staff.staff_number}</TableCell>
-                <TableCell>{staff.category}</TableCell>
+                <TableCell>{titleCase(staff.name) || "-"}</TableCell>
+                <TableCell>{staff.staff_number || "-"}</TableCell>
+                <TableCell>{staff.category || "-"}</TableCell>
                 <TableCell>
                   <StatusBadge variant="green" data="Valid" />
                 </TableCell>
-                <TableCell>{staff.details}</TableCell>
+                <TableCell>{staff.details || "-"}</TableCell>
               </TableRow>
             ))}
           </TableBody>

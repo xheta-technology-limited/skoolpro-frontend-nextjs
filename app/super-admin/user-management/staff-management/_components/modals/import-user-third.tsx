@@ -38,17 +38,17 @@ export default function ThirdModal() {
           <Text scale={"content"} className="text-neutrals-900">
             Validate
           </Text>
-          <Text scale={"caption"} mobile className="text-neutrals-700">
+          <Text scale={"caption"} mobile className="text-neutrals-700 mb-4">
             Every row checked against the field rules and against existing
             staff. Fix invalid rows in your file and re-upload, or carry on and
             commit the valid ones.
           </Text>
-        </div>
 
-        <div className="flex gap-4 items-center mb-8">
-          <StatusBadge variant="green" data="12 Valid" />
-          <StatusBadge variant="orange" data="2 Duplicates" />
-          <StatusBadge variant="red" data="1 Invalid" />
+          <div className="flex gap-4 items-center">
+            <StatusBadge variant="green" data="12 Valid" />
+            <StatusBadge variant="orange" data="2 Duplicates" />
+            <StatusBadge variant="red" data="1 Invalid" />
+          </div>
         </div>
 
         <ImportedTable
@@ -79,7 +79,7 @@ export default function ThirdModal() {
               name: "grace amen",
               staff_number: "STF-001",
               category: "Teaching",
-              details: "Duplicate staff number",
+              details: "Ready to import",
             },
             {
               id: 5,
@@ -107,7 +107,7 @@ export default function ThirdModal() {
               name: "hauwa musa",
               staff_number: "STF-002",
               category: "Administration",
-              details: "Duplicate staff number",
+              details: "Ready to import",
             },
             {
               id: 9,
@@ -149,7 +149,7 @@ export default function ThirdModal() {
               name: "sade ogundimu",
               staff_number: "",
               category: "",
-              details: "Missing staff number and category",
+              details: "Duplicate",
             },
             {
               id: 15,
