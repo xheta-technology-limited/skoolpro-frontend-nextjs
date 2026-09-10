@@ -32,7 +32,12 @@ export default function SecondModal() {
   };
 
   return (
-    <FormModal title={"Import Staff"} onOpenChange={handleClose} open={isOpen}>
+    <FormModal
+      title={"Import Staff"}
+      onOpenChange={handleClose}
+      open={isOpen}
+      step={{ current: 2, total: 4 }}
+    >
       <>
         <div>
           <Text scale={"content"} className="text-neutrals-900">

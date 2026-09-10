@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/custom-button";
 import { DragNDrop } from "@/components/ui/form";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { DocumentDownload } from "iconsax-reactjs";
 import { useSearchParams } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
@@ -33,7 +32,12 @@ export default function FirstModal() {
   };
 
   return (
-    <FormModal title={"Import Staff"} onOpenChange={handleClose} open={isOpen}>
+    <FormModal
+      title={"Import Staff"}
+      onOpenChange={handleClose}
+      open={isOpen}
+      step={{ current: 1, total: 4 }}
+    >
       <>
         <div>
           <Text scale={"content"} className="text-neutrals-900">

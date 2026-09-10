@@ -1,4 +1,5 @@
 "use client";
+import { StatusBadge } from "@/components/common";
 import {
   Table,
   TableBody,
@@ -46,11 +47,12 @@ export default function ImportedTable({ dataToMap }: Props) {
                 )}
               >
                 <TableCell>{titleCase(staff.name)}</TableCell>
+                <TableCell>{staff.staff_number}</TableCell>
+                <TableCell>{staff.category}</TableCell>
                 <TableCell>
-                  {staff.section ? staff.section.name : "Whole class"}
+                  <StatusBadge variant="green" data="Valid" />
                 </TableCell>
-                <TableCell>{staff.is_compulsory ? "Yes" : "No"}</TableCell>
-                <TableCell>{staff.pass_mark}</TableCell>
+                <TableCell>{staff.details}</TableCell>
               </TableRow>
             ))}
           </TableBody>
