@@ -1,5 +1,5 @@
 "use client";
-import { useDropzone } from "react-dropzone";
+import { useDropzone, type DropzoneOptions } from "react-dropzone";
 import { Controller, useFormContext } from "react-hook-form";
 import { XIcon } from "@phosphor-icons/react";
 import { DocumentUpload } from "iconsax-reactjs";
@@ -9,9 +9,30 @@ import Text from "../../text/text";
 type Props = {
   name: string;
   label?: string;
+  /** Accepted file types (MIME types / extensions). Defaults to all files. */
+  accept?: DropzoneOptions["accept"];
+  /** Whether multiple files may be selected. Defaults to false (single file). */
+  multiple?: boolean;
+  /** Maximum size per file in bytes. */
+  maxSize?: number;
+  /** Maximum number of files when `multiple` is true. */
+  maxFiles?: number;
+  /** Disables the dropzone. */
+  disabled?: boolean;
+  /** Fired when a dropped file is rejected (wrong type, too large, etc.). */
+  onDropRejected?: DropzoneOptions["onDropRejected"];
 };
 
-export default function DragNDrop({ name, label }: Props) {
+export default function DragNDrop({
+  name,
+  label,
+  accept,
+  multiple = false,
+  maxSize,
+  maxFiles,
+  disabled,
+  onDropRejected,
+}: Props) {
   const {
     formState: { errors },
   } = useFormContext();
@@ -22,12 +43,17 @@ export default function DragNDrop({ name, label }: Props) {
       name={name}
       render={({ field }) => {
         const { getRootProps, getInputProps, isDragActive } = useDropzone({
+          accept,
+          multiple,
+          maxSize,
+          maxFiles,
+          disabled,
+          onDropRejected,
           onDrop: (acceptedFiles) => {
-            field.onChange(acceptedFiles[0]);
+            field.onChange(multiple ? acceptedFiles : acceptedFiles[0]);
           },
         });
         const file = field.value as File | undefined;
-
         return (
           <div className="relative max-w-full">
             <div
@@ -55,7 +81,7 @@ export default function DragNDrop({ name, label }: Props) {
             </div>
 
             {file && (
-              <div className="mb-2 max-w-full flex items-center justify-between gap-2 rounded-ml border border-neutrals-200 bg-[#F5F5FF] px-ml py-2">
+              <div className="mb-2 max-w-full flex items-center justify-between gap-2 rounded-ml border border-neutrals-200 bg-primary-bg px-ml py-2">
                 <span className="min-w-0 truncate text-[0.875rem]">
                   {file.name}
                 </span>

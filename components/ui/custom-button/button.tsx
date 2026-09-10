@@ -22,12 +22,7 @@ const button = cva(
     variants: {
       variant: {
         primary: ["bg-primary", "text-base-white", "border-transparent"],
-        secondary: [
-          "bg-transparent",
-          "text-primary",
-          "border",
-          "border-primary",
-        ],
+        secondary: ["bg-white", "text-primary", "border", "border-primary"],
         tertiary: ["bg-transparent", "text-primary", "border-transparent"],
       },
       size: {
