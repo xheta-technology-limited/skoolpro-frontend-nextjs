@@ -8,6 +8,18 @@ const nextConfig: NextConfig = {
       fullUrl: true,
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "api.skoolpro.net",
+      },
+    ],
+  },
   async rewrites() {
     return [
       {

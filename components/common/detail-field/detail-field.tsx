@@ -1,6 +1,6 @@
 interface DetailFieldProps {
   label: string;
-  value: string;
+  value?: string;
 }
 
 const DetailField = ({ label, value }: DetailFieldProps) => (
@@ -9,7 +9,7 @@ const DetailField = ({ label, value }: DetailFieldProps) => (
       {label}
     </span>
     <span className="text-[14px] font-normal truncate leading-[1.2] text-neutrals-900">
-      {value}
+      {value || "-"}
     </span>
   </div>
 );
