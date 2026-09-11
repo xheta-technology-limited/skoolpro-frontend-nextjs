@@ -14,6 +14,8 @@ import {
   TableRow,
   TableWrapper,
 } from "@/components/ui/table";
+import { useState } from "react";
+import QualificationModal from "./_components/qualification-modal";
 
 // Fallback helper — anything missing renders as "-"
 const fallback = (value?: string) =>
@@ -31,8 +33,13 @@ const qualificationsHeadRow = [
 ];
 
 export default function ProfilePage() {
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
   return (
     <>
+      <QualificationModal
+        open={isModalOpen}
+        onOpenChange={() => setModalOpen(false)}
+      />
       <div className="flex flex-col gap-8 w-full">
         <div className="flex justify-between items-center">
           <Text className="text-neutrals-700">STAFF DETAILS</Text>
@@ -150,6 +157,10 @@ export default function ProfilePage() {
             <Text className="text-neutrals-700">QUALIFICATIONS</Text>
             <Button
               variant="secondary"
+              onClick={() => {
+                console.log("idfk");
+                setModalOpen(true);
+              }}
               size="sm"
               leftIcon={
                 <AddSquare variant="Bulk" size={16} className="text-primary" />
