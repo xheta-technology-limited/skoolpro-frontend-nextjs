@@ -19,6 +19,8 @@ export default function QualificationModal({ open, onOpenChange }: Props) {
     defaultValues: {},
     resolver: zodResolver(qualificationSchema),
   });
+
+  const onSubmit = () => alert("Not implemented");
   return (
     <FormModal
       open={open}
@@ -31,7 +33,11 @@ export default function QualificationModal({ open, onOpenChange }: Props) {
         </Text>
 
         <FormProvider {...methods}>
-          <form className="flex flex-col gap-4 mb-4">
+          <form
+            id="add-qualification-form"
+            className="flex flex-col gap-4 mb-4"
+            onSubmit={onSubmit}
+          >
             <Select
               options={[
                 { value: "academic", label: "Academic" },
@@ -62,7 +68,9 @@ export default function QualificationModal({ open, onOpenChange }: Props) {
           <Button onClick={onOpenChange} variant="secondary">
             Cancel
           </Button>
-          <Button>Save</Button>
+          <Button type="submit" form="add-qualification-form">
+            Save
+          </Button>
         </div>
       </div>
     </FormModal>

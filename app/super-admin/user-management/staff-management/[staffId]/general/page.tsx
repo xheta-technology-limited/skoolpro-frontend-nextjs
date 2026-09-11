@@ -2,8 +2,7 @@
 import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/custom-button";
 import { AddSquare, Edit, UserEdit } from "iconsax-reactjs";
-import Image from "next/image";
-import { DetailField } from "@/components/common";
+
 import { qualifications, staff } from "./constants";
 import {
   Table,
@@ -16,6 +15,8 @@ import {
 } from "@/components/ui/table";
 import { useState } from "react";
 import QualificationModal from "./_components/qualification-modal";
+import ViewMode from "./_components/view-mode";
+import EditMode from "./_components/edit-mode";
 
 // Fallback helper — anything missing renders as "-"
 const fallback = (value?: string) =>
@@ -34,6 +35,7 @@ const qualificationsHeadRow = [
 
 export default function ProfilePage() {
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
+  const [isEditMode, setEditMode] = useState<boolean>(false);
   return (
     <>
       <QualificationModal
@@ -41,115 +43,11 @@ export default function ProfilePage() {
         onOpenChange={() => setModalOpen(false)}
       />
       <div className="flex flex-col gap-8 w-full">
-        <div className="flex justify-between items-center">
-          <Text className="text-neutrals-700">STAFF DETAILS</Text>
-          <Button
-            variant="secondary"
-            size="sm"
-            rightIcon={
-              <UserEdit variant="Bulk" size={16} className="text-primary" />
-            }
-          >
-            Edit
-          </Button>
-        </div>
-
-        <div className="flex gap-4 flex-wrap">
-          {/* Profile photo */}
-          <div className="relative h-71 w-71 flex items-center justify-center shrink-0 overflow-hidden rounded-ml border-4 border-primary">
-            <Image
-              src={staff.photoUrl}
-              alt={`${staff.firstName} ${staff.lastName}`}
-              fill
-              className="object-cover"
-            />
-          </div>
-
-          {/* Detail fields grid */}
-          <div className="rounded-ml bg-primary-bg min-w-76.75 gap-4 p-2 flex-1 grid grid-cols-2 content-start">
-            <DetailField label="First name" value={fallback(staff.firstName)} />
-            <DetailField
-              label="Middle name"
-              value={fallback(staff.middleName)}
-            />
-            <DetailField label="Last name" value={fallback(staff.lastName)} />
-            <DetailField label="Religion" value={fallback(staff.religion)} />
-            <DetailField label="Sex" value={fallback(staff.sex)} />
-            <DetailField label="D.O.B" value={fallback(staff.dob)} />
-            <DetailField
-              label="Nationality"
-              value={fallback(staff.nationality)}
-            />
-            <DetailField
-              label="Marital status"
-              value={fallback(staff.maritalStatus)}
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          <Text className="text-neutrals-700">ROLE & EMPLOYMENT DETAILS</Text>
-
-          <div className="rounded-ml bg-primary-bg gap-4 p-2 grid grid-cols-2 content-start">
-            <DetailField
-              label="Staff number"
-              value={fallback(staff.staffNumber)}
-            />
-            <DetailField
-              label="National/Prof. No."
-              value={fallback(staff.nationalProfNo)}
-            />
-            <DetailField label="Category" value={fallback(staff.category)} />
-            <DetailField
-              label="Reporting manager"
-              value={fallback(staff.reportingManager)}
-            />
-            <DetailField
-              label="Employment type"
-              value={fallback(staff.employmentType)}
-            />
-            <DetailField
-              label="Employment starts"
-              value={fallback(staff.employmentStarts)}
-            />
-            <DetailField
-              label="Department"
-              value={fallback(staff.department)}
-            />
-            <DetailField
-              label="Contract type"
-              value={fallback(staff.contractType)}
-            />
-            <DetailField
-              label="Staff status"
-              value={fallback(staff.staffStatus)}
-            />
-            <DetailField label="Campus" value={fallback(staff.campus)} />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          <Text className="text-neutrals-700">CONTACT DETAILS</Text>
-
-          <div className="rounded-ml bg-primary-bg gap-4 p-2 grid grid-cols-2 content-start">
-            <DetailField
-              label="Home address"
-              value={fallback(staff.homeAddress)}
-            />
-            <DetailField
-              label="Email address"
-              value={fallback(staff.emailAddress)}
-            />
-            <DetailField
-              label="Phone number"
-              value={fallback(staff.phoneNumber)}
-            />
-            <DetailField
-              label="Emergency phone number"
-              value={fallback(staff.emergencyPhoneNumber)}
-            />
-          </div>
-        </div>
+        {isEditMode ? (
+          <EditMode setEditMode={setEditMode} />
+        ) : (
+          <ViewMode setEditMode={setEditMode} />
+        )}
 
         {/* Qualifications */}
         <div className="flex flex-col gap-4">
@@ -158,7 +56,6 @@ export default function ProfilePage() {
             <Button
               variant="secondary"
               onClick={() => {
-                console.log("idfk");
                 setModalOpen(true);
               }}
               size="sm"
