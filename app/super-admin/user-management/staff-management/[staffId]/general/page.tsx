@@ -1,3 +1,4 @@
+"use client";
 import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/custom-button";
 import { AddSquare, Edit, UserEdit } from "iconsax-reactjs";
@@ -209,6 +210,21 @@ export default function ProfilePage() {
             </TableWrapper>
           </div>
         </div>
+
+        <div className="flex gap-6 *:flex-1">
+          <Button variant="secondary" onClick={() => alert("Not implemented")}>
+            Suspend user
+          </Button>
+          <Button onClick={() => alert("Not implemented")}>
+            Disable user account
+          </Button>
+        </div>
+
+        <Button variant="tertiary" className="m-auto">
+          <Text scale={"highlight"} className="text-error-200">
+            Delete user account
+          </Text>
+        </Button>
       </div>
     </>
   );
