@@ -64,8 +64,8 @@ export default function UserDetailsLayout({
         </div>
       </div>
 
-      <div className="bg-white p-6 w-full">
-        <div className="p-2 gap-2 flex items-center border-2 border-grays-borders rounded-lg mb-8 *:flex-1">
+      <div className="bg-white p-1 md:p-6 w-full">
+        <div className="p-2 gap-2 hidden md:flex items-center border-2 border-grays-borders rounded-lg mb-8 *:flex-1">
           {tabs.map((tab) => {
             const isActive = pathname.includes(tab.label.toLocaleLowerCase());
             return (
