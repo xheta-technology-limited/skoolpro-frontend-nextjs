@@ -67,7 +67,7 @@ export default function UserDetailsLayout({
       <div className="bg-white p-1 md:p-6 w-full">
         <div className="p-2 gap-2 hidden md:flex items-center border-2 border-grays-borders rounded-lg mb-8 *:flex-1">
           {tabs.map((tab) => {
-            const isActive = pathname.includes(tab.label.toLocaleLowerCase());
+            const isActive = pathname.includes(tab.href);
             return (
               <Link
                 key={tab.label}
