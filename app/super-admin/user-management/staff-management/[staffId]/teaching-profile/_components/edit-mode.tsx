@@ -34,7 +34,12 @@ export default function EditMode({ setEditMode }: Props) {
           >
             Cancel
           </Button>
-          <Button variant="primary" size="sm" type="submit" form="edit-user-form">
+          <Button
+            variant="primary"
+            size="sm"
+            type="submit"
+            form="edit-user-form"
+          >
             Save
           </Button>
         </div>
@@ -46,7 +51,7 @@ export default function EditMode({ setEditMode }: Props) {
           className="flex flex-col gap-8"
           id="edit-user-form"
         >
-          <div className="rounded-ml bg-primary-bg gap-4 p-2 grid grid-cols-2 content-start">
+          <div className="rounded-ml bg-white gap-4 p-2 grid grid-cols-2 content-start">
             <Input
               name="teacher_registration_number"
               label="Teacher reg. number"
