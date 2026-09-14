@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import FirstModal from "./modals/import-user-first";
 import SecondModal from "./modals/import-user-second";
 import ThirdModal from "./modals/import-user-third";
+import FourthModal from "./modals/import-user-fourth";
 
 export default function ImportStaff() {
   return (
@@ -9,6 +10,7 @@ export default function ImportStaff() {
       <FirstModal />
       <SecondModal />
       <ThirdModal />
+      <FourthModal />
     </Suspense>
   );
 }

@@ -74,7 +74,7 @@ export default function FirstModal() {
               <DragNDrop
                 name=""
                 label="CSV"
-                accept={{ "text/csv": [".csv"] }}
+                // accept={{ "text/csv": [".csv"] }}
                 onDropRejected={() =>
                   alert("MAKE THIS SET THE FORM STATE ERRORS FOR THIS FIELD")
                 }

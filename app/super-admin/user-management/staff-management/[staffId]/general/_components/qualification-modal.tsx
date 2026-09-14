@@ -1,7 +1,7 @@
 "use client";
 import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/custom-button";
-import { Input, Select } from "@/components/ui/form";
+import { DatePicker, Input, Select } from "@/components/ui/form";
 import FormModal from "@/components/ui/form-modal";
 import {
   QualificationFormData,
@@ -20,7 +20,9 @@ export default function QualificationModal({ open, onOpenChange }: Props) {
     resolver: zodResolver(qualificationSchema),
   });
 
-  const onSubmit = () => alert("Not implemented");
+  const onSubmit = () => {
+    alert("Not implemented");
+  };
   return (
     <FormModal
       open={open}
@@ -36,7 +38,7 @@ export default function QualificationModal({ open, onOpenChange }: Props) {
           <form
             id="add-qualification-form"
             className="flex flex-col gap-4 mb-4"
-            onSubmit={onSubmit}
+            onSubmit={methods.handleSubmit(onSubmit)}
           >
             <Select
               options={[
@@ -46,21 +48,16 @@ export default function QualificationModal({ open, onOpenChange }: Props) {
               name="type"
               label="Enter qualification type"
             />
-
             <Input name="qualification" label="Enter qualification" />
-
             <Input name="institution" label="Enter awarding institution" />
-
-            <Input name="award_date" label="Enter awarding year" type="date" />
-
+            <DatePicker name="award_date" label="Enter awarding year" />
             <Input name="grade" label="Enter grade" />
-
             <Input
               name="professional_registration"
               label="Enter registration number"
             />
-
-            <Input name="expiry_date" label="Enter expiry date" type="date" />
+            <DatePicker name="expiry_date" label="Enter expiry date" />{" "}
+            {/**figure out how to make this work for selecting just years without months */}
           </form>
         </FormProvider>
 

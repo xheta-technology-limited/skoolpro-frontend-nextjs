@@ -2,7 +2,7 @@ import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "next/navigation";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm, UseFormReturn } from "react-hook-form";
 import { Text } from "@/components/ui";
 import { DatePicker, Input, Select } from "@/components/ui/form";
 import { GENDER_SELECT_OPTIONS } from "@/config/constants";
@@ -13,12 +13,11 @@ import {
 } from "@/features/user-management/staff-management/schemas/add-staff-schema";
 import { SuccessModal } from "@/components/common";
 
-const SecondModal = () => {
+interface Props {
+  methods: UseFormReturn<AddStaffSecondFormData>;
+}
+const SecondModal = ({ methods }: Props) => {
   const router = useProgressRouter();
-  const methods = useForm<AddStaffSecondFormData>({
-    defaultValues: {},
-    resolver: zodResolver(addStaffSecondSchema),
-  });
 
   const searchParams = useSearchParams();
   const open = searchParams.get("add-modal");
