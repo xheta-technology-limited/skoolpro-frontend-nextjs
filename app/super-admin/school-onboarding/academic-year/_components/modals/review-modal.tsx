@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm, useFieldArray } from "react-hook-form";
 import { Text } from "@/components/ui";
 import { DatePicker, Input, Select } from "@/components/ui/form";
@@ -23,8 +23,6 @@ import { AcademicYear } from "@/features/academic-year";
 import { toast } from "sonner";
 import { generateFormDate } from "@/lib/helpers/generate-form-date";
 
-const MAX_YEARS = new Date().getFullYear() + 3;
-
 const toFormData = (year: AcademicYear): AcademicYearFormData => ({
   name: year.name,
   starts_on: generateFormDate(year.starts_on),
@@ -40,6 +38,12 @@ const toFormData = (year: AcademicYear): AcademicYearFormData => ({
 export default function ReviewAcademicYear() {
   const router = useProgressRouter();
   const searchParams = useSearchParams();
+  const [maxYears, setMaxYears] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    setMaxYears(new Date().getFullYear() + 3);
+  }, []);
+
   const methods = useForm<AcademicYearFormData>({
     defaultValues: {
       terms: [
@@ -172,12 +176,12 @@ export default function ReviewAcademicYear() {
                 <DatePicker
                   name="starts_on"
                   label="Start date"
-                  maxYears={MAX_YEARS}
+                  maxYears={maxYears}
                 />
                 <DatePicker
                   name="ends_on"
                   label="End date"
-                  maxYears={MAX_YEARS}
+                  maxYears={maxYears}
                 />
               </div>
 
@@ -200,12 +204,12 @@ export default function ReviewAcademicYear() {
                     <DatePicker
                       name={`terms[${index}].starts_on`}
                       label="Start date"
-                      maxYears={MAX_YEARS}
+                      maxYears={maxYears}
                     />
                     <DatePicker
                       name={`terms[${index}].ends_on`}
                       label="End date"
-                      maxYears={MAX_YEARS}
+                      maxYears={maxYears}
                     />
                   </div>
                 </div>
