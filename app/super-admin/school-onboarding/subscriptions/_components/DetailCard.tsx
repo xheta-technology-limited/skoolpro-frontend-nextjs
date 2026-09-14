@@ -1,6 +1,6 @@
 import { Edit } from "iconsax-reactjs";
 import { Button } from "@/components/ui/custom-button";
-import DetailField from "./DetailField";
+import { DetailField } from "@/components/common";
 
 interface DetailCardProps {
   title: string;
@@ -17,7 +17,7 @@ const DetailCard = ({
   buttonLabel = "Edit",
   buttonIcon = <Edit size={16} variant="Bulk" color="#010081" />,
 }: DetailCardProps) => {
-  const rows: [typeof fields[0], typeof fields[0] | undefined][] = [];
+  const rows: [(typeof fields)[0], (typeof fields)[0] | undefined][] = [];
   for (let i = 0; i < fields.length; i += 2) {
     rows.push([fields[i], fields[i + 1]]);
   }
