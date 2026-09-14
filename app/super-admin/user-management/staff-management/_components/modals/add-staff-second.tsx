@@ -16,6 +16,8 @@ import { SuccessModal } from "@/components/common";
 import { useListStaff } from "@/features/user-management/staff-management/api/list-staff";
 import { createSelectOptions } from "@/lib/helpers";
 import { Staff } from "@/features/user-management/staff-management/types/api/staff";
+import { useListCampuses } from "@/features/campuses/api/list-campuses";
+import { Campus } from "@/features/campuses/types/api/campus";
 
 interface Props {
   methods: UseFormReturn<AddStaffSecondFormData>;
@@ -34,11 +36,23 @@ const SecondModal = ({ methods, onSubmit, isPending }: Props) => {
   const handleClose = () =>
     router.replace("/super-admin/user-management/staff-management");
   const { data: allStaff, isPending: isStaffPending } = useListStaff();
+  const { data: allCampus, isPending: isCampusPending } = useListCampuses({
+    enabled: false,
+  });
 
-  const staffOptions = createSelectOptions<Staff, "full_name">(
+  const staffOptions = createSelectOptions<Staff, "id", "full_name">(
     allStaff,
+    "id",
     "full_name"
   );
+  const campusOptions = createSelectOptions<Campus, "id", "name">(
+    allCampus,
+    "id",
+    "name"
+  );
+  if (!isOpen) {
+    return null;
+  }
   return (
     <>
       <SuccessModal
@@ -92,7 +106,12 @@ const SecondModal = ({ methods, onSubmit, isPending }: Props) => {
                 label="Staff status"
                 options={STATUS_OPTIONS}
               />
-              <Select name="campus_id" label="Main campus" options={[]} />
+              <Select
+                name="campus_id"
+                label="Main campus"
+                isLoading={isCampusPending}
+                options={campusOptions || []}
+              />
 
               <Input name="payroll_number" label="Payroll number" />
               <Input name="work_location" label="Work location" />

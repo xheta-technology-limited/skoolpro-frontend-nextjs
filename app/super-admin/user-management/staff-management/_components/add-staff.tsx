@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 import { useCreateStaff } from "@/features/user-management/staff-management/api/create-staff";
 import { useProgressRouter } from "@/features/page-loader";
 import { setFormErrors } from "@/lib/helpers/set-form-errors";
+import { toast } from "sonner";
 
 export default function AddStaff() {
   const secondFormMethods = useForm<AddStaffSecondFormData>({
@@ -32,10 +33,12 @@ export default function AddStaff() {
     mutate(
       { ...firstFormMethods.getValues(), ...secondFormMethods.getValues() },
       {
-        onSuccess: () =>
+        onSuccess: () => {
+          toast.success("New staff added successfully");
           router.push(
             "/super-admin/user-management/staff-management?add-modal=true&current=success"
-          ),
+          );
+        },
         onError: (res) => {
           setFormErrors(secondFormMethods.setError, res.errors);
           setFormErrors(firstFormMethods.setError, res.errors);

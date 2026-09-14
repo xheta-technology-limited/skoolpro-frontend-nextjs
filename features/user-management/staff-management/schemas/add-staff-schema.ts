@@ -1,4 +1,4 @@
-import { phoneString } from "@/lib/utils/zod-schemas";
+import { phoneString, requiredString } from "@/lib/utils/zod-schemas";
 import { z } from "zod";
 
 export const addStaffFirstSchema = z.object({
@@ -37,7 +37,7 @@ export const addStaffFirstSchema = z.object({
 export type AddStaffFirstFormData = z.infer<typeof addStaffFirstSchema>;
 
 export const addStaffSecondSchema = z.object({
-  category: z.string().optional(),
+  category: requiredString,
 
   reporting_manager_id: z.string().optional(),
 

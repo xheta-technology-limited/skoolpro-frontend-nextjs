@@ -80,14 +80,6 @@ export default function StaffManagement() {
     );
   }
 
-  if (isPending) {
-    return (
-      <div className="w-full flex items-center justify-center py-7">
-        <Spinner size={70} />
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col h-full">
       <Header
@@ -97,72 +89,96 @@ export default function StaffManagement() {
         onImportClick={importStaff}
       />
 
-      {hasStaff ? (
-        <>
-          <div className="rounded-tr-ml flex-1 overflow-auto">
-            <div className="bg-white p-4 ">
+      <>
+        <div className="rounded-tr-ml flex-1 overflow-auto">
+          <div className="bg-white p-4 ">
+            <Text
+              className="block mb-8"
+              weight={"standard"}
+              scale={"highlight"}
+            >
+              Staff Management
+            </Text>
+            <div className="flex items-center gap-6">
+              <SearchInput
+                value={searchFilter}
+                onChange={onSearchInputChange}
+                placeholder="Search staff name"
+                className="flex-1"
+              />
               <Text
-                className="block mb-8"
-                weight={"standard"}
-                scale={"highlight"}
-              >
-                Staff Management
-              </Text>
-              <div className="flex items-center gap-6">
-                <SearchInput
-                  value={searchFilter}
-                  onChange={onSearchInputChange}
-                  placeholder="Search staff name"
-                  className="flex-1"
-                />
-                <Text
-                  scale={"caption"}
-                  className="text-neutrals-700"
-                >{`Showing ${0} - ${0} of ${0}`}</Text>
-              </div>
+                scale={"caption"}
+                className="text-neutrals-700"
+              >{`Showing ${0} - ${0} of ${0}`}</Text>
             </div>
-
-            {allStaff && allStaff.length > 0 && (
-              <Table className="m-0">
-                <TableHeader className="[&>tr>th:first-child]:!rounded-none [&>tr>th:first-child]:!border-0 [&>tr>th:first-child]:!pl-4 [&>tr>th:last-child]:!rounded-none [&>tr>th:last-child]:!border-0 [&>tr>th:last-child]:!pr-4">
-                  <TableRow>
-                    {HEADROW.map((col) => {
-                      return (
-                        <TableHead
-                          className={clsx("text-neutrals-700")}
-                          key={col}
-                        >
-                          {col}
-                        </TableHead>
-                      );
-                    })}
-                  </TableRow>
-                </TableHeader>
-
-                <TableBody>
-                  {allStaff.map((staff, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{staff.full_name}</TableCell>
-                      <TableCell>{staff.email}</TableCell>
-                      <TableCell>{staff.staff_number}</TableCell>
-                      <TableCell>{staff.category}</TableCell>
-                      <TableCell>{staff.department}</TableCell>
-                      <TableCell>{staff.contract_type}</TableCell>
-                      <TableCell>
-                        <StatusBadge
-                          data={titleCase(staff.staff_status)}
-                          variant={
-                            staff.staff_status === "active" ? "green" : "orange"
-                          }
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
           </div>
 
+          {isPending ? (
+            <div className="w-full flex items-center justify-center py-7">
+              <Spinner size={70} />
+            </div>
+          ) : hasStaff ? (
+            <Table className="m-0">
+              <TableHeader className="[&>tr>th:first-child]:!rounded-none [&>tr>th:first-child]:!border-0 [&>tr>th:first-child]:!pl-4 [&>tr>th:last-child]:!rounded-none [&>tr>th:last-child]:!border-0 [&>tr>th:last-child]:!pr-4">
+                <TableRow>
+                  {HEADROW.map((col) => {
+                    return (
+                      <TableHead
+                        className={clsx("text-neutrals-700")}
+                        key={col}
+                      >
+                        {col}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              </TableHeader>
+
+              <TableBody>
+                {allStaff.map((staff, index) => (
+                  <TableRow
+                    className="cursor-pointer"
+                    key={index}
+                    onClick={() =>
+                      router.push(
+                        `/super-admin/user-management/staff-management/${staff.id}/general`
+                      )
+                    }
+                  >
+                    <TableCell>{staff.full_name ?? "-"}</TableCell>
+                    <TableCell>{staff.email ?? "-"}</TableCell>
+                    <TableCell>{staff.staff_number ?? "-"}</TableCell>
+                    <TableCell>{staff.category ?? "-"}</TableCell>
+                    <TableCell>{staff.department ?? "-"}</TableCell>
+                    <TableCell>{staff.contract_type ?? "-"}</TableCell>
+                    <TableCell>
+                      <StatusBadge
+                        data={titleCase(staff.staff_status)}
+                        variant={
+                          staff.staff_status === "active" ? "green" : "orange"
+                        }
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <>
+              {" "}
+              <div className="w-fit mx-auto">
+                {" "}
+                <NoData
+                  title="No Staff"
+                  subTitle="You haven't added any staff yet, click the button above to make one"
+                  className="w-97.5 h-143.75"
+                />
+              </div>
+            </>
+          )}
+        </div>
+
+        {hasStaff && (
           <div className="overflow-hidden rounded-b-ml">
             <Pagination
               currentPage={3}
@@ -171,20 +187,8 @@ export default function StaffManagement() {
               onPageChange={() => alert("nope")}
             />
           </div>
-        </>
-      ) : (
-        <>
-          {" "}
-          <div className="w-fit mx-auto">
-            {" "}
-            <NoData
-              title="No Staff"
-              subTitle="You haven't added any staff yet, click the button above to make one"
-              className="w-97.5 h-143.75"
-            />
-          </div>
-        </>
-      )}
+        )}
+      </>
 
       <AddStaff />
       <ImportStaff />

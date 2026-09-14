@@ -2,8 +2,9 @@ import { titleCase } from "./string-to-title-case";
 
 export default function createSelectOptions<
   T extends object,
-  K extends keyof T
->(items: T[] | undefined, key: K) {
+  K extends keyof T,
+  V extends keyof T
+>(items: T[] | undefined, value: K, label: V) {
   if (!items) {
     return;
   }
@@ -11,7 +12,7 @@ export default function createSelectOptions<
     return;
   }
   return items.map((item) => ({
-    value: item[key],
-    label: titleCase(String(item[key])),
+    value: item[value],
+    label: titleCase(String(item[label])),
   }));
 }
