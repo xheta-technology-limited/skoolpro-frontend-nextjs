@@ -165,7 +165,7 @@ export default function StudentReportsPage() {
             key={option.id}
             type="button"
             onClick={() => handleSelectResult(option.id)}
-            className="flex min-h-16.25 w-full items-center justify-between gap-2 rounded-2xl border border-primary-100 bg-#FFFFFF p-4 text-left transition-colors hover:bg-primary-bg"
+            className="flex min-h-16.25 w-full items-center justify-between gap-2 rounded-2xl border border-primary-100 bg-[#FFFFFF] p-4 text-left transition-colors hover:bg-primary-bg"
           >
             <span className="font-poppins text-base font-semibold leading-[120%] tracking-normal text-neutrals-700">
               {option.label}

@@ -156,7 +156,7 @@ export default function StudentGeneralPage() {
 
       <div className="flex flex-col gap-4 sm:flex-row">
         {/* MOCK: Class Attendance Points has no backing field. */}
-        <div className="flex w-full flex-1 flex-col gap-2 rounded-2xl border border-primary-100 bg-#FFFFFF p-4 min-h-23 lg:h-23">
+        <div className="flex w-full flex-1 flex-col gap-2 rounded-2xl border border-primary-100 bg-[#FFFFFF] p-4 min-h-23 lg:h-23">
           <span className="font-poppins text-base font-semibold leading-[120%] tracking-normal text-neutrals-700">
             Class Attendance Point
           </span>
@@ -174,7 +174,7 @@ export default function StudentGeneralPage() {
         </div>
 
         {/* MOCK: Certificates has no backing field. */}
-        <div className="flex w-full flex-1 flex-col gap-2 rounded-2xl border border-primary-100 bg-#FFFFFF p-4 min-h-23 lg:h-23">
+        <div className="flex w-full flex-1 flex-col gap-2 rounded-2xl border border-primary-100 bg-[#FFFFFF] p-4 min-h-23 lg:h-23">
           <span className="font-poppins text-base font-semibold leading-[120%] tracking-normal text-neutrals-700">
             Certificates
           </span>
