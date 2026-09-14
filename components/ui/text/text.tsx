@@ -41,6 +41,7 @@ type TextProps<T extends React.ElementType = "p"> = {
   as?: T;
   className?: string;
   children: React.ReactNode;
+  mobile?: boolean;
 } & VariantProps<typeof textVariants> &
   Omit<React.ComponentPropsWithoutRef<T>, "as" | "className">;
 
@@ -50,6 +51,7 @@ const Text = <T extends React.ElementType = "p">({
   weight,
   className,
   children,
+  mobile,
   ...props
 }: TextProps<T>) => {
   const Component = as ?? "p";

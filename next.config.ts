@@ -8,6 +8,18 @@ const nextConfig: NextConfig = {
       fullUrl: true,
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
+      },
+      {
+        protocol: "https",
+        hostname: "api.skoolpro.net",
+      },
+    ],
+  },
   async rewrites() {
     return [
       {

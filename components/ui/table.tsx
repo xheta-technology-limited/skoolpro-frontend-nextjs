@@ -26,7 +26,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
     <thead
       data-slot="table-header"
       className={cn(
-        "mb-1 py-2.5 px-4 bg-white text-[0.75rem] md:text-[0.875rem] font-semibold",
+        "mb-1 py-2.5 px-4 bg-white text-[0.75rem] font-semibold",
         "[&>tr>th:first-child]:rounded-tl-ml [&>tr>th:first-child]:border [&>tr>th:first-child]:border-r-0 [&>tr>th:first-child]:pl-4",
         "[&>tr>th:last-child]:rounded-tr-ml [&>tr>th:last-child]:border [&>tr>th:last-child]:border-l-0 [&>tr>th:last-child]:pr-4",
         "[&>tr>th]:relative [&>tr>th]:after:absolute [&>tr>th]:after:bottom-0 [&>tr>th]:after:left-0 [&>tr>th]:after:w-full [&>tr>th]:after:h-1 [&>tr>th]:after:bg-primary-bg [&>tr>th]:after:content-['']",
@@ -67,7 +67,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
       className={cn(
         "transition-colors hover:bg-white/50 bg-white has-aria-expanded:bg-white data-[state=selected]:bg-white/50",
         "[&>td]:border-b [&>td]:border-neutrals-100 [&>td:first-child]:pl-4 [&>td]:py-4",
-        "text-[0.875rem] md:text-[1rem]",
+        "text-[0.75rem] md:text-[0.875rem]",
         className
       )}
       {...props}
