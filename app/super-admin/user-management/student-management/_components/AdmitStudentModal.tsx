@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm, FormProvider, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -67,10 +67,7 @@ export default function AdmitStudentModal({
 
   const methods = useForm<AdmitStudentValues>({
     resolver: zodResolver(admitStudentSchema),
-    defaultValues: {
-      ...DEFAULT_ADMIT_STUDENT_VALUES,
-      admissionNumber: generateAdmissionNumber(),
-    },
+    defaultValues: DEFAULT_ADMIT_STUDENT_VALUES,
   });
 
   const { handleSubmit, reset, control, trigger, setValue, watch, formState } =
@@ -133,6 +130,13 @@ export default function AdmitStudentModal({
     }
     onOpenChange(nextOpen);
   }
+
+  useEffect(() => {
+    if (open) {
+      setAdmissionMode("auto");
+      setValue("admissionNumber", generateAdmissionNumber());
+    }
+  }, [open, setValue]);
 
   function handleAutoGenerate() {
     setAdmissionMode("auto");
