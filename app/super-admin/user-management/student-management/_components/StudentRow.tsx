@@ -31,28 +31,37 @@ export default function StudentRow({
     <button
       type="button"
       onClick={() => onClick?.(student)}
-      className={`group grid ${gridTemplate} min-h-[49px] w-full items-center border-b border-primary-100 px-4 py-3 text-left last:border-b-0 hover:bg-primary-bg sm:px-5 lg:px-6`}
+      className={`grid ${gridTemplate} min-h-[49px] w-full items-center border-b border-primary-100 px-4 py-3 text-left last:border-b-0 hover:bg-primary-bg sm:px-5 lg:px-6`}
     >
-      <span className="truncate text-[13px] text-neutrals-900 group-hover:text-primary">
+      <span className="truncate text-[13px] text-neutrals-900">
         {student.name}
       </span>
+
       <span className="truncate text-[13px] text-neutrals-700">
         {student.email}
       </span>
+
       <span className="truncate text-[13px] text-neutrals-700">
         {student.className}
       </span>
+
       <span className="truncate text-[13px] text-neutrals-700">
         {student.admissionStatus}
       </span>
+
       <span className="truncate text-[13px] text-neutrals-700">
         {student.guardian}
       </span>
+
       <span className="truncate text-[13px] text-neutrals-700">
         {student.admissionNumber}
       </span>
+
       <div className="justify-self-start">
-        <StatusBadge data={student.status} variant={STATUS_VARIANTS[student.status]} />
+        <StatusBadge
+          data={student.status}
+          variant={STATUS_VARIANTS[student.status]}
+        />
       </div>
     </button>
   );
