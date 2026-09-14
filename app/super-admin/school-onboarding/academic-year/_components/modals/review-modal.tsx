@@ -41,7 +41,7 @@ export default function ReviewAcademicYear() {
   const [maxYears, setMaxYears] = useState<number | undefined>(undefined);
 
   useEffect(() => {
-    setMaxYears(new Date().getFullYear() + 3);
+    setMaxYears(new Date().getFullYear() + 3); //seetting state in here is a bad idea. I don't even know why this is here, i think AI smoked some shit, but dude I'm tired, I haven't done anything exciting today, and i think i have malaria so I am NOT looking into this. I'm closing this fucking pc and going to do some other shit.
   }, []);
 
   const methods = useForm<AcademicYearFormData>({
