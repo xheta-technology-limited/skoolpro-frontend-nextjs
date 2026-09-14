@@ -9,9 +9,9 @@ import DetailCard from "@/components/common/detail-card/DetailCard";
 import RecordTableSection, {
   type RecordTableRow,
 } from "@/components/common/record-table-section/RecordTableSection";
-import { useGetStudent } from "@/features/student-management/api/get-student";
+import { useGetStudent } from "@/features/user-management/student-management/api/get-student";
 import { titleCase } from "@/lib/helpers/string-to-title-case";
-import type { StudentGuardian } from "@/features/student-management/types/student-detail-types";
+import type { StudentGuardian } from "@/features/user-management/student-management/types/student-detail-types";
 
 function getGuardianResponsibility(guardian: StudentGuardian): string {
   const { link } = guardian;

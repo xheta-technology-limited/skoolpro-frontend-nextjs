@@ -12,8 +12,8 @@ import { Input, Select, DatePicker } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
 import { SuccessModal } from "@/components/common";
 
-import { useCreateStudent } from "@/features/student-management/api/create-student";
-import type { CreateStudentPayload } from "@/features/student-management/types/create-student-types";
+import { useCreateStudent } from "@/features/user-management/student-management/api/create-student";
+import type { CreateStudentPayload } from "@/features/user-management/student-management/types/create-student-types";
 
 import {
   admitStudentSchema,

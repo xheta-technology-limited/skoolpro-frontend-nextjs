@@ -9,8 +9,8 @@ import Pagination from "@/components/common/pagination/pagination";
 import StudentRow, { type Student } from "./_components/StudentRow";
 import AdmitStudentModal from "./_components/AdmitStudentModal";
 import { useUserStore } from "@/features/school-profile/school-profile.store";
-import { useGetStudents } from "@/features/student-management/api/get-students";
-import type { StudentRecord } from "@/features/student-management/types/student-types";
+import { useGetStudents } from "@/features/user-management/student-management/api/get-students";
+import type { StudentRecord } from "@/features/user-management/student-management/types/student-types";
 import { useProgressRouter } from "@/features/page-loader";
 import SearchInput from "@/components/ui/form/input/search-input";
 
