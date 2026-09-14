@@ -10,6 +10,9 @@ import {
 } from "@/features/user-management/staff-management/schemas/add-staff-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useCreateStaff } from "@/features/user-management/staff-management/api/create-staff";
+import { useProgressRouter } from "@/features/page-loader";
+import { setFormErrors } from "@/lib/helpers/set-form-errors";
 
 export default function AddStaff() {
   const secondFormMethods = useForm<AddStaffSecondFormData>({
@@ -21,11 +24,34 @@ export default function AddStaff() {
     defaultValues: {},
     resolver: zodResolver(addStaffFirstSchema),
   });
+
+  const router = useProgressRouter();
+
+  const { mutate, isPending } = useCreateStaff();
+  const onSubmit = () => {
+    mutate(
+      { ...firstFormMethods.getValues(), ...secondFormMethods.getValues() },
+      {
+        onSuccess: () =>
+          router.push(
+            "/super-admin/user-management/staff-management?add-modal=true&current=success"
+          ),
+        onError: (res) => {
+          setFormErrors(secondFormMethods.setError, res.errors);
+          setFormErrors(firstFormMethods.setError, res.errors);
+        },
+      }
+    );
+  };
   return (
     <>
       <Suspense fallback={null}>
         <FirstModal methods={firstFormMethods} />
-        <SecondModal methods={secondFormMethods} />{" "}
+        <SecondModal
+          methods={secondFormMethods}
+          onSubmit={onSubmit}
+          isPending={isPending}
+        />{" "}
         {/**This should probably take in first modal's form thingies then combine and send to the api on submit */}
       </Suspense>
     </>
