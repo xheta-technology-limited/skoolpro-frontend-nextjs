@@ -95,7 +95,7 @@ const SecondModal = ({ methods, onSubmit, isPending }: Props) => {
               <Select name="campus_id" label="Main campus" options={[]} />
 
               <Input name="payroll_number" label="Payroll number" />
-              <Select name="work_location" label="Work location" options={[]} />
+              <Input name="work_location" label="Work location" />
 
               <DatePicker name="probation_end_date" label="Probation end" />
               <DatePicker name="contract_end_date" label="Contract end" />

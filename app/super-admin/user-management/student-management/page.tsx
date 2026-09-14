@@ -83,10 +83,7 @@ export default function StudentManagement() {
     search: searchTerm || undefined,
   });
 
-  const allStudents = useMemo(
-    () => (data ?? []).map(toStudentRowData),
-    [data]
-  );
+  const allStudents = useMemo(() => (data ?? []).map(toStudentRowData), [data]);
 
   const totalItems = allStudents.length;
 
@@ -144,9 +141,9 @@ export default function StudentManagement() {
 
           <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-5">
             <SearchInput
-                placeholder="Search name, email..."
-                className="flex-1"
-              />
+              placeholder="Search name, email..."
+              className="flex-1"
+            />
 
             <span className="shrink-0 text-[12px] text-neutrals-700 sm:whitespace-nowrap">
               Showing {rangeStart} – {rangeEnd} of {totalItems}
@@ -166,7 +163,9 @@ export default function StudentManagement() {
 
         {isPending ? (
           <section className="flex min-h-105 w-full items-center justify-center bg-[#FFFFFF] sm:min-h-131.25">
-            <span className="text-[13px] text-neutrals-500">Loading students…</span>
+            <span className="text-[13px] text-neutrals-500">
+              Loading students…
+            </span>
           </section>
         ) : isError ? (
           <section className="flex min-h-105 w-full flex-col items-center justify-center gap-4 bg-[#FFFFFF] sm:min-h-131.25">
