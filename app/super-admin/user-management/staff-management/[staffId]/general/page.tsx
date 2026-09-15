@@ -45,11 +45,8 @@ export default function ProfilePage() {
   const params = useParams<{ staffId: string }>();
   const userID = params.staffId;
 
-  const {
-    data: qualificationData,
-    isLoading: isQualificationsLoading,
-    error: qualificationError,
-  } = useListStaffQualifications(userID);
+  const { data: qualificationData, error: qualificationError } =
+    useListStaffQualifications(userID);
 
   const {
     data: profileData,
@@ -123,6 +120,13 @@ export default function ProfilePage() {
             <>
               <div className="flex h-full w-full items-center justify-center text-[13px] text-neutrals-500">
                 No qualifications
+              </div>
+            </>
+          )}
+          {qualificationError && (
+            <>
+              <div className="flex h-full w-full items-center justify-center text-[13px] text-neutrals-500">
+                {qualificationError.message}
               </div>
             </>
           )}
