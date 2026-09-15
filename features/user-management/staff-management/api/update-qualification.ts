@@ -1,32 +1,33 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { staffKeys } from "./query-keys";
-import type { QualificationFormData } from "../schemas/add-qualification-schema";
+import type { EditQualificationFormData } from "../schemas/edit-qualification-schema";
 import { ServerErrorResponse } from "@/types/api";
 import { StaffQualification } from "../types/api/qualification";
 
-type AddQualificationVariables = {
+type UpdateQualificationVariables = {
+  qualificationId: string;
   staffId: string;
-  data: QualificationFormData;
+  data: EditQualificationFormData;
 };
 
-export const addQualification = ({
-  staffId,
+export const updateQualification = ({
+  qualificationId,
   data,
-}: AddQualificationVariables): Promise<StaffQualification> => {
-  return api.post(`staff/${staffId}/qualifications`, data);
+}: UpdateQualificationVariables): Promise<StaffQualification> => {
+  return api.put(`staff-qualifications/${qualificationId}`, data);
 };
 
-export const useAddQualification = () => {
+export const useUpdateQualification = () => {
   const queryClient = useQueryClient();
 
   return useMutation<
     StaffQualification,
     ServerErrorResponse,
-    AddQualificationVariables
+    UpdateQualificationVariables
   >({
     mutationFn: (variables) => {
-      return addQualification(variables);
+      return updateQualification(variables);
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
