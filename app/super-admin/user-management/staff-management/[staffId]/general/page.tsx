@@ -17,6 +17,10 @@ import { useState } from "react";
 import QualificationModal from "./_components/qualification-modal";
 import ViewMode from "./_components/view-mode";
 import EditMode from "./_components/edit-mode";
+import { useGetStaff } from "@/features/user-management/staff-management/api/get-staff";
+import { useParams } from "next/navigation";
+import { Spinner } from "@/components/animations";
+import { NoData } from "@/components/icons";
 
 // Fallback helper — anything missing renders as "-"
 const fallback = (value?: string) =>
@@ -36,6 +40,46 @@ const qualificationsHeadRow = [
 export default function ProfilePage() {
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [isEditMode, setEditMode] = useState<boolean>(false);
+  const params = useParams<{ staffId: string }>();
+  const userID = params.staffId;
+
+  const {
+    data: profileData,
+    isPending,
+    error,
+    isRefetching,
+    refetch,
+  } = useGetStaff(userID);
+
+  if (isPending) {
+    return (
+      <div className="w-full flex items-center justify-center py-7">
+        <Spinner size={70} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-fit mx-auto">
+        {" "}
+        <NoData
+          variant="signal"
+          title="Something went Wrong"
+          subTitle={error.message || ""}
+          className="w-97.5 h-143.75"
+        />
+        <Button
+          className="mt-3 w-full"
+          loading={isRefetching}
+          onClick={() => refetch()}
+          size="lg"
+        >
+          Retry
+        </Button>
+      </div>
+    );
+  }
   return (
     <>
       <QualificationModal
@@ -46,7 +90,7 @@ export default function ProfilePage() {
         {isEditMode ? (
           <EditMode setEditMode={setEditMode} />
         ) : (
-          <ViewMode setEditMode={setEditMode} />
+          <ViewMode setEditMode={setEditMode} profileData={profileData} />
         )}
 
         {/* Qualifications */}

@@ -5,11 +5,13 @@ import { staff } from "../constants";
 import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/custom-button";
 import { Dispatch, SetStateAction } from "react";
+import { Staff } from "@/features/user-management/staff-management/types/api/staff";
 
 interface Props {
   setEditMode: Dispatch<SetStateAction<boolean>>;
+  profileData: Staff;
 }
-export default function ViewMode({ setEditMode }: Props) {
+export default function ViewMode({ setEditMode, profileData }: Props) {
   return (
     <>
       <div className="flex justify-between items-center">
