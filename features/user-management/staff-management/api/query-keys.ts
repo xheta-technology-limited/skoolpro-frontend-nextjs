@@ -4,4 +4,6 @@ export const staffKeys = {
   filteredByName: (name: string) => ["staff", "filtered", name] as const,
   qualifications: (staffId: string) =>
     ["staff", "qualifications", staffId] as const,
+  teachingProfile: (staffId: string) =>
+    ["staff", "teaching-profile", staffId] as const,
 };
