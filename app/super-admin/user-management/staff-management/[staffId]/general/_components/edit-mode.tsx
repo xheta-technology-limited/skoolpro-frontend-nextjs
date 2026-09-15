@@ -15,8 +15,9 @@ import {
 } from "@/features/user-management/staff-management/schemas/edit-staff-schema";
 import { useEditStaff } from "@/features/user-management/staff-management/api/edit-staff";
 import { toast } from "sonner";
-import { setFormErrors } from "@/lib/helpers";
+import { createSelectOptions, setFormErrors } from "@/lib/helpers";
 import { STAFF_CATEGORY_OPTIONS } from "@/features/user-management/staff-management";
+import { useListStaff } from "@/features/user-management/staff-management/api/list-staff";
 
 interface Props {
   setEditMode: Dispatch<SetStateAction<boolean>>;
@@ -32,6 +33,13 @@ export default function EditMode({ setEditMode, profileData }: Props) {
     defaultValues: getFormDefaultValues(profileData),
     resolver: zodResolver(editStaffSchema),
   });
+
+  const { isLoading: isStaffLoading, data: staffData } = useListStaff();
+  const staffOptions = createSelectOptions<Staff, "id", "full_name">(
+    staffData,
+    "id",
+    "full_name"
+  );
 
   const { mutate, isPending } = useEditStaff();
   const onSubmit = (data: EditStaffFormData) => {
@@ -95,10 +103,7 @@ export default function EditMode({ setEditMode, profileData }: Props) {
               <Input name="first_name" label="Enter first name" />
               <Input name="middle_name" label="Enter middle name" />
               <Input name="last_name" label="Enter last name" />
-              <Input
-                name="religion"
-                label="Enter religion(doesn't exist on bakend)"
-              />
+              <Input name="religion" label="Enter religion" />
               <Select
                 name="gender"
                 label="Select sex"
@@ -132,9 +137,12 @@ export default function EditMode({ setEditMode, profileData }: Props) {
                 label="Enter category"
                 options={STAFF_CATEGORY_OPTIONS}
               />
-              <Input
+              <Select
                 name="reporting_manager_id"
                 label="Enter reporting manager"
+                options={staffOptions || []}
+                isLoading={isStaffLoading}
+                isLoadingText="Loading"
               />
               <Select
                 name="employment_type"
@@ -173,7 +181,7 @@ export default function EditMode({ setEditMode, profileData }: Props) {
               <Input name="email" label="Enter email address" />
               <Input name="phone" label="Enter phone number" />
               <Input
-                name="emergency_phone_number"
+                name="emergency_phone"
                 label="Enter emergency phone number"
               />
             </div>

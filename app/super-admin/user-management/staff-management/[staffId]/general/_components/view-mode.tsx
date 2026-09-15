@@ -53,20 +53,32 @@ export default function ViewMode({ setEditMode, profileData }: Props) {
 
         {/* Detail fields grid */}
         <div className="rounded-ml bg-primary-bg min-w-76.75 gap-4 p-2 flex-1 grid grid-cols-2 content-start">
-          <DetailField label="First name" value={formatField(profileData.first_name)} />
+          <DetailField
+            label="First name"
+            value={formatField(profileData.first_name)}
+          />
           <DetailField
             label="Middle name"
             value={formatField(profileData.middle_name)}
           />
-          <DetailField label="Last name" value={formatField(profileData.last_name)} />
-          <DetailField label="Religion" value={formatField("no_backend_data")} />
+          <DetailField
+            label="Last name"
+            value={formatField(profileData.last_name)}
+          />
+          <DetailField
+            label="Religion"
+            value={formatField(profileData.religion)}
+          />
           <DetailField label="Sex" value={formatField(profileData.gender)} />
           <DetailField label="D.O.B" value={profileData.date_of_birth ?? "-"} />
           <DetailField
             label="Nationality"
             value={formatField(profileData.nationality)}
           />
-          <DetailField label="Marital status" value={formatField("no_backend_data")} />
+          <DetailField
+            label="Marital status"
+            value={formatField(profileData.marital_status)}
+          />
         </div>
       </div>
 
@@ -82,10 +94,13 @@ export default function ViewMode({ setEditMode, profileData }: Props) {
             label="National/Prof. No."
             value={profileData.national_reg_number ?? "-"}
           />
-          <DetailField label="Category" value={formatField(profileData.category)} />
+          <DetailField
+            label="Category"
+            value={formatField(profileData.category)}
+          />
           <DetailField
             label="Reporting manager"
-            value={profileData.reporting_manager_id ?? "-"}
+            value={formatField(profileData.reporting_manager?.full_name)}
           />
           <DetailField
             label="Employment type"
@@ -107,7 +122,7 @@ export default function ViewMode({ setEditMode, profileData }: Props) {
             label="Staff status"
             value={formatField(profileData.staff_status)}
           />
-          <DetailField label="Campus" value={profileData.campus_id ?? "-"} />
+          <DetailField label="Campus" value={profileData.campus ?? "-"} />
         </div>
       </div>
 
@@ -120,10 +135,13 @@ export default function ViewMode({ setEditMode, profileData }: Props) {
             value={formatField(profileData.address)}
           />
           <DetailField label="Email address" value={profileData.email ?? "-"} />
-          <DetailField label="Phone number" value={formatField(profileData.phone)} />
+          <DetailField
+            label="Phone number"
+            value={formatField(profileData.phone)}
+          />
           <DetailField
             label="Emergency phone number"
-            value={formatField("no_backend_data")}
+            value={formatField(profileData.emergency_phone)}
           />
         </div>
       </div>

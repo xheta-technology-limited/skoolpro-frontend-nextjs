@@ -41,4 +41,9 @@ export interface Staff {
   teaching_profile: Record<string, unknown> | null;
   created_at: string; // ISO datetime
   updated_at: string; // ISO datetime
+  campus: string | null;
+  reporting_manager: Staff | null;
+  religion: string | null;
+  marital_status: string | null;
+  emergency_phone: string | null;
 }
