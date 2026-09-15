@@ -24,6 +24,9 @@ import { NoData } from "@/components/icons";
 import { useListStaffQualifications } from "@/features/user-management/staff-management/api/list-qualifications";
 import { StaffQualification } from "@/features/user-management/staff-management/types/api/qualification";
 import { titleCase } from "@/lib/helpers";
+import { useDeleteStaff } from "@/features/user-management/staff-management/api/delete-staff";
+import FormModal from "@/components/ui/form-modal";
+import { useProgressRouter } from "@/features/page-loader";
 
 // Fallback helper — anything missing renders as "-"
 const fallback = (value?: string | null) =>
@@ -47,6 +50,8 @@ export default function ProfilePage() {
   const [isEditMode, setEditMode] = useState<boolean>(false);
   const params = useParams<{ staffId: string }>();
   const userID = params.staffId;
+  const [deleteModal, setDeleteModal] = useState(false);
+  const router = useProgressRouter();
 
   const openAddModal = () => {
     setEditingQualification(null);
@@ -60,6 +65,17 @@ export default function ProfilePage() {
 
   const { data: qualificationData, error: qualificationError } =
     useListStaffQualifications(userID);
+  const { mutate: deleteMutate, isPending: isDeletePending } = useDeleteStaff();
+
+  const onDelete = () => {
+    deleteMutate(
+      { staffId: userID },
+      {
+        onSuccess: () =>
+          router.push("/super-admin/user-management/staff-management"),
+      }
+    );
+  };
 
   const {
     data: profileData,
@@ -186,9 +202,9 @@ export default function ProfilePage() {
                         <TableCell>{fallback(qual.expiry_date)}</TableCell>
                         <TableCell>
                           <button
-                          className="border-grays-borders text-neutrals-700 px-2 py-1.5 border flex gap-1 items-center rounded-[12px]"
-                          onClick={() => openEditModal(qual)}
-                        >
+                            className="border-grays-borders text-neutrals-700 px-2 py-1.5 border flex gap-1 items-center rounded-[12px]"
+                            onClick={() => openEditModal(qual)}
+                          >
                             <Edit
                               size={14}
                               variant="Bulk"
@@ -219,8 +235,31 @@ export default function ProfilePage() {
             Disable user account
           </Button>
         </div>
+        <FormModal
+          onOpenChange={() => setDeleteModal(false)}
+          open={deleteModal}
+          title="Delete staff"
+        >
+          <>
+            <Text>Delete this staff account?</Text>
+            <div className="flex items-center justify-between">
+              <Button onClick={() => setDeleteModal(false)}>No</Button>
+              <Button
+                variant="secondary"
+                loading={isDeletePending}
+                onClick={onDelete}
+              >
+                <Text className="text-error-200">Yes, delete</Text>
+              </Button>
+            </div>
+          </>
+        </FormModal>
 
-        <Button variant="tertiary" className="m-auto">
+        <Button
+          onClick={() => setDeleteModal(true)}
+          variant="tertiary"
+          className="m-auto"
+        >
           <Text scale={"highlight"} className="text-error-200">
             Delete user account
           </Text>
