@@ -47,12 +47,11 @@ export default function DatePicker({
               selected={field.value ? new Date(field.value) : undefined}
               onSelect={(date) => {
                 if (!date) return;
-                const pad = (n: number) => String(n).padStart(2, "0");
-                field.onChange(
-                  `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-                    date.getDate()
-                  )}T00:00:00.000Z`
-                );
+                // Shift by the timezone offset so toISOString() keeps the same calendar day
+                const localISOString = new Date(
+                  date.getTime() - date.getTimezoneOffset() * 60000
+                ).toISOString();
+                field.onChange(localISOString);
               }}
             />
           }
