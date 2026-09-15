@@ -21,9 +21,11 @@ import { useGetStaff } from "@/features/user-management/staff-management/api/get
 import { useParams } from "next/navigation";
 import { Spinner } from "@/components/animations";
 import { NoData } from "@/components/icons";
+import { useListStaffQualifications } from "@/features/user-management/staff-management/api/list-qualifications";
+import { titleCase } from "@/lib/helpers";
 
 // Fallback helper — anything missing renders as "-"
-const fallback = (value?: string) =>
+const fallback = (value?: string | null) =>
   value && value.trim() !== "" ? value : "-";
 
 const qualificationsHeadRow = [
@@ -42,6 +44,12 @@ export default function ProfilePage() {
   const [isEditMode, setEditMode] = useState<boolean>(false);
   const params = useParams<{ staffId: string }>();
   const userID = params.staffId;
+
+  const {
+    data: qualificationData,
+    isLoading: isQualificationsLoading,
+    error: qualificationError,
+  } = useListStaffQualifications(userID);
 
   const {
     data: profileData,
@@ -111,56 +119,75 @@ export default function ProfilePage() {
             </Button>
           </div>
 
-          <div className="rounded-ml bg-primary-bg p-2">
-            <TableWrapper>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    {qualificationsHeadRow.map((col, index) => {
-                      const isMiddle =
-                        index != 0 && index != qualificationsHeadRow.length - 1;
-                      const style = isMiddle
-                        ? "border-t-[1px] border-b-[1px]"
-                        : "";
-                      return (
-                        <TableHead className={style} key={col}>
-                          {col}
-                        </TableHead>
-                      );
-                    })}
-                  </TableRow>
-                </TableHeader>
-
-                <TableBody>
-                  {qualifications.map((qual) => (
-                    <TableRow key={qual.id}>
-                      <TableCell>{fallback(qual.type)}</TableCell>
-                      <TableCell>{fallback(qual.qualification)}</TableCell>
-                      <TableCell className="truncate max-w-30">
-                        {fallback(qual.institution)}
-                      </TableCell>
-                      <TableCell>{fallback(qual.awarded)}</TableCell>
-                      <TableCell>{fallback(qual.grade)}</TableCell>
-                      <TableCell>{fallback(qual.regNo)}</TableCell>
-                      <TableCell>{fallback(qual.expires)}</TableCell>
-                      <TableCell>
-                        <button className="border-grays-borders text-neutrals-700 px-2 py-1.5 border flex gap-1 items-center rounded-[12px]">
-                          <Edit
-                            size={14}
-                            variant="Bulk"
-                            className="text-neutrals-800"
-                          />
-                          <Text scale={"caption"} className="text-neutrals-700">
-                            Edit
-                          </Text>
-                        </button>
-                      </TableCell>
+          {qualificationData && qualificationData.length === 0 && (
+            <>
+              <div className="flex h-full w-full items-center justify-center text-[13px] text-neutrals-500">
+                No qualifications
+              </div>
+            </>
+          )}
+          {qualificationData && qualificationData.length > 0 && (
+            <div className="rounded-ml bg-primary-bg p-2">
+              <TableWrapper>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {qualificationsHeadRow.map((col, index) => {
+                        const isMiddle =
+                          index != 0 &&
+                          index != qualificationsHeadRow.length - 1;
+                        const style = isMiddle
+                          ? "border-t-[1px] border-b-[1px]"
+                          : "";
+                        return (
+                          <TableHead className={style} key={col}>
+                            {col}
+                          </TableHead>
+                        );
+                      })}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableWrapper>
-          </div>
+                  </TableHeader>
+
+                  <TableBody>
+                    {qualificationData.map((qual) => (
+                      <TableRow key={qual.id}>
+                        <TableCell>{fallback(titleCase(qual.type))}</TableCell>
+                        <TableCell>
+                          {fallback(titleCase(qual.qualification))}
+                        </TableCell>
+                        <TableCell className="truncate max-w-30">
+                          {fallback(qual.institution)}
+                        </TableCell>
+                        <TableCell>
+                          {fallback(qual.award_date?.split("-")[0])}
+                        </TableCell>
+                        <TableCell>{fallback(qual.grade)}</TableCell>
+                        <TableCell>
+                          {fallback(qual.professional_registration)}
+                        </TableCell>
+                        <TableCell>{fallback(qual.expiry_date)}</TableCell>
+                        <TableCell>
+                          <button className="border-grays-borders text-neutrals-700 px-2 py-1.5 border flex gap-1 items-center rounded-[12px]">
+                            <Edit
+                              size={14}
+                              variant="Bulk"
+                              className="text-neutrals-800"
+                            />
+                            <Text
+                              scale={"caption"}
+                              className="text-neutrals-700"
+                            >
+                              Edit
+                            </Text>
+                          </button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableWrapper>
+            </div>
+          )}
         </div>
 
         <div className="flex gap-6 *:flex-1">

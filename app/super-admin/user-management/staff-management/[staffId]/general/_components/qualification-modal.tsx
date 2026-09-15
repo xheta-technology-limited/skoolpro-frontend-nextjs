@@ -3,12 +3,16 @@ import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/custom-button";
 import { DatePicker, Input, Select } from "@/components/ui/form";
 import FormModal from "@/components/ui/form-modal";
+import { useAddQualification } from "@/features/user-management/staff-management/api/add-qualification";
 import {
   QualificationFormData,
   qualificationSchema,
 } from "@/features/user-management/staff-management/schemas/add-qualification-schema";
+import { setFormErrors } from "@/lib/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useParams } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 interface Props {
   onOpenChange: () => void;
@@ -19,9 +23,21 @@ export default function QualificationModal({ open, onOpenChange }: Props) {
     defaultValues: {},
     resolver: zodResolver(qualificationSchema),
   });
+  const { staffId } = useParams<{ staffId: string }>();
 
-  const onSubmit = () => {
-    alert("Not implemented");
+  const { mutate, isPending } = useAddQualification();
+
+  const onSubmit = (data: QualificationFormData) => {
+    mutate(
+      { staffId: staffId, data: data },
+      {
+        onSuccess: () => {
+          toast.success("Qualification added");
+          onOpenChange();
+        },
+        onError: (res) => setFormErrors(methods.setError, res.errors),
+      }
+    );
   };
   return (
     <FormModal
@@ -65,7 +81,11 @@ export default function QualificationModal({ open, onOpenChange }: Props) {
           <Button onClick={onOpenChange} variant="secondary">
             Cancel
           </Button>
-          <Button type="submit" form="add-qualification-form">
+          <Button
+            loading={isPending}
+            type="submit"
+            form="add-qualification-form"
+          >
             Save
           </Button>
         </div>
