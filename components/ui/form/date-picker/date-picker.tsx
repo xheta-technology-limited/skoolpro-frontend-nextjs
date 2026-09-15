@@ -14,7 +14,12 @@ type Props = {
   maxYears?: number;
 };
 
-export default function DatePicker({ name, label, isWarning, maxYears }: Props) {
+export default function DatePicker({
+  name,
+  label,
+  isWarning,
+  maxYears,
+}: Props) {
   const {
     control,
     formState: { errors },
@@ -42,7 +47,12 @@ export default function DatePicker({ name, label, isWarning, maxYears }: Props) 
               selected={field.value ? new Date(field.value) : undefined}
               onSelect={(date) => {
                 if (!date) return;
-                field.onChange(date.toISOString());
+                const pad = (n: number) => String(n).padStart(2, "0");
+                field.onChange(
+                  `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+                    date.getDate()
+                  )}T00:00:00.000Z`
+                );
               }}
             />
           }
