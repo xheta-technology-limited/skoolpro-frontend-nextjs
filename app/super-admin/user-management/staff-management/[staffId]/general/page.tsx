@@ -88,7 +88,7 @@ export default function ProfilePage() {
       />
       <div className="flex flex-col gap-8 w-full">
         {isEditMode ? (
-          <EditMode setEditMode={setEditMode} />
+          <EditMode setEditMode={setEditMode} profileData={profileData} />
         ) : (
           <ViewMode setEditMode={setEditMode} profileData={profileData} />
         )}

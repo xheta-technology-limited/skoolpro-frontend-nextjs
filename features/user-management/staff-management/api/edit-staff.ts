@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { staffKeys } from "./query-keys";
-import type { EditStaffFormData } from "../schemas/edit-staff-schema";
 import { ServerErrorResponse } from "@/types/api";
 import { Staff } from "../types/api/staff";
+import { EditStaffFormData } from "../schemas/edit-staff-schema";
 
 type EditStaffVariables = {
   id: string;

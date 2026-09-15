@@ -7,15 +7,46 @@ import { Input, Select } from "@/components/ui/form";
 import { FormProvider, useForm } from "react-hook-form";
 import { GENDER_SELECT_OPTIONS } from "@/config/constants";
 import { Dispatch, SetStateAction } from "react";
+import { Staff } from "@/features/user-management/staff-management/types/api/staff";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  EditStaffFormData,
+  editStaffSchema,
+} from "@/features/user-management/staff-management/schemas/edit-staff-schema";
+import { useEditStaff } from "@/features/user-management/staff-management/api/edit-staff";
+import { toast } from "sonner";
+import { setFormErrors } from "@/lib/helpers";
+import { STAFF_CATEGORY_OPTIONS } from "@/features/user-management/staff-management";
 
 interface Props {
   setEditMode: Dispatch<SetStateAction<boolean>>;
+  profileData: Staff;
 }
-export default function EditMode({ setEditMode }: Props) {
-  const methods = useForm({});
-  const onSubmit = () => {
-    alert("Saved successfully");
-    setEditMode(false);
+const getFormDefaultValues = (data: Staff): EditStaffFormData =>
+  Object.fromEntries(
+    Object.entries(data).map(([key, value]) => [key, value ?? undefined])
+  ) as unknown as EditStaffFormData;
+
+export default function EditMode({ setEditMode, profileData }: Props) {
+  const methods = useForm<EditStaffFormData>({
+    defaultValues: getFormDefaultValues(profileData),
+    resolver: zodResolver(editStaffSchema),
+  });
+
+  const { mutate, isPending } = useEditStaff();
+  const onSubmit = (data: EditStaffFormData) => {
+    mutate(
+      { id: profileData.id, data: data },
+      {
+        onSuccess: () => {
+          toast.success("Updated successfully");
+          setEditMode(false);
+        },
+        onError: (res) => {
+          setFormErrors(methods.setError, res?.errors);
+        },
+      }
+    );
   };
   return (
     <>
@@ -35,6 +66,7 @@ export default function EditMode({ setEditMode }: Props) {
             size="sm"
             type="submit"
             form="edit-user-form"
+            loading={isPending}
           >
             Save
           </Button>
@@ -95,7 +127,11 @@ export default function EditMode({ setEditMode }: Props) {
                 name="national_reg_number"
                 label="Enter national/prof. no."
               />
-              <Input name="category" label="Enter category" />
+              <Select
+                name="category"
+                label="Enter category"
+                options={STAFF_CATEGORY_OPTIONS}
+              />
               <Input
                 name="reporting_manager_id"
                 label="Enter reporting manager"
