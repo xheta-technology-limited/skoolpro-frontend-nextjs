@@ -15,7 +15,7 @@ export const useListStaff = (
 ) => {
   return useQuery<Staff[], ServerErrorResponse>({
     queryFn: () => listStaff(name),
-    queryKey: name ? staffKeys.detail(name) : staffKeys.all,
+    queryKey: name ? staffKeys.filteredByName(name) : staffKeys.all,
     ...options,
   });
 };
