@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Suspense } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,26 @@ type DashboardSidebarProps = {
 };
 
 export default function Sidebar({
+  items = dashboardNavigation,
+  className,
+}: DashboardSidebarProps) {
+  return (
+    <Suspense
+      fallback={
+        <aside
+          className={cn(
+            "flex h-screen py-4 md:py-8 w-16 md:w-72 flex-col bg-white",
+            className
+          )}
+        />
+      }
+    >
+      <SidebarContent items={items} className={className} />
+    </Suspense>
+  );
+}
+
+function SidebarContent({
   items = dashboardNavigation,
   className,
 }: DashboardSidebarProps) {
