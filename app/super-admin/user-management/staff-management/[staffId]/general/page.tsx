@@ -22,6 +22,7 @@ import { useParams } from "next/navigation";
 import { Spinner } from "@/components/animations";
 import { NoData } from "@/components/icons";
 import { useListStaffQualifications } from "@/features/user-management/staff-management/api/list-qualifications";
+import { StaffQualification } from "@/features/user-management/staff-management/types/api/qualification";
 import { titleCase } from "@/lib/helpers";
 
 // Fallback helper — anything missing renders as "-"
@@ -41,9 +42,21 @@ const qualificationsHeadRow = [
 
 export default function ProfilePage() {
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
+  const [editingQualification, setEditingQualification] =
+    useState<StaffQualification | null>(null);
   const [isEditMode, setEditMode] = useState<boolean>(false);
   const params = useParams<{ staffId: string }>();
   const userID = params.staffId;
+
+  const openAddModal = () => {
+    setEditingQualification(null);
+    setModalOpen(true);
+  };
+
+  const openEditModal = (qualification: StaffQualification) => {
+    setEditingQualification(qualification);
+    setModalOpen(true);
+  };
 
   const { data: qualificationData, error: qualificationError } =
     useListStaffQualifications(userID);
@@ -90,6 +103,7 @@ export default function ProfilePage() {
       <QualificationModal
         open={isModalOpen}
         onOpenChange={() => setModalOpen(false)}
+        qualification={editingQualification}
       />
       <div className="flex flex-col gap-8 w-full">
         {isEditMode ? (
@@ -105,7 +119,7 @@ export default function ProfilePage() {
             <Button
               variant="secondary"
               onClick={() => {
-                setModalOpen(true);
+                openAddModal();
               }}
               size="sm"
               leftIcon={
@@ -171,7 +185,10 @@ export default function ProfilePage() {
                         </TableCell>
                         <TableCell>{fallback(qual.expiry_date)}</TableCell>
                         <TableCell>
-                          <button className="border-grays-borders text-neutrals-700 px-2 py-1.5 border flex gap-1 items-center rounded-[12px]">
+                          <button
+                          className="border-grays-borders text-neutrals-700 px-2 py-1.5 border flex gap-1 items-center rounded-[12px]"
+                          onClick={() => openEditModal(qual)}
+                        >
                             <Edit
                               size={14}
                               variant="Bulk"

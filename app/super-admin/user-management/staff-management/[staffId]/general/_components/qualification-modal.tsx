@@ -4,46 +4,92 @@ import { Button } from "@/components/ui/custom-button";
 import { DatePicker, Input, Select } from "@/components/ui/form";
 import FormModal from "@/components/ui/form-modal";
 import { useAddQualification } from "@/features/user-management/staff-management/api/add-qualification";
+import { useUpdateQualification } from "@/features/user-management/staff-management/api/update-qualification";
 import {
   QualificationFormData,
   qualificationSchema,
 } from "@/features/user-management/staff-management/schemas/add-qualification-schema";
+import { editQualificationSchema } from "@/features/user-management/staff-management/schemas/edit-qualification-schema";
+import { StaffQualification } from "@/features/user-management/staff-management/types/api/qualification";
 import { setFormErrors } from "@/lib/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams } from "next/navigation";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm, Resolver } from "react-hook-form";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 interface Props {
   onOpenChange: () => void;
   open: boolean;
+  qualification?: StaffQualification | null;
 }
-export default function QualificationModal({ open, onOpenChange }: Props) {
-  const methods = useForm<QualificationFormData>({
-    defaultValues: {},
-    resolver: zodResolver(qualificationSchema),
-  });
+
+const toIsoDatetime = (date?: string | null): string | undefined => {
+  if (!date) return undefined;
+  return date.includes("T") ? date : `${date}T00:00:00.000Z`;
+};
+
+const toFormDefaults = (
+  qualification?: StaffQualification | null
+): QualificationFormData => ({
+  type: qualification?.type ?? "",
+  qualification: qualification?.qualification ?? "",
+  institution: qualification?.institution ?? undefined,
+  grade: qualification?.grade ?? undefined,
+  professional_registration:
+    qualification?.professional_registration ?? undefined,
+  award_date: toIsoDatetime(qualification?.award_date),
+  expiry_date: toIsoDatetime(qualification?.expiry_date),
+});
+
+export default function QualificationModal({
+  open,
+  onOpenChange,
+  qualification,
+}: Props) {
+  const isEdit = !!qualification;
   const { staffId } = useParams<{ staffId: string }>();
 
-  const { mutate, isPending } = useAddQualification();
+  const methods = useForm<QualificationFormData>({
+    defaultValues: toFormDefaults(qualification),
+    resolver: zodResolver(
+      isEdit ? editQualificationSchema : qualificationSchema
+    ) as Resolver<QualificationFormData>,
+  });
+
+  useEffect(() => {
+    if (open) methods.reset(toFormDefaults(qualification));
+  }, [open, qualification]);
+
+  const { mutate: addMutate, isPending: isAddPending } =
+    useAddQualification();
+  const { mutate: updateMutate, isPending: isUpdatePending } =
+    useUpdateQualification();
+
+  const isPending = isEdit ? isUpdatePending : isAddPending;
 
   const onSubmit = (data: QualificationFormData) => {
-    mutate(
-      { staffId: staffId, data: data },
-      {
-        onSuccess: () => {
-          toast.success("Qualification added");
-          onOpenChange();
-        },
-        onError: (res) => setFormErrors(methods.setError, res.errors),
-      }
-    );
+    const onSuccess = () => {
+      toast.success(isEdit ? "Qualification updated" : "Qualification added");
+      onOpenChange();
+    };
+    const onError = (res: { message: string; errors?: Record<string, unknown> }) =>
+      setFormErrors(methods.setError, res.errors);
+
+    if (qualification) {
+      updateMutate(
+        { qualificationId: qualification.id, staffId, data },
+        { onSuccess, onError }
+      );
+    } else {
+      addMutate({ staffId, data }, { onSuccess, onError });
+    }
   };
   return (
     <FormModal
       open={open}
       onOpenChange={onOpenChange}
-      title="Add Qualification"
+      title={isEdit ? "Edit Qualification" : "Add Qualification"}
     >
       <div className="flex flex-col gap-4">
         <Text scale={"content"} className="text-neutrals-700">
