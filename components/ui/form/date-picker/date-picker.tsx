@@ -14,7 +14,12 @@ type Props = {
   maxYears?: number;
 };
 
-export default function DatePicker({ name, label, isWarning, maxYears }: Props) {
+export default function DatePicker({
+  name,
+  label,
+  isWarning,
+  maxYears,
+}: Props) {
   const {
     control,
     formState: { errors },
@@ -42,7 +47,11 @@ export default function DatePicker({ name, label, isWarning, maxYears }: Props) 
               selected={field.value ? new Date(field.value) : undefined}
               onSelect={(date) => {
                 if (!date) return;
-                field.onChange(date.toISOString());
+                // Shift by the timezone offset so toISOString() keeps the same calendar day
+                const localISOString = new Date(
+                  date.getTime() - date.getTimezoneOffset() * 60000
+                ).toISOString();
+                field.onChange(localISOString);
               }}
             />
           }
