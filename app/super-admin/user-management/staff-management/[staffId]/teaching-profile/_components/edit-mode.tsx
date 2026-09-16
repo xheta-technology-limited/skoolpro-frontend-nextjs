@@ -25,8 +25,14 @@ interface Props {
   setEditMode: Dispatch<SetStateAction<boolean>>;
   profileData: TeacherProfile;
   subjectIds: string[];
+  sectionIds: string[];
 }
-export default function EditMode({ setEditMode, profileData, subjectIds }: Props) {
+export default function EditMode({
+  setEditMode,
+  profileData,
+  subjectIds,
+  sectionIds,
+}: Props) {
   const { staffId } = useParams<{ staffId: string }>();
   const { mutate, isPending } = useUpdateTeachingProfile();
   const { data: classesData, isPending: isClassesPending } =
@@ -57,6 +63,7 @@ export default function EditMode({ setEditMode, profileData, subjectIds }: Props
         ? Number(data.max_teaching_load)
         : undefined,
       subject_ids: subjectIds,
+      section_ids: sectionIds,
     };
 
     mutate(

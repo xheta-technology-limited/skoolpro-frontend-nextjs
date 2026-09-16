@@ -11,8 +11,6 @@ import { Spinner } from "@/components/animations";
 import { NoData } from "@/components/icons";
 import { Button } from "@/components/ui/custom-button";
 
-const dummyClasses: { id: string; name: string }[] = [];
-
 export default function TeachingProfile() {
   const params = useParams<{ staffId: string }>();
   const staffId = params.staffId;
@@ -27,11 +25,13 @@ export default function TeachingProfile() {
 
   const [isEditMode, setEditMode] = useState<boolean>(false);
   const [subjectIds, setSubjectIds] = useState<string[]>([]);
+  const [sectionIds, setSectionIds] = useState<string[]>([]);
   const [prevProfile, setPrevProfile] = useState(profileData);
 
   if (profileData !== prevProfile) {
     setPrevProfile(profileData);
     setSubjectIds(profileData?.subject_ids ?? []);
+    setSectionIds(profileData?.section_ids ?? []);
   }
 
   if (isPending) {
@@ -70,6 +70,7 @@ export default function TeachingProfile() {
           setEditMode={setEditMode}
           profileData={profileData}
           subjectIds={subjectIds}
+          sectionIds={sectionIds}
         />
       ) : (
         <ViewMode setEditMode={setEditMode} profileData={profileData} />
@@ -81,7 +82,11 @@ export default function TeachingProfile() {
           onAddSubjects={setSubjectIds}
           isEditMode={isEditMode}
         />
-        <ClassesTaught classes={dummyClasses} isEditMode={isEditMode} />
+        <ClassesTaught
+          selectedClassIds={sectionIds}
+          onAddClasses={setSectionIds}
+          isEditMode={isEditMode}
+        />
       </div>
     </>
   );
