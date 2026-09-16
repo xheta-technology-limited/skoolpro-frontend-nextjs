@@ -18,6 +18,10 @@ export const armKeys = {
   detail: (id: string) => ["level-arms", id] as const,
 };
 
+export const classSectionKeys = {
+  all: ["class-sections"] as const,
+};
+
 export const educationStageKeys = {
   all: ["education-stage"] as const,
   detail: (id: string) => ["education-stage", id] as const,
