@@ -11,12 +11,9 @@ import { Spinner } from "@/components/animations";
 import { NoData } from "@/components/icons";
 import { Button } from "@/components/ui/custom-button";
 
-const dummySubjects = [];
-
-const dummyClasses = [];
+const dummyClasses: { id: string; name: string }[] = [];
 
 export default function TeachingProfile() {
-  const [isEditMode, setEditMode] = useState<boolean>(false);
   const params = useParams<{ staffId: string }>();
   const staffId = params.staffId;
 
@@ -27,6 +24,15 @@ export default function TeachingProfile() {
     isRefetching,
     refetch,
   } = useGetTeachingProfile(staffId);
+
+  const [isEditMode, setEditMode] = useState<boolean>(false);
+  const [subjectIds, setSubjectIds] = useState<string[]>([]);
+  const [prevProfile, setPrevProfile] = useState(profileData);
+
+  if (profileData !== prevProfile) {
+    setPrevProfile(profileData);
+    setSubjectIds(profileData?.subject_ids ?? []);
+  }
 
   if (isPending) {
     return (
@@ -60,13 +66,21 @@ export default function TeachingProfile() {
   return (
     <>
       {isEditMode ? (
-        <EditMode setEditMode={setEditMode} profileData={profileData} />
+        <EditMode
+          setEditMode={setEditMode}
+          profileData={profileData}
+          subjectIds={subjectIds}
+        />
       ) : (
         <ViewMode setEditMode={setEditMode} profileData={profileData} />
       )}
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4 lg:gap-8 p-2">
-        <SubjectsTaught subjects={dummySubjects} isEditMode={isEditMode} />
+        <SubjectsTaught
+          selectedSubjectIds={subjectIds}
+          onAddSubjects={setSubjectIds}
+          isEditMode={isEditMode}
+        />
         <ClassesTaught classes={dummyClasses} isEditMode={isEditMode} />
       </div>
     </>

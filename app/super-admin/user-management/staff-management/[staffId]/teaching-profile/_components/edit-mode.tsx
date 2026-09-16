@@ -24,8 +24,9 @@ import { useListClassSections } from "@/features/academic-year/api/list-class-se
 interface Props {
   setEditMode: Dispatch<SetStateAction<boolean>>;
   profileData: TeacherProfile;
+  subjectIds: string[];
 }
-export default function EditMode({ setEditMode, profileData }: Props) {
+export default function EditMode({ setEditMode, profileData, subjectIds }: Props) {
   const { staffId } = useParams<{ staffId: string }>();
   const { mutate, isPending } = useUpdateTeachingProfile();
   const { data: classesData, isPending: isClassesPending } =
@@ -55,6 +56,7 @@ export default function EditMode({ setEditMode, profileData }: Props) {
       max_teaching_load: data.max_teaching_load
         ? Number(data.max_teaching_load)
         : undefined,
+      subject_ids: subjectIds,
     };
 
     mutate(
