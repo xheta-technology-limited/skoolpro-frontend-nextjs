@@ -9,6 +9,8 @@ interface Props {
   setEditMode: Dispatch<SetStateAction<boolean>>;
   profileData: TeacherProfile;
 }
+
+//TODO: FIX THIS WHOLE COMPONENT NOT DISPLAYING THE FUCKING DATA GOTTEN FROM THE BACKEND
 export default function ViewMode({ setEditMode, profileData }: Props) {
   return (
     <div className="flex flex-col">

@@ -9,34 +9,35 @@ import { Spinner } from "@/components/animations";
 import { AddSquare } from "iconsax-reactjs";
 import Item from "./item";
 import { useListSubjects } from "@/features/academic-year/api/list-subjects";
+import { Subject } from "@/features/user-management/staff-management/types/api/teaching-profile";
 
 interface Props {
-  selectedSubjectIds: string[];
-  onAddSubjects: (subjectIds: string[]) => void;
+  selectedSubjects: Subject[];
+  onAddSubjects: (subjects: Subject[]) => void;
   isEditMode: boolean;
 }
 export default function SubjectsTaught({
-  selectedSubjectIds,
+  selectedSubjects,
   onAddSubjects,
   isEditMode,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const { data: subjects, isPending } = useListSubjects();
 
-  const taughtSubjects = (subjects ?? []).filter((subject) =>
-    selectedSubjectIds.includes(subject.id)
-  );
-
   const methods = useForm<{ subject_ids: string[] }>({
-    defaultValues: { subject_ids: selectedSubjectIds },
+    defaultValues: { subject_ids: selectedSubjects.map((sub) => sub.id) },
   });
 
   useEffect(() => {
-    if (isOpen) methods.reset({ subject_ids: selectedSubjectIds });
-  }, [isOpen, selectedSubjectIds, methods]);
+    if (isOpen) methods.reset({ subject_ids: selectedSubjects.map((sub) => sub.id) });
+  }, [isOpen, selectedSubjects, methods]);
 
   const onSubmit = (data: { subject_ids: string[] }) => {
-    onAddSubjects(data.subject_ids);
+    onAddSubjects(
+      (subjects ?? [])
+        .filter((subject) => data.subject_ids.includes(subject.id))
+        .map((subject) => ({ id: subject.id, name: subject.name }))
+    );
     setIsOpen(false);
   };
 
@@ -60,13 +61,13 @@ export default function SubjectsTaught({
       </div>
 
       <div className="rounded-ml bg-primary-bg gap-4 p-2 flex flex-col">
-        {taughtSubjects.map((subject) => (
+        {selectedSubjects.map((subject) => (
           <Item
             key={subject.id}
             label={subject.name}
             onButtonClick={() =>
               onAddSubjects(
-                selectedSubjectIds.filter((id) => id !== subject.id)
+                selectedSubjects.filter((sub) => sub.id !== subject.id)
               )
             }
           />

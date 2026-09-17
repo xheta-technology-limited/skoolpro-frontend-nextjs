@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/custom-button";
 import { Text } from "@/components/ui";
@@ -9,34 +9,44 @@ import { Spinner } from "@/components/animations";
 import { AddSquare } from "iconsax-reactjs";
 import Item from "./item";
 import { useListClassSections } from "@/features/academic-year/api/list-class-sections";
+import { Section } from "@/features/user-management/staff-management/types/api/teaching-profile";
 
 interface Props {
-  selectedClassIds: string[];
-  onAddClasses: (classIds: string[]) => void;
+  selectedClasses: Section[];
+  onAddClasses: (classes: Section[]) => void;
   isEditMode: boolean;
 }
 export default function ClassesTaught({
-  selectedClassIds,
+  selectedClasses,
   onAddClasses,
   isEditMode,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const { data: sections, isPending } = useListClassSections();
 
-  const taughtClasses = (sections ?? []).filter((section) =>
-    selectedClassIds.includes(section.id)
-  );
-
   const methods = useForm<{ section_ids: string[] }>({
-    defaultValues: { section_ids: selectedClassIds },
+    defaultValues: { section_ids: selectedClasses.map((sec) => sec.id) },
   });
 
   useEffect(() => {
-    if (isOpen) methods.reset({ section_ids: selectedClassIds });
-  }, [isOpen, selectedClassIds, methods]);
+    if (isOpen)
+      methods.reset({ section_ids: selectedClasses.map((sec) => sec.id) });
+  }, [isOpen, selectedClasses, methods]);
+
+  // useEffect(() => {
+  //   console.log("le classes: ", selectedClasses);
+  // }, [selectedClasses]);
 
   const onSubmit = (data: { section_ids: string[] }) => {
-    onAddClasses(data.section_ids);
+    onAddClasses(
+      (sections ?? [])
+        .filter((section) => data.section_ids.includes(section.id))
+        .map((section) => ({
+          id: section.id,
+          name: section.name,
+          code: section.code,
+        }))
+    );
     setIsOpen(false);
   };
 
@@ -60,13 +70,13 @@ export default function ClassesTaught({
       </div>
 
       <div className="rounded-ml bg-primary-bg gap-4 p-2 flex flex-col">
-        {taughtClasses.map((section) => (
+        {selectedClasses.map((section) => (
           <Item
             key={section.id}
             label={section.name}
             onButtonClick={() =>
               onAddClasses(
-                selectedClassIds.filter((id) => id !== section.id)
+                selectedClasses.filter((sec) => sec.id !== section.id)
               )
             }
           />

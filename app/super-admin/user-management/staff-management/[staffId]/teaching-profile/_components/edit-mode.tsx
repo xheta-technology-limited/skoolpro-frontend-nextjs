@@ -11,11 +11,13 @@ import {
   EditTeacherFormData,
   editTeacherSchema,
 } from "@/features/user-management/staff-management/schemas/edit-teacher-profile-schema";
+import { useUpdateTeachingProfile } from "@/features/user-management/staff-management/api/update-teaching-profile";
 import {
+  Section,
+  Subject,
+  TeacherProfile,
   UpdateTeachingProfileData,
-  useUpdateTeachingProfile,
-} from "@/features/user-management/staff-management/api/update-teaching-profile";
-import { TeacherProfile } from "@/features/user-management/staff-management/types/api/teaching-profile";
+} from "@/features/user-management/staff-management/types/api/teaching-profile";
 import { createSelectOptions, setFormErrors } from "@/lib/helpers";
 import { useListLevels } from "@/features/academic-year/api/list-levels";
 import { ClassSection, EducationLevel } from "@/features/academic-year";
@@ -24,13 +26,13 @@ import { useListClassSections } from "@/features/academic-year/api/list-class-se
 interface Props {
   setEditMode: Dispatch<SetStateAction<boolean>>;
   profileData: TeacherProfile;
-  subjectIds: string[];
-  sectionIds: string[];
+  subjects: Subject[];
+  sectionIds: Section[];
 }
 export default function EditMode({
   setEditMode,
   profileData,
-  subjectIds,
+  subjects,
   sectionIds,
 }: Props) {
   const { staffId } = useParams<{ staffId: string }>();
@@ -58,12 +60,15 @@ export default function EditMode({
 
   const onSubmit = (data: EditTeacherFormData) => {
     const payload: UpdateTeachingProfileData = {
-      ...data,
+      teacher_registration_number: data.teacher_registration_number,
+      form_class_section_id: data.form_class_section_id,
       max_teaching_load: data.max_teaching_load
         ? Number(data.max_teaching_load)
         : undefined,
-      subject_ids: subjectIds,
-      section_ids: sectionIds,
+      specialist_skills: data.specialist_skills,
+      curriculum_experience: data.curriculum_experience,
+      subjects,
+      sections: sectionIds,
     };
 
     mutate(

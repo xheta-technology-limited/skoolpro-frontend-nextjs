@@ -1,7 +1,6 @@
 "use client";
-
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ViewMode from "./_components/view-mode";
 import EditMode from "./_components/edit-mode";
 import SubjectsTaught from "./_components/subjects-taught";
@@ -10,6 +9,10 @@ import { useGetTeachingProfile } from "@/features/user-management/staff-manageme
 import { Spinner } from "@/components/animations";
 import { NoData } from "@/components/icons";
 import { Button } from "@/components/ui/custom-button";
+import {
+  Section,
+  Subject,
+} from "@/features/user-management/staff-management/types/api/teaching-profile";
 
 export default function TeachingProfile() {
   const params = useParams<{ staffId: string }>();
@@ -24,16 +27,26 @@ export default function TeachingProfile() {
   } = useGetTeachingProfile(staffId);
 
   const [isEditMode, setEditMode] = useState<boolean>(false);
-  const [subjectIds, setSubjectIds] = useState<string[]>([]);
-  const [sectionIds, setSectionIds] = useState<string[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [sectionIds, setSectionIds] = useState<Section[]>([]);
   const [prevProfile, setPrevProfile] = useState(profileData);
 
   if (profileData !== prevProfile) {
     setPrevProfile(profileData);
-    setSubjectIds(profileData?.subject_ids ?? []);
-    setSectionIds(profileData?.section_ids ?? []);
+    setSubjects(profileData?.subjects ?? []);
+    setSectionIds(profileData?.sections ?? []);
   }
 
+  useEffect(() => {
+    console.log("zee profile: ", prevProfile);
+    console.log("profile's subs: ", profileData?.subjects);
+  }, [prevProfile]);
+  useEffect(() => {
+    console.log("zee subjects: ", subjects);
+  }, [subjects]);
+  useEffect(() => {
+    console.log("zee sections: ", sectionIds);
+  }, [sectionIds]);
   if (isPending) {
     return (
       <div className="w-full flex items-center justify-center py-7">
@@ -68,22 +81,22 @@ export default function TeachingProfile() {
       {isEditMode ? (
         <EditMode
           setEditMode={setEditMode}
-          profileData={profileData}
-          subjectIds={subjectIds}
+          profileData={profileData.profile}
+          subjects={subjects}
           sectionIds={sectionIds}
         />
       ) : (
-        <ViewMode setEditMode={setEditMode} profileData={profileData} />
+        <ViewMode setEditMode={setEditMode} profileData={profileData.profile} />
       )}
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4 lg:gap-8 p-2">
         <SubjectsTaught
-          selectedSubjectIds={subjectIds}
-          onAddSubjects={setSubjectIds}
+          selectedSubjects={subjects}
+          onAddSubjects={setSubjects}
           isEditMode={isEditMode}
         />
         <ClassesTaught
-          selectedClassIds={sectionIds}
+          selectedClasses={sectionIds}
           onAddClasses={setSectionIds}
           isEditMode={isEditMode}
         />
