@@ -113,19 +113,19 @@ export default function StudentGeneralPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <span className="text-[12px] font-medium uppercase tracking-wide text-neutrals-500">
+        <span className="font-poppins uppercase text-base font-normal leading-[120%] tracking-normal text-neutrals-700">
           Student
         </span>
 
         <div className="flex items-center gap-3">
           {/* MOCK: no current-class field exists on the API yet. */}
-          <button
+          {/* <button
             type="button"
             className="flex items-center gap-1 rounded-full border border-primary-100 px-3 py-1.5 text-[12px] text-neutrals-700"
           >
             JS 1
             <ArrowDown2 size={12} variant="Linear" color="currentColor" />
-          </button>
+          </button> */}
 
           <Button size="sm" variant="secondary">
             Edit
@@ -229,6 +229,7 @@ export default function StudentGeneralPage() {
         onAdd={noop}
         onEditRow={noop}
         onDeleteRow={noop}
+        addLabel="Link a guardian"
         requireAtLeastOne={false}
         emptyLabel="No guardians linked yet."
       />
