@@ -11,8 +11,11 @@ import FormModal from "@/components/ui/form-modal";
 import { Input, Select, DatePicker } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
 import { SuccessModal } from "@/components/common";
-
+import UnsuccessfulModal from "@/components/common/unsuccessfulModal/fail-modal";
 import { useCreateStudent } from "@/features/user-management/student-management/api/create-student";
+import { useGetClassSections } from "@/features/user-management/student-management/api/get-class-sections";
+import { useListLevels } from "@/features/academic-year/api/list-levels";
+import { useGetAcademicYears } from "@/features/academic-year/api/list-academic-years";
 import type { CreateStudentPayload } from "@/features/user-management/student-management/types/create-student-types";
 
 import {
@@ -21,8 +24,6 @@ import {
   DEFAULT_ADMIT_STUDENT_VALUES,
   GENDER_OPTIONS,
   ADMISSION_TYPE_OPTIONS,
-  CLASS_OPTIONS,
-  ACADEMIC_YEAR_OPTIONS,
   STEP_ONE_FIELDS,
   type AdmitStudentValues,
 } from "../schema/student-management";
@@ -33,25 +34,6 @@ interface AdmitStudentModalProps {
   onOpenChange: (open: boolean) => void;
   schoolId: string;
 }
-
-/**
- * NOTE: POST /students has no schoolId in the URL per the confirmed
- * API spec (unlike school-record's schools/{school}/... endpoints) —
- * the school is presumably inferred from the authenticated session.
- * schoolId is kept as a prop for now since the caller still passes it
- * and other admin actions on this page may need it, but it's no
- * longer used in this mutation's URL.
- *
- * NOTE: photo upload (photoId) is a confirmed dud — there's no photo
- * field on the create-student endpoint. The upload control stays in
- * the UI but its value is never sent. Ask the dev about a separate
- * photo-upload endpoint.
- *
- * NOTE: on failure there's no confirmed "Unsuccessful" result modal
- * component yet (only SuccessModal exists) — per instruction, a toast
- * with the real server error message is shown instead, and the form
- * modal simply stays open on step 2 so the person can retry.
- */
 export default function AdmitStudentModal({
   open,
   onOpenChange,
@@ -62,12 +44,14 @@ export default function AdmitStudentModal({
     "auto"
   );
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
+  const [isUnsuccessfulOpen, setIsUnsuccessfulOpen] = useState(false);
 
   const queryClient = useQueryClient();
 
   const methods = useForm<AdmitStudentValues>({
     resolver: zodResolver(admitStudentSchema),
     defaultValues: DEFAULT_ADMIT_STUDENT_VALUES,
+    mode: "onChange",
   });
 
   const { handleSubmit, reset, control, trigger, setValue, watch, formState } =
@@ -77,6 +61,45 @@ export default function AdmitStudentModal({
   const isAdmitOnly = enrollmentMode === "admit_only";
 
   const createStudentMutation = useCreateStudent();
+  const { data: educationLevels } = useListLevels();
+  const { data: classSections } = useGetClassSections();
+  const { data: academicYears } = useGetAcademicYears();
+
+  const selectedLevelId = watch("classToEnroll");
+
+  const levelOptions = (educationLevels ?? []).map((level) => ({
+    value: level.id,
+    label: level.name,
+  }));
+
+  const academicYearOptions = (academicYears ?? []).map((year) => ({
+    value: year.id,
+    label: year.name,
+  }));
+
+  const sectionOptions = (classSections ?? [])
+    .filter(
+      (section) =>
+        !selectedLevelId || section.education_level_id === selectedLevelId
+    )
+    .map((section) => ({
+      value: section.id,
+      label: section.name,
+    }));
+
+  useEffect(() => {
+    const currentSection = classSections?.find(
+      (section) => section.id === watch("classSection")
+    );
+    if (
+      selectedLevelId &&
+      currentSection &&
+      currentSection.education_level_id !== selectedLevelId
+    ) {
+      setValue("classSection", "");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedLevelId]);
 
   function buildPayload(values: AdmitStudentValues): CreateStudentPayload {
     const payload: CreateStudentPayload = {
@@ -110,9 +133,7 @@ export default function AdmitStudentModal({
       interview_result: values.interviewResult || undefined,
     };
 
-    // Enrolment fields are required_with each other — only include
-    // them together, and only when NOT admit-only. Omitting both
-    // entirely (admit-only) means plain admit, no meta block back.
+    
     if (!isAdmitOnly) {
       payload.class_section_id = values.classSection || undefined;
       payload.academic_year_id = values.academicYear || undefined;
@@ -153,6 +174,12 @@ export default function AdmitStudentModal({
     if (isValid) setStep(2);
   }
 
+  function extractErrorMessage(error: unknown, fallback: string): string {
+    return error && typeof error === "object" && "message" in error
+      ? String((error as { message: unknown }).message)
+      : fallback;
+  }
+
   const onSubmit = async (values: AdmitStudentValues) => {
     const payload = buildPayload(values);
 
@@ -160,7 +187,11 @@ export default function AdmitStudentModal({
       const response = await createStudentMutation.mutateAsync(payload);
       await queryClient.invalidateQueries({ queryKey: ["students"] });
 
-      if (response.meta?.over_capacity) {
+      if (!isAdmitOnly && !response.meta?.enrolled) {
+        toast.warning(
+          "Student was admitted, but enrolment didn't go through. You can enroll them from the student's Enrolment tab."
+        );
+      } else if (response.meta?.over_capacity) {
         toast.warning(
           "Student was admitted and enrolled, but the class is now over capacity."
         );
@@ -169,17 +200,10 @@ export default function AdmitStudentModal({
       setIsSuccessOpen(true);
     } catch (error) {
       console.error("Failed to admit student:", error);
-      // Surface the real server-provided reason (e.g. "Admission
-      // number '...' is already in use at this school.") rather than
-      // a generic message — there's no Unsuccessful result modal yet,
-      // so this toast is the only place the specific reason shows.
-      // The form modal itself stays open on step 2 so the person can
-      // correct the issue and retry without losing their input.
-      const message =
-        error && typeof error === "object" && "message" in error
-          ? String((error as { message: unknown }).message)
-          : "Failed to admit student. Please try again.";
-      toast.error(message);
+      toast.error(
+        extractErrorMessage(error, "Failed to admit student. Please try again.")
+      );
+      setIsUnsuccessfulOpen(true);
     }
   };
 
@@ -187,6 +211,10 @@ export default function AdmitStudentModal({
     setIsSuccessOpen(false);
     handleOpenChange(false);
   }
+
+  function handleUnsuccessfulDismiss() {
+  setIsUnsuccessfulOpen(false);
+}
 
   return (
     <>
@@ -365,7 +393,7 @@ export default function AdmitStudentModal({
                   <Select
                     name="classToEnroll"
                     placeholder="Class to enroll in"
-                    options={CLASS_OPTIONS}
+                    options={levelOptions}
                   />
                   <DatePicker name="admissionDate" label="Admission date" />
                   <Select
@@ -439,15 +467,12 @@ export default function AdmitStudentModal({
                       <Select
                         name="academicYear"
                         placeholder="Academic year"
-                        options={ACADEMIC_YEAR_OPTIONS}
+                        options={academicYearOptions}
                       />
-                      {/* TODO: real class/section list, likely filtered
-                          by classToEnroll above once that relationship
-                          exists. */}
                       <Select
                         name="classSection"
                         placeholder="Class/Section"
-                        options={CLASS_OPTIONS}
+                        options={sectionOptions}
                       />
                     </div>
 
@@ -497,6 +522,21 @@ export default function AdmitStudentModal({
         Dismiss
       </Button>
     </SuccessModal>
+
+    <UnsuccessfulModal
+      isOpen={isUnsuccessfulOpen}
+      onClose={handleUnsuccessfulDismiss}
+      heading="Unsuccessful"
+      subheading="The student was not added succesfully."
+    >
+      <Button
+        onClick={handleUnsuccessfulDismiss}
+        className="h-14 w-full rounded-[28px] sm:w-auto sm:px-12"
+      >
+        Try again
+      </Button>
+
+    </UnsuccessfulModal>
     </>
   );
 }
