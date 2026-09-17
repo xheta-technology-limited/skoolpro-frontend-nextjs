@@ -31,9 +31,15 @@ export default function StudentEnrollmentPage() {
 
   const sortedEnrolments = [...(enrolments ?? [])].sort(
     (a, b) =>
-  const currentEnrolment = sortedEnrolments.find(
-    (enrolment) => enrolment.status === "active"
+      new Date(b.enrolled_on).getTime() - new Date(a.enrolled_on).getTime()
   );
+
+  const currentEnrolment =
+    sortedEnrolments.find((enrolment) => enrolment.status === "active") ??
+    sortedEnrolments[0];
+
+  function sectionName(sectionId: string) {
+    return (
       classSections?.find((section) => section.id === sectionId)?.name ??
       sectionId
     );
