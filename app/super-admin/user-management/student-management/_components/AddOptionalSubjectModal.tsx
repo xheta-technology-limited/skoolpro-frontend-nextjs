@@ -2,14 +2,27 @@
 
 import { useForm, FormProvider, useFieldArray } from "react-hook-form";
 import { Add } from "iconsax-reactjs";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import FormModal from "@/components/ui/form-modal";
-import { Input } from "@/components/ui/form";
+import { Input, Select } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
+import { api } from "@/lib/api";
+import { ServerErrorResponse } from "@/types/api";
+
+interface EffectiveSubject {
+  assignment_id: string;
+  subject_name: string;
+  source: string;
+  pass_mark: number;
+}
 
 interface AddOptionalSubjectsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  enrolmentId?: string;
+  subjects: EffectiveSubject[];
 }
 
 interface AddOptionalSubjectsValues {
@@ -31,7 +44,11 @@ const DEFAULT_VALUES: AddOptionalSubjectsValues = {
 export default function AddOptionalSubjectsModal({
   open,
   onOpenChange,
+  enrolmentId,
+  subjects,
 }: AddOptionalSubjectsModalProps) {
+  const queryClient = useQueryClient();
+
   const methods = useForm<AddOptionalSubjectsValues>({
     defaultValues: DEFAULT_VALUES,
   });
@@ -42,6 +59,29 @@ export default function AddOptionalSubjectsModal({
     control,
     name: "subjects",
   });
+
+  const addOptionalSubjectMutation = useMutation<
+    unknown,
+    ServerErrorResponse,
+    {
+      enrolmentId: string;
+      subjectLevelAssignmentId: string;
+    }
+  >({
+    mutationFn: ({ enrolmentId, subjectLevelAssignmentId }) =>
+      api.post(`enrolments/${enrolmentId}/subjects`, {
+        subject_level_assignment_id: subjectLevelAssignmentId,
+      }),
+  });
+
+  const optionalSubjects = subjects.filter(
+    (subject) => subject.source === "optional"
+  );
+
+  const subjectOptions = optionalSubjects.map((subject) => ({
+    label: subject.subject_name,
+    value: subject.assignment_id,
+  }));
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
@@ -58,8 +98,32 @@ export default function AddOptionalSubjectsModal({
     });
   };
 
-  const onSubmit = (values: AddOptionalSubjectsValues) => {
-    console.log("Optional subjects:", values);
+  const onSubmit = async (values: AddOptionalSubjectsValues) => {
+    if (!enrolmentId) {
+      toast.error("No current enrolment found.");
+      return;
+    }
+
+    try {
+      for (const subject of values.subjects) {
+        if (!subject.subjectName) {
+          continue;
+        }
+
+        await addOptionalSubjectMutation.mutateAsync({
+          enrolmentId,
+          subjectLevelAssignmentId: subject.subjectName,
+        });
+      }
+
+      await queryClient.invalidateQueries();
+
+      toast.success("Optional subject added successfully.");
+      handleOpenChange(false);
+    } catch (error) {
+      console.error("Failed to add optional subject:", error);
+      toast.error("Failed to add optional subject. Please try again.");
+    }
   };
 
   return (
@@ -88,7 +152,7 @@ export default function AddOptionalSubjectsModal({
                   <Input
                     name={`subjects.${index}.subjectName`}
                     label="Enter subject name"
-                  />
+                    />
 
                   <Input
                     name={`subjects.${index}.passMark`}
@@ -130,6 +194,7 @@ export default function AddOptionalSubjectsModal({
             <Button
               type="submit"
               className="h-14 flex-1 rounded-[28px]"
+              loading={addOptionalSubjectMutation.isPending}
             >
               Add Subject
             </Button>

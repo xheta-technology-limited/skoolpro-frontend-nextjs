@@ -161,6 +161,8 @@ export default function StudentEnrollmentPage() {
       <AddOptionalSubjectsModal
         open={isAddOptionalSubjectsOpen}
         onOpenChange={setIsAddOptionalSubjectsOpen}
+        enrolmentId={currentEnrolment?.id}
+        subjects={effectiveSubjects ?? []}
       />
     </>
   );
