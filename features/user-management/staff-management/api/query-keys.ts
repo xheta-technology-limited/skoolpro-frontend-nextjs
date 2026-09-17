@@ -6,4 +6,6 @@ export const staffKeys = {
     ["staff", "qualifications", staffId] as const,
   teachingProfile: (staffId: string) =>
     ["staff", "teaching-profile", staffId] as const,
+  payroll: (staffId: string) =>
+    ["staff", "payroll", staffId] as const,
 };

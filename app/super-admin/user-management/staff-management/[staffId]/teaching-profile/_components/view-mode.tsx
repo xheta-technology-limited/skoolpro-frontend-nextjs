@@ -39,7 +39,7 @@ export default function ViewMode({ setEditMode, profileData }: Props) {
           />
           <DetailField
             label="Register class"
-            value={profileData.form_class_section_id ?? "-"}
+            value={profileData.form_class_section.name ?? "-"}
           />
           <DetailField
             label="Skills"

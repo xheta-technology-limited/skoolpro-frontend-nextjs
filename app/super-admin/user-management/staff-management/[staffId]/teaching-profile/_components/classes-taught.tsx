@@ -22,7 +22,9 @@ export default function ClassesTaught({
   isEditMode,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: sections, isPending } = useListClassSections();
+  const { data: sections, isPending } = useListClassSections({
+    enabled: isEditMode,
+  });
 
   const methods = useForm<{ section_ids: string[] }>({
     defaultValues: { section_ids: selectedClasses.map((sec) => sec.id) },

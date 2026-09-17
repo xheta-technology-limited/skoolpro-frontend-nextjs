@@ -22,14 +22,17 @@ export default function SubjectsTaught({
   isEditMode,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: subjects, isPending } = useListSubjects();
+  const { data: subjects, isPending } = useListSubjects(undefined, {
+    enabled: isEditMode,
+  });
 
   const methods = useForm<{ subject_ids: string[] }>({
     defaultValues: { subject_ids: selectedSubjects.map((sub) => sub.id) },
   });
 
   useEffect(() => {
-    if (isOpen) methods.reset({ subject_ids: selectedSubjects.map((sub) => sub.id) });
+    if (isOpen)
+      methods.reset({ subject_ids: selectedSubjects.map((sub) => sub.id) });
   }, [isOpen, selectedSubjects, methods]);
 
   const onSubmit = (data: { subject_ids: string[] }) => {

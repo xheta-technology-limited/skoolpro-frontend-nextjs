@@ -4,24 +4,13 @@ import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/custom-button";
 import { Dispatch, SetStateAction, useState } from "react";
 import { EyeSlash, Eye } from "iconsax-reactjs";
-
-const salaryDetails = {
-  salary_structure: "Grade 7 / Step 3",
-  payment_frequency: "Monthly",
-  base_salary: "₦450,000",
-  housing_allowance: "₦50,000",
-  transport_allowance: "₦20,000",
-  union_deduction: "₦2,000",
-  bank_name: "First bank",
-  account_number: "0123456789",
-  tax_id: "TIN-99887766",
-  pension_id: "Stanbic IBTC · PEN-123",
-};
+import { Payroll } from "@/features/user-management/staff-management/types/api/payroll";
 
 interface Props {
   setEditMode: Dispatch<SetStateAction<boolean>>;
+  payroll: Payroll;
 }
-export default function ViewMode({ setEditMode }: Props) {
+export default function ViewMode({ setEditMode, payroll }: Props) {
   const [isShown, setShown] = useState<boolean>(false);
   const visible = (value: string) => (isShown ? value : "*****");
   return (
@@ -61,37 +50,42 @@ export default function ViewMode({ setEditMode }: Props) {
         <div className="rounded-ml bg-primary-bg gap-4 p-2 grid grid-cols-2 content-start">
           <DetailField
             label="Salary structure"
-            value={visible(salaryDetails.salary_structure)}
+            value={visible(payroll.salary_structure)}
           />
           <DetailField
             label="Payment frequency"
-            value={visible(salaryDetails.payment_frequency)}
+            value={visible(payroll.payment_frequency)}
           />
-          <DetailField
-            label="Base salary"
-            value={visible(salaryDetails.base_salary)}
-          />
+          <DetailField label="Base salary" value={visible(payroll.base_salary)} />
           <DetailField
             label="Housing allowance"
-            value={visible(salaryDetails.housing_allowance)}
+            value={visible(payroll.allowances.housing)}
           />
           <DetailField
             label="Transport allowance"
-            value={visible(salaryDetails.transport_allowance)}
+            value={visible(payroll.allowances.transport)}
           />
           <DetailField
             label="Union deduction"
-            value={visible(salaryDetails.union_deduction)}
+            value={visible(payroll.deductions.union)}
           />
-          <DetailField label="Bank name" value={visible(salaryDetails.bank_name)} />
+          <DetailField
+            label="Bank name"
+            value={visible(payroll.bank_details.bank_name)}
+          />
           <DetailField
             label="Account number"
-            value={visible(salaryDetails.account_number)}
+            value={visible(payroll.bank_details.account_number)}
           />
-          <DetailField label="Tax ID" value={visible(salaryDetails.tax_id)} />
+          <DetailField
+            label="Tax ID"
+            value={visible(payroll.tax_information.tin)}
+          />
           <DetailField
             label="Pension ID"
-            value={visible(salaryDetails.pension_id)}
+            value={visible(
+              `${payroll.pension_information.pfa} · ${payroll.pension_information.pin}`
+            )}
           />
         </div>
       </div>

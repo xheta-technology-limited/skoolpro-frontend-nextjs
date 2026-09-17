@@ -51,7 +51,7 @@ export default function EditMode({
       teacher_registration_number:
         profileData.teacher_registration_number ?? undefined,
       max_teaching_load: profileData.max_teaching_load?.toString() ?? undefined,
-      form_class_section_id: profileData.form_class_section_id ?? undefined,
+      form_class_section_id: profileData.form_class_section.id ?? undefined,
       specialist_skills: profileData.specialist_skills ?? undefined,
       curriculum_experience: profileData.curriculum_experience ?? undefined,
     },
