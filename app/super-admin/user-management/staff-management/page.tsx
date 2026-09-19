@@ -145,12 +145,16 @@ export default function StaffManagement() {
                       )
                     }
                   >
-                    <TableCell>{staff.full_name ?? "-"}</TableCell>
+                    <TableCell>{titleCase(staff.full_name) ?? "-"}</TableCell>
                     <TableCell>{staff.email ?? "-"}</TableCell>
                     <TableCell>{staff.staff_number ?? "-"}</TableCell>
-                    <TableCell>{staff.category ?? "-"}</TableCell>
-                    <TableCell>{staff.department ?? "-"}</TableCell>
-                    <TableCell>{staff.contract_type ?? "-"}</TableCell>
+                    <TableCell>{titleCase(staff.category) ?? "-"}</TableCell>
+                    <TableCell>
+                      {titleCase(staff.department || "") ?? "-"}
+                    </TableCell>
+                    <TableCell>
+                      {titleCase(staff.contract_type || "") ?? "-"}
+                    </TableCell>
                     <TableCell>
                       <StatusBadge
                         data={titleCase(staff.staff_status)}

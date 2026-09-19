@@ -13,6 +13,7 @@ import Image from "next/image";
 import { AdmiralBlue11 } from "@/components/icons/logos";
 import { Text } from "@/components/ui";
 import { useLogout } from "@/features/auth/api/logout";
+import { useProgressRouter } from "@/features/page-loader";
 
 type DashboardSidebarProps = {
   items?: DashboardNavigationItem[];
@@ -102,7 +103,7 @@ function NavItem({
 }) {
   const Icon = item.icon;
   const isLogout = item.href === "";
-
+  const router = useProgressRouter();
   const isActive = !isLogout && pathname.includes(item.href);
 
   const rowClasses = cn(
@@ -157,7 +158,7 @@ function NavItem({
   // Plain link
   return (
     <li>
-      <Link href={item.href} className={rowClasses}>
+      <button onClick={() => router.push(item.href)} className={rowClasses}>
         {Icon && <Icon variant="Bulk" size={24} className="shrink-0" />}
         <Text
           className="truncate hidden md:inline"
@@ -166,7 +167,7 @@ function NavItem({
         >
           {item.label}
         </Text>
-      </Link>
+      </button>
     </li>
   );
 }
