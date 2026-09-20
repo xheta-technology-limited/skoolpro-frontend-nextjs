@@ -14,6 +14,7 @@ import {
 import { ServerErrorResponse } from "@/types/api";
 import { UseMutateFunction } from "@tanstack/react-query";
 import { Staff } from "@/features/user-management/staff-management/types/api/staff";
+import { LinkedUser } from "@/features/user-management/staff-management";
 
 const dummyRoles = [
   { id: "1", name: "Teacher" },
@@ -23,9 +24,8 @@ const dummyRoles = [
 ];
 
 interface Props {
-  setGenerated: Dispatch<SetStateAction<boolean>>;
-  setPassword: Dispatch<SetStateAction<string>>;
-  profileData: Staff;
+  setPassword: Dispatch<SetStateAction<string | undefined>>;
+  profileData: LinkedUser;
   mutate: UseMutateFunction<
     StaffLoginResponse,
     ServerErrorResponse,
@@ -34,28 +34,35 @@ interface Props {
   >;
   isMutatePending: boolean;
   isPending: boolean;
+  setSelectedRoles: Dispatch<SetStateAction<string[] | undefined>>;
+  selectedRoles: string[];
 }
 export default function NotGenerated({
-  setGenerated,
   setPassword,
   mutate,
   isMutatePending,
   profileData,
   isPending,
+  selectedRoles,
+  setSelectedRoles,
 }: Props) {
   const [email, setEmail] = useState<string | undefined>(
     profileData?.email || undefined
   );
-  const [selectedRoles, setSelectedRoles] = useState(dummyRoles);
+  // const [selectedRoles, setSelectedRoles] = useState(dummyRoles);
   const [isOpen, setIsOpen] = useState(false);
 
   const methods = useForm<{ role_ids: string[] }>({
-    defaultValues: { role_ids: selectedRoles.map((role) => role.id) },
+    defaultValues: selectedRoles
+      ? { role_ids: selectedRoles.map((role) => role) }
+      : {},
   });
 
   const onSubmit = (data: { role_ids: string[] }) => {
     setSelectedRoles(
-      (dummyRoles ?? []).filter((role) => data.role_ids.includes(role.id))
+      dummyRoles
+        .filter((role) => data.role_ids.includes(role.id))
+        .map((role) => role.name)
     );
     setIsOpen(false);
   };
@@ -63,10 +70,14 @@ export default function NotGenerated({
   const onGenerate = () => {
     mutate(
       {
-        email: email || profileData.email || undefined,
-        roles: selectedRoles.map((role) => role.name),
+        email: email || undefined,
+        roles: selectedRoles.map((role) => role),
       },
-      { onSuccess: () => setGenerated(true) }
+      {
+        onSuccess: (data) => {
+          setPassword(data.temporary_password);
+        },
+      }
     );
   };
 
@@ -81,8 +92,8 @@ export default function NotGenerated({
           <Input
             value={email}
             onChange={(e) =>
-  setEmail((e as React.ChangeEvent<HTMLInputElement>).target.value)
-}
+              setEmail((e as React.ChangeEvent<HTMLInputElement>).target.value)
+            }
             isLoading={isPending}
             name="email"
           />
@@ -105,12 +116,10 @@ export default function NotGenerated({
           <div className="rounded-ml bg-primary-bg gap-4 p-2 flex flex-col">
             {selectedRoles.map((role) => (
               <Item
-                key={role.id}
-                label={role.name}
+                key={role}
+                label={role}
                 onButtonClick={() =>
-                  setSelectedRoles(
-                    selectedRoles.filter((sub) => sub.id !== role.id)
-                  )
+                  setSelectedRoles(selectedRoles.filter((sub) => sub !== role))
                 }
               />
             ))}

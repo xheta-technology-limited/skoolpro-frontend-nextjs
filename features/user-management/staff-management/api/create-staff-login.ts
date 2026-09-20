@@ -1,6 +1,7 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { ServerErrorResponse } from "@/types/api";
+import { staffKeys } from "./query-keys";
 
 export type CreateStaffLoginData = {
   email: string | undefined;
@@ -22,9 +23,18 @@ export const createStaffLogin = (
 };
 
 export const useCreateStaffLogin = (staffId: string) => {
-  return useMutation<StaffLoginResponse, ServerErrorResponse, CreateStaffLoginData>({
+  const queryClient = useQueryClient();
+  return useMutation<
+    StaffLoginResponse,
+    ServerErrorResponse,
+    CreateStaffLoginData
+  >({
     mutationFn: (data) => {
       return createStaffLogin(staffId, data);
     },
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: staffKeys.linkedUser(staffId),
+      }),
   });
 };

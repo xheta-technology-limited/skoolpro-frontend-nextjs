@@ -2,18 +2,31 @@
 import DetailField from "@/app/onboarding/_components/DetailField";
 import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/custom-button";
+import { LinkedUser } from "@/features/user-management/staff-management";
+import { useResetTempPassword } from "@/features/user-management/staff-management/api/reset-temp-password";
+import { titleCase } from "@/lib/helpers";
 import { Copy } from "iconsax-reactjs";
+import { toast } from "sonner";
 
 interface Props {
-  password: string;
+  password: string | undefined;
+  data: LinkedUser;
 }
-export default function Generated({ password }: Props) {
+export default function Generated({ password, data }: Props) {
+  const { mutate, isPending } = useResetTempPassword(data.user_id);
   const onReset = () => {
+    mutate(undefined, {
+      onSuccess: () => toast.success("Password reset successfully"),
+    });
     alert("Does nothing.");
   };
 
-  const onCopy = () => {
-    alert("text copied(not really, implement this)");
+  const onCopy = async () => {
+    if (!password) {
+      return;
+    }
+    await navigator.clipboard.writeText(password);
+    toast.success("Text copied to clipboard");
   };
   return (
     <>
@@ -41,14 +54,11 @@ export default function Generated({ password }: Props) {
 
       <div className="rounded-ml mb-8 bg-primary-bg gap-4 p-2 grid grid-cols-2 content-start">
         <DetailField label="Account status" value="Linked" />
-        <DetailField
-          label="Sign in email"
-          value="grace.bello@brightfuture.test"
-        />
-        <DetailField label="Role" value="Teacher" />
+        <DetailField label="Sign in email" value={data.email || "-"} />
+        <DetailField label="Role" value={titleCase(data.roles.join(","))} />
         <DetailField
           label="Must change password"
-          value="Yes - on first sign in"
+          value={data.must_change_password ? "Yes - on first sign in" : "No"}
         />
       </div>
 
@@ -56,6 +66,7 @@ export default function Generated({ password }: Props) {
         variant="secondary"
         className="justify-self-end"
         onClick={onReset}
+        loading={isPending}
       >
         Reset temporary password
       </Button>
