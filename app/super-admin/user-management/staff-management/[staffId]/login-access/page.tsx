@@ -61,7 +61,11 @@ export default function LoginAccess() {
   return (
     <>
       {profileData ? (
-        <Generated data={profileData} password={password} />
+        <Generated
+          data={profileData}
+          password={password}
+          setPassword={setPassword}
+        />
       ) : (
         <NotGenerated
           setPassword={setPassword}

@@ -7,18 +7,27 @@ import { useResetTempPassword } from "@/features/user-management/staff-managemen
 import { titleCase } from "@/lib/helpers";
 import { Copy } from "iconsax-reactjs";
 import { toast } from "sonner";
+import { useParams } from "next/navigation";
+import { Dispatch, SetStateAction } from "react";
 
 interface Props {
   password: string | undefined;
+  setPassword: Dispatch<SetStateAction<string | undefined>>;
   data: LinkedUser;
 }
-export default function Generated({ password, data }: Props) {
-  const { mutate, isPending } = useResetTempPassword(data.user_id);
+export default function Generated({ password, data, setPassword }: Props) {
+  const params = useParams<{ staffId: string }>();
+  const { mutate, isPending } = useResetTempPassword(params.staffId);
   const onReset = () => {
-    mutate(undefined, {
-      onSuccess: () => toast.success("Password reset successfully"),
-    });
-    alert("Does nothing.");
+    mutate(
+      { roles: data.roles },
+      {
+        onSuccess: (data) => {
+          setPassword(data.temporary_password);
+          toast.success("Password reset successfully");
+        },
+      }
+    );
   };
 
   const onCopy = async () => {
@@ -30,8 +39,8 @@ export default function Generated({ password, data }: Props) {
   };
   return (
     <>
-      <div className="mb-4 p-4 flex justify-between items-center border border-primary-100 bg-primary-bg">
-        {password && (
+      {password && (
+        <div className="mb-4 p-4 flex justify-between items-center border border-primary-100 bg-primary-bg">
           <div className="gap-3 flex flex-col">
             <Text scale={"content"} className="text-neutrals-900">
               Temporary password - shown once
@@ -40,17 +49,19 @@ export default function Generated({ password, data }: Props) {
               {password}
             </Text>
           </div>
-        )}
 
-        <Button
-          onClick={onCopy}
-          variant="secondary"
-          leftIcon={<Copy variant="Bulk" size={16} className="text-primary" />}
-          size="sm"
-        >
-          Copy
-        </Button>
-      </div>
+          <Button
+            onClick={onCopy}
+            variant="secondary"
+            leftIcon={
+              <Copy variant="Bulk" size={16} className="text-primary" />
+            }
+            size="sm"
+          >
+            Copy
+          </Button>
+        </div>
+      )}
 
       <div className="rounded-ml mb-8 bg-primary-bg gap-4 p-2 grid grid-cols-2 content-start">
         <DetailField label="Account status" value="Linked" />
