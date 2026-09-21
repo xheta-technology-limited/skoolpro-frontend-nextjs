@@ -13,6 +13,7 @@ import { useGetStudents } from "@/features/user-management/student-management/ap
 import type { StudentRecord } from "@/features/user-management/student-management/types/student-types";
 import { useProgressRouter } from "@/features/page-loader";
 import SearchInput from "@/components/ui/form/input/search-input";
+import { titleCase } from "@/lib/helpers/string-to-title-case";
 
 const TABLE_COLUMNS = [
   "Name",
@@ -30,37 +31,16 @@ const GRID_TEMPLATE = "grid-cols-[1.5fr_1.5fr_.7fr_.8fr_1fr_1fr_.7fr]";
 
 const PAGE_SIZE = 10;
 
-// StudentRow's `status` prop is a strict "Active" | "Withdrawn"
-// union, but the real API's student_status is an open string whose
-// exact casing/values aren't confirmed (could be "active",
-// "ACTIVE", "withdrawn", or something else entirely e.g.
-// "graduated"). Normalize defensively instead of assuming a match —
-// anything not recognizably "withdrawn" falls back to "Active" so the
-// badge always renders something rather than crashing on an
-// unexpected value.
-function toStudentRowStatus(status: string): Student["status"] {
-  return status.toLowerCase() === "withdrawn" ? "Withdrawn" : "Active";
-}
-
-// Maps the real API shape to StudentRow's display shape.
-//
-// TODO: className and guardian have no direct field on StudentRecord.
-// className would need resolving entry_level_id against a
-// classes/levels list (not wired yet); guardian would need reading
-// from a guardians relation (the create-student response shows
-// `guardians: []`, i.e. an array of guardian records, not a flat
-// name) — neither is available yet, so both show as "—" rather than
-// a fabricated placeholder.
 function toStudentRowData(record: StudentRecord): Student {
   return {
     id: record.id,
     name: record.full_name,
     email: record.personal_email ?? "",
     className: "—",
-    admissionStatus: record.admission_status,
+    admissionStatus: titleCase(record.admission_status),
     guardian: "—",
     admissionNumber: record.admission_number,
-    status: toStudentRowStatus(record.student_status),
+    status: record.student_status,
   };
 }
 
@@ -70,15 +50,8 @@ export default function StudentManagement() {
   const [isAdmitStudentOpen, setIsAdmitStudentOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // TODO: confirm this is the right place to read schoolId from — mirrors
-  // how SchoolRecordPage reads the current school profile.
   const schoolId = useUserStore((state) => state.data?.id) ?? "";
 
-  // Server-side search (the API supports a `search` query param), but
-  // no server-side pagination exists yet — the full matching list is
-  // fetched and sliced into pages client-side below. Fine for now;
-  // revisit if the student list grows large enough that fetching
-  // everything becomes slow.
   const { data, isPending, isError, refetch } = useGetStudents({
     search: searchTerm || undefined,
   });
@@ -98,9 +71,6 @@ export default function StudentManagement() {
 
   function handleSearchChange(value: string) {
     setSearchTerm(value);
-    // Reset to page 1 whenever the search term changes, otherwise a
-    // narrower result set could leave currentPage pointing past the
-    // end of the new (shorter) list.
     setCurrentPage(1);
   }
 
@@ -143,6 +113,8 @@ export default function StudentManagement() {
             <SearchInput
               placeholder="Search name, email..."
               className="flex-1"
+              value={searchTerm}
+              onChange={(e) => handleSearchChange(e.target.value)}
             />
 
             <span className="shrink-0 text-[12px] text-neutrals-700 sm:whitespace-nowrap">

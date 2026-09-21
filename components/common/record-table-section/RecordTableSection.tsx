@@ -45,7 +45,14 @@ export default function RecordTableSection({
   emptyLabel = "Nothing added yet",
   requireAtLeastOne = true,
 }: RecordTableSectionProps) {
-  const gridTemplate = `repeat(${columns.length}, minmax(0, 1fr)) 128px`;
+  // The Action column (and its 128px track) only exists when there's
+  // actually something to put in it. A read-only table (no
+  // onEditRow/onDeleteRow — e.g. Enrollment history) shouldn't render
+  // an empty "Action" header with nothing under it.
+  const hasActions = Boolean(onEditRow || onDeleteRow);
+  const gridTemplate = `repeat(${columns.length}, minmax(0, 1fr))${
+    hasActions ? " 128px" : ""
+  }`;
 
   return (
     <section className="flex w-full flex-col gap-4">
@@ -80,9 +87,11 @@ export default function RecordTableSection({
               {column.label}
             </span>
           ))}
-          <span className="text-[12px] font-medium leading-[1.2] text-neutrals-700">
-            Action
-          </span>
+          {hasActions && (
+            <span className="text-[12px] font-medium leading-[1.2] text-neutrals-700">
+              Action
+            </span>
+          )}
         </div>
 
         {rows.length === 0 && (
@@ -127,37 +136,39 @@ export default function RecordTableSection({
                 );
               })}
 
-              <div className="flex items-center justify-between gap-2">
-                {onEditRow && (
-                  <button
-                    type="button"
-                    onClick={() => onEditRow(row.id)}
-                    className="flex h-6.5 w-fit items-center gap-1 rounded-xl border border-grays-borders py-1.5 pl-2 pr-2 text-[13px] font-normal text-neutrals-700 transition-opacity duration-300 ease-out"
-                  >
-                    <Edit size={16} variant="Bulk" color="#5a5555" />
-                    Edit
-                  </button>
-                )}
+              {hasActions && (
+                <div className="flex items-center justify-between gap-2">
+                  {onEditRow && (
+                    <button
+                      type="button"
+                      onClick={() => onEditRow(row.id)}
+                      className="flex h-6.5 w-fit items-center gap-1 rounded-xl border border-grays-borders py-1.5 pl-2 pr-2 text-[13px] font-normal text-neutrals-700 transition-opacity duration-300 ease-out"
+                    >
+                      <Edit size={16} variant="Bulk" color="#5a5555" />
+                      Edit
+                    </button>
+                  )}
 
-                {canDelete && onDeleteRow && (
-                  <button
-                    type="button"
-                    onClick={() => onDeleteRow(row.id)}
-                    disabled={deletingRowId === row.id}
-                    className="flex w-fit items-center text-[13px] font-normal text-[#D92D20] disabled:cursor-not-allowed disabled:opacity-70"
-                    aria-label="Delete"
-                  >
-                    {deletingRowId === row.id ? (
-                      <span
-                        className="h-4 w-4 animate-spin rounded-full border-2 border-[#D92D20]/30 border-t-[#D92D20]"
-                        aria-hidden="true"
-                      />
-                    ) : (
-                      <Trash size={16} variant="Bulk" color="#D92D20" />
-                    )}
-                  </button>
-                )}
-              </div>
+                  {canDelete && onDeleteRow && (
+                    <button
+                      type="button"
+                      onClick={() => onDeleteRow(row.id)}
+                      disabled={deletingRowId === row.id}
+                      className="flex w-fit items-center text-[13px] font-normal text-[#D92D20] disabled:cursor-not-allowed disabled:opacity-70"
+                      aria-label="Delete"
+                    >
+                      {deletingRowId === row.id ? (
+                        <span
+                          className="h-4 w-4 animate-spin rounded-full border-2 border-[#D92D20]/30 border-t-[#D92D20]"
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        <Trash size={16} variant="Bulk" color="#D92D20" />
+                      )}
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           );
         })}

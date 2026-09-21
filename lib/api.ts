@@ -7,6 +7,7 @@ type RequestOptions = {
   body?: unknown;
   params?: Record<string, string | number | boolean | undefined | null>;
   cache?: RequestCache;
+  raw?: boolean;
 };
 var baseClient: string | undefined;
 if (typeof window === "undefined") {
@@ -60,7 +61,7 @@ async function request<T>(
   path: string,
   options: RequestOptions = {}
 ): Promise<T> {
-  const { method = "GET", headers, body, params, cache = "no-store" } = options;
+  const { method = "GET", headers, body, params, cache = "no-store", raw = false } = options;
 
   try {
     const cookie = await getCookieHeader();
@@ -98,9 +99,10 @@ async function request<T>(
       throw new ApiError(err.message, res.status, err?.errors);
     }
 
-    return res.status === 204
-      ? (undefined as T)
-      : res.json().then((data) => data.data);
+    if (res.status === 204) return undefined as T;
+
+    const json = await res.json();
+    return (raw ? json : json.data) as T;
   } catch (error) {
     throw error;
   }

@@ -42,7 +42,7 @@ const DetailCard = ({
       {showHeader && (
         <div className="flex items-center justify-between">
           {title ? (
-            <span className="text-sm uppercase tracking-wide text-neutrals-500">
+            <span className="font-poppins text-base font-normal uppercase leading-[120%] tracking-normal text-neutrals-700">
               {title}
             </span>
           ) : (
