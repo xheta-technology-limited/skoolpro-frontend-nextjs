@@ -9,18 +9,29 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  TableWrapper,
 } from "@/components/ui/table";
 import clsx from "clsx";
 import { SearchInput } from "@/components/ui/form/input";
-import { Pagination } from "@/components/common";
+import { Pagination, StatusBadge } from "@/components/common";
 import AddStaff from "./_components/add-staff";
 import { useProgressRouter } from "@/features/page-loader";
 import { HEADROW } from "./constants";
 import ImportStaff from "./_components/import-user";
+import { useListStaff } from "@/features/user-management/staff-management/api/list-staff";
+import { ChangeEvent, Suspense, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { NoData } from "@/components/icons";
+import { Button } from "@/components/ui/custom-button";
+import { Spinner } from "@/components/animations";
+import { titleCase } from "@/lib/helpers/string-to-title-case";
 
-export default function StaffManagement() {
+function StaffManagement() {
   const router = useProgressRouter();
+  const searchParams = useSearchParams();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchFilter, setSearchFilter] = useState("");
+  const [searchKey, setSearchKey] = useState("");
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const exportStaff = () => alert("export clicked");
   const addStaff = () =>
     router.push(
@@ -30,6 +41,64 @@ export default function StaffManagement() {
     router.push(
       "/super-admin/user-management/staff-management?import-modal=true&current=1"
     );
+  const onPageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const {
+    data: allStaff,
+    isRefetching,
+    refetch,
+    error,
+    isPending,
+  } = useListStaff({ search: searchKey, page: currentPage }, {});
+  const hasStaff = allStaff && allStaff.data.length > 0;
+  const metaData = allStaff?.meta;
+  const onSearchInputChange = (
+    e: ChangeEvent<HTMLInputElement, HTMLInputElement>
+  ) => {
+    const value = e.target.value;
+    setSearchFilter(value);
+    if (searchDebounceRef.current) {
+      clearTimeout(searchDebounceRef.current);
+    }
+    searchDebounceRef.current = setTimeout(() => {
+      setSearchKey(value.length > 2 ? value : "");
+      if (value.length <= 2) {
+        setCurrentPage(1);
+      }
+    }, 300);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (searchDebounceRef.current) {
+        clearTimeout(searchDebounceRef.current);
+      }
+    };
+  }, []);
+
+  if (error) {
+    return (
+      <div className="w-fit mx-auto">
+        {" "}
+        <NoData
+          variant="signal"
+          title="Something went Wrong"
+          subTitle={error.message || ""}
+          className="w-97.5 h-143.75"
+        />
+        <Button
+          className="mt-3 w-full"
+          loading={isRefetching}
+          onClick={() => refetch()}
+          size="lg"
+        >
+          Retry
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -40,62 +109,109 @@ export default function StaffManagement() {
         onImportClick={importStaff}
       />
 
-      <div className="rounded-tr-ml flex-1 overflow-auto">
-        <div className="bg-white p-4 ">
-          <Text className="block mb-8" weight={"standard"} scale={"highlight"}>
-            Staff Management
-          </Text>
-          <div className="flex items-center gap-6">
-            <SearchInput
-              placeholder="Search name, email..."
-              className="flex-1"
-            />
+      <>
+        <div className="rounded-tr-ml flex-1 overflow-auto">
+          <div className="bg-white p-4 ">
             <Text
-              scale={"caption"}
-              className="text-neutrals-700"
-            >{`Showing ${0} - ${0} of ${0}`}</Text>
+              className="block mb-8"
+              weight={"standard"}
+              scale={"highlight"}
+            >
+              Staff Management
+            </Text>
+            <div className="flex items-center gap-6">
+              <SearchInput
+                value={searchFilter}
+                onChange={onSearchInputChange}
+                placeholder="Search staff name"
+                className="flex-1"
+              />
+              <Text scale={"caption"} className="text-neutrals-700">{`Showing ${
+                metaData?.from ?? 0
+              } - ${metaData?.to ?? 0} of ${metaData?.total ?? 0}`}</Text>
+            </div>
           </div>
+
+          {isPending ? (
+            <div className="w-full flex items-center justify-center py-7">
+              <Spinner size={70} />
+            </div>
+          ) : hasStaff ? (
+            <Table className="m-0">
+              <TableHeader className="[&>tr>th:first-child]:!rounded-none [&>tr>th:first-child]:!border-0 [&>tr>th:first-child]:!pl-4 [&>tr>th:last-child]:!rounded-none [&>tr>th:last-child]:!border-0 [&>tr>th:last-child]:!pr-4">
+                <TableRow>
+                  {HEADROW.map((col) => {
+                    return (
+                      <TableHead
+                        className={clsx("text-neutrals-700")}
+                        key={col}
+                      >
+                        {col}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              </TableHeader>
+
+              <TableBody>
+                {allStaff.data.map((staff, index) => (
+                  <TableRow
+                    className="cursor-pointer"
+                    key={index}
+                    onClick={() =>
+                      router.push(
+                        `/super-admin/user-management/staff-management/${staff.id}/general`
+                      )
+                    }
+                  >
+                    <TableCell>{titleCase(staff.full_name) ?? "-"}</TableCell>
+                    <TableCell>{staff.email ?? "-"}</TableCell>
+                    <TableCell>{staff.staff_number ?? "-"}</TableCell>
+                    <TableCell>{titleCase(staff.category) ?? "-"}</TableCell>
+                    <TableCell>
+                      {titleCase(staff.department || "") ?? "-"}
+                    </TableCell>
+                    <TableCell>
+                      {titleCase(staff.contract_type || "") ?? "-"}
+                    </TableCell>
+                    <TableCell>
+                      <StatusBadge
+                        data={titleCase(staff.staff_status)}
+                        variant={
+                          staff.staff_status === "active" ? "green" : "orange"
+                        }
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <>
+              {" "}
+              <div className="w-fit mx-auto">
+                {" "}
+                <NoData
+                  title="No Staff"
+                  subTitle="You haven't added any staff yet, click the button above to make one"
+                  className="w-97.5 h-143.75"
+                />
+              </div>
+            </>
+          )}
         </div>
 
-        <Table className="m-0">
-          <TableHeader className="[&>tr>th:first-child]:!rounded-none [&>tr>th:first-child]:!border-0 [&>tr>th:first-child]:!pl-4 [&>tr>th:last-child]:!rounded-none [&>tr>th:last-child]:!border-0 [&>tr>th:last-child]:!pr-4">
-            <TableRow>
-              {HEADROW.map((col, index) => {
-                return (
-                  <TableHead className={clsx("text-neutrals-700")} key={col}>
-                    {col}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {Array.from({ length: 30 }).map((undefined, index) => (
-              <TableRow key={index}>
-                <TableCell>Helen Diana</TableCell>
-                <TableCell>helendiana@gmail.com</TableCell>
-                <TableCell>EMP001</TableCell>
-                <TableCell>Teaching</TableCell>
-                <TableCell>Sciences</TableCell>
-                <TableCell>Part Time</TableCell>
-                <TableCell>
-                  <StatusInfo status="green" />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-
-      <div className="overflow-hidden rounded-b-ml">
-        <Pagination
-          currentPage={3}
-          totalItems={500}
-          pageSize={14}
-          onPageChange={() => alert("nope")}
-        />
-      </div>
+        {hasStaff && (
+          <div className="overflow-hidden rounded-b-ml">
+            <Pagination
+              currentPage={metaData?.current_page ?? currentPage}
+              totalItems={metaData?.total ?? 0}
+              pageSize={metaData?.per_page ?? 14}
+              onPageChange={onPageChange}
+            />
+          </div>
+        )}
+      </>
 
       <AddStaff />
       <ImportStaff />
@@ -103,23 +219,10 @@ export default function StaffManagement() {
   );
 }
 
-interface StatusProps {
-  status: string; //make this a union of the specific status strings
-}
-const StatusInfo = ({ status }: StatusProps) => {
-  const colors =
-    status === "green"
-      ? "text-success-200 bg-[#EDFDFA]"
-      : "bg-[#FDF6EC] text-warning-200";
-  const details = status === "green" ? "Active" : "On leave";
+export default function StaffManagementPage() {
   return (
-    <Text
-      as="span"
-      scale="footnote"
-      weight="standard"
-      className={clsx("rounded-[12px] px-2.5 py-0.5", colors)}
-    >
-      {details}
-    </Text>
+    <Suspense fallback={null}>
+      <StaffManagement />
+    </Suspense>
   );
-};
+}

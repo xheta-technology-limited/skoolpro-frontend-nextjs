@@ -69,16 +69,16 @@ export default function UserDetailsLayout({
           {tabs.map((tab) => {
             const isActive = pathname.includes(tab.href);
             return (
-              <Link
+              <button
                 key={tab.label}
                 className={twMerge(
                   "px-6 py-2 text-[0.875rem] rounded-lg hover:bg-primary-200 text-center transition-all duration-200",
                   isActive && "bg-primary-900 text-white hover:bg-primary-900"
                 )}
-                href={tab.href}
+                onClick={() => router.push(tab.href)}
               >
                 {tab.label}
-              </Link>
+              </button>
             );
           })}
         </div>

@@ -4,19 +4,27 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useSearchParams } from "next/navigation";
 import { FormProvider, useForm, UseFormReturn } from "react-hook-form";
 import { Text } from "@/components/ui";
-import { DatePicker, Input, Select } from "@/components/ui/form";
-import { GENDER_SELECT_OPTIONS } from "@/config/constants";
-import { Button } from "@/components/ui/custom-button";
+import { Checkbox, DatePicker, Input, Select } from "@/components/ui/form";
+import { DAYS_OF_WEEK_OPTIONS, STATUS_OPTIONS } from "@/config/constants";
 import {
-  AddStaffSecondFormData,
-  addStaffSecondSchema,
-} from "@/features/user-management/staff-management/schemas/add-staff-schema";
+  EMPLOYMENT_TYPE_OPTIONS,
+  STAFF_CATEGORY_OPTIONS,
+} from "@/features/user-management/staff-management";
+import { Button } from "@/components/ui/custom-button";
+import { AddStaffSecondFormData } from "@/features/user-management/staff-management/schemas/add-staff-schema";
 import { SuccessModal } from "@/components/common";
+import { useListStaff } from "@/features/user-management/staff-management/api/list-staff";
+import { createSelectOptions } from "@/lib/helpers";
+import { Staff } from "@/features/user-management/staff-management/types/api/staff";
+import { useListCampuses } from "@/features/campuses/api/list-campuses";
+import { Campus } from "@/features/campuses/types/api/campus";
 
 interface Props {
   methods: UseFormReturn<AddStaffSecondFormData>;
+  onSubmit: () => void;
+  isPending: boolean;
 }
-const SecondModal = ({ methods }: Props) => {
+const SecondModal = ({ methods, onSubmit, isPending }: Props) => {
   const router = useProgressRouter();
 
   const searchParams = useSearchParams();
@@ -25,13 +33,26 @@ const SecondModal = ({ methods }: Props) => {
   const isOpen = open === "true" && current === "2";
   const isSuccessOpen = current === "success";
 
-  const onSubmit = () =>
-    router.push(
-      "/super-admin/user-management/staff-management?add-modal=true&current=success"
-    );
-
   const handleClose = () =>
     router.replace("/super-admin/user-management/staff-management");
+  const { data: allStaff, isPending: isStaffPending } = useListStaff();
+  const { data: allCampus, isPending: isCampusPending } = useListCampuses({
+    enabled: false,
+  });
+
+  const staffOptions = createSelectOptions<Staff, "id", "full_name">(
+    allStaff?.data,
+    "id",
+    "full_name"
+  );
+  const campusOptions = createSelectOptions<Campus, "id", "name">(
+    allCampus,
+    "id",
+    "name"
+  );
+  if (!isOpen) {
+    return null;
+  }
   return (
     <>
       <SuccessModal
@@ -55,17 +76,22 @@ const SecondModal = ({ methods }: Props) => {
               ROLE & EMPLOYMENT
             </Text>
             <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4 mb-4">
-              <Select name="category" label="Category" options={[]} />
+              <Select
+                name="category"
+                label="Category"
+                options={STAFF_CATEGORY_OPTIONS}
+              />
               <Select
                 name="reporting_manager_id"
                 label="Reporting manager"
-                options={[]}
+                isLoading={isStaffPending}
+                options={staffOptions || []}
               />
 
               <Select
                 name="employment_type"
                 label="Employment type"
-                options={[]}
+                options={EMPLOYMENT_TYPE_OPTIONS}
               />
               <DatePicker
                 name="employment_start_date"
@@ -75,16 +101,29 @@ const SecondModal = ({ methods }: Props) => {
               <Select name="department" label="Department" options={[]} />
               <Select name="contract_type" label="Contract type" options={[]} />
 
-              <Select name="staff_status" label="Staff status" options={[]} />
-              <Select name="campus_id" label="Main campus" options={[]} />
+              <Select
+                name="staff_status"
+                label="Staff status"
+                options={STATUS_OPTIONS}
+              />
+              <Select
+                name="campus_id"
+                label="Main campus"
+                isLoading={isCampusPending}
+                options={campusOptions || []}
+              />
 
               <Input name="payroll_number" label="Payroll number" />
-              <Select name="work_location" label="Work location" options={[]} />
+              <Input name="work_location" label="Work location" />
 
               <DatePicker name="probation_end_date" label="Probation end" />
               <DatePicker name="contract_end_date" label="Contract end" />
 
-              <Select name="working_days" label="Working days" options={[]} />
+              <Checkbox
+                name="working_days"
+                label="Working days"
+                options={DAYS_OF_WEEK_OPTIONS}
+              />
               <Input name="working_hours" label="Working hours" />
             </div>
 
@@ -99,7 +138,7 @@ const SecondModal = ({ methods }: Props) => {
                 Cancel
               </Button>
               <Button
-                // loading={isPending}
+                loading={isPending}
                 type="submit"
                 size="lg"
                 className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
