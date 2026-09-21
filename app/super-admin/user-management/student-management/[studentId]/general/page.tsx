@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { ArrowDown2, LockCircle } from "iconsax-reactjs";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/custom-button";
 import DetailCard from "@/components/common/detail-card/DetailCard";
@@ -10,6 +11,8 @@ import RecordTableSection, {
   type RecordTableRow,
 } from "@/components/common/record-table-section/RecordTableSection";
 import { useGetStudent } from "@/features/user-management/student-management/api/get-student";
+import { useGetEnrolments } from "@/features/user-management/student-management/api/get-enrolment";
+import { useGetClassSections } from "@/features/user-management/student-management/api/get-class-sections";
 import { titleCase } from "@/lib/helpers/string-to-title-case";
 import type { StudentGuardian } from "@/features/user-management/student-management/types/student-detail-types";
 
@@ -27,7 +30,18 @@ export default function StudentGeneralPage() {
   const params = useParams<{ studentId: string }>();
   const studentId = params.studentId;
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedFields, setEditedFields] = useState<Record<string, string>>(
+    {}
+  );
+
   const { data: student, isPending, isError } = useGetStudent(studentId);
+
+  const { data: enrolments } = useGetEnrolments({
+    student_id: studentId,
+  });
+
+  const { data: classSections } = useGetClassSections();
 
   if (isPending) {
     return (
@@ -49,65 +63,190 @@ export default function StudentGeneralPage() {
     );
   }
 
-  // TODO: onEdit handlers below are stubs (no-op) — no edit flow has
-  // been requested/built for this page yet.
   function noop() {}
 
+  const currentEnrolment =
+    enrolments?.find((enrolment) => enrolment.status === "active") ??
+    enrolments?.[0];
+
+  const currentClass =
+    classSections?.find(
+      (section) => section.id === currentEnrolment?.class_section_id
+    )?.code ?? "Nil";
+
+  function getFieldValue(label: string, defaultValue: string) {
+    return editedFields[label] ?? defaultValue;
+  }
+
+  function handleFieldChange(label: string, value: string) {
+    setEditedFields((previous) => ({
+      ...previous,
+      [label]: value,
+    }));
+  }
+
+  function handleEdit() {
+    setEditedFields({});
+    setIsEditing(true);
+  }
+
+  function handleCancel() {
+    setEditedFields({});
+    setIsEditing(false);
+  }
+
+  function handleSave() {
+    // TODO: Connect this to the student update API.
+    setIsEditing(false);
+  }
+
   const personalFields = [
-    { label: "First name", value: student.first_name },
-    { label: "Middle name", value: student.middle_name ?? "Nil" },
-    { label: "Last name", value: student.last_name },
-    { label: "Place of birth", value: student.place_of_birth ?? "Nil" },
+    {
+      label: "First name",
+      value: getFieldValue("First name", student.first_name),
+    },
+    {
+      label: "Middle name",
+      value: getFieldValue("Middle name", student.middle_name ?? "Nil"),
+    },
+    {
+      label: "Last name",
+      value: getFieldValue("Last name", student.last_name),
+    },
+    {
+      label: "Place of birth",
+      value: getFieldValue("Place of birth", student.place_of_birth ?? "Nil"),
+    },
     {
       label: "Sex",
-      value: student.gender ? titleCase(student.gender) : "Nil",
+      value: getFieldValue(
+        "Sex",
+        student.gender ? titleCase(student.gender) : "Nil"
+      ),
     },
-    { label: "D.O.B", value: student.date_of_birth ?? "Nil" },
-    { label: "Nationality", value: student.nationality ?? "Nil" },
-    { label: "Country of birth", value: student.country_of_birth ?? "Nil" },
+    {
+      label: "D.O.B",
+      value: getFieldValue("D.O.B", student.date_of_birth ?? "Nil"),
+    },
+    {
+      label: "Nationality",
+      value: getFieldValue("Nationality", student.nationality ?? "Nil"),
+    },
+    {
+      label: "Country of birth",
+      value: getFieldValue(
+        "Country of birth",
+        student.country_of_birth ?? "Nil"
+      ),
+    },
   ];
 
   const languageFields = [
-    { label: "First language", value: student.first_language ?? "Nil" },
-    { label: "Other language", value: student.other_languages ?? "Nil" },
-    { label: "Religion", value: student.religion ?? "Nil" },
-    { label: "Ethnicity", value: student.ethnicity ?? "Nil" },
+    {
+      label: "First language",
+      value: getFieldValue(
+        "First language",
+        student.first_language ?? "Nil"
+      ),
+    },
+    {
+      label: "Other language",
+      value: getFieldValue(
+        "Other language",
+        student.other_languages ?? "Nil"
+      ),
+    },
+    {
+      label: "Religion",
+      value: getFieldValue("Religion", student.religion ?? "Nil"),
+    },
+    {
+      label: "Ethnicity",
+      value: getFieldValue("Ethnicity", student.ethnicity ?? "Nil"),
+    },
   ];
 
   const identificationFields = [
-    { label: "Admission no.", value: student.admission_number },
-    { label: "Student ID", value: student.student_id_number ?? "Nil" },
+    {
+      label: "Admission no.",
+      value: getFieldValue("Admission no.", student.admission_number),
+    },
+    {
+      label: "Student ID",
+      value: getFieldValue(
+        "Student ID",
+        student.student_id_number ?? "Nil"
+      ),
+    },
     {
       label: "Previous admission no.",
-      value: student.previous_admission_number ?? "Nil",
+      value: getFieldValue(
+        "Previous admission no.",
+        student.previous_admission_number ?? "Nil"
+      ),
     },
   ];
 
   const contactFields = [
-    { label: "Home address", value: student.home_address ?? "Nil" },
-    { label: "Email address", value: student.personal_email ?? "Nil" },
-    { label: "Phone number", value: student.personal_phone ?? "Nil" },
+    {
+      label: "Home address",
+      value: getFieldValue("Home address", student.home_address ?? "Nil"),
+    },
+    {
+      label: "Email address",
+      value: getFieldValue(
+        "Email address",
+        student.personal_email ?? "Nil"
+      ),
+    },
+    {
+      label: "Phone number",
+      value: getFieldValue(
+        "Phone number",
+        student.personal_phone ?? "Nil"
+      ),
+    },
   ];
 
   const academicFields = [
-    // MOCK: class enrolled has no backing field (see NOTE at top of file).
-    { label: "Class enrolled", value: "—" },
-    { label: "Admission date", value: student.admission_date },
+    {
+      label: "Class enrolled",
+      value: currentClass,
+    },
+    {
+      label: "Admission date",
+      value: getFieldValue("Admission date", student.admission_date),
+    },
     {
       label: "Admission type",
-      value: student.admission_type
-        ? titleCase(student.admission_type)
-        : "Nil",
+      value: getFieldValue(
+        "Admission type",
+        student.admission_type
+          ? titleCase(student.admission_type)
+          : "Nil"
+      ),
     },
     {
       label: "Previous school attended",
-      value: student.previous_school ?? "Nil",
+      value: getFieldValue(
+        "Previous school attended",
+        student.previous_school ?? "Nil"
+      ),
     },
     {
       label: "Entrance exam result",
-      value: student.entrance_exam_result ?? "Nil",
+      value: getFieldValue(
+        "Entrance exam result",
+        student.entrance_exam_result ?? "Nil"
+      ),
     },
-    { label: "Interview result", value: student.interview_result ?? "Nil" },
+    {
+      label: "Interview result",
+      value: getFieldValue(
+        "Interview result",
+        student.interview_result ?? "Nil"
+      ),
+    },
   ];
 
   return (
@@ -127,9 +266,34 @@ export default function StudentGeneralPage() {
             <ArrowDown2 size={12} variant="Linear" color="currentColor" />
           </button> */}
 
-          <Button size="sm" variant="secondary">
-            Edit
-          </Button>
+          {!isEditing ? (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={handleEdit}
+            >
+              Edit
+            </Button>
+          ) : (
+            <>
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={handleCancel}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                type="button"
+                size="sm"
+                onClick={handleSave}
+              >
+                Save
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
@@ -150,7 +314,11 @@ export default function StudentGeneralPage() {
         </div>
 
         <div className="flex-1">
-          <DetailCard fields={personalFields} />
+          <DetailCard
+            fields={personalFields}
+            editable={isEditing}
+            onFieldChange={handleFieldChange}
+          />
         </div>
       </div>
 
@@ -197,13 +365,32 @@ export default function StudentGeneralPage() {
         </div>
       </div>
 
-      <DetailCard fields={languageFields} />
+      <DetailCard
+        fields={languageFields}
+        editable={isEditing}
+        onFieldChange={handleFieldChange}
+      />
 
-      <DetailCard title="Identification" fields={identificationFields} />
+      <DetailCard
+        title="Identification"
+        fields={identificationFields}
+        editable={isEditing}
+        onFieldChange={handleFieldChange}
+      />
 
-      <DetailCard title="Contact Details" fields={contactFields} />
+      <DetailCard
+        title="Contact Details"
+        fields={contactFields}
+        editable={isEditing}
+        onFieldChange={handleFieldChange}
+      />
 
-      <DetailCard title="Academic Details" fields={academicFields} />
+      <DetailCard
+        title="Academic Details"
+        fields={academicFields}
+        editable={isEditing}
+        onFieldChange={handleFieldChange}
+      />
 
       <RecordTableSection
         title="Guardians"

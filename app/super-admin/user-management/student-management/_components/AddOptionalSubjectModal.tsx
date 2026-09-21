@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import FormModal from "@/components/ui/form-modal";
-import { Input, Select } from "@/components/ui/form";
+import { Select } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
 import { api } from "@/lib/api";
 import { ServerErrorResponse } from "@/types/api";
@@ -15,7 +15,6 @@ interface EffectiveSubject {
   assignment_id: string;
   subject_name: string;
   source: string;
-  pass_mark: number;
 }
 
 interface AddOptionalSubjectsModalProps {
@@ -93,8 +92,7 @@ export default function AddOptionalSubjectsModal({
 
   const handleAddSubject = () => {
     append({
-      subjectName: "",
-      passMark: "",
+      subjectName: ""
     });
   };
 
@@ -149,16 +147,12 @@ export default function AddOptionalSubjectsModal({
                   key={field.id}
                   className="grid grid-cols-1 gap-3 sm:grid-cols-2"
                 >
-                  <Input
+                  <Select
                     name={`subjects.${index}.subjectName`}
-                    label="Enter subject name"
-                    />
-
-                  <Input
-                    name={`subjects.${index}.passMark`}
-                    label="Enter pass mark"
-                    type="number"
+                    label="Subject name" 
+                    options={[]}                    
                   />
+                    
                 </div>
               ))}
             </div>

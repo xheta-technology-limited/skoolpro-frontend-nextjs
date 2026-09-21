@@ -9,7 +9,7 @@ import type {
 export const createEnrolment = (
   payload: CreateEnrolmentPayload
 ): Promise<CreateEnrolmentResponse> => {
-  return api.post("enrolments", payload);
+  return api.post("enrolments", payload, { raw: true });
 };
 
 export const useCreateEnrolment = () => {

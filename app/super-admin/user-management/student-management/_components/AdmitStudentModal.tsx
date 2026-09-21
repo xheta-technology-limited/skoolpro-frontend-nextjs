@@ -234,7 +234,7 @@ export default function AdmitStudentModal({
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[14px] font-medium text-neutrals-900">
-                    Admission number (BFA/year/seq:4)
+                    Admission number (year/seq:4)
                   </span>
 
                   <div className="flex items-center gap-4">
@@ -401,14 +401,9 @@ export default function AdmitStudentModal({
                     placeholder="Admission type"
                     options={ADMISSION_TYPE_OPTIONS}
                   />
-                  {/* TODO: confirm whether this should be a free-text
-                      field instead of a fixed dropdown — a closed list
-                      of "previous schools" seems unlikely to cover
-                      every applicant. */}
-                  <Select
+                  <Input
                     name="previousSchoolAttended"
-                    placeholder="Previous school attended"
-                    options={[]}
+                    label="Previous school attended"
                   />
                   <Input
                     name="entranceExamResult"

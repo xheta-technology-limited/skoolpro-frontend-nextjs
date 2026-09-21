@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { ArrowDown2 } from "iconsax-reactjs";
 
@@ -14,6 +14,7 @@ import type { StudentRecord } from "@/features/user-management/student-managemen
 import { useProgressRouter } from "@/features/page-loader";
 import SearchInput from "@/components/ui/form/input/search-input";
 import { titleCase } from "@/lib/helpers/string-to-title-case";
+import { useListLevels } from "@/features/academic-year/api/list-levels";
 
 const TABLE_COLUMNS = [
   "Name",
@@ -25,8 +26,6 @@ const TABLE_COLUMNS = [
   "Status",
 ];
 
-// 7 columns, kept as one constant so the header row and data rows can
-// never drift out of alignment with each other.
 const GRID_TEMPLATE = "grid-cols-[1.5fr_1.5fr_.7fr_.8fr_1fr_1fr_.7fr]";
 
 const PAGE_SIZE = 10;
@@ -36,7 +35,7 @@ function toStudentRowData(record: StudentRecord): Student {
     id: record.id,
     name: record.full_name,
     email: record.personal_email ?? "",
-    className: "—",
+    className: record.current_enrolment?.class_section?.code ?? "—",
     admissionStatus: titleCase(record.admission_status),
     guardian: "—",
     admissionNumber: record.admission_number,
@@ -46,24 +45,65 @@ function toStudentRowData(record: StudentRecord): Student {
 
 export default function StudentManagement() {
   const router = useProgressRouter();
+
   const [currentPage, setCurrentPage] = useState(1);
   const [isAdmitStudentOpen, setIsAdmitStudentOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+
+  const [isClassMenuOpen, setIsClassMenuOpen] = useState(false);
+  const [selectedLevelId, setSelectedLevelId] = useState<
+    string | undefined
+  >(undefined);
+
+  const classMenuRef = useRef<HTMLDivElement>(null);
+
+  const { data: educationLevels } = useListLevels();
+
+  const selectedLevelLabel =
+    educationLevels?.find((level) => level.id === selectedLevelId)?.name ??
+    "All Classes";
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        classMenuRef.current &&
+        !classMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsClassMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  function handleSelectLevel(levelId: string | undefined) {
+    setSelectedLevelId(levelId);
+    setCurrentPage(1);
+    setIsClassMenuOpen(false);
+  }
 
   const schoolId = useUserStore((state) => state.data?.id) ?? "";
 
   const { data, isPending, isError, refetch } = useGetStudents({
     search: searchTerm || undefined,
+    page: currentPage,
+    per_page: PAGE_SIZE,
+    level_id: selectedLevelId,
   });
 
-  const allStudents = useMemo(() => (data ?? []).map(toStudentRowData), [data]);
+  const students = useMemo(
+    () => (data?.data ?? []).map(toStudentRowData),
+    [data]
+  );
 
-  const totalItems = allStudents.length;
+  const metaData = data?.meta;
 
-  const students = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE;
-    return allStudents.slice(start, start + PAGE_SIZE);
-  }, [allStudents, currentPage]);
+  const totalItems = metaData?.total ?? 0;
+
+  const rangeStart = metaData?.from ?? 0;
+  const rangeEnd = metaData?.to ?? 0;
 
   const exportStudent = () => alert("export clicked");
   const addStudent = () => setIsAdmitStudentOpen(true);
@@ -73,9 +113,6 @@ export default function StudentManagement() {
     setSearchTerm(value);
     setCurrentPage(1);
   }
-
-  const rangeStart = totalItems === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
-  const rangeEnd = Math.min(currentPage * PAGE_SIZE, totalItems);
 
   return (
     <>
@@ -93,20 +130,58 @@ export default function StudentManagement() {
       />
 
       <div className="flex w-full flex-col gap-1">
-        {/* Header: title, class filter, search, table columns */}
         <section className="w-full rounded-t-2xl border border-primary-100 bg-[#FFFFFF] px-4 pt-4 sm:px-5 lg:px-6">
           <div className="flex items-center justify-between gap-4">
             <h1 className="text-[16px] font-medium leading-6 text-neutrals-900">
               Student Management
             </h1>
 
-            <button
-              type="button"
-              className="flex shrink-0 items-center gap-1 rounded-full border border-primary-100 px-3 py-1.5 text-[12px] text-neutrals-700"
-            >
-              All Classes
-              <ArrowDown2 size={12} variant="Linear" color="currentColor" />
-            </button>
+            <div ref={classMenuRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setIsClassMenuOpen((prev) => !prev)}
+                className="flex shrink-0 items-center gap-1 rounded-full border border-primary-100 px-3 py-1.5 text-[12px] text-neutrals-700"
+              >
+                {selectedLevelLabel}
+
+                <ArrowDown2
+                  size={12}
+                  variant="Linear"
+                  color="currentColor"
+                />
+              </button>
+
+              {isClassMenuOpen && (
+                <div className="absolute right-0 top-full z-10 mt-2 w-48 overflow-hidden rounded-2xl border border-primary-100 bg-base-white py-2 shadow-lg">
+                  <button
+                    type="button"
+                    onClick={() => handleSelectLevel(undefined)}
+                    className={`flex w-full items-center px-4 py-2 text-left text-[13px] hover:bg-primary-bg ${
+                      selectedLevelId === undefined
+                        ? "font-semibold text-primary"
+                        : "text-neutrals-700"
+                    }`}
+                  >
+                    All Classes
+                  </button>
+
+                  {(educationLevels ?? []).map((level) => (
+                    <button
+                      key={level.id}
+                      type="button"
+                      onClick={() => handleSelectLevel(level.id)}
+                      className={`flex w-full items-center px-4 py-2 text-left text-[13px] hover:bg-primary-bg ${
+                        selectedLevelId === level.id
+                          ? "font-semibold text-primary"
+                          : "text-neutrals-700"
+                      }`}
+                    >
+                      {level.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-5">
@@ -144,6 +219,7 @@ export default function StudentManagement() {
             <span className="text-[13px] text-neutrals-500">
               Unable to load students.
             </span>
+
             <button
               type="button"
               onClick={() => refetch()}
@@ -153,7 +229,6 @@ export default function StudentManagement() {
             </button>
           </section>
         ) : students.length === 0 ? (
-          /* Empty state */
           <section className="flex min-h-105 w-full flex-col items-center justify-center bg-[#FFFFFF] px-4 py-10 sm:min-h-131.25">
             <Image
               src="/norecord.png"
@@ -164,7 +239,6 @@ export default function StudentManagement() {
             />
           </section>
         ) : (
-          /* Rows */
           <section className="w-full overflow-x-auto bg-[#FFFFFF]">
             <div className="min-w-190">
               {students.map((student) => (
@@ -183,15 +257,12 @@ export default function StudentManagement() {
           </section>
         )}
 
-        {/* Pagination */}
-        <div className="w-full overflow-x-auto rounded-b-2xl bg-[#FFFFFF]">
-          <Pagination
-            currentPage={currentPage}
-            totalItems={totalItems}
-            pageSize={PAGE_SIZE}
-            onPageChange={setCurrentPage}
-          />
-        </div>
+        <Pagination
+          currentPage={metaData?.current_page ?? currentPage}
+          totalItems={metaData?.total ?? 0}
+          pageSize={metaData?.per_page ?? PAGE_SIZE}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </>
   );

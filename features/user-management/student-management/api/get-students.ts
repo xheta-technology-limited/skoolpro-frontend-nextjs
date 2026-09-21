@@ -8,7 +8,10 @@ import type {
 export const getStudents = (
   params: GetStudentsParams = {}
 ): Promise<GetStudentsResponse> => {
-  return api.get("students", { params });
+  return api.get("students", {
+    params,
+    raw: true,
+  });
 };
 
 export const useGetStudents = (params: GetStudentsParams = {}) => {
