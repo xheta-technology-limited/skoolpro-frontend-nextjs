@@ -34,7 +34,7 @@ interface Props {
   >;
   isMutatePending: boolean;
   isPending: boolean;
-  setSelectedRoles: Dispatch<SetStateAction<string[] | undefined>>;
+  setDraftRoles: Dispatch<SetStateAction<string[] | undefined>>;
   selectedRoles: string[];
 }
 export default function NotGenerated({
@@ -44,7 +44,7 @@ export default function NotGenerated({
   profileData,
   isPending,
   selectedRoles,
-  setSelectedRoles,
+  setDraftRoles,
 }: Props) {
   const [email, setEmail] = useState<string | undefined>(
     profileData?.email || undefined
@@ -59,7 +59,7 @@ export default function NotGenerated({
   });
 
   const onSubmit = (data: { role_ids: string[] }) => {
-    setSelectedRoles(
+    setDraftRoles(
       dummyRoles
         .filter((role) => data.role_ids.includes(role.id))
         .map((role) => role.name)
@@ -119,7 +119,7 @@ export default function NotGenerated({
                 key={role}
                 label={role}
                 onButtonClick={() =>
-                  setSelectedRoles(selectedRoles.filter((sub) => sub !== role))
+                  setDraftRoles(selectedRoles.filter((sub) => sub !== role))
                 }
               />
             ))}

@@ -31,7 +31,7 @@ export const addStaffFirstSchema = z.object({
   phone: phoneString,
   address: z.string().max(255, "Address is too long").optional(),
 
-  emergency_phone_number: z.string(),
+  emergency_phone: z.string(),
 });
 
 export type AddStaffFirstFormData = z.infer<typeof addStaffFirstSchema>;

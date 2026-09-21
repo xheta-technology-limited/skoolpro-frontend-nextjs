@@ -18,7 +18,7 @@ import { useProgressRouter } from "@/features/page-loader";
 import { HEADROW } from "./constants";
 import ImportStaff from "./_components/import-user";
 import { useListStaff } from "@/features/user-management/staff-management/api/list-staff";
-import { ChangeEvent, Suspense, useEffect, useState } from "react";
+import { ChangeEvent, Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { NoData } from "@/components/icons";
 import { Button } from "@/components/ui/custom-button";
@@ -31,6 +31,7 @@ function StaffManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchFilter, setSearchFilter] = useState("");
   const [searchKey, setSearchKey] = useState("");
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const exportStaff = () => alert("export clicked");
   const addStaff = () =>
     router.push(
@@ -56,14 +57,26 @@ function StaffManagement() {
   const onSearchInputChange = (
     e: ChangeEvent<HTMLInputElement, HTMLInputElement>
   ) => {
-    setSearchFilter(e.target.value);
+    const value = e.target.value;
+    setSearchFilter(value);
+    if (searchDebounceRef.current) {
+      clearTimeout(searchDebounceRef.current);
+    }
+    searchDebounceRef.current = setTimeout(() => {
+      setSearchKey(value.length > 2 ? value : "");
+      if (value.length <= 2) {
+        setCurrentPage(1);
+      }
+    }, 300);
   };
 
   useEffect(() => {
-    if (searchFilter.length > 2) {
-      setSearchKey(searchFilter);
-    } else return;
-  }, [searchFilter]);
+    return () => {
+      if (searchDebounceRef.current) {
+        clearTimeout(searchDebounceRef.current);
+      }
+    };
+  }, []);
 
   if (error) {
     return (

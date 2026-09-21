@@ -36,7 +36,7 @@ export default function EditMode({ setEditMode, profileData }: Props) {
 
   const { isLoading: isStaffLoading, data: staffData } = useListStaff();
   const staffOptions = createSelectOptions<Staff, "id", "full_name">(
-    staffData,
+    staffData?.data,
     "id",
     "full_name"
   );

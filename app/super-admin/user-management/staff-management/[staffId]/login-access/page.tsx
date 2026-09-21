@@ -24,9 +24,10 @@ export default function LoginAccess() {
     refetch,
   } = useGetLinkedUser(userID);
 
-  const [selectedRoles, setSelectedRoles] = useState<string[] | undefined>(
-    profileData?.roles
-  );
+  const [draftRoles, setDraftRoles] = useState<string[] | undefined>();
+
+  const selectedRoles = draftRoles ?? profileData?.roles;
+
   const { mutate, isPending: isMutatePending } = useCreateStaffLogin(userID);
 
   if (isPending) {
@@ -74,7 +75,7 @@ export default function LoginAccess() {
           profileData={profileData}
           isMutatePending={isMutatePending}
           selectedRoles={selectedRoles || []}
-          setSelectedRoles={setSelectedRoles}
+          setDraftRoles={setDraftRoles}
         />
       )}
     </>
