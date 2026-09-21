@@ -18,14 +18,17 @@ import { useProgressRouter } from "@/features/page-loader";
 import { HEADROW } from "./constants";
 import ImportStaff from "./_components/import-user";
 import { useListStaff } from "@/features/user-management/staff-management/api/list-staff";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { NoData } from "@/components/icons";
 import { Button } from "@/components/ui/custom-button";
 import { Spinner } from "@/components/animations";
 import { titleCase } from "@/lib/helpers/string-to-title-case";
 
-export default function StaffManagement() {
+function StaffManagement() {
   const router = useProgressRouter();
+  const searchParams = useSearchParams();
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchFilter, setSearchFilter] = useState("");
   const [searchKey, setSearchKey] = useState("");
   const exportStaff = () => alert("export clicked");
@@ -37,6 +40,9 @@ export default function StaffManagement() {
     router.push(
       "/super-admin/user-management/staff-management?import-modal=true&current=1"
     );
+  const onPageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const {
     data: allStaff,
@@ -44,8 +50,9 @@ export default function StaffManagement() {
     refetch,
     error,
     isPending,
-  } = useListStaff(searchKey, {});
-  const hasStaff = allStaff && allStaff.length > 0;
+  } = useListStaff({ search: searchKey, page: currentPage }, {});
+  const hasStaff = allStaff && allStaff.data.length > 0;
+  const metaData = allStaff?.meta;
   const onSearchInputChange = (
     e: ChangeEvent<HTMLInputElement, HTMLInputElement>
   ) => {
@@ -106,10 +113,9 @@ export default function StaffManagement() {
                 placeholder="Search staff name"
                 className="flex-1"
               />
-              <Text
-                scale={"caption"}
-                className="text-neutrals-700"
-              >{`Showing ${0} - ${0} of ${0}`}</Text>
+              <Text scale={"caption"} className="text-neutrals-700">{`Showing ${
+                metaData?.from ?? 0
+              } - ${metaData?.to ?? 0} of ${metaData?.total ?? 0}`}</Text>
             </div>
           </div>
 
@@ -135,7 +141,7 @@ export default function StaffManagement() {
               </TableHeader>
 
               <TableBody>
-                {allStaff.map((staff, index) => (
+                {allStaff.data.map((staff, index) => (
                   <TableRow
                     className="cursor-pointer"
                     key={index}
@@ -185,10 +191,10 @@ export default function StaffManagement() {
         {hasStaff && (
           <div className="overflow-hidden rounded-b-ml">
             <Pagination
-              currentPage={3}
-              totalItems={500}
-              pageSize={14}
-              onPageChange={() => alert("nope")}
+              currentPage={metaData?.current_page ?? currentPage}
+              totalItems={metaData?.total ?? 0}
+              pageSize={metaData?.per_page ?? 14}
+              onPageChange={onPageChange}
             />
           </div>
         )}
@@ -197,5 +203,13 @@ export default function StaffManagement() {
       <AddStaff />
       <ImportStaff />
     </div>
+  );
+}
+
+export default function StaffManagementPage() {
+  return (
+    <Suspense fallback={null}>
+      <StaffManagement />
+    </Suspense>
   );
 }

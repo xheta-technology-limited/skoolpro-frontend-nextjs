@@ -1,9 +1,8 @@
 "use client";
 import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/custom-button";
-import { AddSquare, Edit, Trash, UserEdit } from "iconsax-reactjs";
+import { AddSquare, Edit, Trash } from "iconsax-reactjs";
 
-import { qualifications, staff } from "./constants";
 import {
   Table,
   TableBody,

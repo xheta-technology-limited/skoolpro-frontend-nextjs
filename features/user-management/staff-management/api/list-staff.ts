@@ -1,21 +1,44 @@
 import { api } from "@/lib/api";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { ServerErrorResponse } from "@/types/api";
+import { PaginationMeta, ServerErrorResponse } from "@/types/api";
 import { staffKeys } from "./query-keys";
 import { Staff } from "../types/api/staff";
 
-export const listStaff = (name?: string): Promise<Staff[]> => {
-  const queryKey = name ? `?name=${name}` : "";
-  return api.get(`staff${queryKey}`);
+interface StaffResponse {
+  data: Staff[];
+  meta: PaginationMeta;
+}
+
+export type ListStaffParams = {
+  search?: string;
+  page?: number;
+  [key: string]: string | number | undefined;
+};
+
+export const listStaff = (params?: ListStaffParams): Promise<StaffResponse> => {
+  const searchParams = new URLSearchParams();
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined) {
+        searchParams.set(key, String(value));
+      }
+    }
+  }
+  const query = searchParams.toString();
+  return api.get(`staff${query ? `?${query}` : ""}`, { raw: true });
 };
 
 export const useListStaff = (
-  name?: string,
-  options?: Partial<UseQueryOptions<Staff[], ServerErrorResponse>>
+  params?: ListStaffParams,
+  options?: Partial<UseQueryOptions<StaffResponse, ServerErrorResponse>>
 ) => {
-  return useQuery<Staff[], ServerErrorResponse>({
-    queryFn: () => listStaff(name),
-    queryKey: name ? staffKeys.filteredByName(name) : staffKeys.all,
+  return useQuery<StaffResponse, ServerErrorResponse>({
+    queryFn: () => listStaff(params),
+    queryKey: params?.search
+      ? staffKeys.filtered(params.search, params.page)
+      : params?.page !== undefined
+      ? staffKeys.byPage(params.page)
+      : staffKeys.all,
     ...options,
   });
 };

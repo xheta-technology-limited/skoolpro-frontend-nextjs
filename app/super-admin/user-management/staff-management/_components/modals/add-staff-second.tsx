@@ -41,7 +41,7 @@ const SecondModal = ({ methods, onSubmit, isPending }: Props) => {
   });
 
   const staffOptions = createSelectOptions<Staff, "id", "full_name">(
-    allStaff,
+    allStaff?.data,
     "id",
     "full_name"
   );
