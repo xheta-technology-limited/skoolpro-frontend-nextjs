@@ -131,6 +131,7 @@ export default function AdmitStudentModal({
       interview_result: values.interviewResult || undefined,
     };
 
+    
     if (!isAdmitOnly) {
       payload.class_section_id = values.classSection || undefined;
       payload.academic_year_id = values.academicYear || undefined;
@@ -210,8 +211,8 @@ export default function AdmitStudentModal({
   }
 
   function handleUnsuccessfulDismiss() {
-    setIsUnsuccessfulOpen(false);
-  }
+  setIsUnsuccessfulOpen(false);
+}
 
   return (
     <>
@@ -300,39 +301,21 @@ export default function AdmitStudentModal({
 
                   <Input name="otherLanguage" label="Other language" />
 
-                  <Controller
-                    name="photoId"
-                    control={control}
-                    render={({ field }) => (
-                      <label className="flex h-30 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-primary bg-[#F9F6FF] text-center">
-                        <input
-                          type="file"
-                          className="sr-only"
-                          accept=".pdf,.png,.jpg,.jpeg"
-                          onChange={(event) =>
-                            field.onChange(event.target.files?.[0] ?? null)
-                          }
-                        />
-                        <DocumentUpload
-                          size={20}
-                          variant="Bulk"
-                          className="text-primary"
-                        />
-                        <span className="text-[13px] text-neutrals-700">
-                          {field.value ? (
-                            field.value.name
-                          ) : (
-                            <>
-                              Drag and drop or{" "}
-                              <span className="font-semibold text-primary">
-                                Browse
-                              </span>{" "}
-                              to upload photo ID
-                            </>
-                          )}
-                        </span>
-                      </label>
-                    )}
+                <Input name="houseAddress" label="Enter house address" />
+                <Input name="studentEmail" label="Enter email address" />
+                <Input name="phoneNumber" label="Enter phone number" />
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1">
+                  ACADEMIC DETAILS
+                </span>
+
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Select
+                    name="classToEnroll"
+                    placeholder="Class to enroll in"
+                    options={levelOptions}
                   />
                 </div>
 
@@ -415,36 +398,29 @@ export default function AdmitStudentModal({
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1">
-                      ENROLL INTO CLASS
-                    </span>
-
-                    <div className="flex items-center gap-4">
-                      <button
-                        type="button"
-                        onClick={() => setValue("enrollmentMode", "enroll")}
-                        className={`flex h-8.25 items-center gap-2 rounded-sm py-2 pr-6 pl-6 text-[13px] font-medium transition-colors ${
-                          !isAdmitOnly
-                            ? "bg-primary-900 text-white"
-                            : "text-neutrals-700"
-                        }`}
-                      >
-                        Enroll now
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setValue("enrollmentMode", "admit_only")}
-                        className={`flex h-8.25 items-center gap-2 rounded-sm py-2 pr-6 pl-6 text-[13px] font-medium transition-colors ${
-                          isAdmitOnly
-                            ? "bg-primary-900 text-white"
-                            : "text-neutrals-700"
-                        }`}
-                      >
-                        Admit only
-                      </button>
+                {isAdmitOnly ? (
+                  <p className="rounded-2xl bg-primary-bg py-4 pr-5 pl-5 text-[12px] leading-[1.4] text-neutrals-700">
+                    <span className="font-medium text-neutrals-900">
+                      Admit only:
+                    </span>{" "}
+                    the student record is created with no class placement.
+                    You can enroll them later from the student&apos;s
+                    Enrolment tab or the Enrolment module. A student with no
+                    current enrolment is a valid state.
+                  </p>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      <Select
+                        name="academicYear"
+                        placeholder="Academic year"
+                        options={academicYearOptions}
+                      />
+                      <Select
+                        name="classSection"
+                        placeholder="Class/Section"
+                        options={sectionOptions}
+                      />
                     </div>
                   </div>
 
@@ -511,28 +487,24 @@ export default function AdmitStudentModal({
         heading="Successful"
         subheading="The student was added successfully."
       >
-        <Button
-          type="button"
-          onClick={handleSuccessDismiss}
-          className="h-14 w-full rounded-[28px] sm:w-auto sm:px-12"
-        >
-          Dismiss
-        </Button>
-      </SuccessModal>
+        Dismiss
+      </Button>
+    </SuccessModal>
 
-      <UnsuccessfulModal
-        isOpen={isUnsuccessfulOpen}
-        onClose={handleUnsuccessfulDismiss}
-        heading="Unsuccessful"
-        subheading="The student was not added succesfully."
+    <UnsuccessfulModal
+      isOpen={isUnsuccessfulOpen}
+      onClose={handleUnsuccessfulDismiss}
+      heading="Unsuccessful"
+      subheading="The student was not added succesfully."
+    >
+      <Button
+        onClick={handleUnsuccessfulDismiss}
+        className="h-14 w-full rounded-[28px] sm:w-auto sm:px-12"
       >
-        <Button
-          onClick={handleUnsuccessfulDismiss}
-          className="h-14 w-full rounded-[28px] sm:w-auto sm:px-12"
-        >
-          Try again
-        </Button>
-      </UnsuccessfulModal>
+        Try again
+      </Button>
+
+    </UnsuccessfulModal>
     </>
   );
 }

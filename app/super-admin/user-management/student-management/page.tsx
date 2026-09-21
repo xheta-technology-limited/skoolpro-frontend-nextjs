@@ -50,17 +50,13 @@ export default function StudentManagement() {
   const [isAdmitStudentOpen, setIsAdmitStudentOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-
   const schoolId = useUserStore((state) => state.data?.id) ?? "";
 
   const { data, isPending, isError, refetch } = useGetStudents({
     search: searchTerm || undefined,
   });
 
-  const allStudents = useMemo(
-    () => (data ?? []).map(toStudentRowData),
-    [data]
-  );
+  const allStudents = useMemo(() => (data ?? []).map(toStudentRowData), [data]);
 
   const totalItems = allStudents.length;
 
@@ -139,7 +135,9 @@ export default function StudentManagement() {
 
         {isPending ? (
           <section className="flex min-h-105 w-full items-center justify-center bg-[#FFFFFF] sm:min-h-131.25">
-            <span className="text-[13px] text-neutrals-500">Loading students…</span>
+            <span className="text-[13px] text-neutrals-500">
+              Loading students…
+            </span>
           </section>
         ) : isError ? (
           <section className="flex min-h-105 w-full flex-col items-center justify-center gap-4 bg-[#FFFFFF] sm:min-h-131.25">

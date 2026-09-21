@@ -22,7 +22,7 @@ export default function Header({
   return (
     <div className="flex justify-between items-center flex-wrap md:min-w-xl lg:min-w-2xl mb-6 gap-4">
       <button
-        onClick={() => router.back()}
+        onClick={() => router.replace("/super-admin/user-management")}
         className="flex gap-3 cursor-pointer items-center"
       >
         <ArrowLeft variant="Bulk" size={24} />

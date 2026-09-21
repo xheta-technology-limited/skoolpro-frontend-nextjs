@@ -68,7 +68,7 @@ const FirstModal = ({ methods }: Props) => {
             <Input name="phone" label="Enter phone number" />
             <Input name="address" label="Enter home address" />
             <Input
-              name="emergency_phone_number"
+              name="emergency_phone"
               label="Enter emergency phone number"
             />
           </div>

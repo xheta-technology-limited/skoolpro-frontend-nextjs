@@ -7,15 +7,54 @@ import { Input, Select } from "@/components/ui/form";
 import { FormProvider, useForm } from "react-hook-form";
 import { GENDER_SELECT_OPTIONS } from "@/config/constants";
 import { Dispatch, SetStateAction } from "react";
+import { Staff } from "@/features/user-management/staff-management/types/api/staff";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  EditStaffFormData,
+  editStaffSchema,
+} from "@/features/user-management/staff-management/schemas/edit-staff-schema";
+import { useEditStaff } from "@/features/user-management/staff-management/api/edit-staff";
+import { toast } from "sonner";
+import { createSelectOptions, setFormErrors } from "@/lib/helpers";
+import { STAFF_CATEGORY_OPTIONS } from "@/features/user-management/staff-management";
+import { useListStaff } from "@/features/user-management/staff-management/api/list-staff";
 
 interface Props {
   setEditMode: Dispatch<SetStateAction<boolean>>;
+  profileData: Staff;
 }
-export default function EditMode({ setEditMode }: Props) {
-  const methods = useForm({});
-  const onSubmit = () => {
-    alert("Saved successfully");
-    setEditMode(false);
+const getFormDefaultValues = (data: Staff): EditStaffFormData =>
+  Object.fromEntries(
+    Object.entries(data).map(([key, value]) => [key, value ?? undefined])
+  ) as unknown as EditStaffFormData;
+
+export default function EditMode({ setEditMode, profileData }: Props) {
+  const methods = useForm<EditStaffFormData>({
+    defaultValues: getFormDefaultValues(profileData),
+    resolver: zodResolver(editStaffSchema),
+  });
+
+  const { isLoading: isStaffLoading, data: staffData } = useListStaff();
+  const staffOptions = createSelectOptions<Staff, "id", "full_name">(
+    staffData?.data,
+    "id",
+    "full_name"
+  );
+
+  const { mutate, isPending } = useEditStaff();
+  const onSubmit = (data: EditStaffFormData) => {
+    mutate(
+      { id: profileData.id, data: data },
+      {
+        onSuccess: () => {
+          toast.success("Updated successfully");
+          setEditMode(false);
+        },
+        onError: (res) => {
+          setFormErrors(methods.setError, res?.errors);
+        },
+      }
+    );
   };
   return (
     <>
@@ -35,6 +74,7 @@ export default function EditMode({ setEditMode }: Props) {
             size="sm"
             type="submit"
             form="edit-user-form"
+            loading={isPending}
           >
             Save
           </Button>
@@ -63,10 +103,7 @@ export default function EditMode({ setEditMode }: Props) {
               <Input name="first_name" label="Enter first name" />
               <Input name="middle_name" label="Enter middle name" />
               <Input name="last_name" label="Enter last name" />
-              <Input
-                name="religion"
-                label="Enter religion(doesn't exist on bakend)"
-              />
+              <Input name="religion" label="Enter religion" />
               <Select
                 name="gender"
                 label="Select sex"
@@ -95,10 +132,17 @@ export default function EditMode({ setEditMode }: Props) {
                 name="national_reg_number"
                 label="Enter national/prof. no."
               />
-              <Input name="category" label="Enter category" />
-              <Input
+              <Select
+                name="category"
+                label="Enter category"
+                options={STAFF_CATEGORY_OPTIONS}
+              />
+              <Select
                 name="reporting_manager_id"
                 label="Enter reporting manager"
+                options={staffOptions || []}
+                isLoading={isStaffLoading}
+                isLoadingText="Loading"
               />
               <Select
                 name="employment_type"
@@ -137,7 +181,7 @@ export default function EditMode({ setEditMode }: Props) {
               <Input name="email" label="Enter email address" />
               <Input name="phone" label="Enter phone number" />
               <Input
-                name="emergency_phone_number"
+                name="emergency_phone"
                 label="Enter emergency phone number"
               />
             </div>
