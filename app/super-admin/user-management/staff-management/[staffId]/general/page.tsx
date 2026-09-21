@@ -1,7 +1,7 @@
 "use client";
 import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/custom-button";
-import { AddSquare, Edit, UserEdit } from "iconsax-reactjs";
+import { AddSquare, Edit, Trash, UserEdit } from "iconsax-reactjs";
 
 import { qualifications, staff } from "./constants";
 import {
@@ -25,8 +25,10 @@ import { useListStaffQualifications } from "@/features/user-management/staff-man
 import { StaffQualification } from "@/features/user-management/staff-management/types/api/qualification";
 import { titleCase } from "@/lib/helpers";
 import { useDeleteStaff } from "@/features/user-management/staff-management/api/delete-staff";
+import { useRemoveQualification } from "@/features/user-management/staff-management/api/remove-qualification";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
+import { toast } from "sonner";
 
 // Fallback helper — anything missing renders as "-"
 const fallback = (value?: string | null) =>
@@ -66,6 +68,19 @@ export default function ProfilePage() {
   const { data: qualificationData, error: qualificationError } =
     useListStaffQualifications(userID);
   const { mutate: deleteMutate, isPending: isDeletePending } = useDeleteStaff();
+  const {
+    mutate: removeQualificationMutate,
+    isPending: isRemoveQualificationPending,
+  } = useRemoveQualification();
+
+  const onRemoveQualification = (qualification: StaffQualification) => {
+    removeQualificationMutate(
+      { staffId: userID, qualificationId: qualification.id },
+      {
+        onSuccess: () => toast.success("Qualification deleted successfully"),
+      }
+    );
+  };
 
   const onDelete = () => {
     deleteMutate(
@@ -201,22 +216,41 @@ export default function ProfilePage() {
                         </TableCell>
                         <TableCell>{fallback(qual.expiry_date)}</TableCell>
                         <TableCell>
-                          <button
-                            className="border-grays-borders text-neutrals-700 px-2 py-1.5 border flex gap-1 items-center rounded-[12px]"
-                            onClick={() => openEditModal(qual)}
-                          >
-                            <Edit
-                              size={14}
-                              variant="Bulk"
-                              className="text-neutrals-800"
-                            />
-                            <Text
-                              scale={"caption"}
-                              className="text-neutrals-700"
+                          <div className="flex gap-2 items-center">
+                            <button
+                              className="border-grays-borders text-neutrals-700 px-2 py-1.5 border flex gap-1 items-center rounded-[12px]"
+                              onClick={() => openEditModal(qual)}
                             >
-                              Edit
-                            </Text>
-                          </button>
+                              <Edit
+                                size={14}
+                                variant="Bulk"
+                                className="text-neutrals-800"
+                              />
+                              <Text
+                                scale={"caption"}
+                                className="text-neutrals-700"
+                              >
+                                Edit
+                              </Text>
+                            </button>
+                            <button
+                              className="border-grays-borders text-neutrals-700 px-2 py-1.5 border flex gap-1 items-center rounded-[12px]"
+                              onClick={() => onRemoveQualification(qual)}
+                              disabled={isRemoveQualificationPending}
+                            >
+                              <Trash
+                                size={14}
+                                variant="Bulk"
+                                className="text-error-200"
+                              />
+                              <Text
+                                scale={"caption"}
+                                className="text-neutrals-700"
+                              >
+                                Delete
+                              </Text>
+                            </button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
