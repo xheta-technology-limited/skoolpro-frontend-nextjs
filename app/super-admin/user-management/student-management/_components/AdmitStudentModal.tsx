@@ -40,9 +40,7 @@ export default function AdmitStudentModal({
   schoolId,
 }: AdmitStudentModalProps) {
   const [step, setStep] = useState(1);
-  const [admissionMode, setAdmissionMode] = useState<"auto" | "manual">(
-    "auto"
-  );
+  const [admissionMode, setAdmissionMode] = useState<"auto" | "manual">("auto");
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [isUnsuccessfulOpen, setIsUnsuccessfulOpen] = useState(false);
 
@@ -218,166 +216,90 @@ export default function AdmitStudentModal({
 
   return (
     <>
-    <FormModal
-      open={open}
-      onOpenChange={handleOpenChange}
-      title={step === 1 ? "Admit Student" : "Add Student"}
-      step={{ current: step, total: TOTAL_STEPS }}
-    >
-      <FormProvider {...methods}>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex w-full flex-col gap-6"
-        >
-          {step === 1 && (
-            <>
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-[14px] font-medium text-neutrals-900">
-                    Admission number (BFA/year/seq:4)
-                  </span>
+      <FormModal
+        open={open}
+        onOpenChange={handleOpenChange}
+        title={step === 1 ? "Admit Student" : "Add Student"}
+        step={{ current: step, total: TOTAL_STEPS }}
+      >
+        <FormProvider {...methods}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex w-full flex-col gap-6"
+          >
+            {step === 1 && (
+              <>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[14px] font-medium text-neutrals-900">
+                      Admission number (BFA/year/seq:4)
+                    </span>
 
-                  <div className="flex items-center gap-4">
-                    <button
-                      type="button"
-                      onClick={handleAutoGenerate}
-                      className={`flex h-8.25 items-center gap-2 rounded-sm py-2 pr-6 pl-6 text-[13px] font-medium transition-colors ${
-                        admissionMode === "auto"
-                          ? "bg-primary-900 text-white"
-                          : "text-neutrals-700"
-                      }`}
-                    >
-                      Auto generate
-                    </button>
+                    <div className="flex items-center gap-4">
+                      <button
+                        type="button"
+                        onClick={handleAutoGenerate}
+                        className={`flex h-8.25 items-center gap-2 rounded-sm py-2 pr-6 pl-6 text-[13px] font-medium transition-colors ${
+                          admissionMode === "auto"
+                            ? "bg-primary-900 text-white"
+                            : "text-neutrals-700"
+                        }`}
+                      >
+                        Auto generate
+                      </button>
 
-                    <button
-                      type="button"
-                      onClick={handleEnterManually}
-                      className={`flex h-8.25 items-center gap-2 rounded-sm py-2 pr-6 pl-6 text-[13px] font-medium transition-colors ${
-                        admissionMode === "manual"
-                          ? "bg-primary-900 text-white"
-                          : "text-neutrals-700"
-                      }`}
-                    >
-                      Enter manually
-                    </button>
+                      <button
+                        type="button"
+                        onClick={handleEnterManually}
+                        className={`flex h-8.25 items-center gap-2 rounded-sm py-2 pr-6 pl-6 text-[13px] font-medium transition-colors ${
+                          admissionMode === "manual"
+                            ? "bg-primary-900 text-white"
+                            : "text-neutrals-700"
+                        }`}
+                      >
+                        Enter manually
+                      </button>
+                    </div>
+                  </div>
+
+                  <Input
+                    name="admissionNumber"
+                    label="Admission number"
+                    disabled={admissionMode === "auto"}
+                  />
+
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <Input name="studentId" label="Enter student ID" />
+                    <Input
+                      name="previousAdmissionNo"
+                      label="Previous admission no"
+                    />
                   </div>
                 </div>
 
-                <Input
-                  name="admissionNumber"
-                  label="Admission number"
-                  disabled={admissionMode === "auto"}
-                />
-
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <Input name="studentId" label="Enter student ID" />
-                  <Input
-                    name="previousAdmissionNo"
-                    label="Previous admission no"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1">
-                  STUDENT DETAILS
-                </span>
-
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <Input name="firstName" label="Enter first name" />
-                  <Input name="middleName" label="Enter middle name" />
-                  <Input name="lastName" label="Enter last name" />
-                  <Input name="preferredName" label="Enter preferred name" />
-                  <Select
-                    name="gender"
-                    placeholder="Select gender"
-                    options={GENDER_OPTIONS}
-                  />
-                  <DatePicker name="dateOfBirth" label="D.O.B" />
-                  <Input name="nationality" label="Nationality" />
-                  <Input name="countryOfBirth" label="Country of birth" />
-                  <Input name="placeOfBirth" label="Place of birth" />
-                  <Input name="firstLanguage" label="First language" />
-                </div>
-
-                <Input name="otherLanguage" label="Other language" />
-
-                <Controller
-                  name="photoId"
-                  control={control}
-                  render={({ field }) => (
-                    <label className="flex h-30 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-primary bg-[#F9F6FF] text-center">
-                      <input
-                        type="file"
-                        className="sr-only"
-                        accept=".pdf,.png,.jpg,.jpeg"
-                        onChange={(event) =>
-                          field.onChange(event.target.files?.[0] ?? null)
-                        }
-                      />
-                      <DocumentUpload
-                        size={20}
-                        variant="Bulk"
-                        className="text-primary"
-                      />
-                      <span className="text-[13px] text-neutrals-700">
-                        {field.value ? (
-                          field.value.name
-                        ) : (
-                          <>
-                            Drag and drop or{" "}
-                            <span className="font-semibold text-primary">
-                              Browse
-                            </span>{" "}
-                            to upload photo ID
-                          </>
-                        )}
-                      </span>
-                    </label>
-                  )}
-                />
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1">
-                  SENSITIVE DATA
-                </span>
-
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <Input name="religion" label="Religion" />
-                  <Input name="ethnicity" label="Ethnicity" />
-                </div>
-              </div>
-
-              <div className="flex gap-4 pt-2">
-                <button
-                  type="button"
-                  onClick={() => handleOpenChange(false)}
-                  className="flex h-14 flex-1 items-center justify-center rounded-[28px] border border-primary bg-base-white px-8 py-4"
-                >
-                  <span className="text-[16px] font-normal leading-[1.2] text-primary">
-                    Cancel
+                <div className="flex flex-col gap-3">
+                  <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1">
+                    STUDENT DETAILS
                   </span>
-                </button>
 
-                <Button
-                  type="button"
-                  onClick={handleProceedFromStepOne}
-                  className="h-14 flex-1 rounded-[28px]"
-                >
-                  Proceed
-                </Button>
-              </div>
-            </>
-          )}
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <Input name="firstName" label="Enter first name" />
+                    <Input name="middleName" label="Enter middle name" />
+                    <Input name="lastName" label="Enter last name" />
+                    <Input name="preferredName" label="Enter preferred name" />
+                    <Select
+                      name="gender"
+                      placeholder="Select gender"
+                      options={GENDER_OPTIONS}
+                    />
+                    <DatePicker name="dateOfBirth" label="D.O.B" />
+                    <Input name="nationality" label="Nationality" />
+                    <Input name="countryOfBirth" label="Country of birth" />
+                    <Input name="placeOfBirth" label="Place of birth" />
+                    <Input name="firstLanguage" label="First language" />
+                  </div>
 
-          {step === 2 && (
-            <>
-              <div className="flex flex-col gap-3">
-                <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1">
-                  CONTACT DETAILS
-                </span>
+                  <Input name="otherLanguage" label="Other language" />
 
                 <Input name="houseAddress" label="Enter house address" />
                 <Input name="studentEmail" label="Enter email address" />
@@ -395,59 +317,84 @@ export default function AdmitStudentModal({
                     placeholder="Class to enroll in"
                     options={levelOptions}
                   />
-                  <DatePicker name="admissionDate" label="Admission date" />
-                  <Select
-                    name="admissionType"
-                    placeholder="Admission type"
-                    options={ADMISSION_TYPE_OPTIONS}
-                  />
-                  {/* TODO: confirm whether this should be a free-text
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1">
+                    SENSITIVE DATA
+                  </span>
+
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <Input name="religion" label="Religion" />
+                    <Input name="ethnicity" label="Ethnicity" />
+                  </div>
+                </div>
+
+                <div className="flex gap-4 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => handleOpenChange(false)}
+                    className="flex h-14 flex-1 items-center justify-center rounded-[28px] border border-primary bg-base-white px-8 py-4"
+                  >
+                    <span className="text-[16px] font-normal leading-[1.2] text-primary">
+                      Cancel
+                    </span>
+                  </button>
+
+                  <Button
+                    type="button"
+                    onClick={handleProceedFromStepOne}
+                    className="h-14 flex-1 rounded-[28px]"
+                  >
+                    Proceed
+                  </Button>
+                </div>
+              </>
+            )}
+
+            {step === 2 && (
+              <>
+                <div className="flex flex-col gap-3">
+                  <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1">
+                    CONTACT DETAILS
+                  </span>
+
+                  <Input name="houseAddress" label="Enter house address" />
+                  <Input name="studentEmail" label="Enter email address" />
+                  <Input name="phoneNumber" label="Enter phone number" />
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1">
+                    ACADEMIC DETAILS
+                  </span>
+
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <Select
+                      name="classToEnroll"
+                      placeholder="Class to enroll in"
+                      options={levelOptions}
+                    />
+                    <DatePicker name="admissionDate" label="Admission date" />
+                    <Select
+                      name="admissionType"
+                      placeholder="Admission type"
+                      options={ADMISSION_TYPE_OPTIONS}
+                    />
+                    {/* TODO: confirm whether this should be a free-text
                       field instead of a fixed dropdown — a closed list
                       of "previous schools" seems unlikely to cover
                       every applicant. */}
-                  <Select
-                    name="previousSchoolAttended"
-                    placeholder="Previous school attended"
-                    options={[]}
-                  />
-                  <Input
-                    name="entranceExamResult"
-                    label="Entrance exam result"
-                  />
-                  <Input name="interviewResult" label="Interview result" />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1">
-                    ENROLL INTO CLASS
-                  </span>
-
-                  <div className="flex items-center gap-4">
-                    <button
-                      type="button"
-                      onClick={() => setValue("enrollmentMode", "enroll")}
-                      className={`flex h-8.25 items-center gap-2 rounded-sm py-2 pr-6 pl-6 text-[13px] font-medium transition-colors ${
-                        !isAdmitOnly
-                          ? "bg-primary-900 text-white"
-                          : "text-neutrals-700"
-                      }`}
-                    >
-                      Enroll now
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setValue("enrollmentMode", "admit_only")}
-                      className={`flex h-8.25 items-center gap-2 rounded-sm py-2 pr-6 pl-6 text-[13px] font-medium transition-colors ${
-                        isAdmitOnly
-                          ? "bg-primary-900 text-white"
-                          : "text-neutrals-700"
-                      }`}
-                    >
-                      Admit only
-                    </button>
+                    <Select
+                      name="previousSchoolAttended"
+                      placeholder="Previous school attended"
+                      options={[]}
+                    />
+                    <Input
+                      name="entranceExamResult"
+                      label="Entrance exam result"
+                    />
+                    <Input name="interviewResult" label="Interview result" />
                   </div>
                 </div>
 
@@ -475,49 +422,70 @@ export default function AdmitStudentModal({
                         options={sectionOptions}
                       />
                     </div>
+                  </div>
 
-                    <Input name="rollNumber" label="Roll number" />
-                  </>
-                )}
-              </div>
+                  {isAdmitOnly ? (
+                    <p className="rounded-2xl bg-primary-bg py-4 pr-5 pl-5 text-[12px] leading-[1.4] text-neutrals-700">
+                      <span className="font-medium text-neutrals-900">
+                        Admit only:
+                      </span>{" "}
+                      the student record is created with no class placement. You
+                      can enroll them later from the student&apos;s Enrolment
+                      tab or the Enrolment module. A student with no current
+                      enrolment is a valid state.
+                    </p>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <Select
+                          name="academicYear"
+                          placeholder="Academic year"
+                          options={academicYearOptions}
+                        />
+                        <Select
+                          name="classSection"
+                          placeholder="Class/Section"
+                          options={sectionOptions}
+                        />
+                      </div>
 
-              <div className="flex gap-4 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className="flex h-14 flex-1 items-center justify-center rounded-[28px] border border-primary bg-base-white px-8 py-4"
-                >
-                  <span className="text-[16px] font-normal leading-[1.2] text-primary">
-                    Back
-                  </span>
-                </button>
+                      <Input name="rollNumber" label="Roll number" />
+                    </>
+                  )}
+                </div>
 
-                <Button
-                  type="submit"
-                  loading={
-                    formState.isSubmitting || createStudentMutation.isPending
-                  }
-                  className="h-14 flex-1 rounded-[28px]"
-                >
-                  {isAdmitOnly ? "Admit student" : "Admit & Enroll student"}
-                </Button>
-              </div>
-            </>
-          )}
-        </form>
-      </FormProvider>
-    </FormModal>
+                <div className="flex gap-4 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setStep(1)}
+                    className="flex h-14 flex-1 items-center justify-center rounded-[28px] border border-primary bg-base-white px-8 py-4"
+                  >
+                    <span className="text-[16px] font-normal leading-[1.2] text-primary">
+                      Back
+                    </span>
+                  </button>
 
-    <SuccessModal
-      isOpen={isSuccessOpen}
-      onClose={handleSuccessDismiss}
-      heading="Successful"
-      subheading="The student was added successfully."
-    >
-      <Button
-        type="button"
-        onClick={handleSuccessDismiss}
-        className="h-14 w-full rounded-[28px] sm:w-auto sm:px-12"
+                  <Button
+                    type="submit"
+                    loading={
+                      formState.isSubmitting || createStudentMutation.isPending
+                    }
+                    className="h-14 flex-1 rounded-[28px]"
+                  >
+                    {isAdmitOnly ? "Admit student" : "Admit & Enroll student"}
+                  </Button>
+                </div>
+              </>
+            )}
+          </form>
+        </FormProvider>
+      </FormModal>
+
+      <SuccessModal
+        isOpen={isSuccessOpen}
+        onClose={handleSuccessDismiss}
+        heading="Successful"
+        subheading="The student was added successfully."
       >
         Dismiss
       </Button>
