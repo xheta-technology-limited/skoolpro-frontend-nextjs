@@ -1,20 +1,23 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import Image from "next/image";
-import { ArrowDown2, LockCircle } from "iconsax-reactjs";
 import { useState } from "react";
+import { useParams } from "next/navigation";
 
-import { Button } from "@/components/ui/custom-button";
-import DetailCard from "@/components/common/detail-card/DetailCard";
 import RecordTableSection, {
   type RecordTableRow,
 } from "@/components/common/record-table-section/RecordTableSection";
-import { useGetStudent } from "@/features/user-management/student-management/api/get-student";
-import { useGetEnrolments } from "@/features/user-management/student-management/api/get-enrolment";
-import { useGetClassSections } from "@/features/user-management/student-management/api/get-class-sections";
+import { Button } from "@/components/ui/custom-button";
+import { Spinner } from "@/components/animations";
+import { NoData } from "@/components/icons";
 import { titleCase } from "@/lib/helpers/string-to-title-case";
+import { useGetStudent } from "@/features/user-management/student-management/api/get-student";
+import { useDeleteStudent } from "@/features/user-management/student-management/api/delete-student";
 import type { StudentGuardian } from "@/features/user-management/student-management/types/student-detail-types";
+import { useProgressRouter } from "@/features/page-loader";
+import { toast } from "sonner";
+
+import ViewMode from "./_components/view-mode";
+import EditMode from "./_components/edit-mode";
 
 function getGuardianResponsibility(guardian: StudentGuardian): string {
   const { link } = guardian;
@@ -29,368 +32,75 @@ function getGuardianResponsibility(guardian: StudentGuardian): string {
 export default function StudentGeneralPage() {
   const params = useParams<{ studentId: string }>();
   const studentId = params.studentId;
+  const router = useProgressRouter();
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedFields, setEditedFields] = useState<Record<string, string>>(
-    {}
-  );
+  const [isEditMode, setEditMode] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
 
-  const { data: student, isPending, isError } = useGetStudent(studentId);
+  const {
+    data: student,
+    isPending,
+    error,
+    isRefetching,
+    refetch,
+  } = useGetStudent(studentId);
 
-  const { data: enrolments } = useGetEnrolments({
-    student_id: studentId,
-  });
+  const { mutate: deleteStudent, isPending: isDeleting } = useDeleteStudent();
 
-  const { data: classSections } = useGetClassSections();
+  const onDelete = () => {
+    deleteStudent(
+      { studentId },
+      {
+        onSuccess: () => {
+          toast.success("Student deleted successfully");
+          router.push("/super-admin/user-management/student-management");
+        },
+      }
+    );
+  };
 
   if (isPending) {
     return (
-      <div className="flex min-h-60 w-full items-center justify-center">
-        <span className="text-[13px] text-neutrals-500">
-          Loading student…
-        </span>
+      <div className="w-full flex items-center justify-center py-7">
+        <Spinner size={70} />
       </div>
     );
   }
 
-  if (isError || !student) {
+  if (error || !student) {
     return (
-      <div className="flex min-h-60 w-full items-center justify-center">
-        <span className="text-[13px] text-neutrals-500">
-          Unable to load this student.
-        </span>
+      <div className="w-fit mx-auto">
+        <NoData
+          variant="signal"
+          title="Something went wrong"
+          subTitle={error?.message || ""}
+          className="w-97.5 h-143.75"
+        />
+        <Button
+          className="mt-3 w-full"
+          loading={isRefetching}
+          onClick={() => refetch()}
+          size="lg"
+        >
+          Retry
+        </Button>
       </div>
     );
   }
 
-  function noop() {}
-
-  const currentEnrolment =
-    enrolments?.find((enrolment) => enrolment.status === "active") ??
-    enrolments?.[0];
-
-  const currentClass =
-    classSections?.find(
-      (section) => section.id === currentEnrolment?.class_section_id
-    )?.code ?? "Nil";
-
-  function getFieldValue(label: string, defaultValue: string) {
-    return editedFields[label] ?? defaultValue;
-  }
-
-  function handleFieldChange(label: string, value: string) {
-    setEditedFields((previous) => ({
-      ...previous,
-      [label]: value,
-    }));
-  }
-
-  function handleEdit() {
-    setEditedFields({});
-    setIsEditing(true);
-  }
-
-  function handleCancel() {
-    setEditedFields({});
-    setIsEditing(false);
-  }
-
-  function handleSave() {
-    // TODO: Connect this to the student update API.
-    setIsEditing(false);
-  }
-
-  const personalFields = [
-    {
-      label: "First name",
-      value: getFieldValue("First name", student.first_name),
-    },
-    {
-      label: "Middle name",
-      value: getFieldValue("Middle name", student.middle_name ?? "Nil"),
-    },
-    {
-      label: "Last name",
-      value: getFieldValue("Last name", student.last_name),
-    },
-    {
-      label: "Place of birth",
-      value: getFieldValue("Place of birth", student.place_of_birth ?? "Nil"),
-    },
-    {
-      label: "Sex",
-      value: getFieldValue(
-        "Sex",
-        student.gender ? titleCase(student.gender) : "Nil"
-      ),
-    },
-    {
-      label: "D.O.B",
-      value: getFieldValue("D.O.B", student.date_of_birth ?? "Nil"),
-    },
-    {
-      label: "Nationality",
-      value: getFieldValue("Nationality", student.nationality ?? "Nil"),
-    },
-    {
-      label: "Country of birth",
-      value: getFieldValue(
-        "Country of birth",
-        student.country_of_birth ?? "Nil"
-      ),
-    },
-  ];
-
-  const languageFields = [
-    {
-      label: "First language",
-      value: getFieldValue(
-        "First language",
-        student.first_language ?? "Nil"
-      ),
-    },
-    {
-      label: "Other language",
-      value: getFieldValue(
-        "Other language",
-        student.other_languages ?? "Nil"
-      ),
-    },
-    {
-      label: "Religion",
-      value: getFieldValue("Religion", student.religion ?? "Nil"),
-    },
-    {
-      label: "Ethnicity",
-      value: getFieldValue("Ethnicity", student.ethnicity ?? "Nil"),
-    },
-  ];
-
-  const identificationFields = [
-    {
-      label: "Admission no.",
-      value: getFieldValue("Admission no.", student.admission_number),
-    },
-    {
-      label: "Student ID",
-      value: getFieldValue(
-        "Student ID",
-        student.student_id_number ?? "Nil"
-      ),
-    },
-    {
-      label: "Previous admission no.",
-      value: getFieldValue(
-        "Previous admission no.",
-        student.previous_admission_number ?? "Nil"
-      ),
-    },
-  ];
-
-  const contactFields = [
-    {
-      label: "Home address",
-      value: getFieldValue("Home address", student.home_address ?? "Nil"),
-    },
-    {
-      label: "Email address",
-      value: getFieldValue(
-        "Email address",
-        student.personal_email ?? "Nil"
-      ),
-    },
-    {
-      label: "Phone number",
-      value: getFieldValue(
-        "Phone number",
-        student.personal_phone ?? "Nil"
-      ),
-    },
-  ];
-
-  const academicFields = [
-    {
-      label: "Class enrolled",
-      value: currentClass,
-    },
-    {
-      label: "Admission date",
-      value: getFieldValue("Admission date", student.admission_date),
-    },
-    {
-      label: "Admission type",
-      value: getFieldValue(
-        "Admission type",
-        student.admission_type
-          ? titleCase(student.admission_type)
-          : "Nil"
-      ),
-    },
-    {
-      label: "Previous school attended",
-      value: getFieldValue(
-        "Previous school attended",
-        student.previous_school ?? "Nil"
-      ),
-    },
-    {
-      label: "Entrance exam result",
-      value: getFieldValue(
-        "Entrance exam result",
-        student.entrance_exam_result ?? "Nil"
-      ),
-    },
-    {
-      label: "Interview result",
-      value: getFieldValue(
-        "Interview result",
-        student.interview_result ?? "Nil"
-      ),
-    },
-  ];
+  const noop = () => {};
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <span className="font-poppins uppercase text-base font-normal leading-[120%] tracking-normal text-neutrals-700">
-          Student
-        </span>
-
-        <div className="flex items-center gap-3">
-          {/* MOCK: no current-class field exists on the API yet. */}
-          {/* <button
-            type="button"
-            className="flex items-center gap-1 rounded-full border border-primary-100 px-3 py-1.5 text-[12px] text-neutrals-700"
-          >
-            JS 1
-            <ArrowDown2 size={12} variant="Linear" color="currentColor" />
-          </button> */}
-
-          {!isEditing ? (
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={handleEdit}
-            >
-              Edit
-            </Button>
-          ) : (
-            <>
-              <Button
-                type="button"
-                size="sm"
-                variant="secondary"
-                onClick={handleCancel}
-              >
-                Cancel
-              </Button>
-
-              <Button
-                type="button"
-                size="sm"
-                onClick={handleSave}
-              >
-                Save
-              </Button>
-            </>
-          )}
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-4 sm:flex-row">
-        <div className="relative aspect-square w-full max-w-71 shrink-0 overflow-hidden rounded-[32px] border-4 border-primary bg-[#D9D9D9] sm:w-71">
-          {student.photo_path ? (
-            <Image
-              src={student.photo_path}
-              alt={student.full_name}
-              fill
-              className="object-cover"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center text-[13px] text-neutrals-500">
-              No photo
-            </div>
-          )}
-        </div>
-
-        <div className="flex-1">
-          <DetailCard
-            fields={personalFields}
-            editable={isEditing}
-            onFieldChange={handleFieldChange}
-          />
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-4 sm:flex-row">
-        {/* MOCK: Class Attendance Points has no backing field. */}
-        <div className="flex w-full flex-1 flex-col gap-2 rounded-2xl border border-primary-100 bg-[#FFFFFF] p-4 min-h-23 lg:h-23">
-          <span className="font-poppins text-base font-semibold leading-[120%] tracking-normal text-neutrals-700">
-            Class Attendance Point
-          </span>
-          <div className="flex items-center gap-3">
-            <div className="h-6 flex-1 overflow-hidden rounded-tl-[2px] rounded-tr-[32px] rounded-br-[32px] rounded-bl-[2px] bg-primary-bg lg:h-8.25">
-              <div className="h-full w-[38.27%] rounded-tl-[2px] rounded-tr-[32px] rounded-br-[32px] rounded-bl-[2px] bg-(--Primary-Primary800,#0100AB)" />
-            </div>
-            <span className="flex items-center gap-1">
-              <span className="font-poppins text-lg font-semibold leading-[120%] tracking-normal text-neutrals-900 lg:text-2xl">
-                2,450
-              </span>
-              <span className="text-lg lg:text-2xl">🔥</span>
-            </span>
-          </div>
-        </div>
-
-        {/* MOCK: Certificates has no backing field. */}
-        <div className="flex w-full flex-1 flex-col gap-2 rounded-2xl border border-primary-100 bg-[#FFFFFF] p-4 min-h-23 lg:h-23">
-          <span className="font-poppins text-base font-semibold leading-[120%] tracking-normal text-neutrals-700">
-            Certificates
-          </span>
-          <div className="flex w-full items-center justify-between">
-            <Image
-              src="/starbadge.png"
-              alt="Certificate badge"
-              width={36}
-              height={36}
-            />
-            {Array.from({ length: 5 }, (_, index) => (
-              <LockCircle
-                key={index}
-                size={36}
-                variant="Bulk"
-                color="var(--Primary-Primary1000, #01004D)"
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <DetailCard
-        fields={languageFields}
-        editable={isEditing}
-        onFieldChange={handleFieldChange}
-      />
-
-      <DetailCard
-        title="Identification"
-        fields={identificationFields}
-        editable={isEditing}
-        onFieldChange={handleFieldChange}
-      />
-
-      <DetailCard
-        title="Contact Details"
-        fields={contactFields}
-        editable={isEditing}
-        onFieldChange={handleFieldChange}
-      />
-
-      <DetailCard
-        title="Academic Details"
-        fields={academicFields}
-        editable={isEditing}
-        onFieldChange={handleFieldChange}
-      />
+    <div className="flex flex-col gap-6 w-full">
+      {isEditMode ? (
+        <EditMode
+          student={student}
+          onCancel={() => setEditMode(false)}
+          onSaved={() => setEditMode(false)}
+        />
+      ) : (
+        <ViewMode student={student} onEdit={() => setEditMode(true)} />
+      )}
 
       <RecordTableSection
         title="Guardians"
@@ -433,9 +143,37 @@ export default function StudentGeneralPage() {
       <button
         type="button"
         className="mx-auto text-[13px] font-medium text-error"
+        onClick={() => setDeleteModal(true)}
       >
         Delete user account
       </button>
+
+      {/* Wire your existing FormModal here for delete confirmation */}
+      {deleteModal && (
+        <div
+          role="dialog"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+          onClick={() => setDeleteModal(false)}
+        >
+          <div
+            className="rounded-ml bg-white p-6 flex flex-col gap-4 w-80"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span>Delete this student account?</span>
+            <div className="flex items-center justify-between">
+              <Button onClick={() => setDeleteModal(false)}>No</Button>
+              <Button
+                variant="secondary"
+                loading={isDeleting}
+                onClick={onDelete}
+                className="border-error-200! text-error-200!"
+              >
+                Yes, delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

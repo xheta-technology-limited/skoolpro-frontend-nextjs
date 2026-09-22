@@ -9,6 +9,7 @@ import Pagination from "@/components/common/pagination/pagination";
 import StudentRow, { type Student } from "./_components/StudentRow";
 import AdmitStudentModal from "./_components/AdmitStudentModal";
 import { useUserStore } from "@/features/school-profile/school-profile.store";
+import ImportStudent from "./_components/import-user";
 import { useGetStudents } from "@/features/user-management/student-management/api/get-students";
 import type { StudentRecord } from "@/features/user-management/student-management/types/student-types";
 import { useProgressRouter } from "@/features/page-loader";
@@ -59,6 +60,8 @@ export default function StudentManagement() {
 
   const { data: educationLevels } = useListLevels();
 
+  
+
   const selectedLevelLabel =
     educationLevels?.find((level) => level.id === selectedLevelId)?.name ??
     "All Classes";
@@ -107,7 +110,10 @@ export default function StudentManagement() {
 
   const exportStudent = () => alert("export clicked");
   const addStudent = () => setIsAdmitStudentOpen(true);
-  const importStudent = () => alert("import clicked");
+  const importStudent = () =>
+    router.push(
+      "/super-admin/user-management/student-management?import-modal=true&current=1"
+    );
 
   function handleSearchChange(value: string) {
     setSearchTerm(value);
@@ -128,6 +134,8 @@ export default function StudentManagement() {
         onOpenChange={setIsAdmitStudentOpen}
         schoolId={schoolId}
       />
+
+      <ImportStudent />
 
       <div className="flex w-full flex-col gap-1">
         <section className="w-full rounded-t-2xl border border-primary-100 bg-[#FFFFFF] px-4 pt-4 sm:px-5 lg:px-6">

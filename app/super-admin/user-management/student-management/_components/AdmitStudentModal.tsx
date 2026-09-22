@@ -27,6 +27,7 @@ import {
   STEP_ONE_FIELDS,
   type AdmitStudentValues,
 } from "../schema/student-management";
+import CountrySelectField from "@/app/onboarding/_components/fields/CountrySelectField";
 const TOTAL_STEPS = 2;
 
 interface AdmitStudentModalProps {
@@ -296,7 +297,7 @@ export default function AdmitStudentModal({
                   />
                   <DatePicker name="dateOfBirth" label="D.O.B" />
                   <Input name="nationality" label="Nationality" />
-                  <Input name="countryOfBirth" label="Country of birth" />
+                  <CountrySelectField name="countryOfBirth" placeholder="Country of birth" />
                   <Input name="placeOfBirth" label="Place of birth" />
                   <Input name="firstLanguage" label="First language" />
                 </div>
