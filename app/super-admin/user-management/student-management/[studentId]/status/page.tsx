@@ -89,16 +89,22 @@ export default function StudentStatusPage() {
   const params = useParams<{ studentId: string }>();
   const studentId = params.studentId;
 
-  const { data: student, isPending, isError, refetch } = useGetStudent(studentId);
-  const { mutate, isPending: isTransitioning, variables } =
-    useTransitionStudent(studentId);
+  const {
+    data: student,
+    isPending,
+    isError,
+    refetch,
+  } = useGetStudent(studentId);
+  const {
+    mutate,
+    isPending: isTransitioning,
+    variables,
+  } = useTransitionStudent(studentId);
 
   if (isPending) {
     return (
       <div className="flex min-h-60 w-full items-center justify-center">
-        <span className="text-[13px] text-neutrals-500">
-          Loading student…
-        </span>
+        <span className="text-[13px] text-neutrals-500">Loading student…</span>
       </div>
     );
   }
@@ -172,11 +178,7 @@ export default function StudentStatusPage() {
                 loading={isThisActionLoading}
                 onClick={() => handleTransition(roleAction.action)}
                 leftIcon={
-                  <AttachSquare
-                    size={20}
-                    variant="Bulk"
-                    color="currentColor"
-                  />
+                  <AttachSquare size={20} variant="Bulk" color="currentColor" />
                 }
                 className={
                   roleAction.tone === "danger"
@@ -213,8 +215,8 @@ export default function StudentStatusPage() {
           </div>
 
           <p className="flex-1 font-poppins text-base font-normal leading-[120%] tracking-normal text-neutrals-700 sm:pt-7">
-            applicant → offered → accepted → enrolled · deferred / waitlisted
-            / rejected / withdrawn
+            applicant → offered → accepted → enrolled · deferred / waitlisted /
+            rejected / withdrawn
           </p>
         </div>
       </div>

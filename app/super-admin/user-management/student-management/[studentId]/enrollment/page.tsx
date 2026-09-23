@@ -11,6 +11,7 @@ import RecordTableSection, {
 import AddOptionalSubjectsModal from "../../_components/AddOptionalSubjectModal";
 import TransferStudentModal from "../../_components/TransferStudentModal";
 import EnrollStudentModal from "../../_components/EnrollStudentModal";
+
 import { useGetEnrolments } from "@/features/user-management/student-management/api/get-enrolment";
 import { useGetEffectiveSubjects } from "@/features/user-management/student-management/api/get-effective-subjects";
 import { useGetClassSections } from "@/features/user-management/student-management/api/get-class-sections";
@@ -20,7 +21,12 @@ import { useWithdrawEnrolment } from "@/features/user-management/student-managem
 import { useCompleteEnrolment } from "@/features/user-management/student-management/api/complete-enrolment";
 import { useGetStudent } from "@/features/user-management/student-management/api/get-student";
 import { useTransitionStudent } from "@/features/user-management/student-management/api/transition-student";
-import { AddSquare, ArrowSwapHorizontal, MinusSquare, TickSquare } from "iconsax-reactjs";
+import {
+  AddSquare,
+  ArrowSwapHorizontal,
+  MinusSquare,
+  TickSquare,
+} from "iconsax-reactjs";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ApiError } from "@/lib/api";
@@ -43,8 +49,9 @@ export default function StudentEnrollmentPage() {
   // withdrawEnrolmentMutation.isPending, which only covers the first step.
   const [isWithdrawing, setIsWithdrawing] = useState(false);
 
-  const { data: enrolments, isPending: isEnrolmentsPending } =
-    useGetEnrolments({ student_id: studentId });
+  const { data: enrolments, isPending: isEnrolmentsPending } = useGetEnrolments(
+    { student_id: studentId }
+  );
   const { data: classSections } = useGetClassSections();
   const { data: academicYears } = useGetAcademicYears();
 
@@ -256,7 +263,9 @@ export default function StudentEnrollmentPage() {
               variant="secondary"
               size="sm"
               disabled={!activeEnrolment}
-              leftIcon={<ArrowSwapHorizontal size={16} variant="Bulk" color="#433E3F" />}
+              leftIcon={
+                <ArrowSwapHorizontal size={16} variant="Bulk" color="#433E3F" />
+              }
               onClick={() => setIsTransferStudentOpen(true)}
             >
               Transfer
@@ -269,7 +278,9 @@ export default function StudentEnrollmentPage() {
               disabled={!activeEnrolment || isWithdrawing}
               loading={isWithdrawing}
               onClick={handleWithdraw}
-              leftIcon={<MinusSquare size={16} variant="Bulk" color="#C03744" />}
+              leftIcon={
+                <MinusSquare size={16} variant="Bulk" color="#C03744" />
+              }
               className="border-error-200! text-error-200! hover:bg-error-200/5"
             >
               Withdraw
@@ -297,8 +308,8 @@ export default function StudentEnrollmentPage() {
                 ? "Loading…"
                 : "No current enrolment on record."
               : isSubjectsPending
-                ? "Loading subjects…"
-                : "No subjects added yet."
+              ? "Loading subjects…"
+              : "No subjects added yet."
           }
         />
 
@@ -328,9 +339,7 @@ export default function StudentEnrollmentPage() {
         onOpenChange={setIsTransferStudentOpen}
         enrolmentId={activeEnrolment?.id}
         currentClassLabel={
-          currentEnrolment
-            ? sectionName(currentEnrolment.class_section_id)
-            : ""
+          currentEnrolment ? sectionName(currentEnrolment.class_section_id) : ""
         }
         classSections={classSections ?? []}
       />
