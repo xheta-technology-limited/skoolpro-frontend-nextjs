@@ -27,7 +27,6 @@ interface AddOptionalSubjectsModalProps {
 interface AddOptionalSubjectsValues {
   subjects: {
     subjectName: string;
-    passMark: string;
   }[];
 }
 
@@ -35,7 +34,6 @@ const DEFAULT_VALUES: AddOptionalSubjectsValues = {
   subjects: [
     {
       subjectName: "",
-      passMark: "",
     },
   ],
 };
@@ -92,7 +90,7 @@ export default function AddOptionalSubjectsModal({
 
   const handleAddSubject = () => {
     append({
-      subjectName: ""
+      subjectName: "",
     });
   };
 
@@ -143,17 +141,12 @@ export default function AddOptionalSubjectsModal({
 
             <div className="flex flex-col gap-3">
               {fields.map((field, index) => (
-                <div
+                <Select
                   key={field.id}
-                  className="grid grid-cols-1 gap-3 sm:grid-cols-2"
-                >
-                  <Select
-                    name={`subjects.${index}.subjectName`}
-                    label="Subject name" 
-                    options={[]}                    
-                  />
-                    
-                </div>
+                  name={`subjects.${index}.subjectName`}
+                  label="Subject name"
+                  options={[]}
+                />
               ))}
             </div>
           </div>

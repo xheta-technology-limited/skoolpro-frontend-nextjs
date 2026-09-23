@@ -5,11 +5,23 @@ import DetailCard from "@/components/common/detail-card/DetailCard";
 import { Button } from "@/components/ui/custom-button";
 import { titleCase } from "@/lib/helpers/string-to-title-case";
 import type { StudentDetail } from "@/features/user-management/student-management/types/student-detail-types";
+import countryCodesList from "country-codes-list";
 
 interface Props {
   onEdit: () => void;
   student: StudentDetail;
 }
+
+const COUNTRY_NAME_BY_CODE: Record<string, string> = Object.fromEntries(
+  Object.entries(
+    countryCodesList.customList("countryCode", "{countryNameEn}")
+  ).map(([code, name]) => [code, name as string])
+);
+
+const countryName = (value?: string | null) => {
+  if (!value || value.trim() === "") return "Nil";
+  return COUNTRY_NAME_BY_CODE[value.toUpperCase()] ?? value;
+};
 
 const fallback = (value?: string | null) =>
   value && value.trim() !== "" ? value : "Nil";
@@ -28,7 +40,7 @@ export default function ViewMode({ onEdit, student }: Props) {
     },
     { label: "D.O.B", value: fallback(student.date_of_birth) },
     { label: "Nationality", value: fallback(student.nationality) },
-    { label: "Country of birth", value: fallback(student.country_of_birth) },
+    { label: "Country of birth", value: countryName(student.country_of_birth) },
   ];
 
   const languageFields = [

@@ -18,6 +18,8 @@ import { useGetAcademicYears } from "@/features/academic-year/api/list-academic-
 import { formatStudentStatus } from "@/features/user-management/student-management/utils/student-status";
 import { useWithdrawEnrolment } from "@/features/user-management/student-management/api/withdraw-enrolment";
 import { useCompleteEnrolment } from "@/features/user-management/student-management/api/complete-enrolment";
+import { useGetStudent } from "@/features/user-management/student-management/api/get-student";
+import { useTransitionStudent } from "@/features/user-management/student-management/api/transition-student";
 import { AddSquare, ArrowSwapHorizontal, MinusSquare, TickSquare } from "iconsax-reactjs";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -40,6 +42,12 @@ export default function StudentEnrollmentPage() {
     useGetEnrolments({ student_id: studentId });
   const { data: classSections } = useGetClassSections();
   const { data: academicYears } = useGetAcademicYears();
+
+  // Same hook/query key the status page reads from — calling it here too
+  // means `refetchStudent()` below updates the exact cache entry the
+  // status page is subscribed to, without needing to know its query key.
+  const { refetch: refetchStudent } = useGetStudent(studentId);
+  const transitionStudentMutation = useTransitionStudent(studentId);
 
   const sortedEnrolments = [...(enrolments ?? [])].sort(
     (a, b) =>
@@ -108,64 +116,93 @@ export default function StudentEnrollmentPage() {
   }));
 
   async function handleWithdraw() {
-  if (!currentEnrolment) return;
+    if (!currentEnrolment) return;
 
-  try {
-    await withdrawEnrolmentMutation.mutateAsync(currentEnrolment.id);
+    try {
+      await withdrawEnrolmentMutation.mutateAsync(currentEnrolment.id);
 
-    await queryClient.invalidateQueries({
-      queryKey: ["enrolments"],
-    });
+      await queryClient.invalidateQueries({
+        queryKey: ["enrolments"],
+      });
 
-    await queryClient.invalidateQueries({
-      queryKey: ["students"],
-    });
+      await queryClient.invalidateQueries({
+        queryKey: ["students"],
+      });
 
-    toast.success("Student withdrawn successfully.");
-  } catch (error) {
-    console.error("Failed to withdraw student:", error);
+      // Re-pull the student record to see whether withdrawing the
+      // enrolment already flipped the overall student status on its own.
+      const { data: refreshedStudent } = await refetchStudent();
+      const alreadyWithdrawn =
+        refreshedStudent?.student_status?.toLowerCase() === "withdrawn";
 
-    const message =
-      error && typeof error === "object" && "message" in error
-        ? String((error as { message: unknown }).message)
-        : "Failed to withdraw student. Please try again.";
+      let statusSyncFailed = false;
 
-    toast.error(message);
+      if (!alreadyWithdrawn) {
+        // Backend didn't cascade it — drive the status change explicitly
+        // through the same transition endpoint the Status tab uses.
+        try {
+          await transitionStudentMutation.mutateAsync({ action: "withdraw" });
+          await refetchStudent();
+        } catch (transitionError) {
+          statusSyncFailed = true;
+          console.error(
+            "Failed to sync student status to withdrawn after enrolment withdrawal:",
+            transitionError
+          );
+        }
+      }
+
+      if (statusSyncFailed) {
+        toast.error(
+          "Enrolment withdrawn, but the student's overall status couldn't be updated automatically. Update it from the Status tab."
+        );
+      } else {
+        toast.success("Student withdrawn successfully.");
+      }
+    } catch (error) {
+      console.error("Failed to withdraw student:", error);
+
+      const message =
+        error && typeof error === "object" && "message" in error
+          ? String((error as { message: unknown }).message)
+          : "Failed to withdraw student. Please try again.";
+
+      toast.error(message);
+    }
   }
-}
 
-async function handleComplete() {
-  if (!currentEnrolment) return;
+  async function handleComplete() {
+    if (!currentEnrolment) return;
 
-  try {
-    await completeEnrolmentMutation.mutateAsync(currentEnrolment.id);
+    try {
+      await completeEnrolmentMutation.mutateAsync(currentEnrolment.id);
 
-    await queryClient.invalidateQueries({
-      queryKey: ["enrolments"],
-    });
+      await queryClient.invalidateQueries({
+        queryKey: ["enrolments"],
+      });
 
-    await queryClient.invalidateQueries({
-      queryKey: ["students"],
-    });
+      await queryClient.invalidateQueries({
+        queryKey: ["students"],
+      });
 
-    toast.success("Enrolment completed successfully.");
-  } catch (error) {
-    console.error("Failed to complete enrolment:", error);
+      toast.success("Enrolment completed successfully.");
+    } catch (error) {
+      console.error("Failed to complete enrolment:", error);
 
-    const message =
-      error && typeof error === "object" && "message" in error
-        ? String((error as { message: unknown }).message)
-        : "Failed to complete enrolment. Please try again.";
+      const message =
+        error && typeof error === "object" && "message" in error
+          ? String((error as { message: unknown }).message)
+          : "Failed to complete enrolment. Please try again.";
 
-    toast.error(message);
+      toast.error(message);
+    }
   }
-}
 
   return (
     <>
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
-          <span className="text-[12px] font-medium uppercase tracking-wide text-neutrals-500">
+          <span className="text-[16px] font-small uppercase tracking-wide text-neutrals-700">
             Current placement
           </span>
 
@@ -283,5 +320,3 @@ async function handleComplete() {
     </>
   );
 }
-
-
