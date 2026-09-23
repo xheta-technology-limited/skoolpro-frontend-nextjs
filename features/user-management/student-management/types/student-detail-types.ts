@@ -18,6 +18,26 @@ export interface StudentGuardian {
   link: StudentGuardianLink;
 }
 
+export interface StudentCurrentEnrolment {
+  id: string;
+  school_id: string;
+  student_id: string;
+  class_section_id: string;
+  academic_year_id: string;
+  roll_number: string | null;
+  status: string;
+  enrolled_on: string;
+  class_section: {
+    id: string;
+    name: string;
+    slug: string;
+    arm_sequence: number;
+    code: string;
+    created_at: string;
+    updated_at: string;
+  };
+}
+
 export interface StudentDetail {
   id: string;
   school_id: string;
@@ -60,12 +80,12 @@ export interface StudentDetail {
   interview_result: string | null;
   admission_status: string;
   student_status: string;
+  current_enrolment: StudentCurrentEnrolment | null;
   guardians: StudentGuardian[];
   created_at: string;
   updated_at: string;
 }
 
-// api.get unwraps the {"data": ...} envelope (confirmed via the
-// list-students bug) — this hook returns the student object directly,
-// not wrapped.
+// api.get unwraps the {"data": ...} envelope — this hook returns the
+// student object directly, not wrapped.
 export type GetStudentResponse = StudentDetail;

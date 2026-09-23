@@ -5,7 +5,7 @@ import { z } from "zod";
 export function generateAdmissionNumber() {
   const year = new Date().getFullYear();
   const sequence = String(Math.floor(Math.random() * 9999)).padStart(4, "0");
-  return `BFA/${year}/${sequence}`;
+  return `${year}/${sequence}`;
 }
 
 export const GENDER_OPTIONS = [

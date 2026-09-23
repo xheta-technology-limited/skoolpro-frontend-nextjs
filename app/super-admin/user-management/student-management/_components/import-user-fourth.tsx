@@ -1,0 +1,117 @@
+"use client";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  TableWrapper,
+} from "@/components/ui/table";
+import { StatusBadge } from "@/components/common";
+import { Text } from "@/components/ui";
+import { Button } from "@/components/ui/custom-button";
+import FormModal from "@/components/ui/form-modal";
+import { useProgressRouter } from "@/features/page-loader";
+import { useSearchParams } from "next/navigation";
+import clsx from "clsx";
+
+const jobSummary = [
+  { label: "Job Status", value: "Completed" },
+  { label: "Total Rows", value: "15" },
+  { label: "Imported", value: "12" },
+  { label: "Completed at", value: "2/9/2026 - 10:30 AM" },
+];
+
+export default function FourthModal() {
+  const searchParams = useSearchParams();
+  const router = useProgressRouter();
+
+  const open = searchParams.get("import-modal");
+  const current = searchParams.get("current");
+  const isOpen = open === "true" && current === "4";
+
+  const handleClose = () =>
+    router.replace("/super-admin/user-management/student-management");
+
+  return (
+    <FormModal
+      title={"Import Students"}
+      onOpenChange={handleClose}
+      open={isOpen}
+      step={{ current: 4, total: 4 }}
+    >
+      <>
+        <div>
+          <Text scale={"content"} className="text-neutrals-900">
+            Import complete
+          </Text>
+          <Text scale={"caption"} mobile className="text-neutrals-700 mb-4">
+            The valid rows are now student records. Each row imported in its own
+            transaction, so one failure never blocks the rest.
+          </Text>
+
+          <div className="flex gap-4 items-center">
+            <StatusBadge variant="green" data="12 Valid" />
+            <StatusBadge variant="orange" data="2 Duplicates" />
+            <StatusBadge variant="red" data="1 Invalid" />
+          </div>
+        </div>
+
+        <TableWrapper className="mb-4">
+          <Table>
+            <TableBody>
+              {jobSummary.map((row, index) => (
+                <TableRow
+                  key={row.label}
+                  className={clsx(
+                    "text-neutrals-900",
+                    index === jobSummary.length - 1 && "[&>td]:border-b-0"
+                  )}
+                >
+                  <TableCell>{row.label}</TableCell>
+                  <TableCell>{row.value}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableWrapper>
+
+        <div>
+          <div className="flex gap-6 items-center *:flex-1 mb-8">
+            <Button
+              type="button"
+              variant="secondary"
+              size="lg"
+              className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+              onClick={() =>
+                router.push(
+                  "/super-admin/user-management/student-management?import-modal=true&current=1"
+                )
+              }
+            >
+              Import another File
+            </Button>
+            <Button
+              // loading={isPending}
+              //   type="submit"
+              size="lg"
+              className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+              onClick={handleClose}
+            >
+              View Student Directory
+            </Button>
+          </div>
+
+          <Button
+            onClick={() => alert("not implemented")}
+            variant="tertiary"
+            className="border-0 m-auto"
+          >
+            <Text scale={"highlight"} className="text-error-200">
+              Roll back this import
+            </Text>
+          </Button>
+        </div>
+      </>
+    </FormModal>
+  );
+}

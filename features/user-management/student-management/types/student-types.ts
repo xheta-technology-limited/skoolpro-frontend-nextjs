@@ -39,6 +39,7 @@ export interface StudentRecord {
   entrance_exam_result: string | null;
   interview_result: string | null;
   admission_status: string;
+  current_enrolment: CurrentEnrolment | null;
   student_status: string;
   created_at: string;
   updated_at: string;
@@ -48,17 +49,42 @@ export interface GetStudentsParams {
   status?: string;
   admission_status?: string;
   search?: string;
-  // Index signature so this stays structurally compatible with
-  // api.get's params argument (Record<string, string | number |
-  // boolean | null | undefined>) without needing a cast at the call
-  // site. Add new query params above as named, typed properties —
-  // this signature is just to satisfy api.get's generic shape.
+  page?: number;
+  per_page?: number;
+  level_id?: string;
   [key: string]: string | number | boolean | null | undefined;
 }
 
-// api.get already unwraps the {"data": [...]} envelope the raw HTTP
-// response uses — confirmed via runtime logging, the array itself is
-// what actually comes back, not a wrapper object. Don't re-add a
-// `data` property here or callers will look for response.data.data
-// and get undefined.
-export type GetStudentsResponse = StudentRecord[];
+export interface StudentsPaginationMeta {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+  from: number | null;
+  to: number | null;
+}
+
+export interface GetStudentsResponse {
+  data: StudentRecord[];
+  meta: StudentsPaginationMeta;
+}
+
+export interface CurrentEnrolment {
+  id: string;
+  school_id: string;
+  student_id: string;
+  class_section_id: string;
+  academic_year_id: string;
+  roll_number: string | null;
+  status: string;
+  enrolled_on: string;
+  class_section: {
+    id: string;
+    name: string;
+    slug: string;
+    arm_sequence: number;
+    code: string;
+    created_at: string;
+    updated_at: string;
+  };
+}

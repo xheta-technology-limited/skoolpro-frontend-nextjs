@@ -9,11 +9,21 @@ import RecordTableSection, {
   type RecordTableRow,
 } from "@/components/common/record-table-section/RecordTableSection";
 import AddOptionalSubjectsModal from "../../_components/AddOptionalSubjectModal";
+import TransferStudentModal from "../../_components/TransferStudentModal";
+import EnrollStudentModal from "../../_components/EnrollStudentModal";
 import { useGetEnrolments } from "@/features/user-management/student-management/api/get-enrolment";
 import { useGetEffectiveSubjects } from "@/features/user-management/student-management/api/get-effective-subjects";
 import { useGetClassSections } from "@/features/user-management/student-management/api/get-class-sections";
 import { useGetAcademicYears } from "@/features/academic-year/api/list-academic-years";
 import { formatStudentStatus } from "@/features/user-management/student-management/utils/student-status";
+import { useWithdrawEnrolment } from "@/features/user-management/student-management/api/withdraw-enrolment";
+import { useCompleteEnrolment } from "@/features/user-management/student-management/api/complete-enrolment";
+import { useGetStudent } from "@/features/user-management/student-management/api/get-student";
+import { useTransitionStudent } from "@/features/user-management/student-management/api/transition-student";
+import { AddSquare, ArrowSwapHorizontal, MinusSquare, TickSquare } from "iconsax-reactjs";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { ApiError } from "@/lib/api";
 
 function noop() {}
 
@@ -21,13 +31,28 @@ export default function StudentEnrollmentPage() {
   const params = useParams<{ studentId: string }>();
   const studentId = params.studentId;
 
+  const queryClient = useQueryClient();
+  const withdrawEnrolmentMutation = useWithdrawEnrolment();
+  const completeEnrolmentMutation = useCompleteEnrolment();
   const [isAddOptionalSubjectsOpen, setIsAddOptionalSubjectsOpen] =
     useState(false);
+  const [isTransferStudentOpen, setIsTransferStudentOpen] = useState(false);
+  const [isEnrollStudentOpen, setIsEnrollStudentOpen] = useState(false);
+  // Spans the whole handleWithdraw operation (enrolment withdrawal +
+  // status refetch + status transition), unlike
+  // withdrawEnrolmentMutation.isPending, which only covers the first step.
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
 
   const { data: enrolments, isPending: isEnrolmentsPending } =
     useGetEnrolments({ student_id: studentId });
   const { data: classSections } = useGetClassSections();
   const { data: academicYears } = useGetAcademicYears();
+
+  // Same hook/query key the status page reads from — calling it here too
+  // means `refetchStudent()` below updates the exact cache entry the
+  // status page is subscribed to, without needing to know its query key.
+  const { refetch: refetchStudent } = useGetStudent(studentId);
+  const transitionStudentMutation = useTransitionStudent(studentId);
 
   const sortedEnrolments = [...(enrolments ?? [])].sort(
     (a, b) =>
@@ -37,6 +62,13 @@ export default function StudentEnrollmentPage() {
   const currentEnrolment =
     sortedEnrolments.find((enrolment) => enrolment.status === "active") ??
     sortedEnrolments[0];
+
+  // Distinct from `currentEnrolment` above: no fallback to the most recent
+  // enrolment. Complete/Withdraw/Transfer are only valid against an
+  // enrolment that's actually active, so they key off this instead.
+  const activeEnrolment = sortedEnrolments.find(
+    (enrolment) => enrolment.status === "active"
+  );
 
   function sectionName(sectionId: string) {
     return (
@@ -95,11 +127,104 @@ export default function StudentEnrollmentPage() {
     },
   }));
 
+  async function handleWithdraw() {
+    if (!activeEnrolment || isWithdrawing) return;
+
+    setIsWithdrawing(true);
+    try {
+      await withdrawEnrolmentMutation.mutateAsync(activeEnrolment.id);
+
+      await queryClient.invalidateQueries({
+        queryKey: ["enrolments"],
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: ["students"],
+      });
+
+      // Re-pull the student record to see whether withdrawing the
+      // enrolment already flipped the overall student status on its own.
+      const { data: refreshedStudent } = await refetchStudent();
+      const alreadyWithdrawn =
+        refreshedStudent?.student_status?.toLowerCase() === "withdrawn";
+
+      let statusSyncFailed = false;
+
+      if (!alreadyWithdrawn) {
+        // Backend didn't cascade it — drive the status change explicitly
+        // through the same transition endpoint the Status tab uses.
+        try {
+          await transitionStudentMutation.mutateAsync({ action: "withdraw" });
+          await refetchStudent();
+        } catch (transitionError) {
+          statusSyncFailed = true;
+          console.error(
+            "Failed to sync student status to withdrawn after enrolment withdrawal:",
+            transitionError
+          );
+        }
+      }
+
+      if (statusSyncFailed) {
+        toast.error(
+          "Enrolment withdrawn, but the student's overall status couldn't be updated automatically. Update it from the Status tab."
+        );
+      } else {
+        toast.success("Student withdrawn successfully.");
+      }
+    } catch (error) {
+      console.error("Failed to withdraw student:", error);
+
+      // request() in @/lib/api already toasts non-401 ApiErrors before
+      // throwing, so only toast here for errors it wouldn't have shown
+      // (network failures, or anything thrown outside that response path).
+      if (!(error instanceof ApiError)) {
+        const message =
+          error && typeof error === "object" && "message" in error
+            ? String((error as { message: unknown }).message)
+            : "Failed to withdraw student. Please try again.";
+
+        toast.error(message);
+      }
+    } finally {
+      setIsWithdrawing(false);
+    }
+  }
+
+  async function handleComplete() {
+    if (!activeEnrolment) return;
+
+    try {
+      await completeEnrolmentMutation.mutateAsync(activeEnrolment.id);
+
+      await queryClient.invalidateQueries({
+        queryKey: ["enrolments"],
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: ["students"],
+      });
+
+      toast.success("Enrolment completed successfully.");
+    } catch (error) {
+      console.error("Failed to complete enrolment:", error);
+
+      if (!(error instanceof ApiError)) {
+        const message =
+          error && typeof error === "object" && "message" in error
+            ? String((error as { message: unknown }).message)
+            : "Failed to complete enrolment. Please try again.";
+
+        toast.error(message);
+      }
+    }
+  }
+
   return (
     <>
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
-          <span className="text-[12px] font-medium uppercase tracking-wide text-neutrals-500">
+          <span className="text-[16px] font-small uppercase tracking-wide text-neutrals-700">
             Current placement
           </span>
 
@@ -108,7 +233,31 @@ export default function StudentEnrollmentPage() {
               type="button"
               variant="secondary"
               size="sm"
-              onClick={noop}
+              onClick={() => setIsEnrollStudentOpen(true)}
+              leftIcon={<AddSquare size={16} variant="Bulk" color="#433E3F" />}
+            >
+              Enroll
+            </Button>
+
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={!activeEnrolment || completeEnrolmentMutation.isPending}
+              loading={completeEnrolmentMutation.isPending}
+              onClick={handleComplete}
+              leftIcon={<TickSquare size={16} variant="Bulk" color="#433E3F" />}
+            >
+              Complete
+            </Button>
+
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={!activeEnrolment}
+              leftIcon={<ArrowSwapHorizontal size={16} variant="Bulk" color="#433E3F" />}
+              onClick={() => setIsTransferStudentOpen(true)}
             >
               Transfer
             </Button>
@@ -117,7 +266,10 @@ export default function StudentEnrollmentPage() {
               type="button"
               variant="secondary"
               size="sm"
-              onClick={noop}
+              disabled={!activeEnrolment || isWithdrawing}
+              loading={isWithdrawing}
+              onClick={handleWithdraw}
+              leftIcon={<MinusSquare size={16} variant="Bulk" color="#C03744" />}
               className="border-error-200! text-error-200! hover:bg-error-200/5"
             >
               Withdraw
@@ -169,6 +321,24 @@ export default function StudentEnrollmentPage() {
         onOpenChange={setIsAddOptionalSubjectsOpen}
         enrolmentId={currentEnrolment?.id}
         subjects={effectiveSubjects ?? []}
+      />
+
+      <TransferStudentModal
+        open={isTransferStudentOpen}
+        onOpenChange={setIsTransferStudentOpen}
+        enrolmentId={activeEnrolment?.id}
+        currentClassLabel={
+          currentEnrolment
+            ? sectionName(currentEnrolment.class_section_id)
+            : ""
+        }
+        classSections={classSections ?? []}
+      />
+
+      <EnrollStudentModal
+        open={isEnrollStudentOpen}
+        onOpenChange={setIsEnrollStudentOpen}
+        studentId={studentId}
       />
     </>
   );

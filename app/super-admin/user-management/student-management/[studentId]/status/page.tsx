@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { AttachSquare } from "iconsax-reactjs";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/custom-button";
 import { StatusBadge } from "@/components/common";
@@ -121,11 +122,18 @@ export default function StudentStatusPage() {
       {
         onSuccess: () => {
           refetch();
+          // Built from the action that was just performed (via the
+          // ROLE_ACTIONS label lookup) rather than waiting on the
+          // refetched student data, since that resolves asynchronously
+          // and shouldn't gate the toast.
+          const actionLabel =
+            ROLE_ACTIONS.find((roleAction) => roleAction.action === action)
+              ?.label ?? "Status";
+          toast.success(`${actionLabel} successful.`);
         },
         onError: (error) => {
-          alert(
-            error?.message ??
-              "That status change isn't allowed right now."
+          toast.error(
+            error?.message ?? "That status change isn't allowed right now."
           );
         },
       }
