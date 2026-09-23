@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import FormModal from "@/components/ui/form-modal";
-import { Input, Select } from "@/components/ui/form";
+import { Select } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
 import { api } from "@/lib/api";
 import { ServerErrorResponse } from "@/types/api";
@@ -15,7 +15,6 @@ interface EffectiveSubject {
   assignment_id: string;
   subject_name: string;
   source: string;
-  pass_mark: number;
 }
 
 interface AddOptionalSubjectsModalProps {
@@ -28,7 +27,6 @@ interface AddOptionalSubjectsModalProps {
 interface AddOptionalSubjectsValues {
   subjects: {
     subjectName: string;
-    passMark: string;
   }[];
 }
 
@@ -36,7 +34,6 @@ const DEFAULT_VALUES: AddOptionalSubjectsValues = {
   subjects: [
     {
       subjectName: "",
-      passMark: "",
     },
   ],
 };
@@ -94,7 +91,6 @@ export default function AddOptionalSubjectsModal({
   const handleAddSubject = () => {
     append({
       subjectName: "",
-      passMark: "",
     });
   };
 
@@ -145,21 +141,12 @@ export default function AddOptionalSubjectsModal({
 
             <div className="flex flex-col gap-3">
               {fields.map((field, index) => (
-                <div
+                <Select
                   key={field.id}
-                  className="grid grid-cols-1 gap-3 sm:grid-cols-2"
-                >
-                  <Input
-                    name={`subjects.${index}.subjectName`}
-                    label="Enter subject name"
-                    />
-
-                  <Input
-                    name={`subjects.${index}.passMark`}
-                    label="Enter pass mark"
-                    type="number"
-                  />
-                </div>
+                  name={`subjects.${index}.subjectName`}
+                  label="Subject name"
+                  options={[]}
+                />
               ))}
             </div>
           </div>
@@ -170,12 +157,7 @@ export default function AddOptionalSubjectsModal({
               onClick={handleAddSubject}
               className="flex h-8.25 items-center gap-2 rounded-full border border-primary px-5 text-[14px] font-medium text-primary transition-colors hover:bg-primary/5"
             >
-              <Add
-                size={16}
-                variant="Linear"
-                className="text-primary"
-              />
-
+              <Add size={16} variant="Linear" className="text-primary" />
               Add Subject
             </button>
           </div>
