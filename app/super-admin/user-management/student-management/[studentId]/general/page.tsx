@@ -15,6 +15,7 @@ import { useDeleteStudent } from "@/features/user-management/student-management/
 import type { StudentGuardian } from "@/features/user-management/student-management/types/student-detail-types";
 import { useProgressRouter } from "@/features/page-loader";
 import { toast } from "sonner";
+import { ApiError } from "@/lib/api";
 
 import ViewMode from "./_components/view-mode";
 import EditMode from "./_components/edit-mode";
@@ -54,6 +55,11 @@ export default function StudentGeneralPage() {
         onSuccess: () => {
           toast.success("Student deleted successfully");
           router.push("/super-admin/user-management/student-management");
+        },
+        onError: (err) => {
+          if (!(err instanceof ApiError)) {
+            toast.error(err.message || "Failed to delete student.");
+          }
         },
       }
     );

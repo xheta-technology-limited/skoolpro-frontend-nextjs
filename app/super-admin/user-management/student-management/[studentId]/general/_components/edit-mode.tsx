@@ -2,6 +2,7 @@ import Image from "next/image";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { ApiError } from "@/lib/api";
 
 import { Button } from "@/components/ui/custom-button";
 import { DatePicker, Input, Select } from "@/components/ui/form";
@@ -14,7 +15,7 @@ import {
 import { useUpdateStudent } from "@/features/user-management/student-management/api/update-student";
 import type { StudentDetail } from "@/features/user-management/student-management/types/student-detail-types";
 import CountrySelectField from "@/app/onboarding/_components/fields/CountrySelectField";
-
+import { ADMISSION_TYPE_OPTIONS } from "@/app/super-admin/user-management/student-management/schema/student-management";
 interface Props {
   onCancel: () => void;
   onSaved: () => void;
@@ -65,7 +66,11 @@ export default function EditMode({ onCancel, onSaved, student }: Props) {
           onSaved();
         },
         onError: (res) => {
-          setFormErrors(methods.setError, res?.errors);
+          if (res?.errors) {
+            setFormErrors(methods.setError, res.errors);
+          } else if (!(res instanceof ApiError)) {
+            toast.error(res?.message || "Failed to update student.");
+          }
         },
       }
     );
@@ -141,10 +146,8 @@ export default function EditMode({ onCancel, onSaved, student }: Props) {
         <div className="rounded-ml bg-white p-2 grid grid-cols-2 content-start gap-4">
           <Input name="first_language" label="Enter first language" />
           <Input name="other_languages" label="Enter other language" />
-          {/* TODO: wire religion options */}
-          <Select name="religion" label="Select religion" options={[]} />
-          {/* TODO: wire ethnicity options */}
-          <Select name="ethnicity" label="Select ethnicity" options={[]} />
+          <Input name="religion" label="Select religion" />
+          <Input name="ethnicity" label="Select ethnicity" />
         </div>
 
         <div className="rounded-ml bg-white p-2 grid grid-cols-2 content-start gap-4">
@@ -185,11 +188,10 @@ export default function EditMode({ onCancel, onSaved, student }: Props) {
             label="Enter admission date"
             type="date"
           />
-          {/* TODO: wire admission type options */}
           <Select
             name="admission_type"
             label="Select admission type"
-            options={[]}
+            options={ADMISSION_TYPE_OPTIONS}
           />
           <Input name="previous_school" label="Enter previous school" />
           <Input

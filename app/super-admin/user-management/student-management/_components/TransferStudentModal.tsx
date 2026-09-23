@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import FormModal from "@/components/ui/form-modal";
 import { Select } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
+import { ApiError } from "@/lib/api";
 
 import { useTransferEnrolment } from "@/features/user-management/student-management/api/transfer-enrolment";
 import type { ClassSectionRecord } from "@/features/user-management/student-management/types/class-section-types";
@@ -84,11 +85,16 @@ export default function TransferStudentModal({
       handleOpenChange(false);
     } catch (error) {
       console.error("Failed to transfer student:", error);
-      const message =
-        error && typeof error === "object" && "message" in error
-          ? String((error as { message: unknown }).message)
-          : "Failed to transfer student. Please try again.";
-      toast.error(message);
+
+      // request() in @/lib/api already toasts non-401 ApiErrors before
+      // throwing, so only toast here for errors it wouldn't have shown.
+      if (!(error instanceof ApiError)) {
+        const message =
+          error && typeof error === "object" && "message" in error
+            ? String((error as { message: unknown }).message)
+            : "Failed to transfer student. Please try again.";
+        toast.error(message);
+      }
     }
   };
 

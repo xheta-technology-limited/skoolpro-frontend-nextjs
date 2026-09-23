@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import FormModal from "@/components/ui/form-modal";
 import { Input, Select } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
+import { ApiError } from "@/lib/api";
 import { useCreateEnrolment } from "@/features/user-management/student-management/api/create-enrolment";
 import { useGetClassSections } from "@/features/user-management/student-management/api/get-class-sections";
 import { useListLevels } from "@/features/academic-year/api/list-levels";
@@ -131,12 +132,16 @@ export default function EnrollStudentModal({
     } catch (error) {
       console.error("Failed to enroll student:", error);
 
-      const message =
-        error && typeof error === "object" && "message" in error
-          ? String((error as { message: unknown }).message)
-          : "Failed to enroll student. Please try again.";
+      // request() in @/lib/api already toasts non-401 ApiErrors before
+      // throwing, so only toast here for errors it wouldn't have shown.
+      if (!(error instanceof ApiError)) {
+        const message =
+          error && typeof error === "object" && "message" in error
+            ? String((error as { message: unknown }).message)
+            : "Failed to enroll student. Please try again.";
 
-      toast.error(message);
+        toast.error(message);
+      }
     }
   };
 

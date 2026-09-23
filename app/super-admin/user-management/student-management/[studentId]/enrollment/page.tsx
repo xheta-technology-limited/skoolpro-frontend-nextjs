@@ -23,6 +23,7 @@ import { useTransitionStudent } from "@/features/user-management/student-managem
 import { AddSquare, ArrowSwapHorizontal, MinusSquare, TickSquare } from "iconsax-reactjs";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { ApiError } from "@/lib/api";
 
 function noop() {}
 
@@ -37,6 +38,10 @@ export default function StudentEnrollmentPage() {
     useState(false);
   const [isTransferStudentOpen, setIsTransferStudentOpen] = useState(false);
   const [isEnrollStudentOpen, setIsEnrollStudentOpen] = useState(false);
+  // Spans the whole handleWithdraw operation (enrolment withdrawal +
+  // status refetch + status transition), unlike
+  // withdrawEnrolmentMutation.isPending, which only covers the first step.
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
 
   const { data: enrolments, isPending: isEnrolmentsPending } =
     useGetEnrolments({ student_id: studentId });
@@ -57,6 +62,13 @@ export default function StudentEnrollmentPage() {
   const currentEnrolment =
     sortedEnrolments.find((enrolment) => enrolment.status === "active") ??
     sortedEnrolments[0];
+
+  // Distinct from `currentEnrolment` above: no fallback to the most recent
+  // enrolment. Complete/Withdraw/Transfer are only valid against an
+  // enrolment that's actually active, so they key off this instead.
+  const activeEnrolment = sortedEnrolments.find(
+    (enrolment) => enrolment.status === "active"
+  );
 
   function sectionName(sectionId: string) {
     return (
@@ -116,10 +128,11 @@ export default function StudentEnrollmentPage() {
   }));
 
   async function handleWithdraw() {
-    if (!currentEnrolment) return;
+    if (!activeEnrolment || isWithdrawing) return;
 
+    setIsWithdrawing(true);
     try {
-      await withdrawEnrolmentMutation.mutateAsync(currentEnrolment.id);
+      await withdrawEnrolmentMutation.mutateAsync(activeEnrolment.id);
 
       await queryClient.invalidateQueries({
         queryKey: ["enrolments"],
@@ -162,20 +175,27 @@ export default function StudentEnrollmentPage() {
     } catch (error) {
       console.error("Failed to withdraw student:", error);
 
-      const message =
-        error && typeof error === "object" && "message" in error
-          ? String((error as { message: unknown }).message)
-          : "Failed to withdraw student. Please try again.";
+      // request() in @/lib/api already toasts non-401 ApiErrors before
+      // throwing, so only toast here for errors it wouldn't have shown
+      // (network failures, or anything thrown outside that response path).
+      if (!(error instanceof ApiError)) {
+        const message =
+          error && typeof error === "object" && "message" in error
+            ? String((error as { message: unknown }).message)
+            : "Failed to withdraw student. Please try again.";
 
-      toast.error(message);
+        toast.error(message);
+      }
+    } finally {
+      setIsWithdrawing(false);
     }
   }
 
   async function handleComplete() {
-    if (!currentEnrolment) return;
+    if (!activeEnrolment) return;
 
     try {
-      await completeEnrolmentMutation.mutateAsync(currentEnrolment.id);
+      await completeEnrolmentMutation.mutateAsync(activeEnrolment.id);
 
       await queryClient.invalidateQueries({
         queryKey: ["enrolments"],
@@ -189,12 +209,14 @@ export default function StudentEnrollmentPage() {
     } catch (error) {
       console.error("Failed to complete enrolment:", error);
 
-      const message =
-        error && typeof error === "object" && "message" in error
-          ? String((error as { message: unknown }).message)
-          : "Failed to complete enrolment. Please try again.";
+      if (!(error instanceof ApiError)) {
+        const message =
+          error && typeof error === "object" && "message" in error
+            ? String((error as { message: unknown }).message)
+            : "Failed to complete enrolment. Please try again.";
 
-      toast.error(message);
+        toast.error(message);
+      }
     }
   }
 
@@ -221,7 +243,7 @@ export default function StudentEnrollmentPage() {
               type="button"
               variant="secondary"
               size="sm"
-              disabled={!currentEnrolment || completeEnrolmentMutation.isPending}
+              disabled={!activeEnrolment || completeEnrolmentMutation.isPending}
               loading={completeEnrolmentMutation.isPending}
               onClick={handleComplete}
               leftIcon={<TickSquare size={16} variant="Bulk" color="#433E3F" />}
@@ -233,6 +255,7 @@ export default function StudentEnrollmentPage() {
               type="button"
               variant="secondary"
               size="sm"
+              disabled={!activeEnrolment}
               leftIcon={<ArrowSwapHorizontal size={16} variant="Bulk" color="#433E3F" />}
               onClick={() => setIsTransferStudentOpen(true)}
             >
@@ -243,8 +266,8 @@ export default function StudentEnrollmentPage() {
               type="button"
               variant="secondary"
               size="sm"
-              disabled={!currentEnrolment || withdrawEnrolmentMutation.isPending}
-              loading={withdrawEnrolmentMutation.isPending}
+              disabled={!activeEnrolment || isWithdrawing}
+              loading={isWithdrawing}
               onClick={handleWithdraw}
               leftIcon={<MinusSquare size={16} variant="Bulk" color="#C03744" />}
               className="border-error-200! text-error-200! hover:bg-error-200/5"
@@ -303,7 +326,7 @@ export default function StudentEnrollmentPage() {
       <TransferStudentModal
         open={isTransferStudentOpen}
         onOpenChange={setIsTransferStudentOpen}
-        enrolmentId={currentEnrolment?.id}
+        enrolmentId={activeEnrolment?.id}
         currentClassLabel={
           currentEnrolment
             ? sectionName(currentEnrolment.class_section_id)
