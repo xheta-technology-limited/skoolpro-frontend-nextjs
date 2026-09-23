@@ -71,6 +71,8 @@ export default function TransferStudentModal({
       });
 
       await queryClient.invalidateQueries({ queryKey: ["enrolments"] });
+      await queryClient.invalidateQueries({ queryKey: ["students"] });
+
 
       if (response.meta?.over_capacity) {
         toast.warning(
