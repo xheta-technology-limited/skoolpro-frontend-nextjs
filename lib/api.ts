@@ -8,6 +8,7 @@ type RequestOptions = {
   params?: Record<string, string | number | boolean | undefined | null>;
   cache?: RequestCache;
   raw?: boolean;
+  responseType?: "json" | "blob";
 };
 var baseClient: string | undefined;
 if (typeof window === "undefined") {
@@ -61,8 +62,17 @@ async function request<T>(
   path: string,
   options: RequestOptions = {}
 ): Promise<T> {
-  const { method = "GET", headers, body, params, cache = "no-store", raw = false } = options;
-  const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
+  const {
+    method = "GET",
+    headers,
+    body,
+    params,
+    cache = "no-store",
+    raw = false,
+    responseType = "json",
+  } = options;
+  const isFormData =
+    typeof FormData !== "undefined" && body instanceof FormData;
 
   try {
     const cookie = await getCookieHeader();
@@ -107,8 +117,14 @@ async function request<T>(
 
     if (res.status === 204) return undefined as T;
 
-    const json = await res.json();
-    return (raw ? json : json.data) as T;
+    if (responseType === "blob") {
+      return (await res.blob()) as T;
+    } else if (responseType === "json") {
+      const json = await res.json();
+      return (raw ? json : json.data) as T;
+    } else {
+      return res as T;
+    }
   } catch (error) {
     throw error;
   }
