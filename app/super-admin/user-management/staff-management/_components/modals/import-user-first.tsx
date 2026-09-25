@@ -4,21 +4,48 @@ import { Button } from "@/components/ui/custom-button";
 import { DragNDrop } from "@/components/ui/form";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
+import { useGetTemplate } from "@/features/user-management/api/get-user-template";
+import {
+  StartImportFormData,
+  startImportSchema,
+} from "@/features/user-management/schemas/start-import";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { DocumentDownload } from "iconsax-reactjs";
 import { useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
 export default function FirstModal() {
   const searchParams = useSearchParams();
   const router = useProgressRouter();
 
+  const { isFetching: isTemplateFetching, refetch: downloadTemplate } =
+    useGetTemplate("staff", {
+      enabled: false,
+      refetchOnWindowFocus: false,
+    });
+
+  const handleDownload = async () => {
+    const { data: template } = await downloadTemplate();
+    if (!template) return;
+
+    const url = URL.createObjectURL(template);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Staff.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
   const open = searchParams.get("import-modal");
   const current = searchParams.get("current");
   const isOpen = open === "true" && current === "1";
 
-  const methods = useForm({
+  const methods = useForm<StartImportFormData>({
     defaultValues: {},
-    //   resolver: zodResolver(addStaffFirstSchema),
+    resolver: zodResolver(startImportSchema),
   });
 
   const handleClose = () =>
@@ -65,6 +92,8 @@ export default function FirstModal() {
               variant="secondary"
               leftIcon={<DocumentDownload size={16} className="text-primary" />}
               className="h-max"
+              onClick={handleDownload}
+              loading={isTemplateFetching}
             >
               Download template
             </Button>

@@ -1,3 +1,4 @@
+"use client";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { zodResolver } from "@hookform/resolvers/zod";
