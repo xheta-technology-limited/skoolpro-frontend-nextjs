@@ -117,11 +117,13 @@ async function request<T>(
 
     if (res.status === 204) return undefined as T;
 
-    if (responseType != "json") {
-      return res as T;
-    } else {
+    if (responseType === "blob") {
+      return (await res.blob()) as T;
+    } else if (responseType === "json") {
       const json = await res.json();
       return (raw ? json : json.data) as T;
+    } else {
+      return res as T;
     }
   } catch (error) {
     throw error;
