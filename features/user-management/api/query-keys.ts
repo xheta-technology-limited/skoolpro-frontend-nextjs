@@ -6,3 +6,7 @@ export const templateKeys = {
 export const countKeys = {
   all: ["count", "people"] as const,
 };
+export const importKeys = {
+  all: ["imports"] as const,
+  detail: (jobID: string) => ["imports", jobID] as const,
+};
