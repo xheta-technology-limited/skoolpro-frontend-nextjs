@@ -1,34 +1,65 @@
 "use client";
+import { Spinner } from "@/components/animations";
 import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/custom-button";
-import { DragNDrop, Input } from "@/components/ui/form";
+import { Input } from "@/components/ui/form";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { DocumentDownload } from "iconsax-reactjs";
+import { useApplyMapping } from "@/features/user-management/api/apply-mapping";
+import { usePreviewMapping } from "@/features/user-management/api/preview-mapping";
+import { useValidateMapping } from "@/features/user-management/api/validate-mapping";
+import { useImportStaffStore } from "@/features/user-management/stores/import-staff.store";
+import { ApplyMappingPayload } from "@/features/user-management/types/api/template";
+import { titleCase, typedMappedKeys } from "@/lib/helpers";
 import { useSearchParams } from "next/navigation";
-import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 export default function SecondModal() {
   const searchParams = useSearchParams();
   const router = useProgressRouter();
 
   const open = searchParams.get("import-modal");
+  const jobID = searchParams.get("job-id");
   const current = searchParams.get("current");
   const isOpen = open === "true" && current === "2";
 
-  const methods = useForm({
-    defaultValues: {},
-    //   resolver: zodResolver(addStaffFirstSchema),
+  const updateImportStore = useImportStaffStore((state) => state.updateData);
+
+  const {
+    data: jobData,
+    isPending,
+    isSuccess,
+  } = usePreviewMapping(jobID || "", {
+    enabled: !!jobID,
+    refetchOnWindowFocus: false,
   });
+
+  const { mutate, isPending: isMutatePending } = useApplyMapping(jobID || "");
 
   const handleClose = () =>
     router.replace("/super-admin/user-management/staff-management");
 
   const handleProceed = () => {
-    router.push(
-      "/super-admin/user-management/staff-management?import-modal=true&current=3"
-    );
+    if (!jobData) {
+      toast.error("Internal Client Error: No mapped data to preview");
+      return;
+    }
+    if (!jobID) {
+      toast.error("No current job ID found");
+      return;
+    }
+
+    const payload: ApplyMappingPayload = {
+      column_mapping: jobData.expected_columns,
+    };
+    mutate(payload, {
+      onSuccess: (res) => {
+        updateImportStore(res);
+        router.push(
+          `/super-admin/user-management/staff-management?import-modal=true&current=3&job-id=${jobID}`
+        );
+      },
+    });
   };
 
   return (
@@ -51,17 +82,31 @@ export default function SecondModal() {
 
         <div className="flex flex-col mb-8 gap-4">
           <div className="flex gap-3 md:gap-8 *:flex-1">
-            <Text scale={"content"} className="text-neutrals-700">
-              YOUR FILE HEADER
-            </Text>
-            <Text scale={"content"} className="text-neutrals-700">
-              SKOOLPRO FIELD
-            </Text>
-          </div>
-          {/* Here would be where you map through everything */}
-          <div className="flex gap-3 md:gap-8 *:flex-1">
-            <Input disabled name={""} value={"Nothing fr"} />
-            <Input disabled name={""} value={"Nothing fr"} />
+            <div className="flex flex-col gap-4">
+              <div className="flex gap-2 items-center">
+                <Text scale={"content"} className="text-neutrals-700">
+                  YOUR FILE HEADER
+                </Text>
+                {isPending && <Spinner color="#5a5555" size={14} />}
+              </div>
+              {jobData &&
+                typedMappedKeys(jobData.expected_columns).map((key) => (
+                  <Input
+                    key={key}
+                    disabled
+                    name={""}
+                    value={jobData.expected_columns[key]}
+                  />
+                ))}
+            </div>
+            <div className="flex flex-col gap-4">
+              <Text scale={"content"} className="text-neutrals-700">
+                SKOOLPRO FIELD
+              </Text>
+              {jobData?.file_headers.map((head) => (
+                <Input key={head} disabled name={""} value={titleCase(head)} />
+              ))}
+            </div>
           </div>
         </div>
 
@@ -80,8 +125,8 @@ export default function SecondModal() {
             Back
           </Button>
           <Button
-            // loading={isPending}
-            //   type="submit"
+            loading={isMutatePending}
+            disabled={!isSuccess}
             size="lg"
             className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
             onClick={handleProceed}

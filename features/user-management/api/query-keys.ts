@@ -9,4 +9,5 @@ export const countKeys = {
 export const importKeys = {
   all: ["imports"] as const,
   detail: (jobID: string) => ["imports", jobID] as const,
+  preview: (jobID: string) => ["preview", jobID] as const,
 };

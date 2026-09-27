@@ -16,6 +16,11 @@ import { useProgressRouter } from "@/features/page-loader";
 import { useSearchParams } from "next/navigation";
 import ImportedTable from "../tables/imported-staff";
 import clsx from "clsx";
+import { useImportStaffStore } from "@/features/user-management/stores/import-staff.store";
+import { titleCase } from "@/lib/helpers";
+import { useEffect } from "react";
+import { useRollbackImport } from "@/features/user-management/api/rollback-import";
+import { toast } from "sonner";
 
 const jobSummary = [
   { label: "Job Status", value: "Completed" },
@@ -31,18 +36,27 @@ export default function FourthModal() {
   const open = searchParams.get("import-modal");
   const current = searchParams.get("current");
   const isOpen = open === "true" && current === "4";
+  const jobID = searchParams.get("job-id");
 
-  const validRows = "Nan";
+  const data = useImportStaffStore((s) => s.data);
+
+  const { mutate, isPending } = useRollbackImport(jobID || "");
 
   const handleClose = () =>
     router.replace("/super-admin/user-management/staff-management");
 
-  const handleProceed = () => {
-    router.push(
-      "/super-admin/user-management/staff-management?import-modal=true&current=4"
-    );
+  const handleRollback = () => {
+    if (!jobID) {
+      toast.error("No current job ID found");
+      return;
+    }
+    mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Success!");
+        handleClose();
+      },
+    });
   };
-
   return (
     <FormModal
       title={"Import Staff"}
@@ -61,27 +75,57 @@ export default function FourthModal() {
           </Text>
 
           <div className="flex gap-4 items-center">
-            <StatusBadge variant="green" data="12 Valid" />
-            <StatusBadge variant="orange" data="2 Duplicates" />
-            <StatusBadge variant="red" data="1 Invalid" />
+            <StatusBadge variant="green" data={`${data.success_count} Valid`} />
+            <StatusBadge
+              variant="orange"
+              data={`${data.skipped_count} Skipped`}
+            />
+            <StatusBadge variant="red" data={`${data.error_count} Errors`} />
           </div>
         </div>
 
         <TableWrapper className="mb-4">
           <Table>
             <TableBody>
-              {jobSummary.map((row, index) => (
-                <TableRow
-                  key={row.label}
-                  className={clsx(
-                    "text-neutrals-900",
-                    index === jobSummary.length - 1 && "[&>td]:border-b-0"
-                  )}
-                >
-                  <TableCell>{row.label}</TableCell>
-                  <TableCell>{row.value}</TableCell>
-                </TableRow>
-              ))}
+              <TableRow
+                className={clsx(
+                  "text-neutrals-900"
+                  // index === jobSummary.length - 1 && "[&>td]:border-b-0"
+                )}
+              >
+                <TableCell>Job Status</TableCell>
+                <TableCell>{titleCase(data.status || "") || "-"}</TableCell>
+              </TableRow>
+
+              <TableRow
+                className={clsx(
+                  "text-neutrals-900"
+                  // index === jobSummary.length - 1 && "[&>td]:border-b-0"
+                )}
+              >
+                <TableCell>Total Rows</TableCell>
+                <TableCell>{data.total_rows || "-"}</TableCell>
+              </TableRow>
+
+              <TableRow
+                className={clsx(
+                  "text-neutrals-900"
+                  // index === jobSummary.length - 1 && "[&>td]:border-b-0"
+                )}
+              >
+                <TableCell>Imported</TableCell>
+                <TableCell>{data.success_count || "-"}</TableCell>
+              </TableRow>
+
+              <TableRow
+                className={clsx(
+                  "text-neutrals-900"
+                  // index === jobSummary.length - 1 && "[&>td]:border-b-0"
+                )}
+              >
+                <TableCell>Completed at</TableCell>
+                <TableCell>{data.completed_at || "-"}</TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </TableWrapper>
@@ -113,9 +157,10 @@ export default function FourthModal() {
           </div>
 
           <Button
-            onClick={() => alert("not implemented")}
+            onClick={() => handleRollback()}
             variant="tertiary"
             className="border-0 m-auto"
+            loading={isPending}
           >
             <Text scale={"highlight"} className="text-error-200">
               Roll back this import

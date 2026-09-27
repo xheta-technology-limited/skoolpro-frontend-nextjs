@@ -1,9 +1,3 @@
-export type StartImportPayload = {
-  file: File;
-  module: string;
-  entity_type: string;
-};
-
 export type ImportColumnMapping = {
   staff_number: string;
   first_name: string;
@@ -26,14 +20,32 @@ export type ApplyMappingPayload = {
   column_mapping: ImportColumnMapping;
 };
 
+type MappedData = {
+  email: string;
+  phone: string;
+  title: string;
+  gender: string;
+  category: string;
+  last_name: string;
+  department: string;
+  first_name: string;
+  middle_name: string;
+  staff_number: string;
+  staff_status: string;
+  payroll_number: string;
+  employment_type: string;
+  national_reg_number: string;
+  employment_start_date: string;
+};
+
 export type ImportRow = {
   id: string;
   row_number: number;
   status: string;
   errors: unknown;
   is_duplicate: boolean;
-  raw_data: Record<string, string | null>;
-  mapped_data: Record<string, string | null>;
+  raw_data: MappedData | null;
+  mapped_data: MappedData | null;
 };
 
 export type ImportRecord = {
@@ -42,7 +54,7 @@ export type ImportRecord = {
   entity_type: string;
   original_filename: string;
   status: string;
-  column_mapping: unknown;
+  column_mapping: ImportColumnMapping;
   total_rows: number | null;
   success_count: number;
   error_count: number;

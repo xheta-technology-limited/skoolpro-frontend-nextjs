@@ -6,24 +6,51 @@ import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { useSearchParams } from "next/navigation";
 import ImportedTable from "../tables/imported-staff";
+import { useGetSingleImport } from "@/features/user-management/api/get-single-import";
+import { Spinner } from "@/components/animations";
+import { useImportStaffStore } from "@/features/user-management/stores/import-staff.store";
+import { useEffect } from "react";
+import { useValidateMapping } from "@/features/user-management/api/validate-mapping";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { staffKeys } from "@/features/user-management/staff-management/api/query-keys";
 
 export default function ThirdModal() {
   const searchParams = useSearchParams();
   const router = useProgressRouter();
 
+  const queryClient = useQueryClient();
+
   const open = searchParams.get("import-modal");
   const current = searchParams.get("current");
   const isOpen = open === "true" && current === "3";
+  const jobID = searchParams.get("job-id");
 
-  const validRows = "Nan";
+  const { mutate, isPending } = useValidateMapping(jobID || "");
+
+  const data = useImportStaffStore((s) => s.data);
+  const updateImportStore = useImportStaffStore((state) => state.updateData);
 
   const handleClose = () =>
     router.replace("/super-admin/user-management/staff-management");
 
   const handleProceed = () => {
-    router.push(
-      "/super-admin/user-management/staff-management?import-modal=true&current=4"
-    );
+    if (!jobID) {
+      toast.error("No current job id found");
+      return;
+    }
+
+    mutate(undefined, {
+      onSuccess: (res) => {
+        queryClient.invalidateQueries({
+          queryKey: staffKeys.all,
+        });
+        updateImportStore(res);
+        router.push(
+          `/super-admin/user-management/staff-management?import-modal=true&current=4&job-id=${jobID}`
+        );
+      },
+    });
   };
 
   return (
@@ -45,121 +72,19 @@ export default function ThirdModal() {
           </Text>
 
           <div className="flex gap-4 items-center">
-            <StatusBadge variant="green" data="12 Valid" />
-            <StatusBadge variant="orange" data="2 Duplicates" />
-            <StatusBadge variant="red" data="1 Invalid" />
+            <StatusBadge
+              variant="green"
+              data={`${data?.success_count} Valid`}
+            />
+            <StatusBadge
+              variant="orange"
+              data={`${data?.skipped_count} Skipped`}
+            />
+            <StatusBadge variant="red" data={`${data?.error_count} Errors`} />
           </div>
         </div>
 
-        <ImportedTable
-          dataToMap={[
-            {
-              id: 1,
-              name: "adewale johnson",
-              staff_number: "STF-001",
-              category: "Teaching",
-              details: "",
-            },
-            {
-              id: 2,
-              name: "fatima abdullahi",
-              staff_number: "STF-002",
-              category: "Non-Teaching",
-              details: "",
-            },
-            {
-              id: 3,
-              name: "chinedu okoro",
-              staff_number: "STF-003",
-              category: "Teaching",
-              details: "",
-            },
-            {
-              id: 4,
-              name: "grace amen",
-              staff_number: "STF-001",
-              category: "Teaching",
-              details: "Ready to import",
-            },
-            {
-              id: 5,
-              name: "mohammed ali",
-              staff_number: "STF-004",
-              category: "Administration",
-              details: "",
-            },
-            {
-              id: 6,
-              name: "blessing ifeoma",
-              staff_number: "STF-005",
-              category: "Non-Teaching",
-              details: "",
-            },
-            {
-              id: 7,
-              name: "emeka nwosu",
-              staff_number: "STF-006",
-              category: "Teaching",
-              details: "",
-            },
-            {
-              id: 8,
-              name: "hauwa musa",
-              staff_number: "STF-002",
-              category: "Administration",
-              details: "Ready to import",
-            },
-            {
-              id: 9,
-              name: "olusegun akinola",
-              staff_number: "STF-007",
-              category: "Teaching",
-              details: "",
-            },
-            {
-              id: 10,
-              name: "ngozi okafor",
-              staff_number: "STF-008",
-              category: "Non-Teaching",
-              details: "",
-            },
-            {
-              id: 11,
-              name: "tunde bakare",
-              staff_number: "STF-009",
-              category: "Teaching",
-              details: "",
-            },
-            {
-              id: 12,
-              name: "amara eze",
-              staff_number: "STF-010",
-              category: "Administration",
-              details: "",
-            },
-            {
-              id: 13,
-              name: "yusuf danjuma",
-              staff_number: "STF-011",
-              category: "Teaching",
-              details: "",
-            },
-            {
-              id: 14,
-              name: "sade ogundimu",
-              staff_number: "",
-              category: "",
-              details: "Duplicate",
-            },
-            {
-              id: 15,
-              name: "uche chukwu",
-              staff_number: "STF-012",
-              category: "Non-Teaching",
-              details: "",
-            },
-          ]}
-        />
+        <ImportedTable dataToMap={data} />
 
         <div className="flex gap-6 items-center *:flex-1">
           <Button
@@ -176,13 +101,12 @@ export default function ThirdModal() {
             Back
           </Button>
           <Button
-            // loading={isPending}
-            //   type="submit"
+            loading={isPending}
             size="lg"
             className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
             onClick={handleProceed}
           >
-            {`Commit ${validRows} valid rows`}
+            {`Commit ${data?.success_count} valid rows`}
           </Button>
         </div>
       </>

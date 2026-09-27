@@ -9,13 +9,18 @@ import {
   TableRow,
   TableWrapper,
 } from "@/components/ui/table";
+import { ImportRecord } from "@/features/user-management/types/api/template";
 import { titleCase } from "@/lib/helpers/string-to-title-case";
 import clsx from "clsx";
 interface Props {
-  dataToMap: any[];
+  dataToMap: Partial<ImportRecord>;
 }
 export default function ImportedTable({ dataToMap }: Props) {
   const columns = ["Name", "Staff no.", "Category", "Status", "Details"];
+
+  if (!dataToMap) {
+    return null;
+  }
   return (
     <>
       <TableWrapper className="mb-4">
@@ -37,25 +42,36 @@ export default function ImportedTable({ dataToMap }: Props) {
             </TableRow>
           </TableHeader>
 
-          <TableBody>
-            {dataToMap.map((staff, index) => (
-              <TableRow
-                key={staff.id}
-                className={clsx(
-                  "text-neutrals-900",
-                  index === 4 && "[&>td]:border-b-0"
-                )}
-              >
-                <TableCell>{titleCase(staff.name) || "-"}</TableCell>
-                <TableCell>{staff.staff_number || "-"}</TableCell>
-                <TableCell>{staff.category || "-"}</TableCell>
-                <TableCell>
-                  <StatusBadge variant="green" data="Valid" />
-                </TableCell>
-                <TableCell>{staff.details || "-"}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+          {dataToMap.rows && dataToMap.rows.length > 0 && (
+            <TableBody>
+              {dataToMap.rows?.map((row, index) => (
+                <TableRow
+                  key={row.id}
+                  className={clsx(
+                    "text-neutrals-900",
+                    index === 4 && "[&>td]:border-b-0"
+                  )}
+                >
+                  <TableCell>
+                    {titleCase(
+                      `${row.raw_data?.first_name} ${row.raw_data?.last_name} ${row.raw_data?.middle_name}`
+                    ) || "-"}
+                  </TableCell>
+                  <TableCell>{row.raw_data?.staff_number || "-"}</TableCell>
+                  <TableCell>
+                    {titleCase(row.raw_data?.category || "") || "-"}
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge
+                      variant={row.errors ? "orange" : "green"}
+                      data={row.errors ? titleCase(row.status) : "Valid"}
+                    />
+                  </TableCell>
+                  <TableCell>{titleCase(row.status) || "-"}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          )}
         </Table>
       </TableWrapper>
     </>

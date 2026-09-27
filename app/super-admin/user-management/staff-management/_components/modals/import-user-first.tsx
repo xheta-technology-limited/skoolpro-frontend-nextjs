@@ -5,6 +5,7 @@ import { DragNDrop } from "@/components/ui/form";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { useGetTemplate } from "@/features/user-management/api/get-user-template";
+import { useStartImport } from "@/features/user-management/api/start-import";
 import {
   StartImportFormData,
   startImportSchema,
@@ -24,6 +25,8 @@ export default function FirstModal() {
       enabled: false,
       refetchOnWindowFocus: false,
     });
+
+  const { mutate, isPending: isMutatePending } = useStartImport();
 
   const handleDownload = async () => {
     const { data: template } = await downloadTemplate();
@@ -51,11 +54,14 @@ export default function FirstModal() {
   const handleClose = () =>
     router.replace("/super-admin/user-management/staff-management");
 
-  const handleProceed = () => {
-    alert("make this actually check form data");
-    router.push(
-      "/super-admin/user-management/staff-management?import-modal=true&current=2"
-    );
+  const handleProceed = (data: StartImportFormData) => {
+    const payload = { ...data, module: "staff", entity_type: "staff" };
+    mutate(payload, {
+      onSuccess: (res) =>
+        router.push(
+          `/super-admin/user-management/staff-management?import-modal=true&current=2&job-id=${res.id}`
+        ),
+    });
   };
 
   return (
@@ -99,7 +105,10 @@ export default function FirstModal() {
             </Button>
           </div>
           <FormProvider {...methods}>
-            <form>
+            <form
+              id="import-form"
+              onSubmit={methods.handleSubmit(handleProceed)}
+            >
               <DragNDrop
                 name="file"
                 label="CSV"
@@ -122,11 +131,11 @@ export default function FirstModal() {
               Cancel
             </Button>
             <Button
-              // loading={isPending}
-              //   type="submit"
+              loading={isMutatePending}
+              type="submit"
+              form="import-form"
               size="lg"
               className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
-              onClick={handleProceed}
             >
               Proceed
             </Button>
