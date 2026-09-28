@@ -24,14 +24,16 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { staffKeys } from "@/features/user-management/staff-management/api/query-keys";
 
-const jobSummary = [
-  { label: "Job Status", value: "Completed" },
-  { label: "Total Rows", value: "15" },
-  { label: "Imported", value: "12" },
-  { label: "Completed at", value: "2/9/2026 - 10:30 AM" },
-];
-
-export default function FourthModal() {
+interface Props {
+  title: string;
+  importAnotherFn: () => void;
+  handleClose: () => void;
+}
+export default function FourthModal({
+  title,
+  importAnotherFn,
+  handleClose,
+}: Props) {
   const searchParams = useSearchParams();
   const router = useProgressRouter();
 
@@ -45,9 +47,6 @@ export default function FourthModal() {
   const data = useImportStaffStore((s) => s.data);
 
   const { mutate, isPending } = useRollbackImport(jobID || "");
-
-  const handleClose = () =>
-    router.replace("/super-admin/user-management/staff-management");
 
   const handleRollback = () => {
     if (!jobID) {
@@ -66,7 +65,7 @@ export default function FourthModal() {
   };
   return (
     <FormModal
-      title={"Import Staff"}
+      title={title}
       onOpenChange={handleClose}
       open={isOpen}
       step={{ current: 4, total: 4 }}
@@ -144,11 +143,7 @@ export default function FourthModal() {
               variant="secondary"
               size="lg"
               className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
-              onClick={() =>
-                router.push(
-                  "/super-admin/user-management/staff-management?import-modal=true&current=1"
-                )
-              }
+              onClick={importAnotherFn}
             >
               Import another File
             </Button>

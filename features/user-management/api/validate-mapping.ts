@@ -14,6 +14,7 @@ export const useValidateMapping = (jobID: string) => {
     mutationFn: () => validateMapping(jobID),
     onSuccess: () =>
       queryClient.invalidateQueries({
+        //TODO: I think I fixed this on dev branch, but idk. Check.
         queryKey: [...importKeys.detail(jobID), ...importKeys.preview(jobID)],
       }),
   });

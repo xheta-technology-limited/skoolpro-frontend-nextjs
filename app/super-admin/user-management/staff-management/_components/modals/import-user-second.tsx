@@ -10,12 +10,23 @@ import { usePreviewMapping } from "@/features/user-management/api/preview-mappin
 import { useValidateMapping } from "@/features/user-management/api/validate-mapping";
 import { flipKeyValuePair } from "@/features/user-management/helpers/flip-key-value-pairs";
 import { useImportStaffStore } from "@/features/user-management/stores/import-staff.store";
+import { Entity } from "@/features/user-management/types/api/common";
 import { ApplyMappingPayload } from "@/features/user-management/types/api/template";
+import { ColumnMapping } from "@/features/user-management/types/import/staff";
 import { titleCase, typedMappedKeys } from "@/lib/helpers";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
-export default function SecondModal() {
+interface Props {
+  title: string;
+  nextStepUrl: string;
+  handleClose: () => void;
+}
+export default function SecondModal({
+  nextStepUrl,
+  handleClose,
+  title,
+}: Props) {
   const searchParams = useSearchParams();
   const router = useProgressRouter();
 
@@ -40,12 +51,9 @@ export default function SecondModal() {
     mutate,
     isPending: isApplyMutatePending,
     isSuccess: isApplySuccess,
-  } = useApplyMapping(jobID || "");
+  } = useApplyMapping<ColumnMapping>(jobID || "");
   const { mutate: validateMutate, isPending: isValidatePending } =
     useValidateMapping(jobID || "");
-
-  const handleClose = () =>
-    router.replace("/super-admin/user-management/staff-management");
 
   const handleApplyMapping = () => {
     if (!jobData) {
@@ -64,7 +72,7 @@ export default function SecondModal() {
       onSuccess: () => {
         toast.success("Mapped successfully, validate to continue.");
         router.push(
-          `/super-admin/user-management/staff-management?import-modal=true&current=2&job-id=${jobID}&is-applied=true`
+          `${nextStepUrl}?import-modal=true&current=2&job-id=${jobID}&is-applied=true`
         );
       },
     });
@@ -84,7 +92,7 @@ export default function SecondModal() {
       onSuccess: (res) => {
         updateImportStore(res);
         router.push(
-          `/super-admin/user-management/staff-management?import-modal=true&current=3&job-id=${jobID}`
+          `${nextStepUrl}?import-modal=true&current=3&job-id=${jobID}`
         );
       },
     });
@@ -92,7 +100,7 @@ export default function SecondModal() {
 
   return (
     <FormModal
-      title={"Import Staff"}
+      title={title}
       onOpenChange={handleClose}
       open={isOpen}
       step={{ current: 2, total: 4 }}
@@ -145,9 +153,7 @@ export default function SecondModal() {
             size="lg"
             className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
             onClick={() =>
-              router.push(
-                "/super-admin/user-management/staff-management?import-modal=true&current=1"
-              )
+              router.push(`${nextStepUrl}?import-modal=true&current=1`)
             }
           >
             Back

@@ -15,8 +15,14 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { staffKeys } from "@/features/user-management/staff-management/api/query-keys";
 import { useCommitImport } from "@/features/user-management/api/commit-import";
+import { ColumnMapping } from "@/features/user-management/types/import/staff";
 
-export default function ThirdModal() {
+interface Props {
+  title: string;
+  nextStepUrl: string;
+  handleClose: () => void;
+}
+export default function ThirdModal({ nextStepUrl, handleClose, title }: Props) {
   const searchParams = useSearchParams();
   const router = useProgressRouter();
 
@@ -27,13 +33,10 @@ export default function ThirdModal() {
   const isOpen = open === "true" && current === "3";
   const jobID = searchParams.get("job-id");
 
-  const { mutate, isPending } = useCommitImport(jobID || "");
+  const { mutate, isPending } = useCommitImport<ColumnMapping>(jobID || "");
 
   const data = useImportStaffStore((s) => s.data);
   const updateImportStore = useImportStaffStore((state) => state.updateData);
-
-  const handleClose = () =>
-    router.replace("/super-admin/user-management/staff-management");
 
   const handleProceed = () => {
     if (!jobID) {
@@ -48,7 +51,7 @@ export default function ThirdModal() {
           queryKey: staffKeys.all,
         });
         router.push(
-          `/super-admin/user-management/staff-management?import-modal=true&current=4&job-id=${jobID}`
+          `${nextStepUrl}?import-modal=true&current=4&job-id=${jobID}`
         );
       },
     });
@@ -56,7 +59,7 @@ export default function ThirdModal() {
 
   return (
     <FormModal
-      title={"Import Staff"}
+      title={title}
       onOpenChange={handleClose}
       open={isOpen}
       step={{ current: 3, total: 4 }}

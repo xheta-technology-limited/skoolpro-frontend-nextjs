@@ -2,8 +2,8 @@ import { api } from "@/lib/api";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { ServerErrorResponse } from "@/types/api";
 import { templateKeys } from "./query-keys";
+import { Entity } from "../types/api/common";
 
-type Entity = "staff" | "student" | "guardian";
 export const getTemplate = (entity: Entity): Promise<Blob> => {
   return api.get(`imports/template/${entity}`, {
     raw: true,

@@ -10,18 +10,31 @@ import {
   StartImportFormData,
   startImportSchema,
 } from "@/features/user-management/schemas/start-import";
+import { Entity } from "@/features/user-management/types/api/common";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DocumentDownload } from "iconsax-reactjs";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 
-export default function FirstModal() {
+interface Props {
+  title: string;
+  templateTexts: string[];
+  module: Entity;
+  nextStepUrl: string;
+  handleClose: () => void;
+}
+export default function FirstModal({
+  title,
+  templateTexts,
+  module,
+  nextStepUrl,
+  handleClose,
+}: Props) {
   const searchParams = useSearchParams();
   const router = useProgressRouter();
 
   const { isFetching: isTemplateFetching, refetch: downloadTemplate } =
-    useGetTemplate("staff", {
+    useGetTemplate(module, {
       enabled: false,
       refetchOnWindowFocus: false,
     });
@@ -51,22 +64,19 @@ export default function FirstModal() {
     resolver: zodResolver(startImportSchema),
   });
 
-  const handleClose = () =>
-    router.replace("/super-admin/user-management/staff-management");
-
   const handleProceed = (data: StartImportFormData) => {
-    const payload = { ...data, module: "staff", entity_type: "staff" };
+    const payload = { ...data, module: module, entity_type: module };
     mutate(payload, {
       onSuccess: (res) =>
         router.push(
-          `/super-admin/user-management/staff-management?import-modal=true&current=2&job-id=${res.id}`
+          `${nextStepUrl}?import-modal=true&current=2&job-id=${res.id}`
         ),
     });
   };
 
   return (
     <FormModal
-      title={"Import Staff"}
+      title={title}
       onOpenChange={handleClose}
       open={isOpen}
       step={{ current: 1, total: 4 }}
@@ -86,11 +96,10 @@ export default function FirstModal() {
           <div className="bg-primary-bg border border-primary-100 rounded-ml p-4 flex items-center gap-4 flex-wrap">
             <div className="flex-1 h-fit">
               <Text scale={"content"} className="text-neutrals-700">
-                Staff import template
+                {templateTexts[0]}
               </Text>
               <Text scale={"caption"} className="text-neutrals-700">
-                CSV · 15 columns · required: staff number, first name, last
-                name, category
+                {templateTexts[1]}
               </Text>
             </div>
 
