@@ -16,6 +16,9 @@ export default function ImportStaff() {
     router.push(
       "/super-admin/user-management/staff-management?import-modal=true&current=1"
     );
+
+  const tableColumns = ["Name", "Staff no.", "Category", "Status", "Details"];
+  const mapKeys = ["staff_number", "category"];
   return (
     <Suspense fallback={null}>
       <FirstModal
@@ -37,6 +40,8 @@ export default function ImportStaff() {
         title={title}
         nextStepUrl={nextStepUrl}
         handleClose={handleClose}
+        tableColumns={tableColumns}
+        tableKeys={mapKeys}
       />
       <FourthModal
         title={title}

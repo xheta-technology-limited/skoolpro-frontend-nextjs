@@ -21,8 +21,16 @@ interface Props {
   title: string;
   nextStepUrl: string;
   handleClose: () => void;
+  tableColumns: string[];
+  tableKeys: string[];
 }
-export default function ThirdModal({ nextStepUrl, handleClose, title }: Props) {
+export default function ThirdModal({
+  nextStepUrl,
+  handleClose,
+  title,
+  tableColumns,
+  tableKeys,
+}: Props) {
   const searchParams = useSearchParams();
   const router = useProgressRouter();
 
@@ -84,7 +92,11 @@ export default function ThirdModal({ nextStepUrl, handleClose, title }: Props) {
           </div>
         </div>
 
-        <ImportedTable dataToMap={data} />
+        <ImportedTable
+          dataToMap={data}
+          columns={tableColumns}
+          keys={tableKeys}
+        />
 
         <div className="flex gap-6 items-center *:flex-1">
           <Button

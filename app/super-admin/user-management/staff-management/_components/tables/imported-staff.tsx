@@ -12,12 +12,16 @@ import {
 import { ImportRecord } from "@/features/user-management/types/api/template";
 import { titleCase } from "@/lib/helpers/string-to-title-case";
 import clsx from "clsx";
-interface Props {
-  dataToMap: Partial<ImportRecord>;
+interface Props<T extends Record<string, string>> {
+  dataToMap: Partial<ImportRecord<T>>;
+  columns: string[];
+  keys: string[];
 }
-export default function ImportedTable({ dataToMap }: Props) {
-  const columns = ["Name", "Staff no.", "Category", "Status", "Details"];
-
+export default function ImportedTable<T extends Record<string, string>>({
+  dataToMap,
+  columns,
+  keys,
+}: Props<T>) {
   if (!dataToMap) {
     return null;
   }
@@ -57,9 +61,9 @@ export default function ImportedTable({ dataToMap }: Props) {
                       `${row.mapped_data?.first_name} ${row.mapped_data?.last_name} ${row.mapped_data?.middle_name}`
                     ) || "-"}
                   </TableCell>
-                  <TableCell>{row.mapped_data?.staff_number || "-"}</TableCell>
+                  <TableCell>{row.mapped_data?.[keys[0]] || "-"}</TableCell>
                   <TableCell>
-                    {titleCase(row.mapped_data?.category || "") || "-"}
+                    {titleCase(row.mapped_data?.[keys[1]] || "") || "-"}
                   </TableCell>
                   <TableCell>
                     <StatusBadge
