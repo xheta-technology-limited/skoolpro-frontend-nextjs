@@ -21,6 +21,7 @@ export default function SecondModal() {
   const open = searchParams.get("import-modal");
   const jobID = searchParams.get("job-id");
   const current = searchParams.get("current");
+  const validateStep = searchParams.get("is-applied");
   const isOpen = open === "true" && current === "2";
 
   const updateImportStore = useImportStaffStore((state) => state.updateData);
@@ -34,12 +35,18 @@ export default function SecondModal() {
     refetchOnWindowFocus: false,
   });
 
-  const { mutate, isPending: isMutatePending } = useApplyMapping(jobID || "");
+  const {
+    mutate,
+    isPending: isApplyMutatePending,
+    isSuccess: isApplySuccess,
+  } = useApplyMapping(jobID || "");
+  const { mutate: validateMutate, isPending: isValidatePending } =
+    useValidateMapping(jobID || "");
 
   const handleClose = () =>
     router.replace("/super-admin/user-management/staff-management");
 
-  const handleProceed = () => {
+  const handleApplyMapping = () => {
     if (!jobData) {
       toast.error("Internal Client Error: No mapped data to preview");
       return;
@@ -53,6 +60,26 @@ export default function SecondModal() {
       column_mapping: jobData.expected_columns,
     };
     mutate(payload, {
+      onSuccess: (res) => {
+        toast.success("Mapped successfully, validate to continue.");
+        router.push(
+          `/super-admin/user-management/staff-management?import-modal=true&current=2&job-id=${jobID}&is-applied=true`
+        );
+      },
+    });
+  };
+
+  const handleValidateMapping = () => {
+    if (!jobData) {
+      toast.error("Internal Client Error: No mapped data to preview");
+      return;
+    }
+    if (!jobID) {
+      toast.error("No current job ID found");
+      return;
+    }
+
+    validateMutate(undefined, {
       onSuccess: (res) => {
         updateImportStore(res);
         router.push(
@@ -124,15 +151,27 @@ export default function SecondModal() {
           >
             Back
           </Button>
-          <Button
-            loading={isMutatePending}
-            disabled={!isSuccess}
-            size="lg"
-            className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
-            onClick={handleProceed}
-          >
-            Confirm Mapping
-          </Button>
+          {validateStep ? (
+            <Button
+              loading={isValidatePending}
+              disabled={!isSuccess}
+              size="lg"
+              className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+              onClick={handleValidateMapping}
+            >
+              Validate
+            </Button>
+          ) : (
+            <Button
+              loading={isApplyMutatePending}
+              disabled={!isSuccess}
+              size="lg"
+              className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+              onClick={handleApplyMapping}
+            >
+              Confirm Mapping
+            </Button>
+          )}
         </div>
       </>
     </FormModal>

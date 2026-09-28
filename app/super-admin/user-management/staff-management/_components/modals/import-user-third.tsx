@@ -14,6 +14,7 @@ import { useValidateMapping } from "@/features/user-management/api/validate-mapp
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { staffKeys } from "@/features/user-management/staff-management/api/query-keys";
+import { useCommitImport } from "@/features/user-management/api/commit-import";
 
 export default function ThirdModal() {
   const searchParams = useSearchParams();
@@ -26,7 +27,7 @@ export default function ThirdModal() {
   const isOpen = open === "true" && current === "3";
   const jobID = searchParams.get("job-id");
 
-  const { mutate, isPending } = useValidateMapping(jobID || "");
+  const { mutate, isPending } = useCommitImport(jobID || "");
 
   const data = useImportStaffStore((s) => s.data);
   const updateImportStore = useImportStaffStore((state) => state.updateData);
