@@ -12,9 +12,11 @@ export const useValidateMapping = (jobID: string) => {
   const queryClient = useQueryClient();
   return useMutation<ImportRecord, ServerErrorResponse>({
     mutationFn: () => validateMapping(jobID),
-    onSuccess: () =>
-      queryClient.invalidateQueries({
-        queryKey: [...importKeys.detail(jobID), ...importKeys.preview(jobID)],
-      }),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: importKeys.detail(jobID) }),
+        queryClient.invalidateQueries({ queryKey: importKeys.preview(jobID) }),
+      ]);
+    },
   });
 };
