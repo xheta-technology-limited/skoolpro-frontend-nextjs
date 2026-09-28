@@ -43,10 +43,10 @@ export default function ThirdModal() {
 
     mutate(undefined, {
       onSuccess: (res) => {
+        updateImportStore(res);
         queryClient.invalidateQueries({
           queryKey: staffKeys.all,
         });
-        updateImportStore(res);
         router.push(
           `/super-admin/user-management/staff-management?import-modal=true&current=4&job-id=${jobID}`
         );
@@ -73,10 +73,6 @@ export default function ThirdModal() {
           </Text>
 
           <div className="flex gap-4 items-center">
-            <StatusBadge
-              variant="green"
-              data={`${data?.success_count} Valid`}
-            />
             <StatusBadge
               variant="orange"
               data={`${data?.skipped_count} Skipped`}
@@ -107,7 +103,7 @@ export default function ThirdModal() {
             className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
             onClick={handleProceed}
           >
-            {`Commit ${data?.success_count} valid rows`}
+            {`Commit rows`}
           </Button>
         </div>
       </>

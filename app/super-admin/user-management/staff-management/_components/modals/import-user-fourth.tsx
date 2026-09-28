@@ -21,6 +21,8 @@ import { titleCase } from "@/lib/helpers";
 import { useEffect } from "react";
 import { useRollbackImport } from "@/features/user-management/api/rollback-import";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { staffKeys } from "@/features/user-management/staff-management/api/query-keys";
 
 const jobSummary = [
   { label: "Job Status", value: "Completed" },
@@ -38,6 +40,8 @@ export default function FourthModal() {
   const isOpen = open === "true" && current === "4";
   const jobID = searchParams.get("job-id");
 
+  const queryClient = useQueryClient();
+
   const data = useImportStaffStore((s) => s.data);
 
   const { mutate, isPending } = useRollbackImport(jobID || "");
@@ -52,6 +56,9 @@ export default function FourthModal() {
     }
     mutate(undefined, {
       onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: staffKeys.all,
+        });
         toast.success("Success!");
         handleClose();
       },

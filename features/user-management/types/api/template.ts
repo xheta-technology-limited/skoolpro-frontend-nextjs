@@ -17,7 +17,7 @@ export type ImportColumnMapping = {
 };
 
 export type ApplyMappingPayload = {
-  column_mapping: ImportColumnMapping;
+  column_mapping: Record<string, string>;
 };
 
 type MappedData = {
@@ -54,7 +54,7 @@ export type ImportRecord = {
   entity_type: string;
   original_filename: string;
   status: string;
-  column_mapping: ImportColumnMapping;
+  column_mapping: Record<string, string>;
   total_rows: number | null;
   success_count: number;
   error_count: number;

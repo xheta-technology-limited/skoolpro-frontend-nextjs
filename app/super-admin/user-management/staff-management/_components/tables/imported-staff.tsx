@@ -54,12 +54,12 @@ export default function ImportedTable({ dataToMap }: Props) {
                 >
                   <TableCell>
                     {titleCase(
-                      `${row.raw_data?.first_name} ${row.raw_data?.last_name} ${row.raw_data?.middle_name}`
+                      `${row.mapped_data?.first_name} ${row.mapped_data?.last_name} ${row.mapped_data?.middle_name}`
                     ) || "-"}
                   </TableCell>
-                  <TableCell>{row.raw_data?.staff_number || "-"}</TableCell>
+                  <TableCell>{row.mapped_data?.staff_number || "-"}</TableCell>
                   <TableCell>
-                    {titleCase(row.raw_data?.category || "") || "-"}
+                    {titleCase(row.mapped_data?.category || "") || "-"}
                   </TableCell>
                   <TableCell>
                     <StatusBadge

@@ -8,6 +8,7 @@ import { useProgressRouter } from "@/features/page-loader";
 import { useApplyMapping } from "@/features/user-management/api/apply-mapping";
 import { usePreviewMapping } from "@/features/user-management/api/preview-mapping";
 import { useValidateMapping } from "@/features/user-management/api/validate-mapping";
+import { flipKeyValuePair } from "@/features/user-management/helpers/flip-key-value-pairs";
 import { useImportStaffStore } from "@/features/user-management/stores/import-staff.store";
 import { ApplyMappingPayload } from "@/features/user-management/types/api/template";
 import { titleCase, typedMappedKeys } from "@/lib/helpers";
@@ -57,10 +58,10 @@ export default function SecondModal() {
     }
 
     const payload: ApplyMappingPayload = {
-      column_mapping: jobData.expected_columns,
+      column_mapping: flipKeyValuePair(jobData.expected_columns),
     };
     mutate(payload, {
-      onSuccess: (res) => {
+      onSuccess: () => {
         toast.success("Mapped successfully, validate to continue.");
         router.push(
           `/super-admin/user-management/staff-management?import-modal=true&current=2&job-id=${jobID}&is-applied=true`
