@@ -4,20 +4,24 @@ import { ServerErrorResponse } from "@/types/api";
 import { importKeys } from "./query-keys";
 import { PreviewMappingResponse } from "../types/api/preview-mapping";
 
-export const previewMapping = (
+export const previewMapping = <
+  ExpectedColumns extends Record<string, string>
+>(
   jobID: string
-): Promise<PreviewMappingResponse> => {
+): Promise<PreviewMappingResponse<ExpectedColumns>> => {
   return api.get(`imports/${jobID}/preview-mapping`);
 };
 
-export const usePreviewMapping = (
+export const usePreviewMapping = <
+  ExpectedColumns extends Record<string, string>
+>(
   jobID: string,
   options?: Partial<
-    UseQueryOptions<PreviewMappingResponse, ServerErrorResponse>
+    UseQueryOptions<PreviewMappingResponse<ExpectedColumns>, ServerErrorResponse>
   >
 ) => {
-  return useQuery<PreviewMappingResponse, ServerErrorResponse>({
-    queryFn: () => previewMapping(jobID),
+  return useQuery<PreviewMappingResponse<ExpectedColumns>, ServerErrorResponse>({
+    queryFn: () => previewMapping<ExpectedColumns>(jobID),
     queryKey: importKeys.preview(jobID),
     ...options,
   });

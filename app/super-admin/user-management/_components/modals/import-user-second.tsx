@@ -12,21 +12,23 @@ import { flipKeyValuePair } from "@/features/user-management/helpers/flip-key-va
 import { useImportStaffStore } from "@/features/user-management/stores/import-staff.store";
 import { Entity } from "@/features/user-management/types/api/common";
 import { ApplyMappingPayload } from "@/features/user-management/types/api/template";
-import { ColumnMapping } from "@/features/user-management/types/import/staff";
+import { ColumnMappingFor } from "@/features/user-management/types/import";
 import { titleCase, typedMappedKeys } from "@/lib/helpers";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
-interface Props {
+type Props<E extends Entity> = {
   title: string;
   nextStepUrl: string;
   handleClose: () => void;
-}
-export default function SecondModal({
+  module: E;
+};
+export default function SecondModal<E extends Entity>({
   nextStepUrl,
   handleClose,
   title,
-}: Props) {
+  module,
+}: Props<E>) {
   const searchParams = useSearchParams();
   const router = useProgressRouter();
 
@@ -42,7 +44,7 @@ export default function SecondModal({
     data: jobData,
     isPending,
     isSuccess,
-  } = usePreviewMapping(jobID || "", {
+  } = usePreviewMapping<ColumnMappingFor<E>>(jobID || "", {
     enabled: !!jobID,
     refetchOnWindowFocus: false,
   });
@@ -51,9 +53,9 @@ export default function SecondModal({
     mutate,
     isPending: isApplyMutatePending,
     isSuccess: isApplySuccess,
-  } = useApplyMapping<ColumnMapping>(jobID || "");
+  } = useApplyMapping<ColumnMappingFor<E>>(jobID || "");
   const { mutate: validateMutate, isPending: isValidatePending } =
-    useValidateMapping<ColumnMapping>(jobID || "");
+    useValidateMapping<ColumnMappingFor<E>>(jobID || "");
 
   const handleApplyMapping = () => {
     if (!jobData) {
@@ -131,7 +133,7 @@ export default function SecondModal({
                     key={key}
                     disabled
                     name={""}
-                    value={jobData.expected_columns[key]}
+                    value={String(jobData.expected_columns[key])}
                   />
                 ))}
             </div>

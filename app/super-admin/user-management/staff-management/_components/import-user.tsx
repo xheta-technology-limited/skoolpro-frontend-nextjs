@@ -35,6 +35,7 @@ export default function ImportStaff() {
         title={title}
         nextStepUrl={nextStepUrl}
         handleClose={handleClose}
+        module="staff"
       />
       <ThirdModal
         title={title}

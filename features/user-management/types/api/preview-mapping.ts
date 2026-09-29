@@ -1,21 +1,4 @@
-type StaffFileHeaders =
-  | "staff_number"
-  | "first_name"
-  | "last_name"
-  | "category"
-  | "middle_name"
-  | "title"
-  | "gender"
-  | "email"
-  | "phone"
-  | "department"
-  | "employment_type"
-  | "employment_start_date"
-  | "staff_status"
-  | "payroll_number"
-  | "national_reg_number";
-
-export interface StaffExpectedColumns {
+export type StaffExpectedColumns = {
   staff_number: string;
   first_name: string;
   last_name: string;
@@ -33,7 +16,9 @@ export interface StaffExpectedColumns {
   national_reg_number: string;
 }
 
-export interface PreviewMappingResponse {
-  file_headers: StaffFileHeaders[];
-  expected_columns: StaffExpectedColumns;
-}
+export type PreviewMappingResponse<
+  ExpectedColumns extends Record<string, string> = StaffExpectedColumns
+> = {
+  file_headers: (keyof ExpectedColumns & string)[];
+  expected_columns: ExpectedColumns;
+};
