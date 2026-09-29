@@ -53,7 +53,7 @@ export default function SecondModal({
     isSuccess: isApplySuccess,
   } = useApplyMapping<ColumnMapping>(jobID || "");
   const { mutate: validateMutate, isPending: isValidatePending } =
-    useValidateMapping(jobID || "");
+    useValidateMapping<ColumnMapping>(jobID || "");
 
   const handleApplyMapping = () => {
     if (!jobData) {
