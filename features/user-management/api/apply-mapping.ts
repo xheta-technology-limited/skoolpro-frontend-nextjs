@@ -6,16 +6,18 @@ import {
   ApplyMappingResponse,
 } from "../types/api/template";
 
-export const applyMapping = (
+export const applyMapping = <ColumnMapping extends Record<string, string>>(
   jobID: string,
   data: ApplyMappingPayload
-): Promise<ApplyMappingResponse> => {
+): Promise<ApplyMappingResponse<ColumnMapping>> => {
   return api.post(`imports/${jobID}/apply-mapping`, data);
 };
 
-export const useApplyMapping = (jobID: string) => {
+export const useApplyMapping = <ColumnMapping extends Record<string, string>>(
+  jobID: string
+) => {
   return useMutation<
-    ApplyMappingResponse,
+    ApplyMappingResponse<ColumnMapping>,
     ServerErrorResponse,
     ApplyMappingPayload
   >({

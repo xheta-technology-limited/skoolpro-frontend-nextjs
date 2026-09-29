@@ -1,22 +1,21 @@
 import { api } from "@/lib/api";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import { ServerErrorResponse } from "@/types/api";
-import { templateKeys } from "./query-keys";
-import { Entity } from "../types/api/common";
+import { importKeys } from "./query-keys";
 
-export const getTemplate = (entity: Entity): Promise<Blob> => {
-  return api.get(`imports/template/${entity}`, {
+export const getErrorReport = (jobID: string): Promise<Blob> => {
+  return api.get(`imports/${jobID}/error-report`, {
     raw: true,
     responseType: "blob",
   });
 };
-export const useGetTemplate = (
-  entity: Entity,
+export const useGetErrorReport = (
+  jobID: string,
   options?: Partial<UseQueryOptions<Blob, ServerErrorResponse>>
 ) => {
   return useQuery<Blob, ServerErrorResponse>({
-    queryFn: () => getTemplate(entity),
-    queryKey: templateKeys.detail(entity),
+    queryFn: () => getErrorReport(jobID),
+    queryKey: importKeys.errors(jobID),
     ...options,
   });
 };

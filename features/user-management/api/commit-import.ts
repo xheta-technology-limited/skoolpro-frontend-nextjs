@@ -3,12 +3,16 @@ import { api } from "@/lib/api";
 import { ServerErrorResponse } from "@/types/api";
 import { ImportRecord } from "../types/api/template";
 
-export const commitImport = (jobID: string): Promise<ImportRecord> => {
+export const commitImport = <ColumnMapping extends Record<string, string>>(
+  jobID: string
+): Promise<ImportRecord<ColumnMapping>> => {
   return api.post(`imports/${jobID}/commit`);
 };
 
-export const useCommitImport = (jobID: string) => {
-  return useMutation<ImportRecord, ServerErrorResponse, void>({
+export const useCommitImport = <ColumnMapping extends Record<string, string>>(
+  jobID: string
+) => {
+  return useMutation<ImportRecord<ColumnMapping>, ServerErrorResponse, void>({
     mutationFn: () => commitImport(jobID),
   });
 };

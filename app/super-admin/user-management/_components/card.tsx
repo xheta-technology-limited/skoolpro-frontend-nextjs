@@ -4,13 +4,15 @@ import { Text } from "@/components/ui";
 import { Group } from "../constants";
 import { useProgressRouter } from "@/features/page-loader";
 import { cn } from "@/lib/utils";
+import { Spinner } from "@/components/animations";
 
 interface Props {
   group: Group;
+  loading: boolean;
   className?: string;
 }
 
-export default function ManagementCard({ group, className }: Props) {
+export default function ManagementCard({ group, className, loading }: Props) {
   const router = useProgressRouter();
   return (
     <button
@@ -33,13 +35,17 @@ export default function ManagementCard({ group, className }: Props) {
         </div>
 
         <div className="flex justify-between items-center">
-          <Text
-            weight={"accent"}
-            scale={"feature"}
-            className="text-neutrals-900"
-          >
-            {group.total}
-          </Text>
+          {loading ? (
+            <Spinner size={16} color="#2B2829" />
+          ) : (
+            <Text
+              weight={"accent"}
+              scale={"feature"}
+              className="text-neutrals-900"
+            >
+              {group.total}
+            </Text>
+          )}
           <ArrowRight3 variant="Bulk" size={24} className="text-primary" />
         </div>
       </div>

@@ -1,4 +1,4 @@
-export type StaffExpectedColumns = {
+export type ColumnMapping = {
   staff_number: string;
   first_name: string;
   last_name: string;
@@ -14,11 +14,4 @@ export type StaffExpectedColumns = {
   staff_status: string;
   payroll_number: string;
   national_reg_number: string;
-}
-
-export type PreviewMappingResponse<
-  ExpectedColumns extends Record<string, string> = StaffExpectedColumns
-> = {
-  file_headers: (keyof ExpectedColumns & string)[];
-  expected_columns: ExpectedColumns;
 };

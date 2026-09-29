@@ -4,19 +4,24 @@ import { ServerErrorResponse } from "@/types/api";
 import { ImportRecord } from "../types/api/template";
 import { importKeys } from "./query-keys";
 
-export const validateMapping = (jobID: string): Promise<ImportRecord> => {
+export const validateMapping = <ColumnMapping extends Record<string, string>>(
+  jobID: string
+): Promise<ImportRecord<ColumnMapping>> => {
   return api.post(`imports/${jobID}/validate`);
 };
 
-export const useValidateMapping = (jobID: string) => {
+export const useValidateMapping = <
+  ColumnMapping extends Record<string, string>
+>(
+  jobID: string
+) => {
   const queryClient = useQueryClient();
-  return useMutation<ImportRecord, ServerErrorResponse>({
+  return useMutation<ImportRecord<ColumnMapping>, ServerErrorResponse>({
     mutationFn: () => validateMapping(jobID),
-    onSuccess: async () => {
-      await Promise.all([
+    onSuccess: () =>
+      Promise.all([
         queryClient.invalidateQueries({ queryKey: importKeys.detail(jobID) }),
         queryClient.invalidateQueries({ queryKey: importKeys.preview(jobID) }),
-      ]);
-    },
+      ]),
   });
 };
