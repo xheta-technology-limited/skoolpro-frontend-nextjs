@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/custom-button";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { useSearchParams } from "next/navigation";
-import ImportedTable from "../tables/imported-staff";
+import ImportedTable from "../tables/imported-table";
 import clsx from "clsx";
 import { useImportStaffStore } from "@/features/user-management/stores/import-staff.store";
 import { titleCase } from "@/lib/helpers";

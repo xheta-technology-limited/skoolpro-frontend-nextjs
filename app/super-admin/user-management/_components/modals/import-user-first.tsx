@@ -48,7 +48,7 @@ export default function FirstModal({
     const url = URL.createObjectURL(template);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "Staff.csv";
+    a.download = "import_template.csv";
     document.body.appendChild(a);
     a.click();
     a.remove();

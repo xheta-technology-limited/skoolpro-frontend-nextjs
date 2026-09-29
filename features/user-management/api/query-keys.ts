@@ -10,4 +10,5 @@ export const importKeys = {
   all: ["imports"] as const,
   detail: (jobID: string) => ["imports", jobID] as const,
   preview: (jobID: string) => ["preview", jobID] as const,
+  errors: (jobID: string) => ["errors", jobID] as const,
 };

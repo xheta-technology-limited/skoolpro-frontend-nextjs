@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/custom-button";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { useSearchParams } from "next/navigation";
-import ImportedTable from "../tables/imported-staff";
+import ImportedTable from "../tables/imported-table";
 import { useGetSingleImport } from "@/features/user-management/api/get-single-import";
 import { Spinner } from "@/components/animations";
 import { useImportStaffStore } from "@/features/user-management/stores/import-staff.store";
@@ -16,6 +16,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { staffKeys } from "@/features/user-management/staff-management/api/query-keys";
 import { useCommitImport } from "@/features/user-management/api/commit-import";
 import { ColumnMapping } from "@/features/user-management/types/import/staff";
+import { DocumentDownload } from "iconsax-reactjs";
+import { useGetErrorReport } from "@/features/user-management/api/get-error-report";
 
 interface Props {
   title: string;
@@ -65,6 +67,33 @@ export default function ThirdModal({
     });
   };
 
+  const { isFetching: isTemplateFetching, refetch: downloadErrors } =
+    useGetErrorReport(jobID || "", {
+      enabled: false,
+      refetchOnWindowFocus: false,
+    });
+
+  const handleDownload = async () => {
+    if (!jobID) return;
+    const { data: template } = await downloadErrors();
+    if (!template) return;
+
+    const url = URL.createObjectURL(template);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "import_errors.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  useEffect(() => {
+    if (data.error_count && data.error_count > 0) {
+      toast.info("Errors detected; please download the error file.");
+    }
+  }, [data]);
+
   return (
     <FormModal
       title={title}
@@ -83,12 +112,28 @@ export default function ThirdModal({
             commit the valid ones.
           </Text>
 
-          <div className="flex gap-4 items-center">
-            <StatusBadge
-              variant="orange"
-              data={`${data?.skipped_count} Skipped`}
-            />
-            <StatusBadge variant="red" data={`${data?.error_count} Errors`} />
+          <div className="flex justify-between">
+            <div className="flex gap-4 items-center">
+              <StatusBadge
+                variant="orange"
+                data={`${data?.skipped_count} Skipped`}
+              />
+              <StatusBadge variant="red" data={`${data?.error_count} Errors`} />
+            </div>
+
+            {data?.error_count && data.error_count > 0 && (
+              <Button
+                variant="secondary"
+                leftIcon={
+                  <DocumentDownload size={16} className="text-error-200" />
+                }
+                className="h-max"
+                onClick={handleDownload}
+                loading={isTemplateFetching}
+              >
+                Download Error report
+              </Button>
+            )}
           </div>
         </div>
 

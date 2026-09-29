@@ -1,9 +1,9 @@
 "use client";
 import { Suspense } from "react";
-import FirstModal from "./modals/import-user-first";
-import SecondModal from "./modals/import-user-second";
-import ThirdModal from "./modals/import-user-third";
-import FourthModal from "./modals/import-user-fourth";
+import FirstModal from "../../_components/modals/import-user-first";
+import SecondModal from "../../_components/modals/import-user-second";
+import ThirdModal from "../../_components/modals/import-user-third";
+import FourthModal from "../../_components/modals/import-user-fourth";
 import { useProgressRouter } from "@/features/page-loader";
 
 export default function ImportStaff() {
