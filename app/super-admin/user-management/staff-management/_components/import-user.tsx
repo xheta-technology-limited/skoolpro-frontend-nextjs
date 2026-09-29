@@ -43,6 +43,7 @@ export default function ImportStaff() {
         handleClose={handleClose}
         tableColumns={tableColumns}
         tableKeys={mapKeys}
+        module="staff"
       />
       <FourthModal
         title={title}

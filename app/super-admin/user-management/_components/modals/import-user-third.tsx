@@ -6,33 +6,32 @@ import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { useSearchParams } from "next/navigation";
 import ImportedTable from "../tables/imported-table";
-import { useGetSingleImport } from "@/features/user-management/api/get-single-import";
-import { Spinner } from "@/components/animations";
 import { useImportStaffStore } from "@/features/user-management/stores/import-staff.store";
 import { useEffect } from "react";
-import { useValidateMapping } from "@/features/user-management/api/validate-mapping";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { staffKeys } from "@/features/user-management/staff-management/api/query-keys";
 import { useCommitImport } from "@/features/user-management/api/commit-import";
-import { ColumnMapping } from "@/features/user-management/types/import/staff";
+import { Entity } from "@/features/user-management/types/api/common";
+import { ColumnMappingFor } from "@/features/user-management/types/import";
 import { DocumentDownload } from "iconsax-reactjs";
 import { useGetErrorReport } from "@/features/user-management/api/get-error-report";
 
-interface Props {
+type Props<E extends Entity> = {
   title: string;
   nextStepUrl: string;
   handleClose: () => void;
   tableColumns: string[];
   tableKeys: string[];
-}
-export default function ThirdModal({
+  module: E;
+};
+export default function ThirdModal<E extends Entity>({
   nextStepUrl,
   handleClose,
   title,
   tableColumns,
   tableKeys,
-}: Props) {
+}: Props<E>) {
   const searchParams = useSearchParams();
   const router = useProgressRouter();
 
@@ -43,7 +42,9 @@ export default function ThirdModal({
   const isOpen = open === "true" && current === "3";
   const jobID = searchParams.get("job-id");
 
-  const { mutate, isPending } = useCommitImport<ColumnMapping>(jobID || "");
+  const { mutate, isPending } = useCommitImport<ColumnMappingFor<E>>(
+    jobID || ""
+  );
 
   const data = useImportStaffStore((s) => s.data);
   const updateImportStore = useImportStaffStore((state) => state.updateData);

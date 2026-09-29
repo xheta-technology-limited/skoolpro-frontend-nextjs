@@ -27,7 +27,6 @@ export default function SecondModal<E extends Entity>({
   nextStepUrl,
   handleClose,
   title,
-  module,
 }: Props<E>) {
   const searchParams = useSearchParams();
   const router = useProgressRouter();
