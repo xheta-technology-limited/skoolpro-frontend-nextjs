@@ -122,7 +122,7 @@ export default function ThirdModal<E extends Entity>({
               <StatusBadge variant="red" data={`${data?.error_count} Errors`} />
             </div>
 
-            {data?.error_count && data.error_count > 0 && (
+            {(data?.error_count ?? 0) > 0 && (
               <Button
                 variant="secondary"
                 leftIcon={
@@ -152,7 +152,7 @@ export default function ThirdModal<E extends Entity>({
             className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
             onClick={() =>
               router.push(
-                "/super-admin/user-management/staff-management?import-modal=true&current=2"
+                `/super-admin/user-management/staff-management?import-modal=true&current=2&job-id=${jobID}`
               )
             }
           >

@@ -19,9 +19,9 @@ export const useValidateMapping = <
   return useMutation<ImportRecord<ColumnMapping>, ServerErrorResponse>({
     mutationFn: () => validateMapping(jobID),
     onSuccess: () =>
-      queryClient.invalidateQueries({
-        //TODO: I think I fixed this on dev branch, but idk. Check.
-        queryKey: [...importKeys.detail(jobID), ...importKeys.preview(jobID)],
-      }),
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: importKeys.detail(jobID) }),
+        queryClient.invalidateQueries({ queryKey: importKeys.preview(jobID) }),
+      ]),
   });
 };
