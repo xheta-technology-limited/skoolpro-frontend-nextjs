@@ -87,8 +87,8 @@ export default function FirstModal({
             Download the template, then upload your file
           </Text>
           <Text scale={"caption"} className="text-neutrals-700">
-            The template has a column for every staff field, with the required
-            ones marked. Fill it in your spreadsheet app and save as CSV.
+            {`The template has a column for every ${module} field, with the required
+            ones marked. Fill it in your spreadsheet app and save as CSV.`}
           </Text>
         </div>
 

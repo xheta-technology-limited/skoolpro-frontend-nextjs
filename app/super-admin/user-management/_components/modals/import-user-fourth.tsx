@@ -3,8 +3,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
   TableWrapper,
 } from "@/components/ui/table";
@@ -14,25 +12,30 @@ import { Button } from "@/components/ui/custom-button";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { useSearchParams } from "next/navigation";
-import ImportedTable from "../tables/imported-table";
 import clsx from "clsx";
-import { useImportStaffStore } from "@/features/user-management/stores/import-staff.store";
 import { titleCase } from "@/lib/helpers";
-import { useEffect } from "react";
 import { useRollbackImport } from "@/features/user-management/api/rollback-import";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { staffKeys } from "@/features/user-management/staff-management/api/query-keys";
+import { ImportRecord } from "@/features/user-management/types/api/template";
+import { AnyColumnMapping } from "@/features/user-management/types/import";
+import { Entity } from "@/features/user-management/types/api/common";
 
 interface Props {
   title: string;
+  storeData: Partial<ImportRecord<AnyColumnMapping>>;
   importAnotherFn: () => void;
   handleClose: () => void;
+  invalidateQueryKeys: readonly string[];
+  module: Entity;
 }
 export default function FourthModal({
   title,
   importAnotherFn,
   handleClose,
+  invalidateQueryKeys,
+  storeData,
+  module,
 }: Props) {
   const searchParams = useSearchParams();
   const router = useProgressRouter();
@@ -44,8 +47,6 @@ export default function FourthModal({
 
   const queryClient = useQueryClient();
 
-  const data = useImportStaffStore((s) => s.data);
-
   const { mutate, isPending } = useRollbackImport(jobID || "");
 
   const handleRollback = () => {
@@ -56,7 +57,7 @@ export default function FourthModal({
     mutate(undefined, {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: staffKeys.all,
+          queryKey: invalidateQueryKeys,
         });
         toast.success("Success!");
         handleClose();
@@ -76,17 +77,23 @@ export default function FourthModal({
             Import complete
           </Text>
           <Text scale={"caption"} mobile className="text-neutrals-700 mb-4">
-            The valid rows are now staff records. Each row imported in its own
-            transaction, so one failure never blocks the rest.
+            {`The valid rows are now ${module} records. Each row imported in its own
+            transaction, so one failure never blocks the rest.`}
           </Text>
 
           <div className="flex gap-4 items-center">
-            <StatusBadge variant="green" data={`${data.success_count} Valid`} />
+            <StatusBadge
+              variant="green"
+              data={`${storeData.success_count} Valid`}
+            />
             <StatusBadge
               variant="orange"
-              data={`${data.skipped_count} Skipped`}
+              data={`${storeData.skipped_count} Skipped`}
             />
-            <StatusBadge variant="red" data={`${data.error_count} Errors`} />
+            <StatusBadge
+              variant="red"
+              data={`${storeData.error_count} Errors`}
+            />
           </div>
         </div>
 
@@ -100,7 +107,9 @@ export default function FourthModal({
                 )}
               >
                 <TableCell>Job Status</TableCell>
-                <TableCell>{titleCase(data.status || "") || "-"}</TableCell>
+                <TableCell>
+                  {titleCase(storeData.status || "") || "-"}
+                </TableCell>
               </TableRow>
 
               <TableRow
@@ -110,7 +119,7 @@ export default function FourthModal({
                 )}
               >
                 <TableCell>Total Rows</TableCell>
-                <TableCell>{data.total_rows || "-"}</TableCell>
+                <TableCell>{storeData.total_rows || "-"}</TableCell>
               </TableRow>
 
               <TableRow
@@ -120,7 +129,7 @@ export default function FourthModal({
                 )}
               >
                 <TableCell>Imported</TableCell>
-                <TableCell>{data.success_count || "-"}</TableCell>
+                <TableCell>{storeData.success_count || "-"}</TableCell>
               </TableRow>
 
               <TableRow
@@ -130,7 +139,7 @@ export default function FourthModal({
                 )}
               >
                 <TableCell>Completed at</TableCell>
-                <TableCell>{data.completed_at || "-"}</TableCell>
+                <TableCell>{storeData.completed_at || "-"}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -154,7 +163,7 @@ export default function FourthModal({
               className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
               onClick={handleClose}
             >
-              View Staff Directory
+              {`View ${titleCase(module)} Directory`}
             </Button>
           </div>
 
