@@ -5,30 +5,99 @@ import { Button } from "@/components/ui/custom-button";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { useSearchParams } from "next/navigation";
-import ImportedTable from "./tables/imported-student";
+import ImportedTable from "../../_components/tables/imported-table";
+import { useImportStudentsStore } from "@/features/user-management/stores/import-student.store";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { studentKeys } from "@/features/user-management/student-management/api/query-keys";
+import { useCommitImport } from "@/features/user-management/api/commit-import";
+import { Entity } from "@/features/user-management/types/api/common";
+import { ColumnMappingFor } from "@/features/user-management/types/import";
+import { DocumentDownload } from "iconsax-reactjs";
+import { useGetErrorReport } from "@/features/user-management/api/get-error-report";
 
-export default function ThirdModal() {
+type Props<E extends Entity> = {
+  title: string;
+  nextStepUrl: string;
+  handleClose: () => void;
+  tableColumns: string[];
+  tableKeys: string[];
+  module: E;
+};
+export default function StudentThirdModal<E extends Entity>({
+  nextStepUrl,
+  handleClose,
+  title,
+  tableColumns,
+  tableKeys,
+}: Props<E>) {
   const searchParams = useSearchParams();
   const router = useProgressRouter();
+
+  const queryClient = useQueryClient();
 
   const open = searchParams.get("import-modal");
   const current = searchParams.get("current");
   const isOpen = open === "true" && current === "3";
+  const jobID = searchParams.get("job-id");
 
-  const validRows = "Nan";
+  const { mutate, isPending } = useCommitImport<ColumnMappingFor<E>>(
+    jobID || ""
+  );
 
-  const handleClose = () =>
-    router.replace("/super-admin/user-management/student-management");
+  const data = useImportStudentsStore((s) => s.data);
+  const updateImportStore = useImportStudentsStore((state) => state.updateData);
 
   const handleProceed = () => {
-    router.push(
-      "/super-admin/user-management/student-management?import-modal=true&current=4"
-    );
+    if (!jobID) {
+      toast.error("No current job id found");
+      return;
+    }
+
+    mutate(undefined, {
+      onSuccess: (res) => {
+        updateImportStore(res);
+        queryClient.invalidateQueries({
+          queryKey: studentKeys.all,
+        });
+        router.push(
+          `${nextStepUrl}?import-modal=true&current=4&job-id=${jobID}`
+        );
+      },
+    });
   };
+
+  const { isFetching: isTemplateFetching, refetch: downloadErrors } =
+    useGetErrorReport(jobID || "", {
+      enabled: false,
+      refetchOnWindowFocus: false,
+    });
+
+  const handleDownload = async () => {
+    if (!jobID) return;
+    const { data: template } = await downloadErrors();
+    if (!template) return;
+
+    const url = URL.createObjectURL(template);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "import_errors.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  useEffect(() => {
+    if (data.error_count && data.error_count > 0) {
+      toast.info("Errors detected; please download the error file.");
+    }
+  }, [data]);
 
   return (
     <FormModal
-      title={"Import Students"}
+      title={title}
       onOpenChange={handleClose}
       open={isOpen}
       step={{ current: 3, total: 4 }}
@@ -44,121 +113,35 @@ export default function ThirdModal() {
             and commit the valid ones.
           </Text>
 
-          <div className="flex gap-4 items-center">
-            <StatusBadge variant="green" data="12 Valid" />
-            <StatusBadge variant="orange" data="2 Duplicates" />
-            <StatusBadge variant="red" data="1 Invalid" />
+          <div className="flex justify-between">
+            <div className="flex gap-4 items-center">
+              <StatusBadge
+                variant="orange"
+                data={`${data?.skipped_count} Skipped`}
+              />
+              <StatusBadge variant="red" data={`${data?.error_count} Errors`} />
+            </div>
+
+            {(data?.error_count ?? 0) > 0 && (
+              <Button
+                variant="secondary"
+                leftIcon={
+                  <DocumentDownload size={16} className="text-error-200" />
+                }
+                className="h-max"
+                onClick={handleDownload}
+                loading={isTemplateFetching}
+              >
+                Download Error report
+              </Button>
+            )}
           </div>
         </div>
 
         <ImportedTable
-          dataToMap={[
-            {
-              id: 1,
-              name: "adewale johnson",
-              admission_number: "ADM-001",
-              gender: "Male",
-              details: "",
-            },
-            {
-              id: 2,
-              name: "fatima abdullahi",
-              admission_number: "ADM-002",
-              gender: "Female",
-              details: "",
-            },
-            {
-              id: 3,
-              name: "chinedu okoro",
-              admission_number: "ADM-003",
-              gender: "Male",
-              details: "",
-            },
-            {
-              id: 4,
-              name: "grace amen",
-              admission_number: "ADM-001",
-              gender: "Female",
-              details: "Ready to import",
-            },
-            {
-              id: 5,
-              name: "mohammed ali",
-              admission_number: "ADM-004",
-              gender: "Male",
-              details: "",
-            },
-            {
-              id: 6,
-              name: "blessing ifeoma",
-              admission_number: "ADM-005",
-              gender: "Female",
-              details: "",
-            },
-            {
-              id: 7,
-              name: "emeka nwosu",
-              admission_number: "ADM-006",
-              gender: "Male",
-              details: "",
-            },
-            {
-              id: 8,
-              name: "hauwa musa",
-              admission_number: "ADM-002",
-              gender: "Female",
-              details: "Ready to import",
-            },
-            {
-              id: 9,
-              name: "olusegun akinola",
-              admission_number: "ADM-007",
-              gender: "Male",
-              details: "",
-            },
-            {
-              id: 10,
-              name: "ngozi okafor",
-              admission_number: "ADM-008",
-              gender: "Female",
-              details: "",
-            },
-            {
-              id: 11,
-              name: "tunde bakare",
-              admission_number: "ADM-009",
-              gender: "Male",
-              details: "",
-            },
-            {
-              id: 12,
-              name: "amara eze",
-              admission_number: "ADM-010",
-              gender: "Female",
-              details: "",
-            },
-            {
-              id: 13,
-              name: "yusuf danjuma",
-              admission_number: "ADM-011",
-              gender: "Male",
-              details: "",
-            },
-            {
-              id: 14,
-              name: "sade ogundimu",
-              admission_number: "",
-              gender: "",
-              details: "Duplicate",
-            },
-            {
-              id: 15,
-              name: "uche chukwu",
-              admission_number: "ADM-012",
-              gender: "Male",
-              details: "",
-            },
-          ]}
+          dataToMap={data}
+          columns={tableColumns}
+          keys={tableKeys}
         />
 
         <div className="flex gap-6 items-center *:flex-1">
@@ -169,20 +152,19 @@ export default function ThirdModal() {
             className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
             onClick={() =>
               router.push(
-                "/super-admin/user-management/student-management?import-modal=true&current=2"
+                `${nextStepUrl}?import-modal=true&current=2&job-id=${jobID}`
               )
             }
           >
             Back
           </Button>
           <Button
-            // loading={isPending}
-            //   type="submit"
+            loading={isPending}
             size="lg"
             className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
             onClick={handleProceed}
           >
-            {`Commit ${validRows} valid rows`}
+            {`Commit rows`}
           </Button>
         </div>
       </>

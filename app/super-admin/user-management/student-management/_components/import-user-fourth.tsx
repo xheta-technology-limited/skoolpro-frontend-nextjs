@@ -10,31 +10,64 @@ import { StatusBadge } from "@/components/common";
 import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/custom-button";
 import FormModal from "@/components/ui/form-modal";
-import { useProgressRouter } from "@/features/page-loader";
 import { useSearchParams } from "next/navigation";
 import clsx from "clsx";
+import { useImportStudentsStore } from "@/features/user-management/stores/import-student.store";
+import { titleCase } from "@/lib/helpers";
+import { useRollbackImport } from "@/features/user-management/api/rollback-import";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { studentKeys } from "@/features/user-management/student-management/api/query-keys";
 
-const jobSummary = [
-  { label: "Job Status", value: "Completed" },
-  { label: "Total Rows", value: "15" },
-  { label: "Imported", value: "12" },
-  { label: "Completed at", value: "2/9/2026 - 10:30 AM" },
-];
-
-export default function FourthModal() {
+interface Props {
+  title: string;
+  importAnotherFn: () => void;
+  handleClose: () => void;
+}
+export default function StudentFourthModal({
+  title,
+  importAnotherFn,
+  handleClose,
+}: Props) {
   const searchParams = useSearchParams();
-  const router = useProgressRouter();
 
   const open = searchParams.get("import-modal");
   const current = searchParams.get("current");
   const isOpen = open === "true" && current === "4";
+  const jobID = searchParams.get("job-id");
 
-  const handleClose = () =>
-    router.replace("/super-admin/user-management/student-management");
+  const queryClient = useQueryClient();
+
+  const data = useImportStudentsStore((s) => s.data);
+
+  const { mutate, isPending } = useRollbackImport(jobID || "");
+
+  const handleRollback = () => {
+    if (!jobID) {
+      toast.error("No current job ID found");
+      return;
+    }
+    mutate(undefined, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: studentKeys.all,
+        });
+        toast.success("Success!");
+        handleClose();
+      },
+    });
+  };
+
+  const rows: [string, string | number][] = [
+    ["Job Status", titleCase(data.status || "") || "-"],
+    ["Total Rows", data.total_rows || "-"],
+    ["Imported", data.success_count || "-"],
+    ["Completed at", data.completed_at || "-"],
+  ];
 
   return (
     <FormModal
-      title={"Import Students"}
+      title={title}
       onOpenChange={handleClose}
       open={isOpen}
       step={{ current: 4, total: 4 }}
@@ -50,25 +83,22 @@ export default function FourthModal() {
           </Text>
 
           <div className="flex gap-4 items-center">
-            <StatusBadge variant="green" data="12 Valid" />
-            <StatusBadge variant="orange" data="2 Duplicates" />
-            <StatusBadge variant="red" data="1 Invalid" />
+            <StatusBadge variant="green" data={`${data.success_count} Valid`} />
+            <StatusBadge
+              variant="orange"
+              data={`${data.skipped_count} Skipped`}
+            />
+            <StatusBadge variant="red" data={`${data.error_count} Errors`} />
           </div>
         </div>
 
         <TableWrapper className="mb-4">
           <Table>
             <TableBody>
-              {jobSummary.map((row, index) => (
-                <TableRow
-                  key={row.label}
-                  className={clsx(
-                    "text-neutrals-900",
-                    index === jobSummary.length - 1 && "[&>td]:border-b-0"
-                  )}
-                >
-                  <TableCell>{row.label}</TableCell>
-                  <TableCell>{row.value}</TableCell>
+              {rows.map(([label, value]) => (
+                <TableRow key={label} className={clsx("text-neutrals-900")}>
+                  <TableCell>{label}</TableCell>
+                  <TableCell>{value}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -82,17 +112,11 @@ export default function FourthModal() {
               variant="secondary"
               size="lg"
               className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
-              onClick={() =>
-                router.push(
-                  "/super-admin/user-management/student-management?import-modal=true&current=1"
-                )
-              }
+              onClick={importAnotherFn}
             >
               Import another File
             </Button>
             <Button
-              // loading={isPending}
-              //   type="submit"
               size="lg"
               className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
               onClick={handleClose}
@@ -102,9 +126,10 @@ export default function FourthModal() {
           </div>
 
           <Button
-            onClick={() => alert("not implemented")}
+            onClick={() => handleRollback()}
             variant="tertiary"
             className="border-0 m-auto"
+            loading={isPending}
           >
             <Text scale={"highlight"} className="text-error-200">
               Roll back this import
