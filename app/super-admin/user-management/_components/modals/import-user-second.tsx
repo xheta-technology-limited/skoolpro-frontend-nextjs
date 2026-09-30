@@ -9,10 +9,15 @@ import { useApplyMapping } from "@/features/user-management/api/apply-mapping";
 import { usePreviewMapping } from "@/features/user-management/api/preview-mapping";
 import { useValidateMapping } from "@/features/user-management/api/validate-mapping";
 import { flipKeyValuePair } from "@/features/user-management/helpers/flip-key-value-pairs";
-import { useImportStaffStore } from "@/features/user-management/stores/import-staff.store";
 import { Entity } from "@/features/user-management/types/api/common";
-import { ApplyMappingPayload } from "@/features/user-management/types/api/template";
-import { ColumnMappingFor } from "@/features/user-management/types/import";
+import {
+  ApplyMappingPayload,
+  ImportRecord,
+} from "@/features/user-management/types/api/template";
+import {
+  AnyColumnMapping,
+  ColumnMappingFor,
+} from "@/features/user-management/types/import";
 import { titleCase, typedMappedKeys } from "@/lib/helpers";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
@@ -21,12 +26,14 @@ type Props<E extends Entity> = {
   title: string;
   nextStepUrl: string;
   handleClose: () => void;
+  updateStoreData: (record: ImportRecord<AnyColumnMapping>) => void;
   module: E;
 };
 export default function SecondModal<E extends Entity>({
   nextStepUrl,
   handleClose,
   title,
+  updateStoreData,
 }: Props<E>) {
   const searchParams = useSearchParams();
   const router = useProgressRouter();
@@ -36,8 +43,6 @@ export default function SecondModal<E extends Entity>({
   const current = searchParams.get("current");
   const validateStep = searchParams.get("is-applied");
   const isOpen = open === "true" && current === "2";
-
-  const updateImportStore = useImportStaffStore((state) => state.updateData);
 
   const {
     data: jobData,
@@ -91,7 +96,7 @@ export default function SecondModal<E extends Entity>({
 
     validateMutate(undefined, {
       onSuccess: (res) => {
-        updateImportStore(res);
+        updateStoreData(res);
         router.push(
           `${nextStepUrl}?import-modal=true&current=3&job-id=${jobID}`
         );

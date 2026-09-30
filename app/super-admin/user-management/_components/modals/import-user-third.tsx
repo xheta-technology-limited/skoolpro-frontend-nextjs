@@ -6,16 +6,18 @@ import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { useSearchParams } from "next/navigation";
 import ImportedTable from "../tables/imported-table";
-import { useImportStaffStore } from "@/features/user-management/stores/import-staff.store";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
-import { staffKeys } from "@/features/user-management/staff-management/api/query-keys";
 import { useCommitImport } from "@/features/user-management/api/commit-import";
 import { Entity } from "@/features/user-management/types/api/common";
-import { ColumnMappingFor } from "@/features/user-management/types/import";
+import {
+  AnyColumnMapping,
+  ColumnMappingFor,
+} from "@/features/user-management/types/import";
 import { DocumentDownload } from "iconsax-reactjs";
 import { useGetErrorReport } from "@/features/user-management/api/get-error-report";
+import { ImportRecord } from "@/features/user-management/types/api/template";
 
 type Props<E extends Entity> = {
   title: string;
@@ -23,6 +25,9 @@ type Props<E extends Entity> = {
   handleClose: () => void;
   tableColumns: string[];
   tableKeys: string[];
+  storeData: Partial<ImportRecord<AnyColumnMapping>>;
+  updateStoreData: (record: ImportRecord<AnyColumnMapping>) => void;
+  invalidateQueryKeys: readonly string[];
   module: E;
 };
 export default function ThirdModal<E extends Entity>({
@@ -31,6 +36,10 @@ export default function ThirdModal<E extends Entity>({
   title,
   tableColumns,
   tableKeys,
+  storeData,
+  invalidateQueryKeys,
+  updateStoreData,
+  module,
 }: Props<E>) {
   const searchParams = useSearchParams();
   const router = useProgressRouter();
@@ -46,9 +55,6 @@ export default function ThirdModal<E extends Entity>({
     jobID || ""
   );
 
-  const data = useImportStaffStore((s) => s.data);
-  const updateImportStore = useImportStaffStore((state) => state.updateData);
-
   const handleProceed = () => {
     if (!jobID) {
       toast.error("No current job id found");
@@ -57,9 +63,9 @@ export default function ThirdModal<E extends Entity>({
 
     mutate(undefined, {
       onSuccess: (res) => {
-        updateImportStore(res);
+        updateStoreData(res);
         queryClient.invalidateQueries({
-          queryKey: staffKeys.all,
+          queryKey: invalidateQueryKeys,
         });
         router.push(
           `${nextStepUrl}?import-modal=true&current=4&job-id=${jobID}`
@@ -90,10 +96,10 @@ export default function ThirdModal<E extends Entity>({
   };
 
   useEffect(() => {
-    if (data.error_count && data.error_count > 0) {
+    if (storeData.error_count && storeData.error_count > 0) {
       toast.info("Errors detected; please download the error file.");
     }
-  }, [data]);
+  }, [storeData]);
 
   return (
     <FormModal
@@ -108,21 +114,24 @@ export default function ThirdModal<E extends Entity>({
             Validate
           </Text>
           <Text scale={"caption"} mobile className="text-neutrals-700 mb-4">
-            Every row checked against the field rules and against existing
-            staff. Fix invalid rows in your file and re-upload, or carry on and
-            commit the valid ones.
+            {`Every row checked against the field rules and against existing
+            ${module}. Fix invalid rows in your file and re-upload, or carry on and
+            commit the valid ones.`}
           </Text>
 
           <div className="flex justify-between">
             <div className="flex gap-4 items-center">
               <StatusBadge
                 variant="orange"
-                data={`${data?.skipped_count} Skipped`}
+                data={`${storeData?.skipped_count} Skipped`}
               />
-              <StatusBadge variant="red" data={`${data?.error_count} Errors`} />
+              <StatusBadge
+                variant="red"
+                data={`${storeData?.error_count} Errors`}
+              />
             </div>
 
-            {(data?.error_count ?? 0) > 0 && (
+            {(storeData?.error_count ?? 0) > 0 && (
               <Button
                 variant="secondary"
                 leftIcon={
@@ -139,7 +148,7 @@ export default function ThirdModal<E extends Entity>({
         </div>
 
         <ImportedTable
-          dataToMap={data}
+          dataToMap={storeData}
           columns={tableColumns}
           keys={tableKeys}
         />
@@ -152,7 +161,7 @@ export default function ThirdModal<E extends Entity>({
             className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
             onClick={() =>
               router.push(
-                `/super-admin/user-management/staff-management?import-modal=true&current=2&job-id=${jobID}`
+                `${nextStepUrl}?import-modal=true&current=2&job-id=${jobID}`
               )
             }
           >
