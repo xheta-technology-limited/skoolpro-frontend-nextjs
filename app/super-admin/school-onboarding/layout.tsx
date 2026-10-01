@@ -10,6 +10,10 @@ const SCHOOL_ONBOARDING_TABS = [
     label: "Academic year",
     href: "/super-admin/school-onboarding/academic-year",
   },
+  {
+    label: "Promotion",
+    href: "/super-admin/school-onboarding/promotion",
+  },
   { label: "Timetable", href: "/super-admin/school-onboarding/timetable" },
   {
     label: "Subscriptions",
