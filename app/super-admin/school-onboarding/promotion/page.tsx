@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { AddSquare } from "iconsax-reactjs";
 import PromotionList from "./_components/promotion-list";
+import PrepareRunButton from "./_components/prepare-run-button";
 
 export default async function Promotion() {
   const queryClient = new QueryClient();
@@ -18,9 +19,9 @@ export default async function Promotion() {
   });
 
   return (
-    <>
-      <div className="flex justify-between items-center mb-8">
-        <div>
+    <div className="w-full h-[55vh] md:h-[65vh] p-4">
+      <div className="flex flex-wrap justify-between gap-8 items-center mb-8">
+        <div className="max-w-146.5 min-w-70">
           <Text
             scale={"highlight"}
             weight={"accent"}
@@ -28,28 +29,19 @@ export default async function Promotion() {
           >
             Promotion runs
           </Text>
-          <Text scale={"content"} className="text-neutrals-700">
+          <Text mobile scale={"contentMobile"} className="text-neutrals-700">
             Advancing a year’s students into the next. A run is prepared
             automatically when next year’s draft is generated review it, then
             commit. Nothing moves until you do.
           </Text>
         </div>
 
-        <Button
-          onClick={() => alert("Not implemented")}
-          leftIcon={
-            <AddSquare variant="Bulk" size={16} className="text-primary" />
-          }
-          variant="secondary"
-          size="sm"
-        >
-          Prepare a Run
-        </Button>
+        <PrepareRunButton />
       </div>
 
       <HydrationBoundary state={dehydrate(queryClient)}>
         <PromotionList />
       </HydrationBoundary>
-    </>
+    </div>
   );
 }
