@@ -1,10 +1,12 @@
 "use client";
 import { Suspense } from "react";
-import FirstModal from "../_components/import-user-first";
-import SecondModal from "../_components/import-user-second";
-import ThirdModal from "../_components/import-user-third";
-import FourthModal from "../_components/import-user-fourth";
+import FirstModal from "../../_components/modals/import-user-first";
+import SecondModal from "../../_components/modals/import-user-second";
+import ThirdModal from "../../_components/modals/import-user-third";
+import FourthModal from "../../_components/modals/import-user-fourth";
 import { useProgressRouter } from "@/features/page-loader";
+import { useImportStudentsStore } from "@/features/user-management/stores/import-student.store";
+import { studentKeys } from "@/features/user-management/student-management/api/query-keys";
 
 export default function ImportStudent() {
   const router = useProgressRouter();
@@ -16,6 +18,10 @@ export default function ImportStudent() {
     router.push(
       "/super-admin/user-management/student-management?import-modal=true&current=1"
     );
+
+  const data = useImportStudentsStore((s) => s.data);
+  const updateStoreData = useImportStudentsStore((s) => s.updateData);
+  const keys = studentKeys.all;
 
   const tableColumns = ["Name", "Student no.", "Admission no.", "Status", "Details"];
   const mapKeys = ["student_id_number", "admission_number"];
@@ -36,6 +42,7 @@ export default function ImportStudent() {
         nextStepUrl={nextStepUrl}
         handleClose={handleClose}
         module="students"
+        updateStoreData={updateStoreData}
       />
       <ThirdModal
         title={title}
@@ -44,11 +51,17 @@ export default function ImportStudent() {
         tableColumns={tableColumns}
         tableKeys={mapKeys}
         module="students"
+        invalidateQueryKeys={keys}
+        storeData={data}
+        updateStoreData={updateStoreData}
       />
       <FourthModal
         title={title}
         importAnotherFn={handleImportAnother}
         handleClose={handleClose}
+        invalidateQueryKeys={keys}
+        storeData={data}
+        module="students"
       />
     </Suspense>
   );
