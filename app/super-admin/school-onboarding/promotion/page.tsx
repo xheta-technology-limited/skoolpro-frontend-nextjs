@@ -19,7 +19,7 @@ export default async function Promotion() {
   });
 
   return (
-    <div className="w-full h-[55vh] md:h-[65vh] p-4">
+    <div className="w-full h-[55vh] md:h-[65vh] overflow-scroll p-4">
       <div className="flex flex-wrap justify-between gap-8 items-center mb-8">
         <div className="max-w-146.5 min-w-70">
           <Text

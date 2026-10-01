@@ -21,6 +21,7 @@ export default function ImportStaff() {
 
   const data = useImportStaffStore((s) => s.data);
   const updateStoreData = useImportStaffStore((s) => s.updateData);
+  const clearStore = useImportStaffStore((s) => s.clearData);
   const keys = staffKeys.all;
 
   const tableColumns = ["Name", "Staff no.", "Category", "Status", "Details"];
@@ -58,7 +59,10 @@ export default function ImportStaff() {
       <FourthModal
         title={title}
         importAnotherFn={handleImportAnother}
-        handleClose={handleClose}
+        handleClose={() => {
+          clearStore();
+          handleClose();
+        }}
         module="staff"
         invalidateQueryKeys={keys}
         storeData={data}

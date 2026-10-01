@@ -4,9 +4,15 @@ import clsx from "clsx";
 interface StatusProps {
   data: string;
   variant: "red" | "green" | "orange";
-  scale?: "footnote" | "caption" | "content";
+  scale?: "footnote" | "caption" | "content" | "captionMobile";
+  className?: string;
 }
-const StatusBadge = ({ data, variant, scale = "caption" }: StatusProps) => {
+const StatusBadge = ({
+  data,
+  variant,
+  scale = "caption",
+  className,
+}: StatusProps) => {
   const variants =
     variant === "green"
       ? "text-success-200 bg-[#EDFDFA]"
@@ -20,7 +26,7 @@ const StatusBadge = ({ data, variant, scale = "caption" }: StatusProps) => {
       as="span"
       scale={scale}
       weight="standard"
-      className={clsx("rounded-[12px] px-2.5 py-0.5", variants)}
+      className={clsx("rounded-[12px] px-2.5 py-0.5", variants, className)}
     >
       {data}
     </Text>

@@ -22,6 +22,8 @@ export const textVariants = cva(
         display3: ["text-[2rem]", "md:text-[4rem]"],
         footnote: ["text-[0.625rem]"],
         contentMobile: ["text-[0.875rem]"],
+        highlightMobile: ["text-[1rem]"],
+        captionMobile: ["text-[0.75rem]"],
       },
       weight: {
         bold: "font-bold",
