@@ -9,7 +9,7 @@ interface SProps {
 }
 export default function CurrentStage({ stage }: SProps) {
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
       {texts.map((text, index) => (
         <Stage
           key={index}
@@ -19,9 +19,9 @@ export default function CurrentStage({ stage }: SProps) {
           status={
             stage === 0
               ? "pending"
-              : stage > index
+              : stage > index + 1
               ? "completed"
-              : stage === index
+              : stage === index + 1
               ? "current"
               : "pending"
           }
@@ -43,17 +43,17 @@ function Stage({ status, step, index, label }: Props) {
       {status === "completed" ? (
         <DotLottieReact
           src="/animations/success-check.lottie"
-          className="w-9 h-9"
+          className="w-11 h-11"
           loop
           autoplay
-          segment={[85, 130]}
+          segment={[19, 110]}
         />
       ) : (
         <Text
           className={clsx(
             status === "current" && "text-success-300 bg-[#EDFDFA]",
             status === "pending" && "text-neutrals-700 bg-[#F4F6F5]",
-            "p-2 rounded-ml"
+            "py-2 px-3.25 rounded-ml"
           )}
           scale={"content"}
           weight={"standard"}

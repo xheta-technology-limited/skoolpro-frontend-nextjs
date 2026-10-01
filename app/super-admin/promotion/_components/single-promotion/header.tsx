@@ -9,7 +9,7 @@ export default function Header() {
   return (
     <button
       onClick={() => router.replace("/super-admin/school-onboarding/promotion")}
-      className="flex gap-3 cursor-pointer items-center"
+      className="flex gap-3 cursor-pointer items-center mb-6"
     >
       <ArrowLeft variant="Bulk" size={24} />
       <Text weight={"accent"} scale={"feature"} className="text-neutrals-900">

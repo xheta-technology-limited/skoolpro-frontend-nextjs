@@ -8,21 +8,40 @@ import { Spinner } from "@/components/animations";
 import { NoData } from "@/components/icons";
 import { Button } from "@/components/ui/custom-button";
 import CurrentStage from "../_components/single-promotion/steps";
+import { useEffect } from "react";
 
-export default async function SinglePromotion() {
+const dummy = {
+  id: "dummy-discarded-1",
+  school_id: "dummy-school",
+  source_academic_year_id: "dummy-year-5",
+  target_academic_year_id: "dummy-year-6",
+  status: "prepared",
+  counts: { promoted: 0, graduated: 0, repeated: 0, held: 23 },
+  prepared_at: "2025-08-01T09:00:00+00:00",
+  committed_at: null,
+  source_year: { id: "dummy-year-5", name: "2024 / 2025" },
+  target_year: { id: "dummy-year-6", name: "2025 / 2026" },
+  created_at: "2025-08-01T09:00:00+00:00",
+  updated_at: "2025-08-03T10:15:00+00:00",
+};
+export default function SinglePromotion() {
   const searchParams = useSearchParams();
   const id = searchParams.get("promotionId");
 
   const { data, isPending, isFetching, error, refetch, isSuccess, isError } =
     useGetSinglePromotion(id || "");
   const stage =
-    data?.status === "committed"
+    dummy.status === "committed" //TODO: Change back to data
       ? 3
-      : data?.status === "prepared"
+      : dummy.status === "prepared"
       ? 2
-      : data?.status === "discarded"
+      : dummy.status === "discarded"
       ? 1
       : 0;
+
+  useEffect(() => {
+    console.log("le stage: ", stage);
+  }, [stage]);
 
   return (
     <>
@@ -36,7 +55,7 @@ export default async function SinglePromotion() {
                 weight={"accent"}
                 className="text-neutrals-800"
               >
-                {`Review promotion · ${data.source_year} → ${data.target_year}`}
+                {`Review promotion · ${dummy.source_year.name} → ${dummy.target_year.name}`}
               </Text>
               <Text
                 scale={"content"}

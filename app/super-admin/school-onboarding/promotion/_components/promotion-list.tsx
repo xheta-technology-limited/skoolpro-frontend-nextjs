@@ -158,7 +158,7 @@ interface Props {
 function Item({ promotion: p }: Props) {
   const router = useProgressRouter();
   const onButtonClick = () =>
-    router.push(`/super-admin/school-onboarding/promotion/${p.id}`);
+    router.push(`/super-admin/promotion/${p.id}`);
   return (
     <div className="rounded-ml border border-grays-borders flex justify-between px-4 py-6 items-center">
       <div className="gap-2 flex flex-col">
