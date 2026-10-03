@@ -9,7 +9,7 @@ interface SProps {
 }
 export default function CurrentStage({ stage }: SProps) {
   return (
-    <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+    <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-8">
       {texts.map((text, index) => (
         <Stage
           key={index}

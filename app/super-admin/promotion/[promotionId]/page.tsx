@@ -9,6 +9,7 @@ import { NoData } from "@/components/icons";
 import { Button } from "@/components/ui/custom-button";
 import CurrentStage from "../_components/single-promotion/steps";
 import { useEffect } from "react";
+import Counts from "../_components/single-promotion/card";
 
 const dummy = {
   id: "dummy-discarded-1",
@@ -69,6 +70,7 @@ export default function SinglePromotion() {
             </div>
 
             {stage !== 0 && <CurrentStage stage={stage} />}
+            <Counts data={data.counts} />
           </>
         ) : isPending ? (
           <>
