@@ -1,9 +1,10 @@
 import { Entity } from "../api/common";
 import { ColumnMapping as StaffColumnMapping } from "./staff";
+import { ColumnMapping as StudentColumnMapping } from "./students";
 
 export type ColumnMappingByEntity = {
   staff: StaffColumnMapping;
-  students: Record<string, string>;
+  students: StudentColumnMapping;
   guardian: Record<string, string>;
 };
 
