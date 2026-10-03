@@ -1,12 +1,10 @@
 import { Text } from "@/components/ui";
-import { Button } from "@/components/ui/custom-button";
 import { getPromotions } from "@/features/promotion/api/get-promotions";
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import { AddSquare } from "iconsax-reactjs";
 import PromotionList from "./_components/promotion-list";
 import PrepareRunButton from "./_components/prepare-run-button";
 

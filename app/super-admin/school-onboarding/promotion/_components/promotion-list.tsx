@@ -11,109 +11,9 @@ import { titleCase } from "@/lib/helpers";
 import { isoToLongDate } from "@/lib/helpers/convert-dates";
 import { ArrowRight3 } from "iconsax-reactjs";
 
-const DUMMY_PROMOTIONS: Promotion[] = [
-  {
-    id: "dummy-prepared-1",
-    school_id: "dummy-school",
-    source_academic_year_id: "dummy-year-1",
-    target_academic_year_id: "dummy-year-2",
-    status: "prepared",
-    counts: { promoted: 0, graduated: 0, repeated: 0, held: 0 },
-    prepared_at: "2027-08-01T09:00:00+00:00",
-    committed_at: null,
-    source_year: { id: "dummy-year-1", name: "2026 / 2027" },
-    target_year: { id: "dummy-year-2", name: "2027 / 2028" },
-    created_at: "2027-08-01T09:00:00+00:00",
-    updated_at: "2027-08-01T09:00:00+00:00",
-  },
-  {
-    id: "dummy-committed-1",
-    school_id: "dummy-school",
-    source_academic_year_id: "dummy-year-3",
-    target_academic_year_id: "dummy-year-4",
-    status: "committed",
-    counts: { promoted: 142, graduated: 11, repeated: 4, held: 0 },
-    prepared_at: "2026-08-01T09:00:00+00:00",
-    committed_at: "2026-08-12T14:30:00+00:00",
-    source_year: { id: "dummy-year-3", name: "2025 / 2026" },
-    target_year: { id: "dummy-year-4", name: "2026 / 2027" },
-    created_at: "2026-08-01T09:00:00+00:00",
-    updated_at: "2026-08-12T14:30:00+00:00",
-  },
-  {
-    id: "dummy-discarded-1",
-    school_id: "dummy-school",
-    source_academic_year_id: "dummy-year-5",
-    target_academic_year_id: "dummy-year-6",
-    status: "discarded",
-    counts: { promoted: 0, graduated: 0, repeated: 0, held: 23 },
-    prepared_at: "2025-08-01T09:00:00+00:00",
-    committed_at: null,
-    source_year: { id: "dummy-year-5", name: "2024 / 2025" },
-    target_year: { id: "dummy-year-6", name: "2025 / 2026" },
-    created_at: "2025-08-01T09:00:00+00:00",
-    updated_at: "2025-08-03T10:15:00+00:00",
-  },
-  {
-    id: "dummy-committed-1",
-    school_id: "dummy-school",
-    source_academic_year_id: "dummy-year-3",
-    target_academic_year_id: "dummy-year-4",
-    status: "committed",
-    counts: { promoted: 142, graduated: 11, repeated: 4, held: 0 },
-    prepared_at: "2026-08-01T09:00:00+00:00",
-    committed_at: "2026-08-12T14:30:00+00:00",
-    source_year: { id: "dummy-year-3", name: "2025 / 2026" },
-    target_year: { id: "dummy-year-4", name: "2026 / 2027" },
-    created_at: "2026-08-01T09:00:00+00:00",
-    updated_at: "2026-08-12T14:30:00+00:00",
-  },
-  {
-    id: "dummy-discarded-1",
-    school_id: "dummy-school",
-    source_academic_year_id: "dummy-year-5",
-    target_academic_year_id: "dummy-year-6",
-    status: "discarded",
-    counts: { promoted: 0, graduated: 0, repeated: 0, held: 23 },
-    prepared_at: "2025-08-01T09:00:00+00:00",
-    committed_at: null,
-    source_year: { id: "dummy-year-5", name: "2024 / 2025" },
-    target_year: { id: "dummy-year-6", name: "2025 / 2026" },
-    created_at: "2025-08-01T09:00:00+00:00",
-    updated_at: "2025-08-03T10:15:00+00:00",
-  },
-  {
-    id: "dummy-committed-1",
-    school_id: "dummy-school",
-    source_academic_year_id: "dummy-year-3",
-    target_academic_year_id: "dummy-year-4",
-    status: "committed",
-    counts: { promoted: 142, graduated: 11, repeated: 4, held: 0 },
-    prepared_at: "2026-08-01T09:00:00+00:00",
-    committed_at: "2026-08-12T14:30:00+00:00",
-    source_year: { id: "dummy-year-3", name: "2025 / 2026" },
-    target_year: { id: "dummy-year-4", name: "2026 / 2027" },
-    created_at: "2026-08-01T09:00:00+00:00",
-    updated_at: "2026-08-12T14:30:00+00:00",
-  },
-  {
-    id: "dummy-discarded-1",
-    school_id: "dummy-school",
-    source_academic_year_id: "dummy-year-5",
-    target_academic_year_id: "dummy-year-6",
-    status: "discarded",
-    counts: { promoted: 0, graduated: 0, repeated: 0, held: 23 },
-    prepared_at: "2025-08-01T09:00:00+00:00",
-    committed_at: null,
-    source_year: { id: "dummy-year-5", name: "2024 / 2025" },
-    target_year: { id: "dummy-year-6", name: "2025 / 2026" },
-    created_at: "2025-08-01T09:00:00+00:00",
-    updated_at: "2025-08-03T10:15:00+00:00",
-  },
-];
-
 export default function PromotionList() {
-  const { isPending, error, isFetching, refetch } = useGetPromotions();
+  const { data, isSuccess, isPending, error, isFetching, refetch } =
+    useGetPromotions();
 
   if (isPending) {
     return (
@@ -143,9 +43,24 @@ export default function PromotionList() {
       </div>
     );
   }
+  if (isSuccess && data.length === 0) {
+    return (
+      <div className="w-fit mx-auto">
+        {" "}
+        <NoData
+          variant="page"
+          title="No promotions created"
+          subTitle={
+            "You can create a new promotion with the button above or when drafting a new academic year"
+          }
+          className="w-97.5 h-143.75"
+        />
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col gap-4">
-      {DUMMY_PROMOTIONS.map((d) => (
+      {data.map((d) => (
         <Item key={d.id} promotion={d} />
       ))}
     </div>
@@ -157,8 +72,7 @@ interface Props {
 }
 function Item({ promotion: p }: Props) {
   const router = useProgressRouter();
-  const onButtonClick = () =>
-    router.push(`/super-admin/promotion/${p.id}`);
+  const onButtonClick = () => router.push(`/super-admin/promotion/${p.id}`);
   return (
     <div className="rounded-ml border border-grays-borders flex justify-between px-4 py-6 items-center">
       <div className="gap-2 flex flex-col">
