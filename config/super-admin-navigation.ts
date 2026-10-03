@@ -93,6 +93,11 @@ export const dashboardNavigation: DashboardNavigationItem[] = [
         icon: null,
       },
       {
+        label: "Promotion",
+        href: "/super-admin/school-onboarding/promotion",
+        icon: null,
+      },
+      {
         label: "Subscriptions",
         href: "/super-admin/school-onboarding/subscriptions",
         icon: null,

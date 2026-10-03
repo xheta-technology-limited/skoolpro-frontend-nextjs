@@ -22,6 +22,8 @@ import { Spinner } from "@/components/animations";
 import { AcademicYear } from "@/features/academic-year";
 import { toast } from "sonner";
 import { generateFormDate } from "@/lib/helpers/generate-form-date";
+import { useQueryClient } from "@tanstack/react-query";
+import { promotionKeys } from "@/features/promotion/api/query-keys";
 
 const toFormData = (year: AcademicYear): AcademicYearFormData => ({
   name: year.name,
@@ -39,6 +41,7 @@ export default function ReviewAcademicYear() {
   const router = useProgressRouter();
   const searchParams = useSearchParams();
   const [maxYears, setMaxYears] = useState<number | undefined>(undefined);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     setMaxYears(new Date().getFullYear() + 3); //seetting state in here is a bad idea. I don't even know why this is here, i think AI smoked some shit, but dude I'm tired, I haven't done anything exciting today, and i think i have malaria so I am NOT looking into this. I'm closing this fucking pc and going to do some other shit.
@@ -128,6 +131,7 @@ export default function ReviewAcademicYear() {
         { academicYearID: data.id },
         {
           onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: promotionKeys.all });
             toast.success("Academic year approved and added successfully");
             router.replace("/super-admin/school-onboarding/academic-year");
           },
