@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 export default function SchoolOnboarding() {
-  return <div></div>;
+  redirect("/super-admin/school-onboarding/school-record");
 }
