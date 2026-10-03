@@ -1,5 +1,10 @@
+"use client";
 import TabsNav from "../../../components/common/tabs/tabs-nav";
+import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 import { OpenModalButton } from "./academic-year/_components/modals/create-academic-year";
+
+const PROMOTION_ROUTE = "/super-admin/school-onboarding/promotion";
 
 const SCHOOL_ONBOARDING_TABS = [
   {
@@ -12,7 +17,7 @@ const SCHOOL_ONBOARDING_TABS = [
   },
   {
     label: "Promotion",
-    href: "/super-admin/school-onboarding/promotion",
+    href: PROMOTION_ROUTE,
   },
   { label: "Timetable", href: "/super-admin/school-onboarding/timetable" },
   {
@@ -26,8 +31,16 @@ export default function SchoolOnboardingLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const isPromotionRoute = pathname.startsWith(PROMOTION_ROUTE);
+
   return (
-    <div className="min-h-screen w-full">
+    <div
+      className={cn(
+        "w-full",
+        isPromotionRoute ? "h-full overflow-hidden" : "min-h-screen"
+      )}
+    >
       <div className="flex w-full flex-col gap-4 sm:h-12 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-semibold text-neutrals-900">
           School onboarding
@@ -38,7 +51,12 @@ export default function SchoolOnboardingLayout({
 
       <TabsNav tabs={SCHOOL_ONBOARDING_TABS} className="mt-6" />
 
-      <div className="mb-8 w-full rounded-2xl border border-grays-borders bg-white">
+      <div
+        className={cn(
+          "mb-8 w-full rounded-2xl border border-grays-borders bg-white",
+          isPromotionRoute && "h-full overflow-hidden"
+        )}
+      >
         {children}
       </div>
     </div>
