@@ -27,6 +27,7 @@ import { useGetClassSections } from "@/features/user-management/student-manageme
 import { createSelectOptions, titleCase } from "@/lib/helpers";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface Props {
   data: Promotion;
@@ -164,7 +165,10 @@ function NotCommitted({ data }: Props) {
   >({});
   const payload: CommitPromotionFormData = { decisions };
   const onCommit = () => {
-    mutate({ promotionId: pID, data: payload });
+    mutate(
+      { promotionId: pID, data: payload },
+      { onSuccess: () => toast.success("Data committed!") }
+    );
   };
 
   if (isPending) {
@@ -256,7 +260,11 @@ function NotCommitted({ data }: Props) {
                             },
                           }))
                         }
-                        value={"Choose class"}
+                        value={
+                          decisions[row.student_id]?.target_section_id ??
+                          row.target_section_id ??
+                          null
+                        }
                         items={classesOptions || []}
                       />
                     </TableCell>
