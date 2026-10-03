@@ -6,10 +6,10 @@ interface Props {
 }
 
 const getColor = {
-  promoted: "#0B7B69",
-  graduated: "#6155F5",
-  repeated: "#0088FF",
-  held: "#C18800",
+  promoted: "text-[#0B7B69]",
+  graduated: "text-[#6155F5]",
+  repeated: "text-[#0088FF]",
+  held: "text-[#C18800]",
 };
 
 const getHeading = {
@@ -24,11 +24,14 @@ export default function Counts({ data }: Props) {
     <>
       <div className="flex gap-2.5 items-center flex-wrap mb-8">
         {Object.entries(data).map(([key, value]) => (
-          <div className="border border-primary-100 rounded-ml p-4 flex flex-col min-w-30 md:min-w-59 gap-2">
+          <div
+            key={key}
+            className="border border-primary-100 rounded-ml p-4 flex-1 flex flex-col min-w-30 md:min-w-59 gap-2"
+          >
             <Text
               weight={"accent"}
               scale={"feature"}
-              className={`text-[${getColor[key as keyof PromotionCounts]}]`}
+              className={getColor[key as keyof PromotionCounts]}
             >
               {value}
             </Text>

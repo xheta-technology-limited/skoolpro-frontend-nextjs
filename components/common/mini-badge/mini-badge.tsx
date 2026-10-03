@@ -5,7 +5,7 @@ interface Props {
 }
 export default function MiniBadge({ data }: Props) {
   return (
-    <div className="max-w-fit bg-white border border-grays-borders rounded-[12px]">
+    <div className="max-w-fit bg-white border border-grays-borders rounded-[12px] px-2 py-1.5">
       <Text scale={"captionMobile"}>{data}</Text>
     </div>
   );

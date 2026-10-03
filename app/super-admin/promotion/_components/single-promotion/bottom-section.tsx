@@ -18,6 +18,7 @@ import {
   listClassSections,
   useListClassSections,
 } from "@/features/academic-year/api/list-class-sections";
+import { useCommitPromotion } from "@/features/promotion/api/commit-promotion";
 import { useGetPromotionDetails } from "@/features/promotion/api/get-promotion-details";
 import { CommitPromotionFormData } from "@/features/promotion/schemas/commit-promotion-schema";
 import { Promotion } from "@/features/promotion/types/api/promotion";
@@ -39,6 +40,11 @@ const notCommittedHeaders = [
   "Next year",
   "Decision",
 ];
+
+const cellValue = (...parts: (string | null | undefined)[]) => {
+  const value = parts.filter(Boolean).join(" · ");
+  return value || "-";
+};
 export default function BottomSection({ data }: Props) {
   return (
     <>
@@ -129,7 +135,8 @@ function NotCommitted({ data }: Props) {
     error,
     refetch,
     isFetching,
-  } = useGetPromotionDetails(pID);
+  } = useGetPromotionDetails(pID, { refetchOnWindowFocus: false });
+  const { mutate, isPending: isMutatePending } = useCommitPromotion();
 
   const getColor = {
     promote: "#0B7B69",
@@ -156,6 +163,9 @@ function NotCommitted({ data }: Props) {
     CommitPromotionFormData["decisions"]
   >({});
   const payload: CommitPromotionFormData = { decisions };
+  const onCommit = () => {
+    mutate({ promotionId: pID, data: payload });
+  };
 
   if (isPending) {
     return (
@@ -208,11 +218,14 @@ function NotCommitted({ data }: Props) {
             <TableBody>
               {singleData?.data.map((row, index) => (
                 <TableRow key={row.student_id}>
-                  <TableCell>{titleCase(row.student_name)}</TableCell>
                   <TableCell>
-                    {row.current_level}
-                    {row.current_section &&
-                      `· ${titleCase(row.current_section)}`}
+                    {cellValue(titleCase(row.student_name))}
+                  </TableCell>
+                  <TableCell>
+                    {cellValue(
+                      row.current_level,
+                      titleCase(row.current_section ?? "")
+                    )}
                   </TableCell>
                   <TableCell>
                     <Text
@@ -225,8 +238,10 @@ function NotCommitted({ data }: Props) {
                     </Text>
                   </TableCell>
                   <TableCell>
-                    {row.target_level}
-                    {row.target_section && `· ${titleCase(row.target_section)}`}
+                    {cellValue(
+                      row.target_level,
+                      titleCase(row.target_section ?? "")
+                    )}
                   </TableCell>
 
                   {row.needs_placement ? (
@@ -275,15 +290,18 @@ function NotCommitted({ data }: Props) {
         </TableWrapper>
       </div>
 
-      <div className="flex gap-5">
+      <div className="flex gap-5 self-end">
         <Button
+          onClick={() => alert("Not implemented")}
           disabled={data.status === "discarded"}
           variant="secondary"
           size="md"
         >
           Discard Run
         </Button>
-        <Button size="md">Commit Propmotion</Button>
+        <Button onClick={onCommit} loading={isMutatePending} size="md">
+          Commit Propmotion
+        </Button>
       </div>
     </div>
   );
