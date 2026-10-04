@@ -11,7 +11,6 @@ import RecordTableSection, {
 import AddOptionalSubjectsModal from "../../_components/AddOptionalSubjectModal";
 import TransferStudentModal from "../../_components/TransferStudentModal";
 import EnrollStudentModal from "../../_components/EnrollStudentModal";
-
 import { useGetEnrolments } from "@/features/user-management/student-management/api/get-enrolment";
 import { useGetEffectiveSubjects } from "@/features/user-management/student-management/api/get-effective-subjects";
 import { useGetClassSections } from "@/features/user-management/student-management/api/get-class-sections";

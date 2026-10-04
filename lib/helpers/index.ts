@@ -6,3 +6,4 @@ export { splitAtSlash, getTextInParentheses } from "./get-text-in-parentheses";
 export { getNameInitials } from "./get-name-initials";
 export { generateFormDate } from "./generate-form-date";
 export { default as createSelectOptions } from "./create-select-options";
+export { typedMappedKeys } from "./mapped-type-keys";
