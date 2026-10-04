@@ -23,7 +23,13 @@ export default function ImportStudent() {
   const updateStoreData = useImportStudentsStore((s) => s.updateData);
   const keys = studentKeys.all;
 
-  const tableColumns = ["Name", "Student no.", "Admission no.", "Status", "Details"];
+  const tableColumns = [
+    "Name",
+    "Student no.",
+    "Admission no.",
+    "Status",
+    "Details",
+  ];
   const mapKeys = ["student_id_number", "admission_number"];
   return (
     <Suspense fallback={null}>

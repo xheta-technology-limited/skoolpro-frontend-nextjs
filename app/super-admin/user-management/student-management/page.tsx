@@ -52,15 +52,13 @@ export default function StudentManagement() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const [isClassMenuOpen, setIsClassMenuOpen] = useState(false);
-  const [selectedLevelId, setSelectedLevelId] = useState<
-    string | undefined
-  >(undefined);
+  const [selectedLevelId, setSelectedLevelId] = useState<string | undefined>(
+    undefined
+  );
 
   const classMenuRef = useRef<HTMLDivElement>(null);
 
   const { data: educationLevels } = useListLevels();
-
-  
 
   const selectedLevelLabel =
     educationLevels?.find((level) => level.id === selectedLevelId)?.name ??
@@ -152,11 +150,7 @@ export default function StudentManagement() {
               >
                 {selectedLevelLabel}
 
-                <ArrowDown2
-                  size={12}
-                  variant="Linear"
-                  color="currentColor"
-                />
+                <ArrowDown2 size={12} variant="Linear" color="currentColor" />
               </button>
 
               {isClassMenuOpen && (
