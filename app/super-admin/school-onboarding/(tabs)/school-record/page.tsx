@@ -61,6 +61,7 @@ import {
   toDateOnly,
 } from "./utils";
 import CountrySelectField from "@/app/onboarding/_components/fields/CountrySelectField";
+import Header from "../../_components/header";
 
 export default function SchoolRecordPage() {
   const [mode, setMode] = useState<"view" | "edit">("view");
@@ -431,8 +432,11 @@ export default function SchoolRecordPage() {
   ];
 
   return (
-    <div className="flex flex-col gap-4 p-4 sm:p-8">
-      {mode === "view" && (
+    <div className="p-6">
+      <Header label="School record" />
+
+      <div className="mb-8 flex w-full flex-col gap-4 rounded-2xl border border-grays-borders bg-white p-4">
+        {mode === "view" && (
         <>
           <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1 [font-family:var(--font-inter)]">
             SCHOOL IDENTITY
@@ -549,9 +553,9 @@ export default function SchoolRecordPage() {
             onEditRow={() => setIsEditColorCodeOpen(true)}
           />
         </>
-      )}
+        )}
 
-      {mode === "edit" && (
+        {mode === "edit" && (
         <>
           <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1 [font-family:var(--font-inter)]">
             SCHOOL IDENTITY
@@ -602,8 +606,9 @@ export default function SchoolRecordPage() {
               </div>
             </form>
           </FormProvider>
-        </>
-      )}
+          </>
+        )}
+      </div>
 
       <AddRegistrationNumberModal
         open={isAddRegistrationOpen}
