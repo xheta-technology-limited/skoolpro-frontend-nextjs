@@ -13,7 +13,9 @@ import {
   TableWrapper,
 } from "@/components/ui/table";
 import { MiniSelector } from "@/components/common";
-import CreateAcademicYear from "./modals/create-academic-year";
+import CreateAcademicYear, {
+  OpenModalButton,
+} from "./modals/create-academic-year";
 import CreateEducationStructure from "./modals/create-education-structure";
 import CreateClassSections from "./modals/create-class-sections/create-class-sections";
 import CreateSubjects from "./modals/create-subjects";
@@ -25,9 +27,10 @@ import { AcademicYear } from "@/features/academic-year";
 import { titleCase } from "@/lib/helpers/string-to-title-case";
 import { useSetCurrentTerm } from "@/features/academic-year/api/set-term-to-current";
 import { useSetCurrentYear } from "@/features/academic-year/api/set-year-to-current";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { toast } from "sonner";
 import { useProgressRouter } from "@/features/page-loader";
+import Header from "../../../_components/header";
 
 const headRow = ["Name", "Start", "End", "Status", "Action"];
 export default function AcademicYears() {
@@ -61,62 +64,69 @@ export default function AcademicYears() {
   };
   if (isPending) {
     return (
-      <div className="w-full flex items-center justify-center py-7">
-        <Spinner size={70} />
-      </div>
+      <Root data={undefined}>
+        <div className="w-full flex items-center justify-center py-7">
+          <Spinner size={70} />
+        </div>
+      </Root>
     );
   }
   if (error) {
     return (
-      <div className="w-fit mx-auto">
-        {" "}
-        <NoData
-          variant="signal"
-          title="Something went Wrong"
-          subTitle={error.message || ""}
-          className="w-97.5 h-143.75"
-        />
-        <Button
-          className="mt-3 w-full"
-          loading={isFetching}
-          onClick={() => refetch()}
-          size="lg"
-        >
-          Retry
-        </Button>
-        <Modals data={data} />
-      </div>
+      <Root data={data}>
+        <div className="w-fit mx-auto">
+          {" "}
+          <NoData
+            variant="signal"
+            title="Something went Wrong"
+            subTitle={error.message || ""}
+            className="w-97.5 h-143.75"
+          />
+          <Button
+            className="mt-3 w-full"
+            loading={isFetching}
+            onClick={() => refetch()}
+            size="lg"
+          >
+            Retry
+          </Button>
+        </div>
+      </Root>
     );
   }
 
   if (data && data.length === 0) {
     return (
-      <div className="w-fit mx-auto">
-        {" "}
-        <NoData
-          title="No Academic Years"
-          subTitle="You haven't created any academic years, click the button above to make one"
-          className="w-97.5 h-143.75"
-        />
-        <Modals data={data} />
-      </div>
+      <Root data={data}>
+        <div className="w-fit mx-auto">
+          {" "}
+          <NoData
+            title="No Academic Years"
+            subTitle="You haven't created any academic years, click the button above to make one"
+            className="w-97.5 h-143.75"
+          />
+        </div>
+      </Root>
     );
   }
   return (
     <>
-      {data?.map((year) => (
-        <Year
-          year={year}
-          key={year.id}
-          onSetCurrentTerm={setCurrentTerm}
-          termToMutate={termToMutate}
-          isCurrentTermMutatePending={isCurrentTermMutatePending}
-          onSetCurrentYear={setCurrentYear}
-          yearToMutate={yearToMutate}
-          isCurrentYearMutatePending={isCurrentYearMutatePending}
-        />
-      ))}
-      <Modals data={data} />
+      <Root data={data}>
+        <div>
+          {data?.map((year) => (
+            <Year
+              year={year}
+              key={year.id}
+              onSetCurrentTerm={setCurrentTerm}
+              termToMutate={termToMutate}
+              isCurrentTermMutatePending={isCurrentTermMutatePending}
+              onSetCurrentYear={setCurrentYear}
+              yearToMutate={yearToMutate}
+              isCurrentYearMutatePending={isCurrentYearMutatePending}
+            />
+          ))}
+        </div>
+      </Root>
     </>
   );
 }
@@ -228,9 +238,18 @@ const Year = ({
   );
 };
 
-const Modals = ({ data }: { data: AcademicYear[] | undefined }) => {
+interface RootProps {
+  data: AcademicYear[] | undefined;
+  children: ReactNode;
+}
+const Root = ({ data, children }: RootProps) => {
   return (
     <>
+      <Header label="Academic year">
+        <OpenModalButton />
+      </Header>
+
+      {children}
       <CreateAcademicYear />
       <CreateEducationStructure data={data} />
       <CreateClassSections />

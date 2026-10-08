@@ -8,7 +8,13 @@ import { Edit } from "iconsax-reactjs";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/custom-button";
-import { Input, Select, DatePicker, TextArea, Checkbox } from "@/components/ui/form";
+import {
+  Input,
+  Select,
+  DatePicker,
+  TextArea,
+  Checkbox,
+} from "@/components/ui/form";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 import RecordTableSection, {
@@ -27,7 +33,7 @@ import EditColorCodeModal from "./_components/EditColorCodeModal";
 import {
   schoolIdentitySchema,
   type SchoolIdentityFormValues,
-} from "@/app/super-admin/school-onboarding/school-record/schema/school-record-schema";
+} from "@/app/super-admin/school-onboarding/(tabs)/school-record/schema/school-record-schema";
 
 import { useUserStore } from "@/features/school-profile/school-profile.store";
 import { useGetSchoolProfile } from "@/features/school-profile/api/get-school-profile";
@@ -47,7 +53,13 @@ import type {
   UpdateSchoolProfilePayload,
 } from "./types";
 
-import { getAddress, getInitials, getPrimaryContact, getSchoolTypes, toDateOnly } from "./utils";
+import {
+  getAddress,
+  getInitials,
+  getPrimaryContact,
+  getSchoolTypes,
+  toDateOnly,
+} from "./utils";
 import CountrySelectField from "@/app/onboarding/_components/fields/CountrySelectField";
 
 export default function SchoolRecordPage() {
@@ -59,13 +71,11 @@ export default function SchoolRecordPage() {
   const [isAddLocationOpen, setIsAddLocationOpen] = useState(false);
   const [editingCampusId, setEditingCampusId] = useState<string | null>(null);
   const [isAddContactOpen, setIsAddContactOpen] = useState(false);
-  const [editingContactId, setEditingContactId] = useState<string | null>(
+  const [editingContactId, setEditingContactId] = useState<string | null>(null);
+  const [isAddKeyContactOpen, setIsAddKeyContactOpen] = useState(false);
+  const [editingKeyContactId, setEditingKeyContactId] = useState<string | null>(
     null
   );
-  const [isAddKeyContactOpen, setIsAddKeyContactOpen] = useState(false);
-  const [editingKeyContactId, setEditingKeyContactId] = useState<
-    string | null
-  >(null);
   const [isEditColorCodeOpen, setIsEditColorCodeOpen] = useState(false);
 
   const profile = useUserStore((state) => state.data);
@@ -98,7 +108,10 @@ export default function SchoolRecordPage() {
     }
   >({
     mutationFn: ({ schoolId, registrationId, data }) =>
-      api.put(`schools/${schoolId}/registration-numbers/${registrationId}`, data),
+      api.put(
+        `schools/${schoolId}/registration-numbers/${registrationId}`,
+        data
+      ),
   });
 
   const deleteRegistrationMutation = useMutation<
@@ -210,19 +223,19 @@ export default function SchoolRecordPage() {
   }
 
   const deletingRegistrationId = deleteRegistrationMutation.isPending
-    ? (deleteRegistrationMutation.variables?.registrationId ?? null)
+    ? deleteRegistrationMutation.variables?.registrationId ?? null
     : null;
 
   const deletingCampusId = deleteCampusMutation.isPending
-    ? (deleteCampusMutation.variables?.campusId ?? null)
+    ? deleteCampusMutation.variables?.campusId ?? null
     : null;
 
   const deletingContactId = deleteContactMutation.isPending
-    ? (deleteContactMutation.variables?.contactId ?? null)
+    ? deleteContactMutation.variables?.contactId ?? null
     : null;
 
   const deletingKeyContactId = deleteKeyContactMutation.isPending
-    ? (deleteKeyContactMutation.variables?.keyContactId ?? null)
+    ? deleteKeyContactMutation.variables?.keyContactId ?? null
     : null;
 
   const formValues = useMemo<SchoolIdentityFormValues>(() => {
@@ -316,7 +329,7 @@ export default function SchoolRecordPage() {
       } catch (error) {
         console.error("Failed to update issuing authority/country:", error);
         failures.push("Registration details");
-      } 
+      }
     } else {
       failures.push("Registration details");
     }
@@ -333,7 +346,9 @@ export default function SchoolRecordPage() {
 
     if (anySucceeded) {
       toast.warning(
-        `Some details were saved, but ${failures.join(", ")} failed to update. Please try again.`
+        `Some details were saved, but ${failures.join(
+          ", "
+        )} failed to update. Please try again.`
       );
       return;
     }
@@ -341,7 +356,10 @@ export default function SchoolRecordPage() {
     toast.error("Failed to update school identity. Please try again.");
   };
 
-  const isSaving = isSubmitting || updateSchoolMutation.isPending || updateRegistrationMutation.isPending;
+  const isSaving =
+    isSubmitting ||
+    updateSchoolMutation.isPending ||
+    updateRegistrationMutation.isPending;
 
   if (!profile?.id) {
     return null;
@@ -353,46 +371,52 @@ export default function SchoolRecordPage() {
   const email = getPrimaryContact(profile.contacts ?? [], ["email"]);
   const address = getAddress(profile.campuses ?? []);
 
-  const registrationRows: RecordTableRow[] = (profile.registration_numbers ?? []).map(
-    (registration) => ({
-      id: registration.id,
+  const registrationRows: RecordTableRow[] = (
+    profile.registration_numbers ?? []
+  ).map((registration) => ({
+    id: registration.id,
+    cells: {
+      number: registration.number,
+      country: registration.country_code,
+      authority: registration.issuing_authority,
+      expiry: registration.expiry_date ?? "",
+    },
+  }));
+
+  const locationRows: RecordTableRow[] = (profile.campuses ?? []).map(
+    (campus) => ({
+      id: campus.id,
       cells: {
-        number: registration.number,
-        country: registration.country_code,
-        authority: registration.issuing_authority,
-        expiry: registration.expiry_date ?? "",
+        address: campus.address_line_1 ?? "",
+        city: campus.city,
+        country: campus.country_code,
+        postalCode: campus.postal_code ?? "",
+      },
+    })
+  );
+  const contactRows: RecordTableRow[] = (profile.contacts ?? []).map(
+    (contact) => ({
+      id: contact.id,
+      cells: {
+        type: titleCase(contact.type),
+        label: contact.label,
+        value: contact.value,
+        assigned: contact.is_primary ? "Primary" : "Secondary",
       },
     })
   );
 
-  const locationRows: RecordTableRow[] = (profile.campuses ?? []).map((campus) => ({
-    id: campus.id,
-    cells: {
-      address: campus.address_line_1 ?? "",
-      city: campus.city,
-      country: campus.country_code,
-      postalCode: campus.postal_code ?? "",
-    },
-  }));
- const contactRows: RecordTableRow[] = (profile.contacts ?? []).map((contact) => ({
-    id: contact.id,
-    cells: {
-      type: titleCase(contact.type),
-      label: contact.label,
-      value: contact.value,
-      assigned: contact.is_primary ? "Primary" : "Secondary",
-    },
-  }));
-
-   const keyContactRows: RecordTableRow[] = (profile.key_contacts ?? []).map((contact) => ({
-    id: contact.id,
-    cells: {
-      role: titleCase(contact.role_type),
-      name: contact.full_name,
-      title: contact.job_title,
-      email: contact.email,
-    },
-  }));
+  const keyContactRows: RecordTableRow[] = (profile.key_contacts ?? []).map(
+    (contact) => ({
+      id: contact.id,
+      cells: {
+        role: titleCase(contact.role_type),
+        name: contact.full_name,
+        title: contact.job_title,
+        email: contact.email,
+      },
+    })
+  );
 
   const colorCodeRows: RecordTableRow[] = [
     {
@@ -564,7 +588,10 @@ export default function SchoolRecordPage() {
                 <CountrySelectField name="countryCode" placeholder="Country" />
               </div>
 
-              <DatePicker name="dateOfEstablishment" label="Date of establishment" />
+              <DatePicker
+                name="dateOfEstablishment"
+                label="Date of establishment"
+              />
 
               <TextArea name="motto" label="School motto" maxLength={200} />
 
@@ -619,9 +646,8 @@ export default function SchoolRecordPage() {
         }}
         schoolId={schoolId}
         campus={
-          profile.campuses?.find(
-            (campus) => campus.id === editingCampusId
-          ) ?? null
+          profile.campuses?.find((campus) => campus.id === editingCampusId) ??
+          null
         }
       />
 
