@@ -157,12 +157,7 @@ export default function AddOptionalSubjectsModal({
               onClick={handleAddSubject}
               className="flex h-8.25 items-center gap-2 rounded-full border border-primary px-5 text-[14px] font-medium text-primary transition-colors hover:bg-primary/5"
             >
-              <Add
-                size={16}
-                variant="Linear"
-                className="text-primary"
-              />
-
+              <Add size={16} variant="Linear" className="text-primary" />
               Add Subject
             </button>
           </div>
