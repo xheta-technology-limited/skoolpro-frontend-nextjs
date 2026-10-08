@@ -14,7 +14,7 @@ export const PAGES: Group[] = [
   },
   {
     label: "Grading System",
-    pageUrl: "",
+    pageUrl: "/super-admin/school-onboarding/grading",
   },
   {
     label: "Promotion",
