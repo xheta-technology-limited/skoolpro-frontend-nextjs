@@ -5,6 +5,7 @@ import { AddSquare } from "iconsax-reactjs";
 import DetailCard from "./_components/DetailCard";
 import UpgradePlanModal from "./_components/UpgradePlanModal";
 import BillingDetailsModal from "./_components/BillingDetailsModal";
+import Header from "../../_components/header";
 
 import { useUserStore } from "@/features/school-profile/school-profile.store";
 import { useGetSubscription } from "@/features/subscriptions/api/get-subscriptions";
@@ -99,14 +100,16 @@ function handleEditBilling() {
 }
 
   return (
-    <div className="flex flex-col gap-6 p-5.5">
+    <div className="p-6">
+      <Header label="Subscriptions" />
+
+      <div className="mb-8 flex w-full flex-col gap-4 rounded-2xl border border-grays-borders bg-white p-4">
         <DetailCard
           title="Subscription"
           fields={subscriptionFields}
           onEdit={handleUpgradeSubscription}
           buttonLabel="Upgrade Plan"
           buttonIcon={<AddSquare size={16} variant="Bulk" color="#010081" />}
-
         />
 
         <DetailCard
@@ -115,28 +118,29 @@ function handleEditBilling() {
           onEdit={handleEditBilling}
           buttonLabel="Update"
         />
+      </div>
 
-        <UpgradePlanModal
-          open={isUpgradeModalOpen}
-          onOpenChange={setIsUpgradeModalOpen}
-          schoolId={schoolId}
-          subscriptionId={subscription?.id ?? ""}
-        />
+      <UpgradePlanModal
+        open={isUpgradeModalOpen}
+        onOpenChange={setIsUpgradeModalOpen}
+        schoolId={schoolId}
+        subscriptionId={subscription?.id ?? ""}
+      />
 
-        <BillingDetailsModal
-          open={isBillingModalOpen}
-          onOpenChange={setIsBillingModalOpen}
-          subscriptionId={subscription?.id ?? ""}
-          currentDetails={{
-            billingContactName: subscription?.billing_contact_name ?? "",
-            billingContactPhone: subscription?.billing_contact_phone ?? "",
-            billingContactEmail: subscription?.billing_contact_email ?? "",
-            billingAddress: subscription?.billing_address ?? "",
-            purchaseOrderReference:
-              subscription?.purchase_order_reference ?? "",
-            taxIdentifier: subscription?.tax_identifier ?? "",
-          }}
-        />
+      <BillingDetailsModal
+        open={isBillingModalOpen}
+        onOpenChange={setIsBillingModalOpen}
+        subscriptionId={subscription?.id ?? ""}
+        currentDetails={{
+          billingContactName: subscription?.billing_contact_name ?? "",
+          billingContactPhone: subscription?.billing_contact_phone ?? "",
+          billingContactEmail: subscription?.billing_contact_email ?? "",
+          billingAddress: subscription?.billing_address ?? "",
+          purchaseOrderReference:
+            subscription?.purchase_order_reference ?? "",
+          taxIdentifier: subscription?.tax_identifier ?? "",
+        }}
+      />
     </div>
   );
 }

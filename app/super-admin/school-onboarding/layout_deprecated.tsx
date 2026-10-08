@@ -2,7 +2,7 @@
 import TabsNav from "../../../components/common/tabs/tabs-nav";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { OpenModalButton } from "./academic-year/_components/modals/create-academic-year";
+import { OpenModalButton } from "./(tabs)/academic-year/_components/modals/create-academic-year";
 
 const PROMOTION_ROUTE = "/super-admin/school-onboarding/promotion";
 
