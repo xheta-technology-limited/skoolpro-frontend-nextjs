@@ -81,7 +81,7 @@ function Item({ promotion: p }: Props) {
           scale={"highlightMobile"}
           weight={"standard"}
         >
-          {`${p.source_year.name} > ${p.target_year.name}`}
+          {`${p.source_year?.name || ""} > ${p.target_year?.name || ""}`}
         </Text>
         <Text
           className="text-neutrals-800"

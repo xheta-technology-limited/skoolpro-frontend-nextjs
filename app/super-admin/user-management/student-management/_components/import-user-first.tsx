@@ -4,64 +4,20 @@ import { Button } from "@/components/ui/custom-button";
 import { DragNDrop } from "@/components/ui/form";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
-import { useGetTemplate } from "@/features/user-management/api/get-user-template";
-import { useStartImport } from "@/features/user-management/api/start-import";
-import {
-  StartImportFormData,
-  startImportSchema,
-} from "@/features/user-management/schemas/start-import";
-import { Entity } from "@/features/user-management/types/api/common";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { DocumentDownload } from "iconsax-reactjs";
 import { useSearchParams } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
 
-interface Props {
-  title: string;
-  templateTexts: string[];
-  module: Entity;
-  nextStepUrl: string;
-  handleClose: () => void;
-}
-export default function FirstModal({
-  title,
-  templateTexts,
-  module,
-  nextStepUrl,
-  handleClose,
-}: Props) {
+export default function FirstModal() {
   const searchParams = useSearchParams();
   const router = useProgressRouter();
-
-  const { isFetching: isTemplateFetching, refetch: downloadTemplate } =
-    useGetTemplate(module, {
-      enabled: false,
-      refetchOnWindowFocus: false,
-    });
-
-  const { mutate, isPending: isMutatePending } = useStartImport();
-
-  const handleDownload = async () => {
-    const { data: template } = await downloadTemplate();
-    if (!template) return;
-
-    const url = URL.createObjectURL(template);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "import_template.csv";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  };
 
   const open = searchParams.get("import-modal");
   const current = searchParams.get("current");
   const isOpen = open === "true" && current === "1";
 
-  const methods = useForm<StartImportFormData>({
+  const methods = useForm({
     defaultValues: {},
-<<<<<<<< HEAD:app/super-admin/user-management/student-management/_components/import-user-first.tsx
     //   resolver: zodResolver(addStudentFirstSchema),
   });
 
@@ -73,28 +29,11 @@ export default function FirstModal({
     router.push(
       "/super-admin/user-management/student-management?import-modal=true&current=2"
     );
-========
-    resolver: zodResolver(startImportSchema),
-  });
-
-  const handleProceed = (data: StartImportFormData) => {
-    const payload = { ...data, module: module, entity_type: module };
-    mutate(payload, {
-      onSuccess: (res) =>
-        router.push(
-          `${nextStepUrl}?import-modal=true&current=2&job-id=${res.id}`
-        ),
-    });
->>>>>>>> dev:app/super-admin/user-management/_components/modals/import-user-first.tsx
   };
 
   return (
     <FormModal
-<<<<<<<< HEAD:app/super-admin/user-management/student-management/_components/import-user-first.tsx
       title={"Import Students"}
-========
-      title={title}
->>>>>>>> dev:app/super-admin/user-management/_components/modals/import-user-first.tsx
       onOpenChange={handleClose}
       open={isOpen}
       step={{ current: 1, total: 4 }}
@@ -105,13 +44,8 @@ export default function FirstModal({
             Download the template, then upload your file
           </Text>
           <Text scale={"caption"} className="text-neutrals-700">
-<<<<<<<< HEAD:app/super-admin/user-management/student-management/_components/import-user-first.tsx
             The template has a column for every student field, with the required
             ones marked. Fill it in your spreadsheet app and save as CSV.
-========
-            {`The template has a column for every ${module} field, with the required
-            ones marked. Fill it in your spreadsheet app and save as CSV.`}
->>>>>>>> dev:app/super-admin/user-management/_components/modals/import-user-first.tsx
           </Text>
         </div>
 
@@ -119,18 +53,11 @@ export default function FirstModal({
           <div className="bg-primary-bg border border-primary-100 rounded-ml p-4 flex items-center gap-4 flex-wrap">
             <div className="flex-1 h-fit">
               <Text scale={"content"} className="text-neutrals-700">
-<<<<<<<< HEAD:app/super-admin/user-management/student-management/_components/import-user-first.tsx
                 Student import template
               </Text>
               <Text scale={"caption"} className="text-neutrals-700">
-                CSV · 13 columns · required: admission number, first name,
-                last name, admission date
-========
-                {templateTexts[0]}
-              </Text>
-              <Text scale={"caption"} className="text-neutrals-700">
-                {templateTexts[1]}
->>>>>>>> dev:app/super-admin/user-management/_components/modals/import-user-first.tsx
+                CSV · 13 columns · required: admission number, first name, last
+                name, admission date
               </Text>
             </div>
 
@@ -138,21 +65,16 @@ export default function FirstModal({
               variant="secondary"
               leftIcon={<DocumentDownload size={16} className="text-primary" />}
               className="h-max"
-              onClick={handleDownload}
-              loading={isTemplateFetching}
             >
               Download template
             </Button>
           </div>
           <FormProvider {...methods}>
-            <form
-              id="import-form"
-              onSubmit={methods.handleSubmit(handleProceed)}
-            >
+            <form>
               <DragNDrop
-                name="file"
+                name=""
                 label="CSV"
-                accept={{ "text/csv": [".csv"] }}
+                // accept={{ "text/csv": [".csv"] }}
                 onDropRejected={() =>
                   alert("MAKE THIS SET THE FORM STATE ERRORS FOR THIS FIELD")
                 }
@@ -171,11 +93,11 @@ export default function FirstModal({
               Cancel
             </Button>
             <Button
-              loading={isMutatePending}
-              type="submit"
-              form="import-form"
+              // loading={isPending}
+              //   type="submit"
               size="lg"
               className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+              onClick={handleProceed}
             >
               Proceed
             </Button>

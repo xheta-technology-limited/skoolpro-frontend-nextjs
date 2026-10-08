@@ -34,7 +34,7 @@ export default async function Promotion() {
           </Text>
         </div>
 
-        <PrepareRunButton />
+        {/* <PrepareRunButton /> */}
       </div>
 
       <HydrationBoundary state={dehydrate(queryClient)}>
