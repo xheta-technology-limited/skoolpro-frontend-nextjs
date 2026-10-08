@@ -112,7 +112,7 @@ export default function AcademicYears() {
   return (
     <>
       <Root data={data}>
-        <div>
+        <div className="mb-8 w-full rounded-2xl border border-grays-borders bg-white p-4">
           {data?.map((year) => (
             <Year
               year={year}

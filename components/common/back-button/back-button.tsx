@@ -13,7 +13,7 @@ export default function BackButton({ label, url }: Props) {
   return (
     <button
       onClick={() => router.replace(url)}
-      className="flex gap-3 cursor-pointer items-center mb-6"
+      className="flex gap-3 cursor-pointer items-center"
     >
       <ArrowLeft variant="Bulk" size={24} />
       <Text weight={"accent"} scale={"feature"} className="text-neutrals-900">
