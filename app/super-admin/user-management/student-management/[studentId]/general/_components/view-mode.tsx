@@ -97,7 +97,7 @@ export default function ViewMode({ onEdit, student }: Props) {
         </Button>
       </div>
 
-      <div className="flex flex-col gap-4 sm:flex-row">
+      <div className="flex flex-col gap-4 lg:flex-row">
         <div className="relative aspect-square w-full max-w-71 shrink-0 overflow-hidden rounded-[32px] border-4 border-primary bg-[#D9D9D9] sm:w-71">
           {student.photo_path ? (
             <Image
