@@ -55,11 +55,12 @@ export default function NotGenerated({
   });
 
   const onSubmit = (data: { role_ids: string[] }) => {
-    setDraftRoles(
-      dummyRoles
-        .filter((role) => data.role_ids.includes(role.id))
-        .map((role) => role.name)
-    );
+    // setDraftRoles(
+    //   dummyRoles
+    //     .filter((role) => data.role_ids.includes(role.id))
+    //     .map((role) => role.name)
+    // );
+    setDraftRoles(data.role_ids ?? []);
     setIsOpen(false);
   };
 
@@ -112,7 +113,8 @@ export default function NotGenerated({
             {selectedRoles.map((role) => (
               <Item
                 key={role}
-                label={role}
+                // label={role}
+                label={dummyRoles.find((item) => item.id === role)?.name ?? role}
                 onButtonClick={() =>
                   setDraftRoles(selectedRoles.filter((sub) => sub !== role))
                 }

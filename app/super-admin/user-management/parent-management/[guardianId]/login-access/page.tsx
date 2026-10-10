@@ -61,7 +61,7 @@ export default function LoginAccess() {
 
   return (
     <>
-      {profileData ? (
+      {profileData?.is_linked ? (
         <Generated
           data={profileData}
           password={password}

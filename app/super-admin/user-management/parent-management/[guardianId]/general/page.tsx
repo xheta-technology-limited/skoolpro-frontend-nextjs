@@ -20,6 +20,7 @@ import LinkStudentModal from "./_components/LinkStudentModal";
 import { useDeleteGuardian } from "@/features/user-management/guardian-management/api/delete-guardian";
 import { ApiError } from "@/lib/api";
 import { useProgressRouter } from "@/features/page-loader";
+import FormModal from "@/components/ui/form-modal";
 
 function getStudentResponsibility(
   link: GuardianStudentLink["link"]
@@ -44,9 +45,6 @@ export default function GuardianGeneralPage() {
   >();
     const { mutate: deleteGuardian, isPending: isDeleting } = useDeleteGuardian();
   
-
-  // ASSUMED — see top-of-file note #1. Path/hook name mirrors
-  // get-student's own convention.
   const {
     data: guardian,
     isPending,
@@ -168,32 +166,24 @@ export default function GuardianGeneralPage() {
         Delete user account
       </Button>
 
-      {/* Wire your existing FormModal here for delete confirmation */}
-      {deleteModal && (
-        <div
-          role="dialog"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-          onClick={() => setDeleteModal(false)}
-        >
-          <div
-            className="rounded-ml bg-white p-6 flex flex-col gap-4 w-80"
-            onClick={(e) => e.stopPropagation()}
+      <FormModal
+        open={deleteModal}
+        onOpenChange={setDeleteModal}
+        title="Delete this guardian account?"
+        maxWidth="max-w-md"
+      >
+        <div className="flex items-center justify-between">
+          <Button onClick={() => setDeleteModal(false)}>No</Button>
+          <Button
+            variant="secondary"
+            loading={isDeleting}
+            onClick={onDelete}
+            className="border-error-200! text-error-200!"
           >
-            <span>Delete this guardian account?</span>
-            <div className="flex items-center justify-between">
-              <Button onClick={() => setDeleteModal(false)}>No</Button>
-              <Button
-                variant="secondary"
-                loading={isDeleting}
-                onClick={onDelete}
-                className="border-error-200! text-error-200!"
-              >
-                Yes, delete
-              </Button>
-            </div>
-          </div>
+            Yes, delete
+          </Button>
         </div>
-      )}
+      </FormModal>
     </div>
   );
 }

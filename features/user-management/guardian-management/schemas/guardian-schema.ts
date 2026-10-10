@@ -20,6 +20,14 @@ export const addGuardianSchema = z.object({
   preferredContactMethod: z.string().optional(),
   homeAddress: z.string().optional(),
   workAddress: z.string().optional(),
+}).superRefine((values, ctx) => {
+  // Either one may be empty, but not both — a guardian needs at least
+  // one way to be contacted.
+  if (!values.email?.trim() && !values.phone?.trim()) {
+    const message = "Provide at least an email or a phone number";
+    ctx.addIssue({ code: "custom", message, path: ["email"] });
+    ctx.addIssue({ code: "custom", message, path: ["phone"] });
+  }
 });
 
 export type AddGuardianValues = z.infer<typeof addGuardianSchema>;

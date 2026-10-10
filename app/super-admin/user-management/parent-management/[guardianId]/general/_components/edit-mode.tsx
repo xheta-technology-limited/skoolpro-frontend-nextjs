@@ -12,7 +12,10 @@ import {
   editGuardianSchema,
   type EditGuardianFormData,
 } from "@/features/user-management/guardian-management/schemas/edit-guardian-schema";
-import { useUpdateGuardian } from "@/features/user-management/guardian-management/api/update-guardian";
+import {
+  useUpdateGuardian,
+  type UpdateGuardianPayload,
+} from "@/features/user-management/guardian-management/api/update-guardian";
 import type { GuardianDetail } from "@/features/user-management/guardian-management/types/guardian-detail-types";
 import { PREFERRED_CONTACT_METHOD_OPTIONS } from "@/features/user-management/guardian-management/schemas/guardian-schema";
 import CountrySelectField from "@/app/onboarding/_components/fields/CountrySelectField";
@@ -40,6 +43,18 @@ const toDefaults = (guardian: GuardianDetail): EditGuardianFormData => ({
   work_address: guardian.work_address ?? "",
 });
 
+// toDefaults turns null into "" so the inputs stay controlled; on
+// submit, map blank strings back to null so a cleared field is sent as
+// "no value" (and can actually clear the stored one) rather than "".
+// Non-empty values are passed through untouched.
+const toPayload = (data: EditGuardianFormData) =>
+  Object.fromEntries(
+    Object.entries(data).map(([key, value]) => [
+      key,
+      typeof value === "string" && value.trim() === "" ? null : value,
+    ])
+  ) as UpdateGuardianPayload;
+
 export default function EditMode({ onCancel, onSaved, guardian }: Props) {
   const methods = useForm<EditGuardianFormData>({
     defaultValues: toDefaults(guardian),
@@ -50,7 +65,7 @@ export default function EditMode({ onCancel, onSaved, guardian }: Props) {
 
   const onSubmit = (data: EditGuardianFormData) => {
     mutate(
-      { guardianId: guardian.id, payload: data },
+      { guardianId: guardian.id, payload: toPayload(data) },
       {
         onSuccess: () => {
           toast.success("Guardian updated successfully");
