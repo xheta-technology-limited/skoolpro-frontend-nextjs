@@ -13,6 +13,7 @@ import { useState } from "react";
 import { TickSquare } from "iconsax-reactjs";
 import { Button } from "@/components/ui/custom-button";
 import { Text } from "@/components/ui";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 //TODO: Make this also double as editing a grade scale
 export default function AddGradeScaleModal() {
@@ -29,7 +30,10 @@ export default function AddGradeScaleModal() {
   const handleClose = () =>
     router.push("/super-admin/school-onboarding/grading");
 
-  const methods = useForm<CreateGradeScaleFormData>({ defaultValues: {} });
+  const methods = useForm<CreateGradeScaleFormData>({
+    defaultValues: {},
+    resolver: zodResolver(createGradeScaleSchema),
+  });
 
   return (
     <FormModal onOpenChange={handleClose} open={isOpen} title="Add Grade Scale">

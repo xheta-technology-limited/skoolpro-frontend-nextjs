@@ -6,14 +6,21 @@ import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/custom-button";
 import { Input } from "@/components/ui/form";
 import { Select } from "@/components/ui/form";
-import { CreateBandFormData } from "@/features/grade-scales/schemas/create-band-schema";
+import {
+  CreateBandFormData,
+  createBandSchema,
+} from "@/features/grade-scales/schemas/create-band-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface Props {
   handleClose: () => void;
   isOpen: boolean;
 }
 export default function AddBand({ handleClose, isOpen }: Props) {
-  const methods = useForm<CreateBandFormData>({ defaultValues: {} });
+  const methods = useForm<CreateBandFormData>({
+    defaultValues: {},
+    resolver: zodResolver(createBandSchema),
+  });
   const onSub = () => alert("it do be working");
   return (
     <>
