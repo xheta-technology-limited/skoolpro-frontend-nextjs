@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import Header from "../../_components/header";
 import GradeScale from "./_components/grade-scales/grade-scale";
 import GradingSchemes from "./_components/grading-schemes/grading-schemas";
+import AddGradeScaleModal from "./_components/modals/add-grade-scale";
 import PassMark from "./_components/pass-mark/pass-mark";
 import PromotionRules from "./_components/promotion-rules/promotion-rules";
 
@@ -14,6 +16,10 @@ export default function Grading() {
         <GradingSchemes />
         <PassMark />
         <PromotionRules />
+
+        <Suspense>
+          <AddGradeScaleModal />
+        </Suspense>
       </div>
     </>
   );

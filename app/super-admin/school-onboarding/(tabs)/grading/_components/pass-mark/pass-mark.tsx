@@ -12,7 +12,6 @@ import GradeItem from "../grade-item";
 import { titleCase } from "@/lib/helpers";
 import { Text } from "@/components/ui";
 import { ArrowRight3, Edit } from "iconsax-reactjs";
-import clsx from "clsx";
 import { headRow, badges } from "./constants";
 
 //TODO: Make this take in the content it's supposed to display
@@ -106,34 +105,25 @@ export default function PassMark() {
   );
 }
 
+const badgeColors: Record<string, { bg: string; text: string }> = {
+  Class: { bg: "#6155F51A", text: "#6155F5" },
+  Subject: { bg: "#0088FF1A", text: "#0088FF" },
+  "Program (stage)": { bg: "#FEE6D180", text: "#EDA145" },
+  "General (school)": { bg: "#E3E3E3", text: "#433E3F" },
+};
+
 const Badge = ({ label }: { label: string }) => {
-  const bgColor =
-    label === "Class"
-      ? "#6155F51A"
-      : label === "Subject"
-      ? "#0088FF1A"
-      : label === "Program (stage)"
-      ? "#FEE6D180"
-      : label === "General (school)"
-      ? "#E3E3E3"
-      : "";
-
-  const textColor =
-    label === "Class"
-      ? "#6155F5"
-      : label === "Subject"
-      ? "#0088FF"
-      : label === "Program (stage)"
-      ? "#EDA145"
-      : label === "General (school)"
-      ? "#433E3F"
-      : "";
-
-  const style = `text-[${textColor}] bg-[${bgColor}]`;
+  const colors = badgeColors[label];
 
   return (
-    <div className={clsx(`px-2.5 py-0.5 rounded-[12px]`, style)}>
-      <Text scale={"captionMobile"}>{`${label}`}</Text>
+    <div
+      className="px-2.5 py-0.5 rounded-[12px]"
+      style={{ backgroundColor: colors?.bg }}
+    >
+      <Text
+        style={{ color: colors?.text }}
+        scale={"captionMobile"}
+      >{`${label}`}</Text>
     </div>
   );
 };

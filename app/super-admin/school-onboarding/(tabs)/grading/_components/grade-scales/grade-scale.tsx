@@ -12,16 +12,22 @@ import GradeItem from "../grade-item";
 import { titleCase } from "@/lib/helpers";
 import { Text } from "@/components/ui";
 import { ArrowRight3 } from "iconsax-reactjs";
+import { useProgressRouter } from "@/features/page-loader";
 
 const headRow = ["Scale", "Band", "Coverage", "Status", "Action"];
 //TODO: Make this take in the content it's supposed to display
 export default function GradeScale() {
+  const router = useProgressRouter();
   return (
     <GradeItem
       label="Grade scales"
       subLabel="Each scale maps score ranges to grades. A school can keep several (senior WAEC, a junior A–E) and mark one the default. Open a scale to manage its bands."
       buttonText="Add Grade Scale"
-      buttonFunc={() => alert("not implemented")}
+      buttonFunc={() =>
+        router.push(
+          "/super-admin/school-onboarding/grading?add-grade-scale=true"
+        )
+      }
       isLoading
     >
       <div className="rounded-ml bg-primary-bg p-6 border border-primary-100">
@@ -54,7 +60,9 @@ export default function GradeScale() {
                     <button
                       className="py-1.5 px-2 rounded-[12px] text-[0.75rem] flex items-center border border-grays-borders"
                       onClick={() =>
-                        alert("make this navigate to the right place")
+                        router.push(
+                          `grading/grade-scale/${"some-id-somewhere"}`
+                        )
                       }
                     >
                       <Text
