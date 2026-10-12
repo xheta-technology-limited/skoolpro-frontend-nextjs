@@ -2,3 +2,8 @@ export const gradeScaleKeys = {
   all: ["grade-scales"] as const,
   detail: (id: string) => ["grade-scales", id] as const,
 };
+
+export const gradingSchemeKeys = {
+  all: ["grading-schemes"] as const,
+  detail: (id: string) => ["grading-schemes", id] as const,
+};

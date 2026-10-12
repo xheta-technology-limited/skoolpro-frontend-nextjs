@@ -5,6 +5,7 @@ import GradingSchemes from "./_components/grading-schemes/grading-schemas";
 import AddGradeScaleModal from "./_components/modals/add-grade-scale";
 import PassMark from "./_components/pass-mark/pass-mark";
 import PromotionRules from "./_components/promotion-rules/promotion-rules";
+import AddGradeSheme from "./_components/modals/add-grading-scheme";
 
 export default function Grading() {
   return (
@@ -19,6 +20,7 @@ export default function Grading() {
 
         <Suspense>
           <AddGradeScaleModal />
+          <AddGradeSheme />
         </Suspense>
       </div>
     </>

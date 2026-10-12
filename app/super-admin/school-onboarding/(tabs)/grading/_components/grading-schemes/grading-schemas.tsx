@@ -12,8 +12,10 @@ import GradeItem from "../grade-item";
 import { titleCase } from "@/lib/helpers";
 import { Text } from "@/components/ui";
 import { ArrowRight3 } from "iconsax-reactjs";
+import { useProgressRouter } from "@/features/page-loader";
 
 const headRow = ["Scheme", "Scope", "Component", "Weight", "Action"];
+const router = useProgressRouter();
 //TODO: Make this take in the content it's supposed to display
 export default function GradingSchemes() {
   return (
@@ -21,7 +23,11 @@ export default function GradingSchemes() {
       label="Grading schemes"
       subLabel="A scheme is the set of weighted assessments a subject total is built from. One school-wide default, with optional overrides per level or per subject. Open one to manage its components."
       buttonText="Add Scheme"
-      buttonFunc={() => alert("not implemented")}
+      buttonFunc={() =>
+        router.push(
+          "/super-admin/school-onboarding/grading?add-grade-scheme=true"
+        )
+      }
       isLoading
     >
       <div className="rounded-ml bg-primary-bg p-6 border border-primary-100">
