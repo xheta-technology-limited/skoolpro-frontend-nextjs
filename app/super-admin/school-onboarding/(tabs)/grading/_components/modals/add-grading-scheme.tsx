@@ -4,10 +4,6 @@ import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { usePathname, useSearchParams } from "next/navigation";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-import {
-  CreateGradeScaleFormData,
-  createGradeScaleSchema,
-} from "@/features/grade-scales/schemas/create-grade-scale-schema";
 import { Input, Select } from "@/components/ui/form";
 import { useState } from "react";
 import { TickSquare } from "iconsax-reactjs";

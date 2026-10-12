@@ -7,3 +7,8 @@ export const gradingSchemeKeys = {
   all: ["grading-schemes"] as const,
   detail: (id: string) => ["grading-schemes", id] as const,
 };
+
+export const passMarkKeys = {
+  all: ["pass-marks"] as const,
+  detail: (id: string) => ["pass-marks", id] as const,
+};

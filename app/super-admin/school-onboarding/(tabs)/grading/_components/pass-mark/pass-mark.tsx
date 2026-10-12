@@ -13,15 +13,19 @@ import { titleCase } from "@/lib/helpers";
 import { Text } from "@/components/ui";
 import { ArrowRight3, Edit } from "iconsax-reactjs";
 import { headRow, badges } from "./constants";
+import { useProgressRouter } from "@/features/page-loader";
 
 //TODO: Make this take in the content it's supposed to display
 export default function PassMark() {
+  const router = useProgressRouter();
   return (
     <GradeItem
       label="Pass mark"
       subLabel="The score a student must reach to pass. Set at four scopes; the most specific one applies. If none is set, pass/fail falls back to the grade band."
       buttonText="Set Pass Mark"
-      buttonFunc={() => alert("not implemented")}
+      buttonFunc={() =>
+        router.push("/super-admin/school-onboarding/grading?add-pass-mark=true")
+      }
       isLoading
     >
       <div className="mb-8 py-6 px-4 flex flex-col gap-2 border border-grays-borders rounded-ml">
