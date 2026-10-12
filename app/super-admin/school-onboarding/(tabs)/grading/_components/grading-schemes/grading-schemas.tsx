@@ -15,9 +15,9 @@ import { ArrowRight3 } from "iconsax-reactjs";
 import { useProgressRouter } from "@/features/page-loader";
 
 const headRow = ["Scheme", "Scope", "Component", "Weight", "Action"];
-const router = useProgressRouter();
 //TODO: Make this take in the content it's supposed to display
 export default function GradingSchemes() {
+  const router = useProgressRouter();
   return (
     <GradeItem
       label="Grading schemes"
@@ -60,7 +60,9 @@ export default function GradingSchemes() {
                     <button
                       className="py-1.5 px-2 rounded-[12px] text-[0.75rem] flex items-center border border-grays-borders"
                       onClick={() =>
-                        alert("make this navigate to the right place")
+                        router.push(
+                          `grading/grading-schemes/${"some-id-somewhere"}`
+                        )
                       }
                     >
                       <Text

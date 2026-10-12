@@ -12,6 +12,7 @@ import GradeItem from "../grade-item";
 import { titleCase } from "@/lib/helpers";
 import { Text } from "@/components/ui";
 import { ArrowRight3, Edit } from "iconsax-reactjs";
+import { useProgressRouter } from "@/features/page-loader";
 
 const headRow = [
   "Scale",
@@ -22,12 +23,17 @@ const headRow = [
 ];
 //TODO: Make this take in the content it's supposed to display
 export default function PromotionRules() {
+  const router = useProgressRouter();
   return (
     <GradeItem
       label="Promotion Rules"
       subLabel="The academic gates used to recommend promotion. Scoped school / stage / level (most specific wins). These feed the eligibility check shown on each student’s result."
       buttonText="Add Rule"
-      buttonFunc={() => alert("not implemented")}
+      buttonFunc={() =>
+        router.push(
+          "/super-admin/school-onboarding/grading?add-promotion-rule=true"
+        )
+      }
       isLoading
     >
       <div className="rounded-ml bg-primary-bg p-6 border border-primary-100">
