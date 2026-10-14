@@ -29,6 +29,7 @@ export default function AddGradeScaleModal() {
   const isOpen =
     params.includes("/grading") &&
     searchParams.get("add-grade-scale") === "true";
+  const isEditMode = isOpen && searchParams.get("scale-id");
 
   const handleClose = () =>
     router.push("/super-admin/school-onboarding/grading");
