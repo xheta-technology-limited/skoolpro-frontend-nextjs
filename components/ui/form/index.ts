@@ -5,3 +5,4 @@ export { default as DatePicker } from "./date-picker/date-picker";
 export { default as DragNDrop } from "./drag-n-drop/drag-n-drop";
 export { default as Checkbox } from "./checkbox/checkbox";
 export { default as CompactCheckbox } from "./checkbox-compact/checkbox-compact";
+export { default as BooleanSelect } from "./select/boolean-select";
