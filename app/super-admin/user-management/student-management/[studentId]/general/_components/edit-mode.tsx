@@ -124,7 +124,7 @@ export default function EditMode({ onCancel, onSaved, student }: Props) {
             )}
           </div>
 
-          <div className="flex-1 rounded-ml bg-white p-2 grid grid-cols-2 content-start gap-4">
+          <div className="flex-1 rounded-ml bg-white p-2 grid grid-cols-1 lg:grid-cols-2 content-start gap-4">
             <Input name="first_name" label="Enter first name" />
             <Input name="middle_name" label="Enter middle name" />
             <Input name="last_name" label="Enter last name" />
@@ -143,14 +143,14 @@ export default function EditMode({ onCancel, onSaved, student }: Props) {
           </div>
         </div>
 
-        <div className="rounded-ml bg-white p-2 grid grid-cols-2 content-start gap-4">
+        <div className="rounded-ml bg-white p-2 grid grid-cols-1 lg:grid-cols-2 content-start gap-4">
           <Input name="first_language" label="Enter first language" />
           <Input name="other_languages" label="Enter other language" />
           <Input name="religion" label="Select religion" />
           <Input name="ethnicity" label="Select ethnicity" />
         </div>
 
-        <div className="rounded-ml bg-white p-2 grid grid-cols-2 content-start gap-4">
+        <div className="rounded-ml bg-white p-2 grid grid-cols-1 lg:grid-cols-2 content-start gap-4">
           <Input
             name="admission_number_display"
             label="Admission no."
@@ -171,7 +171,7 @@ export default function EditMode({ onCancel, onSaved, student }: Props) {
           />
         </div>
 
-        <div className="rounded-ml bg-white p-2 grid grid-cols-2 content-start gap-4">
+        <div className="rounded-ml bg-white p-2 grid grid-cols-1 lg:grid-cols-2 content-start gap-4">
           <Input name="home_address" label="Enter home address" />
           <Input name="mailing_address" label="Enter mailing address" />
           <Input
@@ -182,7 +182,7 @@ export default function EditMode({ onCancel, onSaved, student }: Props) {
           <Input name="personal_phone" label="Enter phone number" />
         </div>
 
-        <div className="rounded-ml bg-white p-2 grid grid-cols-2 content-start gap-4">
+        <div className="rounded-ml bg-white p-2 grid grid-cols-1 lg:grid-cols-2 content-start gap-4">
           <Input
             name="admission_date"
             label="Enter admission date"

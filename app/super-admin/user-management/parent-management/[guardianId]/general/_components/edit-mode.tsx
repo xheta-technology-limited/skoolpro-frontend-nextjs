@@ -130,7 +130,7 @@ export default function EditMode({ onCancel, onSaved, guardian }: Props) {
             )}
           </div>
 
-          <div className="flex-1 rounded-ml bg-white p-2 grid grid-cols-2 content-start gap-4">
+          <div className="flex-1 rounded-ml bg-white p-2 grid grid-cols-1 lg:grid-cols-2 content-start gap-4">
             <Input name="title" label="Enter title" />
             <Input name="first_name" label="Enter first name" />
             <Input name="middle_name" label="Enter middle name" />
@@ -158,7 +158,7 @@ export default function EditMode({ onCancel, onSaved, guardian }: Props) {
           </div>
         </div>
 
-        <div className="rounded-ml bg-white p-2 grid grid-cols-2 content-start gap-4">
+        <div className="rounded-ml bg-white p-2 grid grid-cols-1 lg:grid-cols-2 content-start gap-4">
           <Input name="phone" label="Enter phone number" />
           <Input name="alt_phone" label="Enter alt. phone number" />
           <Input name="email" label="Enter email address" />
