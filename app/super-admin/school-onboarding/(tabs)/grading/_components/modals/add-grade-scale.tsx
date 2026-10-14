@@ -8,7 +8,7 @@ import {
   CreateGradeScaleFormData,
   createGradeScaleSchema,
 } from "@/features/grade-scales/schemas/create-grade-scale-schema";
-import { Input, Select } from "@/components/ui/form";
+import { BooleanSelect, Input, Select } from "@/components/ui/form";
 import { useState } from "react";
 import { TickSquare } from "iconsax-reactjs";
 import { Button } from "@/components/ui/custom-button";
@@ -65,21 +65,17 @@ export default function AddGradeScaleModal() {
           className="flex flex-col gap-4 w-full"
         >
           <Input name="name" label="Enter grade name" />
-          <Select
+          <BooleanSelect
             name="is_default"
             label="Set as default"
-            options={[
-              { value: "true", label: "Yes" },
-              { value: "false", label: "No" },
-            ]}
+            trueLabel="Yes"
+            falseLabel="No"
           />
-          <Select
+          <BooleanSelect
             name="is_active"
             label="Select status"
-            options={[
-              { value: "true", label: "Active" },
-              { value: "false", label: "Inactive" },
-            ]}
+            trueLabel="Active"
+            falseLabel="Inactive"
           />
 
           <button
@@ -99,19 +95,17 @@ export default function AddGradeScaleModal() {
           {isAddBands && (
             <>
               <div className="flex gap-4">
-                <Input label="Enter grade" name="bands.0.label" />
+                <Input label="Enter band label" name="bands.0.label" />
                 <Input label="Enter minimum score" name="bands.0.min_score" />
                 <Input label="Enter maximum score" name="bands.0.max_score" />
               </div>
 
               <Input label="Enter grade point" name="bands.0.grade_point" />
-              <Select
+              <BooleanSelect
                 label="Select pass or fail"
                 name="bands.0.is_pass"
-                options={[
-                  { value: "true", label: "Pass" },
-                  { value: "false", label: "Fail" },
-                ]}
+                trueLabel="Pass"
+                falseLabel="Fail"
               />
               <Input label="Enter description" name="bands.0.description" />
               <Input

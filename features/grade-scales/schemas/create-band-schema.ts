@@ -2,9 +2,31 @@ import { z } from "zod";
 
 export const createBandSchema = z.object({
   label: z.string(),
-  min_score: z.number(),
-  max_score: z.number(),
-  grade_point: z.number().optional(),
+  min_score: z.string().refine((value) => {
+    const number = Number(value);
+    return (
+      value.trim() !== "" &&
+      Number.isFinite(number) &&
+      number >= 1 &&
+      number < 100
+    );
+  }, "Please enter a valid number between 0 and 100"),
+  max_score: z.string().refine((value) => {
+    const number = Number(value);
+    return (
+      value.trim() !== "" &&
+      Number.isFinite(number) &&
+      number >= 1 &&
+      number < 100
+    );
+  }, "Please enter a valid number between 0 and 100"),
+  grade_point: z
+    .string()
+    .refine((value) => {
+      const number = Number(value);
+      return value.trim() !== "" && Number.isFinite(number) && number >= 1;
+    }, "Please enter a valid number")
+    .optional(),
   description: z.string().optional(),
   comment: z.string().optional(),
   is_pass: z.boolean().optional(),

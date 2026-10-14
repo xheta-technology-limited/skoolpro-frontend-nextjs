@@ -1,8 +1,6 @@
 import * as z from "zod";
 
-export const requiredString = z
-  .string()
-  .nonempty("This field is required");
+export const requiredString = z.string().nonempty("This field is required");
 
 export const phoneString = z
   .string()
