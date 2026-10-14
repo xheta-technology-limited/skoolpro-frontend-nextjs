@@ -23,6 +23,9 @@ export const useCreateBand = (gradeScaleID: string) => {
       queryClient.invalidateQueries({
         queryKey: gradeScaleKeys.detail(gradeScaleID),
       });
+      queryClient.invalidateQueries({
+        queryKey: gradeScaleKeys.all,
+      });
     },
   });
 };

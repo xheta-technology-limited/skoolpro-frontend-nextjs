@@ -13,14 +13,15 @@ import {
 import { titleCase } from "@/lib/helpers";
 import { AddSquare, ArrowRight3 } from "iconsax-reactjs";
 import GradeItem from "../../_components/grade-item";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AddBand from "./_components/add-band";
 import { useGetGradeScale } from "@/features/grade-scales/api/get-grade-scale";
-import { useParams } from "next/navigation";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { Spinner } from "@/components/animations";
 import { NoData } from "@/components/icons";
 import { Button } from "@/components/ui/custom-button";
 import { useProgressRouter } from "@/features/page-loader";
+import { CreateBandFormData } from "@/features/grade-scales/schemas/create-band-schema";
 
 const headRow = [
   "Grade",
@@ -34,12 +35,38 @@ const headRow = [
 export default function GradeScale() {
   const [isModalOpen, setModalOpen] = useState(false);
   const { gradeId } = useParams();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const bandId = searchParams.get("band-id");
   const router = useProgressRouter();
 
   const { data, isPending, isRefetching, error, refetch } = useGetGradeScale(
     (gradeId as string) ?? "",
     { enabled: !!gradeId, refetchOnWindowFocus: false }
   );
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    router.replace(pathname);
+  };
+
+  const defaults = useMemo(() => {
+    if (!bandId) return undefined;
+    const def = data?.bands?.find((b) => b.id === bandId);
+    if (!def) return undefined;
+    return {
+      comment: def?.comment === null ? undefined : def?.comment,
+      description: def?.description === null ? undefined : def?.description,
+      grade_point:
+        def.grade_point === undefined
+          ? def.grade_point
+          : String(def.grade_point),
+      label: def?.label || "",
+      min_score: String(def?.min_score),
+      max_score: String(def?.max_score),
+      is_pass: def.is_pass,
+    };
+  }, [bandId, data]);
 
   return (
     <div>
@@ -127,11 +154,10 @@ export default function GradeScale() {
                         <TableCell>
                           <button
                             className="py-1.5 px-2 rounded-[12px] text-[0.75rem] flex items-center border border-grays-borders"
-                            onClick={() =>
-                              router.push(
-                                "/super-admin/school-onboarding/grading?add-grade-scale=true&scale-id=true"
-                              )
-                            }
+                            onClick={() => {
+                              router.push(`?band-id=${b.id}`);
+                              setModalOpen(true);
+                            }}
                           >
                             <Text
                               scale={"captionMobile"}
@@ -156,7 +182,11 @@ export default function GradeScale() {
         </GradeItem>
       </div>
 
-      <AddBand handleClose={() => setModalOpen(false)} isOpen={isModalOpen} />
+      <AddBand
+        handleClose={handleCloseModal}
+        isOpen={isModalOpen}
+        defaults={defaults}
+      />
     </div>
   );
 }
