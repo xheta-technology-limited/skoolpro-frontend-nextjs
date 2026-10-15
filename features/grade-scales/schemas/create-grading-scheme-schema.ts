@@ -1,9 +1,12 @@
+import { requiredString } from "@/lib/utils/zod-schemas";
 import { z } from "zod";
 
 export const createGradingSchemeSchema = z
   .object({
-    name: z.string(),
-    scope_type: z.enum(["school", "level", "subject_assignment"]),
+    name: requiredString,
+    scope_type: z
+      .enum(["school", "level", "subject_assignment"], "This field is required")
+      .nonoptional("This field is required"),
     education_level_id: z.uuid().optional(),
     subject_level_assignment_id: z.uuid().optional(),
     academic_term_id: z.uuid().optional().nullable(),
@@ -22,7 +25,7 @@ export const createGradingSchemeSchema = z
       ctx.addIssue({
         code: "custom",
         path: ["education_level_id"],
-        message: "education_level_id is required when scope_type is 'level'",
+        message: "Education level is required when scope is 'level'",
       });
     }
 
@@ -33,8 +36,7 @@ export const createGradingSchemeSchema = z
       ctx.addIssue({
         code: "custom",
         path: ["subject_level_assignment_id"],
-        message:
-          "subject_level_assignment_id is required when scope_type is 'subject_assignment'",
+        message: "Subject level is required when scope is 'subject assignment'",
       });
     }
   });

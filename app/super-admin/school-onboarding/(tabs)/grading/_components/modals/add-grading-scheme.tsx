@@ -12,11 +12,16 @@ import {
   createGradingSchemeSchema,
 } from "@/features/grade-scales/schemas/create-grading-scheme-schema";
 import { useListGradeScales } from "@/features/grade-scales/api/list-grade-scales";
-import { createSelectOptions } from "@/lib/helpers";
+import { createSelectOptions, setFormErrors, titleCase } from "@/lib/helpers";
 import { GradeScale } from "@/features/grade-scales/types/api/grade-scale";
 import { useListLevels } from "@/features/academic-year/api/list-levels";
-import { EducationLevel } from "@/features/academic-year";
+import { EducationLevel, SubjectAssignment } from "@/features/academic-year";
 import { useListLevelSubjectAssignments } from "@/features/academic-year/api/list-level-overview";
+import { useCreateGradingScheme } from "@/features/grade-scales/api/create-grading-scheme";
+import { toast } from "sonner";
+import { useEffect } from "react";
+import { useListCurrentTerms } from "@/features/academic-year/api/list-current-terms";
+import { Term } from "@/features/academic-year/types/api/terms";
 
 export default function AddGradeSheme() {
   const params = usePathname();
@@ -42,9 +47,19 @@ export default function AddGradeSheme() {
     "id",
     "name"
   );
+  const selectedScope = useWatch({
+    name: "scope_type",
+    control: methods.control,
+  });
+  const selectedLevel = useWatch({
+    name: "education_level_id",
+    control: methods.control,
+  });
 
   const { data: educationLevels, isPending: isLevelsPending } = useListLevels({
     refetchOnWindowFocus: false,
+    enabled:
+      selectedScope === "level" || selectedScope === "subject_assignment",
   });
   const levelOptions = createSelectOptions<EducationLevel, "id", "name">(
     educationLevels,
@@ -53,17 +68,40 @@ export default function AddGradeSheme() {
   );
 
   const { data: subjectAssignments, isPending: isAssignmentsPending } =
-    useListLevelSubjectAssignments({ refetchOnWindowFocus: false });
-  const levelOptions = createSelectOptions<EducationLevel, "id", "name">(
-    educationLevels,
+    useListLevelSubjectAssignments(selectedLevel || "", {
+      refetchOnWindowFocus: false,
+      enabled: !!selectedLevel,
+    });
+  const subjectOptions = subjectAssignments?.map((sub) => ({
+    value: sub.id,
+    label: titleCase(sub.subject.name),
+  }));
+
+  const { data: terms, isPending: isTermsPending } = useListCurrentTerms({
+    refetchOnWindowFocus: false,
+  });
+  const termOptions = createSelectOptions<Term, "id", "name">(
+    terms,
     "id",
     "name"
   );
 
-  const selectedScope = useWatch({
-    name: "scope_type",
-    control: methods.control,
-  });
+  useEffect(() => {
+    console.log("le sub options: ", subjectOptions);
+  }, [subjectAssignments, subjectOptions]);
+  const { mutate, isPending } = useCreateGradingScheme();
+
+  const onSubmit = (data: CreateGradingSchemeFormData) => {
+    mutate(data, {
+      onSuccess: () => {
+        toast.success("Created!");
+        handleClose();
+      },
+      onError: (err) => {
+        setFormErrors(methods.setError, err.errors);
+      },
+    });
+  };
 
   return (
     <FormModal
@@ -72,13 +110,17 @@ export default function AddGradeSheme() {
       title="Add Grading Scheme"
     >
       <FormProvider {...methods}>
-        <form id="scheme-create" className="flex flex-col gap-4 w-full">
+        <form
+          id="scheme-create"
+          className="flex flex-col gap-4 w-full"
+          onSubmit={methods.handleSubmit(onSubmit)}
+        >
           <Input name="name" label="Enter scheme name" />
           <Select
             name="scope_type"
             label="Select scope"
             options={[
-              { value: "school", label: "School default" },
+              { value: "school", label: "School (default)" },
               { value: "level", label: "A specific level" },
               { value: "subject_assignment", label: "A specific subject" },
             ]}
@@ -94,16 +136,21 @@ export default function AddGradeSheme() {
           )}
 
           {selectedScope === "subject_assignment" && (
-            <Select
-              name="subject_level_assignment_id"
-              label="Select subject level"
-              options={[
-                {
-                  value: "subject_assignment",
-                  label: "TODO: Fetch from backend",
-                },
-              ]}
-            />
+            <div className="flex gap-2 flex-wrap w-full *:flex-1">
+              <Select
+                name="education_level_id"
+                label="Select level"
+                options={levelOptions || []}
+                isLoading={isLevelsPending}
+              />
+              <Select
+                name="subject_level_assignment_id"
+                label="Select subject level"
+                isLoading={isAssignmentsPending}
+                disabled={selectedLevel ? false : true}
+                options={subjectOptions || []}
+              />
+            </div>
           )}
           <Select
             name="grade_scale_id"
@@ -115,7 +162,8 @@ export default function AddGradeSheme() {
           <Select
             name="academic_term_id"
             label="Applies to term"
-            options={[{ value: "true", label: "TODO: Fetch from backend" }]}
+            isLoading={isTermsPending}
+            options={termOptions || []}
           />
         </form>
 
@@ -123,11 +171,7 @@ export default function AddGradeSheme() {
           <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
-          <Button
-            type="submit"
-            form="scheme-create"
-            onClick={() => alert("some api stuff")}
-          >
+          <Button type="submit" form="scheme-create" loading={isPending}>
             Create Scheme
           </Button>
         </div>
