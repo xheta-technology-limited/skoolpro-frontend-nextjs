@@ -15,18 +15,46 @@ import { ArrowRight3, Edit } from "iconsax-reactjs";
 import { headRow, badges } from "./constants";
 import { useProgressRouter } from "@/features/page-loader";
 import { useListPassMarks } from "@/features/grade-scales/api/list-pass-marks";
+import { PassMark as PassMarkType } from "@/features/grade-scales/types/api/pass-mark";
+import { CreatePassMarkFormData } from "@/features/grade-scales/schemas/create-pass-mark-schema";
 import AddPassMark from "../modals/add-pass-mark";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 //TODO: Make this take in the content it's supposed to display
 export default function PassMark() {
   const router = useProgressRouter();
   const [isModalOpen, setModalOpen] = useState(false);
+  const [editingPassMark, setEditingPassMark] = useState<PassMarkType | null>(
+    null
+  );
   const { data, isPending } = useListPassMarks({
     refetchOnWindowFocus: false,
   });
 
-  const openModal = () => setModalOpen(true);
+  const defaults = useMemo<CreatePassMarkFormData | undefined>(() => {
+    if (!editingPassMark) return undefined;
+    const scope =
+      editingPassMark.scope_type === "programme" ||
+      editingPassMark.scope_type === "class"
+        ? editingPassMark.scope_type
+        : "general";
+    return {
+      scope,
+      mark: String(editingPassMark.pass_mark),
+      education_stage_id: editingPassMark.education_stage_id ?? undefined,
+      class_section_id: editingPassMark.class_section_id ?? undefined,
+    };
+  }, [editingPassMark]);
+
+  const openModal = () => {
+    setEditingPassMark(null);
+    setModalOpen(true);
+  };
+
+  const openEditModal = (passMark: PassMarkType) => {
+    setEditingPassMark(passMark);
+    setModalOpen(true);
+  };
 
   return (
     <GradeItem
@@ -108,9 +136,7 @@ export default function PassMark() {
                       <TableCell>
                         <button
                           className="py-1.5 px-2 rounded-[12px] text-[0.75rem] flex items-center border border-grays-borders"
-                          onClick={() =>
-                            alert("make this do whatever it's supposed to do")
-                          }
+                          onClick={() => openEditModal(passMark)}
                         >
                           <Edit
                             variant="Bulk"
@@ -134,6 +160,7 @@ export default function PassMark() {
           <AddPassMark
             isOpen={isModalOpen}
             handleClose={() => setModalOpen(false)}
+            defaults={defaults}
           />
         </div>
       )}

@@ -18,6 +18,7 @@ import { useListStages } from "@/features/academic-year/api/list-stages";
 import { createSelectOptions, setFormErrors } from "@/lib/helpers";
 import { useCreatePassMark } from "@/features/grade-scales/api/create-pass-mark";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 interface Props {
   isOpen: boolean;
@@ -26,9 +27,15 @@ interface Props {
 }
 export default function AddPassMark({ isOpen, handleClose, defaults }: Props) {
   const methods = useForm<CreatePassMarkFormData>({
-    defaultValues: {},
+    defaultValues: defaults ?? {},
     resolver: zodResolver(createPassMarkSchema),
   });
+  const { reset } = methods;
+
+  useEffect(() => {
+    reset(defaults ?? {});
+  }, [defaults, isOpen, reset]);
+
   const { mutate, isPending } = useCreatePassMark();
   const selectedScope = useWatch({
     name: "scope",
