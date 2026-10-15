@@ -1,6 +1,3 @@
-export function titleCase(word: string | undefined | null) {
-  if (!word) {
-    return;
-  }
+export function titleCase(word: string) {
   return word.replace(/[_-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }

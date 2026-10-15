@@ -13,11 +13,17 @@ import { titleCase } from "@/lib/helpers";
 import { Text } from "@/components/ui";
 import { ArrowRight3 } from "iconsax-reactjs";
 import { useProgressRouter } from "@/features/page-loader";
+import { useListGradingSchemes } from "@/features/grade-scales/api/list-grading-schemes";
 
 const headRow = ["Scheme", "Scope", "Component", "Weight", "Action"];
 //TODO: Make this take in the content it's supposed to display
 export default function GradingSchemes() {
   const router = useProgressRouter();
+
+  const { data, isPending } = useListGradingSchemes({
+    refetchOnWindowFocus: false,
+  });
+
   return (
     <GradeItem
       label="Grading schemes"
@@ -28,62 +34,71 @@ export default function GradingSchemes() {
           "/super-admin/school-onboarding/grading?add-grade-scheme=true"
         )
       }
-      isLoading
+      isLoading={isPending}
     >
-      <div className="rounded-ml bg-primary-bg p-6 border border-primary-100">
-        <TableWrapper>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {headRow.map((col, index) => {
-                  const isMiddle = index != 0 && index != headRow.length - 1;
-                  const style = isMiddle ? "border-t-[1px] border-b-[1px]" : "";
-                  return (
-                    <TableHead className={style} key={col}>
-                      {col}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            </TableHeader>
+      {!data ? (
+        <></>
+      ) : (
+        <div className="rounded-ml bg-primary-bg p-6 border border-primary-100">
+          {data.length === 0 ? (
+            <></>
+          ) : (
+            <TableWrapper>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {headRow.map((col, index) => {
+                      const isMiddle =
+                        index != 0 && index != headRow.length - 1;
+                      const style = isMiddle
+                        ? "border-t-[1px] border-b-[1px]"
+                        : "";
+                      return (
+                        <TableHead className={style} key={col}>
+                          {col}
+                        </TableHead>
+                      );
+                    })}
+                  </TableRow>
+                </TableHeader>
 
-            <TableBody>
-              {Array.from({ length: 3 }).map((_, index) => (
-                <TableRow key={index}>
-                  <TableCell>{titleCase("sum stuff")}</TableCell>
-                  <TableCell>{"sum other stuff"}</TableCell>
-                  <TableCell className="text-success-300">
-                    {"ANOTHER stuff"}
-                  </TableCell>
-                  <TableCell>{titleCase("omg more stuff wow")}</TableCell>
-                  <TableCell>
-                    <button
-                      className="py-1.5 px-2 rounded-[12px] text-[0.75rem] flex items-center border border-grays-borders"
-                      onClick={() =>
-                        router.push(
-                          `grading/grading-schemes/${"some-id-somewhere"}`
-                        )
-                      }
-                    >
-                      <Text
-                        scale={"captionMobile"}
-                        className="text-neutrals-700"
-                      >
-                        Open
-                      </Text>
-                      <ArrowRight3
-                        variant="Bulk"
-                        size={12}
-                        className="text-neutrals-800"
-                      />
-                    </button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableWrapper>
-      </div>
+                <TableBody>
+                  {data.map((scheme, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{titleCase(scheme.name)}</TableCell>
+                      <TableCell>{titleCase(scheme.scope_type)}</TableCell>
+                      <TableCell className="text-success-300">
+                        {scheme.components[0]?.name || "-"}
+                      </TableCell>
+                      <TableCell>{`${scheme.weights_total}%`}</TableCell>
+                      <TableCell>
+                        <button
+                          className="py-1.5 px-2 rounded-[12px] text-[0.75rem] flex items-center border border-grays-borders"
+                          onClick={() =>
+                            router.push(`grading/grading-schemes/${scheme.id}`)
+                          }
+                        >
+                          <Text
+                            scale={"captionMobile"}
+                            className="text-neutrals-700"
+                          >
+                            Open
+                          </Text>
+                          <ArrowRight3
+                            variant="Bulk"
+                            size={12}
+                            className="text-neutrals-800"
+                          />
+                        </button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableWrapper>
+          )}
+        </div>
+      )}
     </GradeItem>
   );
 }

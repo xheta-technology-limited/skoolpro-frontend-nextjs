@@ -1,20 +1,20 @@
 "use client";
 import FormModal from "@/components/ui/form-modal";
-import { TickSquare } from "iconsax-reactjs";
 import { FormProvider, useForm } from "react-hook-form";
-import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/custom-button";
 import { Input } from "@/components/ui/form";
 import { Select } from "@/components/ui/form";
 import {
-  CreateBandFormData,
-  createBandSchema,
-} from "@/features/grade-scales/schemas/create-band-schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
   CreateGradingComponentFormData,
   createGradingComponentSchema,
 } from "@/features/grade-scales/schemas/create-grading-component-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useCreateGradingComponent } from "@/features/grade-scales/api/create-grading-component";
+import { useUpdateGradingComponent } from "@/features/grade-scales/api/update-grading-component";
+import { useParams, useSearchParams } from "next/navigation";
+import { setFormErrors } from "@/lib/helpers";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 const assessmentTypes = [
   { value: "test", label: "Test" },
@@ -26,28 +26,80 @@ const assessmentTypes = [
 interface Props {
   handleClose: () => void;
   isOpen: boolean;
+  defaults?: CreateGradingComponentFormData;
 }
-export default function AddCompenent({ handleClose, isOpen }: Props) {
+export default function AddCompenent({ handleClose, isOpen, defaults }: Props) {
+  const params = useParams<{ schemeId: string }>();
+  const searchParams = useSearchParams();
+  const componentId = searchParams.get("component-id");
+
   const methods = useForm<CreateGradingComponentFormData>({
-    defaultValues: {},
+    defaultValues: defaults ? defaults : {},
     resolver: zodResolver(createGradingComponentSchema),
   });
-  const onSub = () => alert("it do be working");
+  const isEditMode = componentId ? true : false;
+  const { mutate: createMutate, isPending: isCreatePending } =
+    useCreateGradingComponent(params.schemeId || "");
+  const { mutate: updateMutate, isPending: isUpdatePending } =
+    useUpdateGradingComponent();
+
+  const onCreate = (data: CreateGradingComponentFormData) => {
+    createMutate(data, {
+      onError: (err) => {
+        setFormErrors(methods.setError, err.errors);
+      },
+      onSuccess: () => {
+        toast.success("Created!");
+        handleClose();
+      },
+    });
+  };
+
+  const onUpdate = (data: CreateGradingComponentFormData) => {
+    if (!componentId) {
+      alert("No component ID found");
+      return;
+    }
+    updateMutate(
+      { componentId, data },
+      {
+        onError: (err) => {
+          setFormErrors(methods.setError, err.errors);
+        },
+        onSuccess: () => {
+          toast.success("Updated!");
+          handleClose();
+        },
+      }
+    );
+  };
+
+  const onSub = (data: CreateGradingComponentFormData) => {
+    if (isEditMode) {
+      onUpdate(data);
+    } else {
+      onCreate(data);
+    }
+  };
+
+  useEffect(() => {
+    methods.reset(defaults ?? {});
+  }, [defaults]);
   return (
     <>
       <FormModal
         onOpenChange={handleClose}
         open={isOpen}
-        title="Add Grade Scale"
+        title={isEditMode ? "Edit Component" : "Add Component"}
       >
         <FormProvider {...methods}>
           <form
-            id="band-create"
+            id="component-create"
             className="flex flex-col gap-4 w-full"
             onSubmit={methods.handleSubmit(onSub)}
           >
             <>
-              <Input label="Enter name" name="label" />
+              <Input label="Enter name" name="name" />
               <Select
                 label="Select type"
                 name="assessment_type"
@@ -62,8 +114,12 @@ export default function AddCompenent({ handleClose, isOpen }: Props) {
             <Button variant="secondary" onClick={handleClose}>
               Cancel
             </Button>
-            <Button type="submit" form="band-create">
-              Create Component
+            <Button
+              loading={isCreatePending || isUpdatePending}
+              type="submit"
+              form="component-create"
+            >
+              {isEditMode ? "Edit Component" : "Create Component"}
             </Button>
           </div>
         </FormProvider>

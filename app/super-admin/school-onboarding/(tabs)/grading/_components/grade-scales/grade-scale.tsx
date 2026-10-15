@@ -40,67 +40,72 @@ export default function GradeScale() {
         <></>
       ) : (
         <div className="rounded-ml bg-primary-bg p-6 border border-primary-100">
-          <TableWrapper>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  {headRow.map((col, index) => {
-                    const isMiddle = index != 0 && index != headRow.length - 1;
-                    const style = isMiddle
-                      ? "border-t-[1px] border-b-[1px]"
-                      : "";
-                    return (
-                      <TableHead className={style} key={col}>
-                        {col}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              </TableHeader>
-
-              <TableBody>
-                {data.map((scale, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      {`${titleCase(scale.name)} `}
-                      {scale.is_default && (
-                        <span className="text-success-300">Default</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {titleCase(scale.bands[0]?.label || "") || "-"}
-                    </TableCell>
-                    <TableCell className="text-success-300">
-                      {"Not provided by backend"}
-                    </TableCell>
-                    <TableCell>
-                      {scale.is_active ? "Active" : "Inactive"}
-                    </TableCell>
-                    <TableCell>
-                      <button
-                        className="py-1.5 px-2 rounded-[12px] text-[0.75rem] flex items-center border border-grays-borders"
-                        onClick={() =>
-                          router.push(`grading/grade-scale/${scale.id}`)
-                        }
-                      >
-                        <Text
-                          scale={"captionMobile"}
-                          className="text-neutrals-700"
-                        >
-                          Open
-                        </Text>
-                        <ArrowRight3
-                          variant="Bulk"
-                          size={12}
-                          className="text-neutrals-800"
-                        />
-                      </button>
-                    </TableCell>
+          {data.length === 0 ? (
+            <></>
+          ) : (
+            <TableWrapper>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {headRow.map((col, index) => {
+                      const isMiddle =
+                        index != 0 && index != headRow.length - 1;
+                      const style = isMiddle
+                        ? "border-t-[1px] border-b-[1px]"
+                        : "";
+                      return (
+                        <TableHead className={style} key={col}>
+                          {col}
+                        </TableHead>
+                      );
+                    })}
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableWrapper>
+                </TableHeader>
+
+                <TableBody>
+                  {data.map((scale, index) => (
+                    <TableRow key={index}>
+                      <TableCell>
+                        {`${titleCase(scale.name)} `}
+                        {scale.is_default && (
+                          <span className="text-success-300">Default</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {titleCase(scale.bands[0]?.label || "") || "-"}
+                      </TableCell>
+                      <TableCell className="text-success-300">
+                        {"Not provided by backend"}
+                      </TableCell>
+                      <TableCell>
+                        {scale.is_active ? "Active" : "Inactive"}
+                      </TableCell>
+                      <TableCell>
+                        <button
+                          className="py-1.5 px-2 rounded-[12px] text-[0.75rem] flex items-center border border-grays-borders"
+                          onClick={() =>
+                            router.push(`grading/grade-scale/${scale.id}`)
+                          }
+                        >
+                          <Text
+                            scale={"captionMobile"}
+                            className="text-neutrals-700"
+                          >
+                            Open
+                          </Text>
+                          <ArrowRight3
+                            variant="Bulk"
+                            size={12}
+                            className="text-neutrals-800"
+                          />
+                        </button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableWrapper>
+          )}
         </div>
       )}
     </GradeItem>

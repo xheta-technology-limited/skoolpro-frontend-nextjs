@@ -14,18 +14,16 @@ export const createGradingComponent = (
 export const useCreateGradingComponent = (gradingSchemeId: string) => {
   const queryClient = useQueryClient();
 
-  return useMutation<
-    null,
-    ServerErrorResponse,
-    CreateGradingComponentFormData
-  >({
-    mutationFn: (data) => {
-      return createGradingComponent(data, gradingSchemeId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: gradingSchemeKeys.detail(gradingSchemeId),
-      });
-    },
-  });
+  return useMutation<null, ServerErrorResponse, CreateGradingComponentFormData>(
+    {
+      mutationFn: (data) => {
+        return createGradingComponent(data, gradingSchemeId);
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: gradingSchemeKeys.detail(gradingSchemeId),
+        });
+      },
+    }
+  );
 };

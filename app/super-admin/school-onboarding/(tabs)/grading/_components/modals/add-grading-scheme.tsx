@@ -3,25 +3,25 @@
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { usePathname, useSearchParams } from "next/navigation";
-import { FormProvider, useFieldArray, useForm } from "react-hook-form";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { Input, Select } from "@/components/ui/form";
-import { useState } from "react";
-import { TickSquare } from "iconsax-reactjs";
 import { Button } from "@/components/ui/custom-button";
-import { Text } from "@/components/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   CreateGradingSchemeFormData,
   createGradingSchemeSchema,
 } from "@/features/grade-scales/schemas/create-grading-scheme-schema";
+import { useListGradeScales } from "@/features/grade-scales/api/list-grade-scales";
+import { createSelectOptions } from "@/lib/helpers";
+import { GradeScale } from "@/features/grade-scales/types/api/grade-scale";
+import { useListLevels } from "@/features/academic-year/api/list-levels";
+import { EducationLevel } from "@/features/academic-year";
+import { useListLevelSubjectAssignments } from "@/features/academic-year/api/list-level-overview";
 
-//TODO: Make this also double as editing a grade scale
 export default function AddGradeSheme() {
   const params = usePathname();
   const searchParams = useSearchParams();
   const router = useProgressRouter();
-
-  const [isAddBands, setAddBands] = useState(false);
 
   const isOpen =
     params.includes("/grading") &&
@@ -33,6 +33,36 @@ export default function AddGradeSheme() {
   const methods = useForm<CreateGradingSchemeFormData>({
     defaultValues: {},
     resolver: zodResolver(createGradingSchemeSchema),
+  });
+
+  const { data: gradeScales, isPending: isGradeScalePending } =
+    useListGradeScales({ refetchOnWindowFocus: false });
+  const gradeScaleOptions = createSelectOptions<GradeScale, "id", "name">(
+    gradeScales,
+    "id",
+    "name"
+  );
+
+  const { data: educationLevels, isPending: isLevelsPending } = useListLevels({
+    refetchOnWindowFocus: false,
+  });
+  const levelOptions = createSelectOptions<EducationLevel, "id", "name">(
+    educationLevels,
+    "id",
+    "name"
+  );
+
+  const { data: subjectAssignments, isPending: isAssignmentsPending } =
+    useListLevelSubjectAssignments({ refetchOnWindowFocus: false });
+  const levelOptions = createSelectOptions<EducationLevel, "id", "name">(
+    educationLevels,
+    "id",
+    "name"
+  );
+
+  const selectedScope = useWatch({
+    name: "scope_type",
+    control: methods.control,
   });
 
   return (
@@ -54,20 +84,32 @@ export default function AddGradeSheme() {
             ]}
           />
 
-          <Select
-            name="education_level_id"
-            label="Select level"
-            options={[
-              {
-                value: "subject_assignment",
-                label: "TODO: Fetch from backend",
-              },
-            ]}
-          />
+          {selectedScope === "level" && (
+            <Select
+              name="education_level_id"
+              label="Select level"
+              isLoading={isLevelsPending}
+              options={levelOptions || []}
+            />
+          )}
+
+          {selectedScope === "subject_assignment" && (
+            <Select
+              name="subject_level_assignment_id"
+              label="Select subject level"
+              options={[
+                {
+                  value: "subject_assignment",
+                  label: "TODO: Fetch from backend",
+                },
+              ]}
+            />
+          )}
           <Select
             name="grade_scale_id"
+            isLoading={isGradeScalePending}
             label="Select grade scale"
-            options={[{ value: "true", label: "TODO: Fetch from backend" }]}
+            options={gradeScaleOptions || []}
           />
 
           <Select
@@ -75,45 +117,6 @@ export default function AddGradeSheme() {
             label="Applies to term"
             options={[{ value: "true", label: "TODO: Fetch from backend" }]}
           />
-
-          <button
-            type="button"
-            className="flex gap-2 mb-4"
-            onClick={() => setAddBands((prev) => !prev)}
-          >
-            <TickSquare
-              variant={isAddBands ? "Bulk" : "Outline"}
-              size={24}
-              color={isAddBands ? "#0301FF" : "#726C6C"}
-            />
-            <Text className="text-neutrals-700" scale="content">
-              Add bands after creating scale
-            </Text>
-          </button>
-          {isAddBands && (
-            <>
-              <div className="flex gap-4">
-                <Input label="Enter grade" name="label" />
-                <Input label="Enter minimum score" name="min_score" />
-                <Input label="Enter maximum score" name="max_score" />
-              </div>
-
-              <Input label="Enter grade point" name="grade_point" />
-              <Select
-                label="Select pass or fail"
-                name="is_pass"
-                options={[
-                  { value: "true", label: "Pass" },
-                  { value: "false", label: "Fail" },
-                ]}
-              />
-              <Input label="Enter description" name="description" />
-              <Input
-                label="Enter longer remark for report card"
-                name="comment"
-              />
-            </>
-          )}
         </form>
 
         <div className="flex gap-6 *:flex-1">

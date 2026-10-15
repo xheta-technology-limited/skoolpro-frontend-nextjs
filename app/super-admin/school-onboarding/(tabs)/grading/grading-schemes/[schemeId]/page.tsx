@@ -18,7 +18,6 @@ import AddComponent from "./_components/add-component";
 
 const headRow = ["No.", "Components", "Types", "Max", "Weight", "Action"];
 export default function GradingScheme() {
-  const passOrFail: "pass" | "fail" = "pass";
   const [isModalOpen, setModalOpen] = useState(false);
   return (
     <div>
