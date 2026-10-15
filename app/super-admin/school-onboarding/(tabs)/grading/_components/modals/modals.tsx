@@ -19,9 +19,7 @@ export default function Modals() {
       {isOnGrading && searchParams.get("add-grade-scheme") === "true" && (
         <AddGradeSheme />
       )}
-      {isOnGrading && searchParams.get("add-pass-mark") === "true" && (
-        <AddPassMark />
-      )}
+
       {isOnGrading && searchParams.get("add-promotion-rule") === "true" && (
         <AddPromotionRule />
       )}

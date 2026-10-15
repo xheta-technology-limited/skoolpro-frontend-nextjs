@@ -3,7 +3,7 @@
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { usePathname, useSearchParams } from "next/navigation";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { Input, Select } from "@/components/ui/form";
 import { InfoCircle, TickSquare } from "iconsax-reactjs";
 import { Button } from "@/components/ui/custom-button";
@@ -13,28 +13,61 @@ import {
   CreatePassMarkFormData,
   createPassMarkSchema,
 } from "@/features/grade-scales/schemas/create-pass-mark-schema";
+import { useListClassSections } from "@/features/academic-year/api/list-class-sections";
+import { useListStages } from "@/features/academic-year/api/list-stages";
+import { createSelectOptions, setFormErrors } from "@/lib/helpers";
+import { useCreatePassMark } from "@/features/grade-scales/api/create-pass-mark";
+import { toast } from "sonner";
 
-//TODO: Make this also double as editing a grade scale
-export default function AddPassMark() {
-  const params = usePathname();
-  const searchParams = useSearchParams();
-  const router = useProgressRouter();
-
-  const isOpen =
-    params.includes("/grading") && searchParams.get("add-pass-mark") === "true";
-
-  const handleClose = () =>
-    router.push("/super-admin/school-onboarding/grading");
-
+interface Props {
+  isOpen: boolean;
+  handleClose: () => void;
+  defaults?: CreatePassMarkFormData;
+}
+export default function AddPassMark({ isOpen, handleClose, defaults }: Props) {
   const methods = useForm<CreatePassMarkFormData>({
     defaultValues: {},
     resolver: zodResolver(createPassMarkSchema),
   });
+  const { mutate, isPending } = useCreatePassMark();
+  const selectedScope = useWatch({
+    name: "scope",
+    control: methods.control,
+  });
+
+  const { data: classSections, isPending: isSectionsPending } =
+    useListClassSections({
+      refetchOnWindowFocus: false,
+      enabled: selectedScope === "class",
+    });
+  const classOptions = createSelectOptions(classSections, "id", "name");
+  const { data: stages, isPending: isStagesPending } = useListStages({
+    refetchOnWindowFocus: false,
+    enabled: selectedScope === "programme",
+  });
+  const stageOptions = createSelectOptions(stages, "id", "name");
+
+  const onSubmit = (data: CreatePassMarkFormData) => {
+    mutate(data, {
+      onSuccess: () => {
+        toast.success("Created!");
+        methods.reset();
+        handleClose();
+      },
+      onError: (err) => {
+        setFormErrors(methods.setError, err.errors);
+      },
+    });
+  };
 
   return (
     <FormModal onOpenChange={handleClose} open={isOpen} title="Set Pass Mark">
       <FormProvider {...methods}>
-        <form id="scheme-create" className="flex flex-col gap-4 w-full">
+        <form
+          id="pass-mark-create"
+          className="flex flex-col gap-4 w-full"
+          onSubmit={methods.handleSubmit(onSubmit)}
+        >
           <Select
             name="scope"
             label="Select scope"
@@ -45,28 +78,22 @@ export default function AddPassMark() {
             ]}
           />
 
-          {/* TODO: Make this only show if the scope is class */}
-          <Select
-            name="class_section_id"
-            label="Select class"
-            options={[
-              {
-                value: "subject_assignment",
-                label: "TODO: Fetch from backend",
-              },
-            ]}
-          />
-          {/* TODO: Make this only show if scope is... the other */}
-          <Select
-            name="education_stage_id"
-            label="Select stage"
-            options={[
-              {
-                value: "subject_assignment",
-                label: "TODO: Fetch from backend",
-              },
-            ]}
-          />
+          {selectedScope === "class" && (
+            <Select
+              name="class_section_id"
+              label="Select class"
+              isLoading={isSectionsPending}
+              options={classOptions || []}
+            />
+          )}
+          {selectedScope === "programme" && (
+            <Select
+              name="education_stage_id"
+              label="Select stage"
+              options={stageOptions || []}
+              isLoading={isStagesPending}
+            />
+          )}
           <Input label="Enter pass mark(0 - 100)" name="mark" />
 
           <div className="flex items-center gap-2">
@@ -82,11 +109,7 @@ export default function AddPassMark() {
           <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
-          <Button
-            type="submit"
-            form="scheme-create"
-            onClick={() => alert("some api stuff")}
-          >
+          <Button type="submit" form="pass-mark-create" loading={isPending}>
             Create Pass Mark
           </Button>
         </div>
