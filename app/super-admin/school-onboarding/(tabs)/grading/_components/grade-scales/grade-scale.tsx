@@ -71,11 +71,9 @@ export default function GradeScale() {
                           <span className="text-success-300">Default</span>
                         )}
                       </TableCell>
-                      <TableCell>
-                        {titleCase(scale.bands[0]?.label || "") || "-"}
-                      </TableCell>
+                      <TableCell>{scale.bands_count || "-"}</TableCell>
                       <TableCell className="text-success-300">
-                        {"Not provided by backend"}
+                        {scale.coverage || "-"}
                       </TableCell>
                       <TableCell>
                         {scale.is_active ? "Active" : "Inactive"}

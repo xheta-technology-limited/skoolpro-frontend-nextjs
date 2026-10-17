@@ -131,7 +131,11 @@ export default function PassMark() {
                       >
                         {titleCase(passMark.scope_type)}
                       </TableCell>
-                      <TableCell className="text-success-300">{"-"}</TableCell>
+                      <TableCell>
+                        {passMark.applies_to === "general"
+                          ? "Whole School"
+                          : titleCase(passMark.applies_to) || "-"}
+                      </TableCell>
                       <TableCell>{passMark.pass_mark}</TableCell>
                       <TableCell>
                         <button
