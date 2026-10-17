@@ -19,7 +19,7 @@ import { EducationLevel, SubjectAssignment } from "@/features/academic-year";
 import { useListLevelSubjectAssignments } from "@/features/academic-year/api/list-level-overview";
 import { useCreateGradingScheme } from "@/features/grade-scales/api/create-grading-scheme";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useListCurrentTerms } from "@/features/academic-year/api/list-current-terms";
 import { Term } from "@/features/academic-year/types/api/terms";
 
@@ -85,6 +85,19 @@ export default function AddGradeSheme() {
     "id",
     "name"
   );
+
+  useEffect(() => {
+    methods.setValue("subject_level_assignment_id", undefined);
+  }, [selectedLevel]);
+
+  useEffect(() => {
+    if (selectedScope !== "level" && selectedScope !== "subject_assignment") {
+      methods.setValue("education_level_id", undefined);
+    }
+    if (selectedScope !== "subject_assignment") {
+      methods.setValue("subject_level_assignment_id", undefined);
+    }
+  }, [selectedScope]);
 
   useEffect(() => {
     console.log("le sub options: ", subjectOptions);
