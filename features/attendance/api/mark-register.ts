@@ -33,9 +33,17 @@ export const useMarkRegister = () => {
   const queryClient = useQueryClient();
   return useMutation<AttendanceSession, ServerErrorResponse, MarkRegisterArgs>({
     mutationFn: markRegister,
+    // Marking changes the register itself and every student's summary
+    // (the single-student summaries aren't under the register key), so
+    // refresh both.
     onSuccess: (_data, { sectionId, termId }) =>
-      queryClient.invalidateQueries({
-        queryKey: attendanceKeys.register(sectionId, termId),
-      }),
+      Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: attendanceKeys.register(sectionId, termId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: attendanceKeys.enrolmentSummaries(),
+        }),
+      ]),
   });
 };

@@ -31,8 +31,14 @@ export const useApproveAbsence = () => {
   return useMutation<AttendanceRecord, ServerErrorResponse, ApproveAbsenceArgs>({
     mutationFn: approveAbsence,
     // The record's section/term aren't known here, so refresh every
-    // loaded register.
+    // loaded register, plus the single-student summaries (which aren't
+    // under the register key) since a status change alters the counts.
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: attendanceKeys.registers() }),
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: attendanceKeys.registers() }),
+        queryClient.invalidateQueries({
+          queryKey: attendanceKeys.enrolmentSummaries(),
+        }),
+      ]),
   });
 };
