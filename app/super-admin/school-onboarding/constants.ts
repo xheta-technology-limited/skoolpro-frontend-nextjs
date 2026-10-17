@@ -26,7 +26,7 @@ export const PAGES: Group[] = [
   },
   {
     label: "Attendance",
-    pageUrl: "",
+    pageUrl: "/super-admin/school-onboarding/attendance",
   },
   {
     label: "Subscription",
