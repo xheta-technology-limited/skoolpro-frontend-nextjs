@@ -102,6 +102,23 @@ export const dashboardNavigation: DashboardNavigationItem[] = [
         href: "/super-admin/school-onboarding/subscriptions",
         icon: null,
       },
+      {
+        label: "Grading System",
+        href: "/super-admin/school-onboarding/grading",
+        icon: null,
+        children: [
+          {
+            label: "Add grade scale",
+            href: "/super-admin/school-onboarding/grading?add-grade-scale=true",
+            icon: null,
+          },
+          {
+            label: "Add grade scheme",
+            href: "/super-admin/school-onboarding/grading?add-grade-scheme=true",
+            icon: null,
+          },
+        ],
+      },
     ],
   },
   {

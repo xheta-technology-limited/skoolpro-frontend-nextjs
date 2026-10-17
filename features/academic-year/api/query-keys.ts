@@ -36,3 +36,8 @@ export const assignedSubjectKeys = {
   all: ["assigned-subjects"] as const,
   detail: (level: string) => ["assigned-subjects", level] as const,
 };
+
+export const academicTermKeys = {
+  all: ["academic-terms"] as const,
+  current: ["academic-terms", "current"] as const,
+};
