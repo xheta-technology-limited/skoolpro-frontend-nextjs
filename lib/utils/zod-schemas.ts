@@ -18,3 +18,47 @@ export const emailString = z
   .email("Enter a valid email");
 
 export const hexColorString = z.string();
+
+type NumericString = {
+  optional?: boolean;
+  percent?: boolean;
+};
+export const numericString = ({ optional, percent }: NumericString) => {
+  if (optional && percent) {
+    return z
+      .string()
+      .refine((value) => {
+        const number = Number(value);
+        return (
+          value.trim() !== "" &&
+          Number.isFinite(number) &&
+          number >= 1 &&
+          number < 100
+        );
+      }, "Please enter a valid number between 0 and 100")
+      .optional();
+  } else if (optional && !percent) {
+    return z
+      .string()
+      .refine((value) => {
+        const number = Number(value);
+        return value.trim() !== "" && Number.isFinite(number) && number >= 1;
+      }, "Please enter a valid number")
+      .optional();
+  } else if (!optional && percent) {
+    return z.string().refine((value) => {
+      const number = Number(value);
+      return (
+        value.trim() !== "" &&
+        Number.isFinite(number) &&
+        number >= 1 &&
+        number < 100
+      );
+    }, "Please enter a valid number between 0 and 100");
+  } else {
+    return z.string().refine((value) => {
+      const number = Number(value);
+      return value.trim() !== "" && Number.isFinite(number) && number >= 1;
+    }, "Please enter a valid number");
+  }
+};
