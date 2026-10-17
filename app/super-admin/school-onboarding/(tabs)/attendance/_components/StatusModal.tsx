@@ -2,6 +2,7 @@
 
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
+import { TickSquare } from "iconsax-reactjs";
 
 import FormModal from "@/components/ui/form-modal";
 import { Input, Select } from "@/components/ui/form";
@@ -83,7 +84,9 @@ function extractErrorMessage(error: unknown, fallback: string): string {
 }
 
 // Local checkbox — no shared Checkbox component was found. Swap this
-// out if one already exists elsewhere.
+// out if one already exists elsewhere. Checked state uses the iconsax
+// "tick-square" (Bulk) icon, matching the toggles' icon set; unchecked
+// is an empty rounded square the same size as the icon's drawn square.
 function CheckboxField({
   label,
   checked,
@@ -96,20 +99,28 @@ function CheckboxField({
   disabled?: boolean;
 }) {
   return (
-    <label
-      className={`flex items-center gap-2 text-[14px] text-neutrals-900 ${
-        disabled ? "cursor-not-allowed opacity-70" : "cursor-pointer"
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={checked}
+      disabled={disabled}
+      onClick={() => onChange(!checked)}
+      className={`flex items-center gap-2 text-left text-[14px] text-neutrals-900 ${
+        disabled ? "cursor-not-allowed opacity-70" : ""
       }`}
     >
-      <input
-        type="checkbox"
-        checked={checked}
-        disabled={disabled}
-        onChange={(event) => onChange(event.target.checked)}
-        className="h-4 w-4 rounded accent-primary"
-      />
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center">
+        {checked ? (
+          <TickSquare size={24} variant="Bulk" color="#010081" />
+        ) : (
+          <span
+            className="h-5 w-5 rounded-sm border-2 border-neutrals-400"
+            aria-hidden="true"
+          />
+        )}
+      </span>
       {label}
-    </label>
+    </button>
   );
 }
 

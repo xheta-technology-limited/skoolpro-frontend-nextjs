@@ -90,7 +90,7 @@ export default function RecordTableSection({
 
       <div className="w-full rounded-2xl border border-primary-100 bg-primary-bg p-2">
         <div
-          className="grid h-8.5 items-center rounded-t-2xl border border-grays-borders bg-[#FFFFFF] px-2"
+          className="grid h-8.5 items-center rounded-t-2xl border border-grays-borders bg-[#FFFFFF] px-4"
           style={{ gridTemplateColumns: gridTemplate }}
         >
           {columns.map((column) => (
@@ -123,7 +123,7 @@ export default function RecordTableSection({
           return (
             <div
               key={row.id}
-              className={`mt-1 grid h-12.5 items-center bg-[#FFFFFF] px-2 ${
+              className={`mt-1 grid h-12.5 items-center bg-[#FFFFFF] px-4 ${
                 !isLast ? "border-b border-neutrals-100" : "rounded-b-2xl"
               }`}
               style={{ gridTemplateColumns: gridTemplate }}

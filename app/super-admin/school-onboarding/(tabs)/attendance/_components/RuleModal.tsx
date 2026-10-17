@@ -230,7 +230,7 @@ export default function AttendanceRuleModal({
           )}
 
           <div className="flex flex-col gap-3">
-            <span className="text-[14px] font-medium text-neutrals-900">
+            <span className="text-[16px] font-medium text-neutrals-700">
               Lateness
             </span>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -245,7 +245,7 @@ export default function AttendanceRuleModal({
           </div>
 
           <div className="flex flex-col gap-3">
-            <span className="text-[14px] font-medium text-neutrals-900">
+            <span className="text-[16px] font-medium text-neutrals-700">
               Absence
             </span>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -263,7 +263,7 @@ export default function AttendanceRuleModal({
           </div>
 
           <div className="flex flex-col gap-3">
-            <span className="text-[14px] font-medium text-neutrals-900">
+            <span className="text-[16px] font-medium text-neutrals-700">
               Attendance (%)
             </span>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
