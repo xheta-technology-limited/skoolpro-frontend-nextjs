@@ -27,7 +27,6 @@ const headRow = [
   "Grade",
   "Minimum",
   "Maximum",
-  "Point",
   "Description",
   "Pass",
   "Action",
@@ -142,7 +141,6 @@ export default function GradeScale() {
                         <TableCell>{titleCase(b.label) || ""}</TableCell>
                         <TableCell>{b.min_score}</TableCell>
                         <TableCell>{b.max_score}</TableCell>
-                        <TableCell>{b.grade_point}</TableCell>
                         <TableCell>{b.description}</TableCell>
                         <TableCell
                           style={{

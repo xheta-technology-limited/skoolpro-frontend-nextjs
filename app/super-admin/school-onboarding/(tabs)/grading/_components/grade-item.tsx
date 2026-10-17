@@ -2,6 +2,7 @@
 import { Spinner } from "@/components/animations";
 import { Text } from "@/components/ui";
 import { Button } from "@/components/ui/custom-button";
+import { titleCase } from "@/lib/helpers";
 import { AddSquare } from "iconsax-reactjs";
 import { ReactNode } from "react";
 
@@ -32,7 +33,7 @@ export default function GradeItem({
               scale={"highlightMobile"}
               weight={"accent"}
             >
-              {label}
+              {titleCase(label ?? "")}
             </Text>
             {isLoading && <Spinner size={16} color="#5A5555" />}
           </div>

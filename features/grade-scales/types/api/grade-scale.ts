@@ -17,6 +17,8 @@ export type GradeScale = {
   is_default: boolean;
   is_active: boolean;
   bands: GradeScaleBand[];
+  bands_count: number;
+  coverage: string;
   created_at: string;
   updated_at: string;
 };
