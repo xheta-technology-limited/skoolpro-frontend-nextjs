@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Edit, AddSquare, Trash } from "iconsax-reactjs";
 import { Button } from "@/components/ui/custom-button";
 
@@ -10,6 +11,12 @@ export interface RecordTableColumn {
 export interface RecordTableRow {
   id: string;
   cells: Record<string, string>;
+  // Optional text colour per cell, keyed by column key (any CSS
+  // colour, e.g. a hex from the API). Cells without an entry keep the
+  // default text colour, so existing call sites are unaffected. Use
+  // this when the cell text itself should be coloured; `isColor` on
+  // a column draws a colour swatch beside the text instead.
+  cellColors?: Record<string, string>;
 }
 
 interface RecordTableSectionProps {
@@ -31,6 +38,10 @@ interface RecordTableSectionProps {
   // to false for tables where zero rows is a valid state (e.g.
   // Guardians — a student can have none).
   requireAtLeastOne?: boolean;
+  // Optional content rendered between the header (title + add button)
+  // and the table — e.g. a summary card that belongs to the same
+  // section. Nothing is rendered when omitted.
+  children?: ReactNode;
 }
 
 export default function RecordTableSection({
@@ -44,6 +55,7 @@ export default function RecordTableSection({
   deletingRowId = null,
   emptyLabel = "Nothing added yet",
   requireAtLeastOne = true,
+  children,
 }: RecordTableSectionProps) {
   // The Action column (and its 128px track) only exists when there's
   // actually something to put in it. A read-only table (no
@@ -74,9 +86,11 @@ export default function RecordTableSection({
         )}
       </div>
 
+      {children}
+
       <div className="w-full rounded-2xl border border-primary-100 bg-primary-bg p-2">
         <div
-          className="grid h-8.5 items-center rounded-t-2xl border border-grays-borders bg-[#FFFFFF] px-2"
+          className="grid h-8.5 items-center rounded-t-2xl border border-grays-borders bg-[#FFFFFF] px-4"
           style={{ gridTemplateColumns: gridTemplate }}
         >
           {columns.map((column) => (
@@ -109,7 +123,7 @@ export default function RecordTableSection({
           return (
             <div
               key={row.id}
-              className={`mt-1 grid h-12.5 items-center bg-[#FFFFFF] px-2 ${
+              className={`mt-1 grid h-12.5 items-center bg-[#FFFFFF] px-4 ${
                 !isLast ? "border-b border-neutrals-100" : "rounded-b-2xl"
               }`}
               style={{ gridTemplateColumns: gridTemplate }}
@@ -129,7 +143,10 @@ export default function RecordTableSection({
                         aria-hidden="true"
                       />
                     )}
-                    <span className="truncate text-[13px] font-normal leading-[1.2] text-neutrals-900">
+                    <span
+                      className="truncate text-[13px] font-normal leading-[1.2] text-neutrals-900"
+                      style={{ color: row.cellColors?.[column.key] }}
+                    >
                       {value || "—"}
                     </span>
                   </span>

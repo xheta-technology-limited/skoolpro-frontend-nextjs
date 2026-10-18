@@ -56,8 +56,8 @@ export default function FirstModal() {
                 Student import template
               </Text>
               <Text scale={"caption"} className="text-neutrals-700">
-                CSV · 13 columns · required: admission number, first name,
-                last name, admission date
+                CSV · 13 columns · required: admission number, first name, last
+                name, admission date
               </Text>
             </div>
 

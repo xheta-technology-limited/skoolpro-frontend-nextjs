@@ -198,7 +198,7 @@ export default function StudentStatusPage() {
           ADMISSION STATUS
         </span>
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-8">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start sm:gap-8">
           <div className="w-full lg:w-118.5 lg:shrink-0">
             <label
               htmlFor="admission_status"

@@ -108,7 +108,7 @@ export default function EditMode({ onCancel, onSaved, student }: Props) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 sm:flex-row">
+        <div className="flex flex-col gap-4 lg:flex-row">
           <div className="relative aspect-square w-full max-w-71 shrink-0 overflow-hidden rounded-[32px] border-4 border-primary bg-[#D9D9D9] sm:w-71">
             {student.photo_path ? (
               <Image
@@ -124,7 +124,7 @@ export default function EditMode({ onCancel, onSaved, student }: Props) {
             )}
           </div>
 
-          <div className="flex-1 rounded-ml bg-white p-2 grid grid-cols-2 content-start gap-4">
+          <div className="flex-1 rounded-ml bg-white p-2 grid grid-cols-1 lg:grid-cols-2 content-start gap-4">
             <Input name="first_name" label="Enter first name" />
             <Input name="middle_name" label="Enter middle name" />
             <Input name="last_name" label="Enter last name" />
@@ -134,23 +134,23 @@ export default function EditMode({ onCancel, onSaved, student }: Props) {
               label="Select sex"
               options={GENDER_SELECT_OPTIONS}
             />
-            <DatePicker
-              name="date_of_birth"
-              label="Enter date of birth"
-            />
+            <DatePicker name="date_of_birth" label="Enter date of birth" />
             <Input name="nationality" label="Enter nationality" />
-            <CountrySelectField name="country_of_birth" placeholder="Enter country of birth" />
+            <CountrySelectField
+              name="country_of_birth"
+              placeholder="Enter country of birth"
+            />
           </div>
         </div>
 
-        <div className="rounded-ml bg-white p-2 grid grid-cols-2 content-start gap-4">
+        <div className="rounded-ml bg-white p-2 grid grid-cols-1 lg:grid-cols-2 content-start gap-4">
           <Input name="first_language" label="Enter first language" />
           <Input name="other_languages" label="Enter other language" />
           <Input name="religion" label="Select religion" />
           <Input name="ethnicity" label="Select ethnicity" />
         </div>
 
-        <div className="rounded-ml bg-white p-2 grid grid-cols-2 content-start gap-4">
+        <div className="rounded-ml bg-white p-2 grid grid-cols-1 lg:grid-cols-2 content-start gap-4">
           <Input
             name="admission_number_display"
             label="Admission no."
@@ -171,7 +171,7 @@ export default function EditMode({ onCancel, onSaved, student }: Props) {
           />
         </div>
 
-        <div className="rounded-ml bg-white p-2 grid grid-cols-2 content-start gap-4">
+        <div className="rounded-ml bg-white p-2 grid grid-cols-1 lg:grid-cols-2 content-start gap-4">
           <Input name="home_address" label="Enter home address" />
           <Input name="mailing_address" label="Enter mailing address" />
           <Input
@@ -182,7 +182,7 @@ export default function EditMode({ onCancel, onSaved, student }: Props) {
           <Input name="personal_phone" label="Enter phone number" />
         </div>
 
-        <div className="rounded-ml bg-white p-2 grid grid-cols-2 content-start gap-4">
+        <div className="rounded-ml bg-white p-2 grid grid-cols-1 lg:grid-cols-2 content-start gap-4">
           <Input
             name="admission_date"
             label="Enter admission date"

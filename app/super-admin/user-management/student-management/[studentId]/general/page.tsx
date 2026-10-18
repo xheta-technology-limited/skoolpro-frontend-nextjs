@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 import RecordTableSection, {
   type RecordTableRow,
@@ -9,9 +10,11 @@ import RecordTableSection, {
 import { Button } from "@/components/ui/custom-button";
 import { Spinner } from "@/components/animations";
 import { NoData } from "@/components/icons";
+import FormModal from "@/components/ui/form-modal";
 import { titleCase } from "@/lib/helpers/string-to-title-case";
 import { useGetStudent } from "@/features/user-management/student-management/api/get-student";
 import { useDeleteStudent } from "@/features/user-management/student-management/api/delete-student";
+import { useDetachGuardian } from "@/features/user-management/guardian-management/api/detach-guardian";
 import type { StudentGuardian } from "@/features/user-management/student-management/types/student-detail-types";
 import { useProgressRouter } from "@/features/page-loader";
 import { toast } from "sonner";
@@ -19,6 +22,7 @@ import { ApiError } from "@/lib/api";
 
 import ViewMode from "./_components/view-mode";
 import EditMode from "./_components/edit-mode";
+import LinkGuardianModal from "./_components/LinkGuardianModal";
 
 function getGuardianResponsibility(guardian: StudentGuardian): string {
   const { link } = guardian;
@@ -34,9 +38,17 @@ export default function StudentGeneralPage() {
   const params = useParams<{ studentId: string }>();
   const studentId = params.studentId;
   const router = useProgressRouter();
+  const queryClient = useQueryClient();
 
   const [isEditMode, setEditMode] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [linkModal, setLinkModal] = useState(false);
+  const [editingGuardian, setEditingGuardian] = useState<
+    StudentGuardian | undefined
+  >();
+  const [detachingGuardian, setDetachingGuardian] = useState<
+    StudentGuardian | undefined
+  >();
 
   const {
     data: student,
@@ -47,6 +59,8 @@ export default function StudentGeneralPage() {
   } = useGetStudent(studentId);
 
   const { mutate: deleteStudent, isPending: isDeleting } = useDeleteStudent();
+  const { mutate: detachGuardian, isPending: isDetaching } =
+    useDetachGuardian();
 
   const onDelete = () => {
     deleteStudent(
@@ -59,6 +73,34 @@ export default function StudentGeneralPage() {
         onError: (err) => {
           if (!(err instanceof ApiError)) {
             toast.error(err.message || "Failed to delete student.");
+          }
+        },
+      }
+    );
+  };
+
+  const onDetach = () => {
+    if (!detachingGuardian) return;
+    detachGuardian(
+      { studentId, guardianId: detachingGuardian.id },
+      {
+        onSuccess: async () => {
+          // Detaching the primary contact auto-promotes the earliest
+          // remaining guardian, which changes a DIFFERENT guardian's
+          // link — so refresh the whole guardians family, not just
+          // the detached one.
+          await Promise.all([
+            queryClient.invalidateQueries({
+              queryKey: ["students", studentId],
+            }),
+            queryClient.invalidateQueries({ queryKey: ["guardians"] }),
+          ]);
+          toast.success("Guardian detached successfully");
+          setDetachingGuardian(undefined);
+        },
+        onError: (err) => {
+          if (!(err instanceof ApiError)) {
+            toast.error(err.message || "Failed to detach guardian.");
           }
         },
       }
@@ -94,8 +136,6 @@ export default function StudentGeneralPage() {
     );
   }
 
-  const noop = () => {};
-
   return (
     <div className="flex flex-col gap-6 w-full">
       {isEditMode ? (
@@ -129,13 +169,62 @@ export default function StudentGeneralPage() {
             },
           })
         )}
-        onAdd={noop}
-        onEditRow={noop}
-        onDeleteRow={noop}
+        onAdd={() => {
+          setEditingGuardian(undefined);
+          setLinkModal(true);
+        }}
+        onEditRow={(rowOrId: string | { id: string }) => {
+          const id = typeof rowOrId === "string" ? rowOrId : rowOrId.id;
+          const guardian = student.guardians.find((g) => g.id === id);
+          if (guardian) {
+            setEditingGuardian(guardian);
+            setLinkModal(true);
+          }
+        }}
+        onDeleteRow={(rowOrId: string | { id: string }) => {
+          const id = typeof rowOrId === "string" ? rowOrId : rowOrId.id;
+          setDetachingGuardian(student.guardians.find((g) => g.id === id));
+        }}
         addLabel="Link a guardian"
         requireAtLeastOne={false}
         emptyLabel="No guardians linked yet."
       />
+
+      <LinkGuardianModal
+        key={editingGuardian?.id ?? "new"}
+        open={linkModal}
+        onOpenChange={setLinkModal}
+        studentId={studentId}
+        editingGuardian={editingGuardian}
+      />
+
+      <FormModal
+        open={!!detachingGuardian}
+        onOpenChange={(next) => {
+          if (!next) setDetachingGuardian(undefined);
+        }}
+        title={`Detach ${detachingGuardian?.full_name ?? "guardian"}?`}
+        maxWidth="max-w-md"
+      >
+        <p className="text-[14px] text-neutrals-700">
+          This removes the link between this guardian and the student. The
+          guardian&apos;s account isn&apos;t deleted.
+          {detachingGuardian?.link.is_primary_contact &&
+            student.guardians.length > 1 &&
+            " They're the primary contact, so the earliest linked guardian will become primary."}
+        </p>
+        <div className="flex items-center justify-between">
+          <Button onClick={() => setDetachingGuardian(undefined)}>No</Button>
+          <Button
+            variant="secondary"
+            loading={isDetaching}
+            onClick={onDetach}
+            className="border-error-200! text-error-200!"
+          >
+            Yes, detach
+          </Button>
+        </div>
+      </FormModal>
 
       <div className="flex flex-col gap-3 pt-2 sm:flex-row">
         <Button variant="secondary" size="lg" className="flex-1">
