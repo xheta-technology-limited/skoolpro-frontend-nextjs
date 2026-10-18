@@ -70,9 +70,7 @@ export default function ViewMode({ onEdit, student }: Props) {
     { label: "Admission date", value: fallback(student.admission_date) },
     {
       label: "Admission type",
-      value: student.admission_type
-        ? titleCase(student.admission_type)
-        : "Nil",
+      value: student.admission_type ? titleCase(student.admission_type) : "Nil",
     },
     {
       label: "Previous school attended",

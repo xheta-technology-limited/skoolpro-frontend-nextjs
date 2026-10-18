@@ -134,12 +134,12 @@ export default function EditMode({ onCancel, onSaved, student }: Props) {
               label="Select sex"
               options={GENDER_SELECT_OPTIONS}
             />
-            <DatePicker
-              name="date_of_birth"
-              label="Enter date of birth"
-            />
+            <DatePicker name="date_of_birth" label="Enter date of birth" />
             <Input name="nationality" label="Enter nationality" />
-            <CountrySelectField name="country_of_birth" placeholder="Enter country of birth" />
+            <CountrySelectField
+              name="country_of_birth"
+              placeholder="Enter country of birth"
+            />
           </div>
         </div>
 
