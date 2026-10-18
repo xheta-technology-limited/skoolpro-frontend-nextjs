@@ -43,6 +43,11 @@ export const dashboardNavigation: DashboardNavigationItem[] = [
     ],
   },
   {
+    label: "Students",
+    href: "/super-admin/user-management/student-management/?origin=dashboard",
+    icon: UserOctagon,
+  },
+  {
     label: "Fee management",
     href: "/dashboard/fees",
     icon: MoneyChange,
