@@ -90,7 +90,9 @@ export default function StudentGeneralPage() {
           // link — so refresh the whole guardians family, not just
           // the detached one.
           await Promise.all([
-            queryClient.invalidateQueries({ queryKey: ["students", studentId] }),
+            queryClient.invalidateQueries({
+              queryKey: ["students", studentId],
+            }),
             queryClient.invalidateQueries({ queryKey: ["guardians"] }),
           ]);
           toast.success("Guardian detached successfully");
