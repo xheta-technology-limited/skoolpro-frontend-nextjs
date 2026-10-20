@@ -22,12 +22,43 @@ export const hexColorString = z.string();
 type NumericString = {
   optional?: boolean;
   percent?: boolean;
+  message?: string;
 };
-export const numericString = ({ optional, percent }: NumericString) => {
+export const numericString = ({
+  optional,
+  percent,
+  message,
+}: NumericString) => {
   if (optional && percent) {
     return z
       .string()
-      .refine((value) => {
+      .refine(
+        (value) => {
+          const number = Number(value);
+          return (
+            value.trim() !== "" &&
+            Number.isFinite(number) &&
+            number >= 0 &&
+            number <= 100
+          );
+        },
+        message ? message : "Please enter a valid number between 0 and 100"
+      )
+      .optional();
+  } else if (optional && !percent) {
+    return z
+      .string()
+      .refine(
+        (value) => {
+          const number = Number(value);
+          return value.trim() !== "" && Number.isFinite(number) && number >= 1;
+        },
+        message ? message : "Please enter a valid number"
+      )
+      .optional();
+  } else if (!optional && percent) {
+    return z.string().refine(
+      (value) => {
         const number = Number(value);
         return (
           value.trim() !== "" &&
@@ -35,26 +66,9 @@ export const numericString = ({ optional, percent }: NumericString) => {
           number >= 0 &&
           number <= 100
         );
-      }, "Please enter a valid number between 0 and 100")
-      .optional();
-  } else if (optional && !percent) {
-    return z
-      .string()
-      .refine((value) => {
-        const number = Number(value);
-        return value.trim() !== "" && Number.isFinite(number) && number >= 1;
-      }, "Please enter a valid number")
-      .optional();
-  } else if (!optional && percent) {
-    return z.string().refine((value) => {
-      const number = Number(value);
-      return (
-        value.trim() !== "" &&
-        Number.isFinite(number) &&
-        number >= 0 &&
-        number <= 100
-      );
-    }, "Please enter a valid number between 0 and 100");
+      },
+      message ? message : "Please enter a valid number between 0 and 100"
+    );
   } else {
     return z.string().refine((value) => {
       const number = Number(value);

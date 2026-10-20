@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { Text } from "@/components/ui";
 import { Spinner } from "@/components/animations";
 import { MiniSelector } from "@/components/common";
@@ -14,7 +14,6 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { createSelectOptions, titleCase } from "@/lib/helpers";
-import { ArrowRight3 } from "iconsax-reactjs";
 import router from "next/router";
 import { useListComments } from "@/features/comment-bank/api/list-comments";
 import { NoData } from "@/components/icons";
@@ -22,13 +21,12 @@ import { Button } from "@/components/ui/custom-button";
 import { X, XIcon } from "@phosphor-icons/react";
 import { useListLevels } from "@/features/academic-year/api/list-levels";
 import { useDeleteComment } from "@/features/comment-bank/api/delete-comment";
-import { useDeleteStudent } from "@/features/user-management/student-management/api/delete-student";
-import { useDeleteStaff } from "@/features/user-management/staff-management/api/delete-staff";
 import { toast } from "sonner";
+import AddComment from "./modals/add-comment";
 
 const headRow = ["Score band", "Comment", "Status", "Action"];
 export default function Body() {
-  const [typeQuery, setTypeQuery] = useState("");
+  const [typeQuery, setTypeQuery] = useState<string>("form_teacher");
   const [levelQuery, setLevelQuery] = useState("");
 
   const {
@@ -37,6 +35,7 @@ export default function Body() {
     isRefetching,
     error,
     isFetching,
+    isFetched,
     refetch,
     isSuccess,
   } = useListComments(
@@ -61,6 +60,7 @@ export default function Body() {
     { value: "all", label: "All levels(school wide)" },
     ...(q || []),
   ];
+  const typeOptions = [{ value: "form_teacher", label: "Form teacher" }];
 
   if (isPending) {
     return (
@@ -92,97 +92,121 @@ export default function Body() {
     );
   }
 
-  if (isSuccess && data.length === 0) {
+  if (isSuccess && !isFetched && data.length === 0) {
     return (
-      <div className="w-fit mx-auto">
-        {" "}
-        <NoData
-          variant="page"
-          title="No comments yet"
-          subTitle={"You can create a new comment with the button above"}
-          className="w-97.5 h-143.75"
-        />
-      </div>
+      <Modals>
+        <div className="w-fit mx-auto">
+          {" "}
+          <NoData
+            variant="page"
+            title="No comments yet"
+            subTitle={"You can create a new comment with the button above"}
+            className="w-97.5 h-143.75"
+          />
+        </div>
+      </Modals>
     );
   }
   return (
-    <div className="flex w-full flex-col gap-8 rounded-2xl border border-grays-borders bg-white p-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Text className="text-neutrals-600">COMMENT BANK</Text>
-          {isRefetching && <Spinner size={16} color="#5A5555" />}
+    <Modals>
+      <div className="flex w-full flex-col gap-8 rounded-2xl border border-grays-borders bg-white p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Text className="text-neutrals-600">COMMENT BANK</Text>
+            {isRefetching && <Spinner size={16} color="#5A5555" />}
+          </div>
+
+          <div className="flex gap-4 items-center mb-4">
+            <Text className="text-neutrals-600" scale={"caption"}>
+              {`${10000} comments`}
+            </Text>
+            {/* TODO: Eventually list teachers */}
+            <MiniSelector
+              label="Form Teacher"
+              defaultValue={"form_teacher"}
+              items={typeOptions}
+              onValueChange={(e) => setTypeQuery(e as string)}
+            />
+            <MiniSelector
+              disabled={isLevelsPending}
+              defaultValue={"all"}
+              onValueChange={(e) => {
+                if (e === "all") {
+                  setLevelQuery("");
+                } else {
+                  setLevelQuery(e as string);
+                }
+              }}
+              items={levelOptions || []}
+              label="All level(school wide)"
+            />
+          </div>
         </div>
 
-        <div className="flex gap-4 items-center mb-4">
-          <Text className="text-neutrals-600" scale={"caption"}>
-            {`${10000} comments`}
-          </Text>
-          {/* TODO: Eventually list teachers */}
-          <MiniSelector label="Form Teacher" items={[]} />
-          <MiniSelector
-            disabled={isLevelsPending}
-            defaultValue={"all"}
-            onValueChange={(e) => {
-              if (e === "all") {
-                setLevelQuery("");
-              } else {
-                setLevelQuery(e as string);
-              }
-            }}
-            items={levelOptions || []}
-            label="All level(school wide)"
-          />
-        </div>
-      </div>
-
-      <TableWrapper>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {headRow.map((col, index) => {
-                const isMiddle = index != 0 && index != headRow.length - 1;
-                const style = isMiddle ? "border-t-[1px] border-b-[1px]" : "";
-                return (
-                  <TableHead className={style} key={col}>
-                    {col}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {data.map((c, index) => (
-              <TableRow key={index}>
-                <TableCell className="text-success-300">
-                  {`${Math.floor(c.min_score)} - ${Math.floor(c.max_score)}`}
-                </TableCell>
-                <TableCell>{c.body}</TableCell>
-                <TableCell>{c.is_active ? "Active" : "Inactive"}</TableCell>
-
-                <TableCell>
-                  <div className="flex items-center gap-2.5"></div>
-                  <button
-                    className="py-1.5 px-2 rounded-[12px] text-[0.75rem] flex items-center border border-grays-borders"
-                    onClick={() => router.push(`?add-comment=true&id=${c.id}`)}
-                  >
-                    <Text scale={"captionMobile"} className="text-neutrals-700">
-                      Edit
-                    </Text>
-                  </button>
-
-                  <button
-                    disabled={isDeletePending}
-                    onClick={() => onDelete(c.id)}
-                  >
-                    <XIcon size={20} color="rgba(112,113,112,1)" />
-                  </button>
-                </TableCell>
+        <TableWrapper>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {headRow.map((col, index) => {
+                  const isMiddle = index != 0 && index != headRow.length - 1;
+                  const style = isMiddle ? "border-t-[1px] border-b-[1px]" : "";
+                  return (
+                    <TableHead className={style} key={col}>
+                      {col}
+                    </TableHead>
+                  );
+                })}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableWrapper>
-    </div>
+            </TableHeader>
+
+            <TableBody>
+              {data.map((c, index) => (
+                <TableRow key={index}>
+                  <TableCell className="text-success-300">
+                    {`${Math.floor(c.min_score)} - ${Math.floor(c.max_score)}`}
+                  </TableCell>
+                  <TableCell>{c.body}</TableCell>
+                  <TableCell>{c.is_active ? "Active" : "Inactive"}</TableCell>
+
+                  <TableCell>
+                    <div className="flex items-center gap-2.5">
+                      <button
+                        className="py-1.5 px-2 rounded-[12px] text-[0.75rem] flex items-center border border-grays-borders"
+                        onClick={() =>
+                          router.push(`?add-comment=true&comment-id=${c.id}`)
+                        }
+                      >
+                        <Text
+                          scale={"captionMobile"}
+                          className="text-neutrals-700"
+                        >
+                          Edit
+                        </Text>
+                      </button>
+
+                      <button
+                        disabled={isDeletePending}
+                        onClick={() => onDelete(c.id)}
+                      >
+                        <XIcon size={20} color="rgba(112,113,112,1)" />
+                      </button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableWrapper>
+      </div>
+    </Modals>
   );
 }
+
+const Modals = ({ children }: { children: ReactNode }) => {
+  return (
+    <>
+      <AddComment />
+      {children}
+    </>
+  );
+};
