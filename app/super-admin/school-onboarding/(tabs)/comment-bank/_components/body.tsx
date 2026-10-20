@@ -25,6 +25,7 @@ import { useDeleteComment } from "@/features/comment-bank/api/delete-comment";
 import { toast } from "sonner";
 import AddComment from "./modals/add-comment";
 import { useProgressRouter } from "@/features/page-loader";
+import SeedScale from "./modals/seed";
 
 const headRow = ["Score band", "Comment", "Status", "Action"];
 export default function Body() {
@@ -137,7 +138,7 @@ export default function Body() {
 
           <div className="flex gap-4 items-center mb-4">
             <Text className="text-neutrals-600" scale={"caption"}>
-              {`${10000} comments`}
+              {`${data.length} ${data.length > 1 ? "comments" : "comment"}`}
             </Text>
             {/* TODO: Eventually list teachers */}
             <MiniSelector
@@ -231,6 +232,7 @@ const Modals = ({
   return (
     <>
       <AddComment defaults={defaults} />
+      <SeedScale />
       {children}
     </>
   );

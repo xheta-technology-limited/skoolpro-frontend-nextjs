@@ -17,14 +17,7 @@ import { toast } from "sonner";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-
-const COMMENT_TYPE_OPTIONS = [
-  { value: "form_teacher", label: "Form Teacher" },
-  { value: "head_teacher", label: "Head Teacher" },
-  { value: "principal", label: "Principal" },
-  { value: "subject_teacher", label: "Subject Teacher" },
-];
-
+import { COMMENT_TYPE_OPTIONS } from "@/features/comment-bank/constants";
 interface Props {
   defaults?: CreateCommentFormData;
 }
