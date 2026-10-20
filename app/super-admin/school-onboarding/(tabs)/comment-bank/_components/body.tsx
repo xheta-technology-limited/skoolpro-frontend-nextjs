@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import { Text } from "@/components/ui";
 import { Spinner } from "@/components/animations";
 import { MiniSelector } from "@/components/common";
@@ -14,8 +14,9 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { createSelectOptions, titleCase } from "@/lib/helpers";
-import router from "next/router";
+import { useSearchParams } from "next/navigation";
 import { useListComments } from "@/features/comment-bank/api/list-comments";
+import { CreateCommentFormData } from "@/features/comment-bank/schemas/create-comment-schema";
 import { NoData } from "@/components/icons";
 import { Button } from "@/components/ui/custom-button";
 import { X, XIcon } from "@phosphor-icons/react";
@@ -23,11 +24,15 @@ import { useListLevels } from "@/features/academic-year/api/list-levels";
 import { useDeleteComment } from "@/features/comment-bank/api/delete-comment";
 import { toast } from "sonner";
 import AddComment from "./modals/add-comment";
+import { useProgressRouter } from "@/features/page-loader";
 
 const headRow = ["Score band", "Comment", "Status", "Action"];
 export default function Body() {
   const [typeQuery, setTypeQuery] = useState<string>("form_teacher");
   const [levelQuery, setLevelQuery] = useState("");
+  const router = useProgressRouter();
+  const searchParams = useSearchParams();
+  const commentId = searchParams.get("comment-id");
 
   const {
     data,
@@ -62,6 +67,20 @@ export default function Body() {
   ];
   const typeOptions = [{ value: "form_teacher", label: "Form teacher" }];
 
+  const defaults = useMemo<CreateCommentFormData | undefined>(() => {
+    if (!commentId) return undefined;
+    const comment = data?.find((c) => c.id === commentId);
+    if (!comment) return undefined;
+    return {
+      type: comment.type as CreateCommentFormData["type"],
+      education_level_id: comment.education_level_id ?? undefined,
+      min_score: String(comment.min_score),
+      max_score: String(comment.max_score),
+      body: comment.body,
+      sequence: comment.sequence != null ? String(comment.sequence) : undefined,
+    };
+  }, [commentId, data]);
+
   if (isPending) {
     return (
       <div className="w-full flex items-center justify-center py-7">
@@ -94,7 +113,7 @@ export default function Body() {
 
   if (isSuccess && !isFetched && data.length === 0) {
     return (
-      <Modals>
+      <Modals defaults={defaults}>
         <div className="w-fit mx-auto">
           {" "}
           <NoData
@@ -108,7 +127,7 @@ export default function Body() {
     );
   }
   return (
-    <Modals>
+    <Modals defaults={defaults}>
       <div className="flex w-full flex-col gap-8 rounded-2xl border border-grays-borders bg-white p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -202,10 +221,16 @@ export default function Body() {
   );
 }
 
-const Modals = ({ children }: { children: ReactNode }) => {
+const Modals = ({
+  children,
+  defaults,
+}: {
+  children: ReactNode;
+  defaults?: CreateCommentFormData;
+}) => {
   return (
     <>
-      <AddComment />
+      <AddComment defaults={defaults} />
       {children}
     </>
   );

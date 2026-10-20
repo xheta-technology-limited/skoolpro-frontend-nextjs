@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Header from "../../_components/header";
 import Body from "./_components/body";
 import ActionButtons from "./_components/header-buttons";
@@ -9,7 +10,9 @@ export default function Comment() {
         <ActionButtons />
       </Header>
 
-      <Body />
+      <Suspense fallback={null}>
+        <Body />
+      </Suspense>
     </>
   );
 }
