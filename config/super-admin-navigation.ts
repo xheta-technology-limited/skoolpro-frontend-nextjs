@@ -124,6 +124,23 @@ export const dashboardNavigation: DashboardNavigationItem[] = [
           },
         ],
       },
+      {
+        label: "Comment bank",
+        href: "/super-admin/school-onboarding/comment-bank",
+        icon: null,
+        children: [
+          {
+            label: "Add comment",
+            href: "/super-admin/school-onboarding/comment-bank?add-comment=true",
+            icon: null,
+          },
+          {
+            label: "Seed grade scale",
+            href: "/super-admin/school-onboarding/comment-bank?seed-scale=true",
+            icon: null,
+          },
+        ],
+      },
     ],
   },
   {

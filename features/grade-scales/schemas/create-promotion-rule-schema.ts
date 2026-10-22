@@ -16,10 +16,10 @@ export const createPromotionRuleSchema = z
       .nonoptional("This field is required"),
     education_stage_id: z.string().optional(),
     education_level_id: z.string().optional(),
-    minimum_average: numericString({ optional: true, percent: true }),
+    minimum_average: numericString({ percent: true }).optional(),
     require_all_compulsory: z.boolean().optional(),
     required_subject_assignment_ids: z.array(z.string()).optional(),
-    attendance_requirement: numericString({ optional: true, percent: true }),
+    attendance_requirement: numericString({ percent: true }).optional(),
     auto_promote: z.boolean().optional(),
     graduation_minimum_average: optionalNumericString,
   })
