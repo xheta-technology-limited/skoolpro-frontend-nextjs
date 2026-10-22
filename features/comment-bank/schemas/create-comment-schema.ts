@@ -15,7 +15,7 @@ export const createCommentSchema = z
     body: requiredString,
     sequence: numericString({}).optional(),
   })
-  .refine((data) => data.max_score >= data.min_score, {
+  .refine((data) => Number(data.max_score) >= Number(data.min_score), {
     message: "Maximum score must be greater than or equal to minimum score",
     path: ["max_score"],
   });

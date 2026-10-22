@@ -26,6 +26,7 @@ import { toast } from "sonner";
 import AddComment from "./modals/add-comment";
 import { useProgressRouter } from "@/features/page-loader";
 import SeedScale from "./modals/seed";
+import { keepPreviousData } from "@tanstack/react-query";
 
 const headRow = ["Score band", "Comment", "Status", "Action"];
 export default function Body() {
@@ -46,7 +47,7 @@ export default function Body() {
     isSuccess,
   } = useListComments(
     { type: typeQuery, education_level_id: levelQuery },
-    { refetchOnWindowFocus: false }
+    { refetchOnWindowFocus: false, placeholderData: keepPreviousData }
   );
 
   const { isPending: isDeletePending, mutate: deleteMutate } =
