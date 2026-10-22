@@ -66,7 +66,12 @@ export default function Body() {
     { value: "all", label: "All levels(school wide)" },
     ...(q || []),
   ];
-  const typeOptions = [{ value: "form_teacher", label: "Form teacher" }];
+  const typeOptions = [
+    { value: "form_teacher", label: "Form teacher" },
+    { value: "subject_teacher", label: "Subject Teacher" },
+    { value: "head_teacher", label: "Head Teacher" },
+    { value: "principal", label: "Principal" },
+  ];
 
   const defaults = useMemo<CreateCommentFormData | undefined>(() => {
     if (!commentId) return undefined;
