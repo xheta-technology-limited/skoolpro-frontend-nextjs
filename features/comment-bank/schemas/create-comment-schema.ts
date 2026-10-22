@@ -10,18 +10,14 @@ export const createCommentSchema = z
       "principal",
     ]),
     education_level_id: z.string().optional(),
-    min_score: numericString({ optional: false, percent: true }),
-    max_score: numericString({ optional: false, percent: true }),
+    min_score: numericString({ percent: true }),
+    max_score: numericString({ percent: true }),
     body: requiredString,
-    sequence: numericString({ optional: true }),
+    sequence: numericString({}).optional(),
   })
-  .refine(
-    (data) =>
-      data.max_score && data.min_score && data.max_score >= data.min_score,
-    {
-      message: "Maximum score must be greater than or equal to minimum score",
-      path: ["max_score"],
-    }
-  );
+  .refine((data) => data.max_score >= data.min_score, {
+    message: "Maximum score must be greater than or equal to minimum score",
+    path: ["max_score"],
+  });
 
 export type CreateCommentFormData = z.infer<typeof createCommentSchema>;
