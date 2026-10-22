@@ -22,43 +22,21 @@ export const hexColorString = z.string();
 type NumericString = {
   optional?: boolean;
   percent?: boolean;
+  message?: string;
 };
-export const numericString = ({ optional, percent }: NumericString) => {
-  if (optional && percent) {
-    return z
-      .string()
-      .refine((value) => {
-        const number = Number(value);
-        return (
-          value.trim() !== "" &&
-          Number.isFinite(number) &&
-          number >= 0 &&
-          number <= 100
-        );
-      }, "Please enter a valid number between 0 and 100")
-      .optional();
-  } else if (optional && !percent) {
-    return z
-      .string()
-      .refine((value) => {
-        const number = Number(value);
-        return value.trim() !== "" && Number.isFinite(number) && number >= 1;
-      }, "Please enter a valid number")
-      .optional();
-  } else if (!optional && percent) {
-    return z.string().refine((value) => {
-      const number = Number(value);
-      return (
-        value.trim() !== "" &&
-        Number.isFinite(number) &&
-        number >= 0 &&
-        number <= 100
-      );
-    }, "Please enter a valid number between 0 and 100");
-  } else {
-    return z.string().refine((value) => {
-      const number = Number(value);
-      return value.trim() !== "" && Number.isFinite(number) && number >= 1;
-    }, "Please enter a valid number");
-  }
+
+export const numericString = ({ percent, message }: NumericString) => {
+  const defaultMessage = percent
+    ? "Please enter a valid number between 0 and 100"
+    : "Please enter a valid number";
+
+  const isValid = (value: string) => {
+    if (!/^\d+(\.\d+)?$/.test(value.trim())) return false; // plain decimals only
+    const n = Number(value);
+    return percent ? n >= 0 && n <= 100 : n >= 1;
+  };
+
+  const base = z.string().refine(isValid, message ?? defaultMessage);
+
+  return base;
 };
