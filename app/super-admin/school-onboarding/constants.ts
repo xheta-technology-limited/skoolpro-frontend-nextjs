@@ -34,6 +34,6 @@ export const PAGES: Group[] = [
   },
   {
     label: "Comment Bank",
-    pageUrl: "",
+    pageUrl: "/super-admin/school-onboarding/comment-bank",
   },
 ];
