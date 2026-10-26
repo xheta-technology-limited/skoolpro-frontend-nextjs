@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useProgressRouter } from "@/features/page-loader";
 
@@ -13,16 +13,28 @@ export interface TabItem {
 interface TabsNavProps {
   tabs: TabItem[];
   className?: string;
+  hasQueryParams?: boolean;
 }
 
-export default function TabsNav({ tabs, className }: TabsNavProps) {
+export default function TabsNav({
+  tabs,
+  className,
+  hasQueryParams,
+}: TabsNavProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const fullRoute = searchParams.size
+    ? `${pathname}?${searchParams.toString()}`
+    : pathname;
   const router = useProgressRouter();
 
   return (
     <div className={cn("flex h-10.25 gap-2", className)}>
       {tabs.map((tab) => {
-        const isActive = pathname.startsWith(tab.href);
+        const isActive = hasQueryParams
+          ? fullRoute.includes(tab.href)
+          : pathname.startsWith(tab.href);
         return (
           <button
             key={tab.href}

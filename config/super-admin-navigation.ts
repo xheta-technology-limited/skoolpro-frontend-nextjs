@@ -53,14 +53,14 @@ export const dashboardNavigation: DashboardNavigationItem[] = [
     icon: MoneyChange,
   },
   {
-    label: "Curriculum management",
-    href: "/dashboard/curriculum",
-    icon: Book,
+    label: "Structure & Curriculum",
+    href: "/super-admin/structure-and-curriculum",
+    icon: Book1,
   },
   {
     label: "Exam management",
     href: "/dashboard/exams",
-    icon: Book1,
+    icon: Book,
   },
   {
     label: "Hostel management",
