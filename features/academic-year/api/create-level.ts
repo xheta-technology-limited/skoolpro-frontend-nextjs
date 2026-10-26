@@ -4,8 +4,21 @@ import { educationStageKeys, levelKeys } from "./query-keys";
 import { ServerErrorResponse } from "@/types/api";
 import type { CreateLevelFormData } from "../schemas/create-level-schema";
 
+export type CreateLevelPayload = Omit<CreateLevelFormData, "position">;
+
+export const toCreateLevelPayload = (
+  data: CreateLevelFormData
+): CreateLevelPayload => {
+  const { position, ...rest } = data;
+  return {
+    ...rest,
+    insert_after_level_id:
+      position === "end_of_stage" ? undefined : rest.insert_after_level_id,
+  };
+};
+
 export const createLevel = (data: CreateLevelFormData): Promise<null> => {
-  return api.post("education/levels", data);
+  return api.post("education/levels", toCreateLevelPayload(data));
 };
 
 export const useCreateLevel = () => {

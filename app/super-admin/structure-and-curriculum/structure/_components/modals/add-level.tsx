@@ -3,22 +3,26 @@
 import { Button } from "@/components/ui/custom-button";
 import { Input, Select, TextArea } from "@/components/ui/form";
 import FormModal from "@/components/ui/form-modal";
-import { useListLevels } from "@/features/academic-year/api/list-levels";
 import { useCreateLevel } from "@/features/academic-year/api/create-level";
 import { useUpdateLevel } from "@/features/academic-year/api/update-level";
-import { useUpdateComment } from "@/features/comment-bank/api/update-comment";
 import { useProgressRouter } from "@/features/page-loader";
 import { createSelectOptions, setFormErrors } from "@/lib/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { COMMENT_TYPE_OPTIONS } from "@/features/comment-bank/constants";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import {
   CreateLevelFormData,
   createLevelSchema,
 } from "@/features/academic-year/schemas/create-level-schema";
+import { useListStages } from "@/features/academic-year/api/list-stages";
+import { useListLevels } from "@/features/academic-year/api/list-levels";
+
+const POSITION_OPTIONS = [
+  { value: "end_of_stage", label: "End of stage" },
+  { value: "after_level", label: "After a level" },
+];
 
 interface Props {
   defaults?: CreateLevelFormData;
@@ -38,14 +42,24 @@ export default function AddLevel({ defaults }: Props) {
   const { mutate: createMutate, isPending: isCreatePending } = useCreateLevel();
   const { mutate: updateMutate, isPending: isUpdatePending } = useUpdateLevel();
   const isOpen =
-    params.includes("/comment-bank") &&
-    searchParams.get("add-comment") === "true";
+    params.includes("/structure-and-curriculum") &&
+    searchParams.get("add-level") === "true";
   const isEditMode = isOpen && !!levelId;
 
-  const { data: levelData, isPending: isLevelsPending } = useListLevels({
+  const { data: stagesData, isPending: isStagesPending } = useListStages({
     refetchOnWindowFocus: false,
   });
-  const levelOptions = createSelectOptions(levelData, "id", "name");
+  const stageOptions = createSelectOptions(stagesData, "id", "name");
+
+  const { data: levelsData, isPending: isLevelsPending } = useListLevels({
+    refetchOnWindowFocus: false,
+  });
+  const levelOptions = createSelectOptions(levelsData, "id", "name");
+
+  const hasPosition = useWatch({
+    control: methods.control,
+    name: "position",
+  });
 
   const onCreate = (data: CreateLevelFormData) => {
     createMutate(data, {
@@ -103,28 +117,32 @@ export default function AddLevel({ defaults }: Props) {
           id="level-create"
           className="flex flex-col gap-4 w-full"
         >
-          {isEditMode ? (
-            <TextArea name="body" label="Input comment" maxLength={1000} />
-          ) : (
-            <>
+          <>
+            <Select
+              name="education_stage_id"
+              label="Select stage"
+              options={stageOptions || []}
+              isLoading={isStagesPending}
+            />
+            <Select
+              name="position"
+              label="Select position"
+              options={POSITION_OPTIONS}
+            />
+            {hasPosition === "after_level" && (
               <Select
-                options={COMMENT_TYPE_OPTIONS}
-                name="type"
-                label="Select comment type"
-              />
-              <Select
-                name="education_level_id"
+                name="insert_after_level_id"
                 label="Select level"
                 options={levelOptions || []}
                 isLoading={isLevelsPending}
               />
-              <div className="flex gap-4 items-center *:flex-1">
-                <Input name="min_score" label="Enter min score" />
-                <Input name="max_score" label="Enter max score" />
-              </div>
-              <TextArea name="body" label="Input comment" maxLength={1000} />
-            </>
-          )}
+            )}
+            <Input name="name" label="Enter name" />
+            <Input name="code" label="Enter code" />
+            <Input name="typical_entry_age" label="Enter typical entry age" />
+            <Input name="uniform_fee" label="Uniform fee" />
+            <Input name="book_fee" label="Book fee" />
+          </>
         </form>
 
         <div className="flex gap-6 *:flex-1">
@@ -136,7 +154,7 @@ export default function AddLevel({ defaults }: Props) {
             type="submit"
             form="level-create"
           >
-            {isEditMode ? "Edit Comment" : "Save Comment"}
+            {isEditMode ? "Edit level" : "Add level"}
           </Button>
         </div>
       </FormProvider>

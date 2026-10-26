@@ -2,6 +2,7 @@
 
 import { Text } from "@/components/ui";
 import StructureItem from "../structure-item";
+import { useProgressRouter } from "@/features/page-loader";
 
 type Block = {
   label: string;
@@ -15,6 +16,13 @@ const BLOCKS: Block[] = [
 ];
 
 export default function EducationStructure() {
+  const router = useProgressRouter();
+  const searchParams = new URLSearchParams(window.location.search);
+
+  const onAddLevel = () => {
+    searchParams.set("add-level", "true");
+    router.push(`?${searchParams.toString()}`);
+  };
   return (
     <StructureItem
       isLoading
@@ -22,7 +30,7 @@ export default function EducationStructure() {
       primaryButtonText="Add Stage"
       primaryButtonFunc={() => null}
       secondaryButtonText="Add level"
-      secondaryButtonFunc={() => null}
+      secondaryButtonFunc={onAddLevel}
     >
       <div className="flex gap-2.5 flex-wrap">
         {BLOCKS.map((b, index) => (

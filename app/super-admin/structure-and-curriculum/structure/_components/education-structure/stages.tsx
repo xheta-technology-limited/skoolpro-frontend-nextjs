@@ -21,6 +21,7 @@ import { useDeleteLevel } from "@/features/academic-year/api/delete-level";
 import { useState } from "react";
 import { DeleteModal } from "@/components/common";
 import { toast } from "sonner";
+import AddLevel from "../modals/add-level";
 
 const headRow = [
   "Level",
@@ -34,6 +35,7 @@ const headRow = [
 
 export default function Stages() {
   const router = useProgressRouter();
+  const searchParams = new URLSearchParams(window.location.search);
   const [deleteModal, setDeleteModal] = useState(false);
   const [targetDeleteID, setDeleteID] = useState<undefined | string>(undefined);
   const {
@@ -52,7 +54,8 @@ export default function Stages() {
     alert("not implemented");
   };
   const onAddLevel = () => {
-    alert("Not Implemented");
+    searchParams.set("add-level", "true");
+    router.push(`?${searchParams.toString()}`);
   };
   const onAbortDelete = () => {
     setDeleteID(undefined);
@@ -79,6 +82,7 @@ export default function Stages() {
   if (isPending) {
     return (
       <div className="flex items-center justify-center">
+        <AddLevel />
         <Spinner size={16} color="rgba(67, 62, 63, 1)" />
       </div>
     );
@@ -86,6 +90,7 @@ export default function Stages() {
   if (error) {
     return (
       <div className="w-full text-center flex flex-col gap-2 justify-center">
+        <AddLevel />
         <Text scale={"caption"} className="text-neutrals-800">
           Something went wrong
         </Text>
@@ -107,12 +112,14 @@ export default function Stages() {
         description="Delete this level?"
         onConfirm={onDeleteLevel}
       />
+      <AddLevel />
       {stages.map((s) => (
         <StructureItem
           isLoading={isRefetching}
           label={s.name.toUpperCase()}
           primaryButtonText="Add level"
           primaryButtonFunc={() => onAddLevel()}
+          key={s.id}
         >
           <div className="rounded-ml bg-primary-bg p-6 border border-primary-100">
             <TableWrapper>

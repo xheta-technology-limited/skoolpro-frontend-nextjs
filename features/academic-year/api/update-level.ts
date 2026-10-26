@@ -3,6 +3,7 @@ import { api } from "@/lib/api";
 import { educationStageKeys, levelKeys } from "./query-keys";
 import { ServerErrorResponse } from "@/types/api";
 import type { CreateLevelFormData } from "../schemas/create-level-schema";
+import { toCreateLevelPayload } from "./create-level";
 
 type UpdateLevelVariables = {
   levelId: string;
@@ -13,7 +14,7 @@ export const updateLevel = ({
   levelId,
   data,
 }: UpdateLevelVariables): Promise<null> => {
-  return api.put(`education/levels/${levelId}`, data);
+  return api.put(`education/levels/${levelId}`, toCreateLevelPayload(data));
 };
 
 export const useUpdateLevel = () => {
