@@ -10,8 +10,8 @@ interface Props {
   label: string;
   primaryButtonText: string;
   primaryButtonFunc: () => void;
-  secondaryButtonText: string;
-  secondaryButtonFunc: () => void;
+  secondaryButtonText?: string;
+  secondaryButtonFunc?: () => void;
 
   isLoading: boolean;
   children: ReactNode;
@@ -28,7 +28,7 @@ export default function StructureItem({
 }: Props) {
   return (
     <div>
-      <div className="w-full mb-8 flex flex-wrap gap-2 justify-between items-center">
+      <div className="w-full mb-4 flex flex-wrap gap-2 justify-between items-center">
         <div className="flex flex-col gap-1 text-left max-w-146.5">
           <div className="flex gap-2 items-center">
             <Text className="text-neutrals-700" scale={"content"}>

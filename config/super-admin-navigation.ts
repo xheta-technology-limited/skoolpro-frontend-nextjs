@@ -54,7 +54,7 @@ export const dashboardNavigation: DashboardNavigationItem[] = [
   },
   {
     label: "Structure & Curriculum",
-    href: "/super-admin/structure-and-curriculum",
+    href: "/super-admin/structure-and-curriculum/structure?tab=education",
     icon: Book1,
   },
   {

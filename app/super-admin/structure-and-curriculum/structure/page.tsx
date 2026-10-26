@@ -2,11 +2,18 @@
 
 import { Text } from "@/components/ui";
 import { useParams, useSearchParams } from "next/navigation";
-import EducationStructure from "./_components/education-structure/structure";
+import { Stages, EducationStructure } from "./_components/education-structure";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Structure() {
   const params = useSearchParams();
   const activeTab = params.get("tab");
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("?tab=education");
+  }, []);
   return (
     <>
       {activeTab === "education" ? (
@@ -22,6 +29,7 @@ const Education = () => {
   return (
     <div className="flex gap-8 flex-col">
       <EducationStructure />
+      <Stages />
     </div>
   );
 };
