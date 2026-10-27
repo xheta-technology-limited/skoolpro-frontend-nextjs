@@ -17,11 +17,11 @@ const BLOCKS: Block[] = [
 
 export default function EducationStructure() {
   const router = useProgressRouter();
-  const searchParams = new URLSearchParams(window.location.search);
 
   const onAddLevel = () => {
-    searchParams.set("add-level", "true");
-    router.push(`?${searchParams.toString()}`);
+    router.push(
+      "/super-admin/structure-and-curriculum/structure?tab=education&add-level=true"
+    );
   };
   return (
     <StructureItem

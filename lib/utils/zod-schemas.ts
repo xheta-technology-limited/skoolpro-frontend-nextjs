@@ -31,6 +31,9 @@ export const numericString = ({ percent, message }: NumericString) => {
     : "Please enter a valid number";
 
   const isValid = (value: string) => {
+    if (value === "") {
+      return;
+    }
     if (!/^\d+(\.\d+)?$/.test(value.trim())) return false; // plain decimals only
     const n = Number(value);
     return percent ? n >= 0 && n <= 100 : n >= 1;

@@ -109,7 +109,7 @@ export default function AddLevel({ defaults }: Props) {
     <FormModal
       onOpenChange={handleClose}
       open={isOpen}
-      title={isEditMode ? "Edit Comment" : "Add Comment to Bank"}
+      title={isEditMode ? "Edit Level" : "Add Level"}
     >
       <FormProvider {...methods}>
         <form

@@ -35,7 +35,6 @@ const headRow = [
 
 export default function Stages() {
   const router = useProgressRouter();
-  const searchParams = new URLSearchParams(window.location.search);
   const [deleteModal, setDeleteModal] = useState(false);
   const [targetDeleteID, setDeleteID] = useState<undefined | string>(undefined);
   const {
@@ -53,10 +52,7 @@ export default function Stages() {
     // router.push(`?modal=true&edit=true&stage=${slug}`)
     alert("not implemented");
   };
-  const onAddLevel = () => {
-    searchParams.set("add-level", "true");
-    router.push(`?${searchParams.toString()}`);
-  };
+
   const onAbortDelete = () => {
     setDeleteID(undefined);
     setDeleteModal(false);
@@ -118,7 +114,11 @@ export default function Stages() {
           isLoading={isRefetching}
           label={s.name.toUpperCase()}
           primaryButtonText="Add level"
-          primaryButtonFunc={() => onAddLevel()}
+          primaryButtonFunc={() =>
+            router.push(
+              "/super-admin/structure-and-curriculum/structure?tab=education&add-level=true"
+            )
+          }
           key={s.id}
         >
           <div className="rounded-ml bg-primary-bg p-6 border border-primary-100">
