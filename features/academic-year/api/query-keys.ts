@@ -41,3 +41,7 @@ export const academicTermKeys = {
   all: ["academic-terms"] as const,
   current: ["academic-terms", "current"] as const,
 };
+
+export const schoolTypeKeys = {
+  all: ["school-types"] as const,
+};

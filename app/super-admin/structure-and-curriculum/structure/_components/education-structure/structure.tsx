@@ -18,19 +18,22 @@ const BLOCKS: Block[] = [
 export default function EducationStructure() {
   const router = useProgressRouter();
 
-  const onAddLevel = () => {
-    router.push(
-      "/super-admin/structure-and-curriculum/structure?tab=education&add-level=true"
-    );
-  };
   return (
     <StructureItem
       isLoading
       label="EDUCATION STRUCTURE"
       primaryButtonText="Add Stage"
-      primaryButtonFunc={() => null}
+      primaryButtonFunc={() => {
+        router.push(
+          "/super-admin/structure-and-curriculum/structure?tab=education&add-stage=true"
+        );
+      }}
       secondaryButtonText="Add level"
-      secondaryButtonFunc={onAddLevel}
+      secondaryButtonFunc={() =>
+        router.push(
+          "/super-admin/structure-and-curriculum/structure?tab=education&add-level=true"
+        )
+      }
     >
       <div className="flex gap-2.5 flex-wrap">
         {BLOCKS.map((b, index) => (

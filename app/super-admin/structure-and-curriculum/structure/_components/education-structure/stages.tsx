@@ -22,6 +22,7 @@ import { useState } from "react";
 import { DeleteModal } from "@/components/common";
 import { toast } from "sonner";
 import AddLevel from "../modals/add-level";
+import AddStage from "../modals/add-stage";
 import { CreateLevelFormData } from "@/features/academic-year/schemas/create-level-schema";
 
 const headRow = [
@@ -120,6 +121,7 @@ export default function Stages() {
         onConfirm={onDeleteLevel}
       />
       <AddLevel defaults={editDefaults} />
+      <AddStage />
       {stages.map((s) => (
         <StructureItem
           isLoading={isRefetching}
