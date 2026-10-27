@@ -45,3 +45,7 @@ export const academicTermKeys = {
 export const schoolTypeKeys = {
   all: ["school-types"] as const,
 };
+
+export const educationSummaryKeys = {
+  all: ["education-summary"] as const,
+};
