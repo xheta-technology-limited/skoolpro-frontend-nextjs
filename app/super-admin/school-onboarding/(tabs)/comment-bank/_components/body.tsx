@@ -146,7 +146,6 @@ export default function Body() {
             <Text className="text-neutrals-600" scale={"caption"}>
               {`${data.length} ${data.length > 1 ? "comments" : "comment"}`}
             </Text>
-            {/* TODO: Eventually list teachers */}
             <MiniSelector
               label="Form Teacher"
               defaultValue={"form_teacher"}

@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { Stages, EducationStructure } from "./_components/education-structure";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import ClassStructure from "./_components/class-structure/classes";
 
 export default function Structure() {
   const params = useSearchParams();
@@ -12,14 +13,18 @@ export default function Structure() {
   const router = useRouter();
 
   useEffect(() => {
-    router.push("?tab=education");
+    if (params.get("tab") === "classes") {
+      return;
+    } else {
+      router.push("?tab=education");
+    }
   }, []);
   return (
     <>
       {activeTab === "education" ? (
         <Education />
       ) : activeTab === "classes" ? (
-        <Classes />
+        <ClassStructure />
       ) : null}
     </>
   );
@@ -32,8 +37,4 @@ const Education = () => {
       <Stages />
     </div>
   );
-};
-
-const Classes = () => {
-  return null;
 };
