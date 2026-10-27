@@ -47,7 +47,9 @@ export default function TabSwitcher() {
       <button
         className="block"
         onClick={() =>
-          router.push("/super-admin/structure-and-curriculum/curriculum")
+          router.push(
+            "/super-admin/structure-and-curriculum/curriculum?tab=subjects"
+          )
         }
       >
         <Text
