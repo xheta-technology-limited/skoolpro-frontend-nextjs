@@ -184,7 +184,7 @@ export default function ClassStructure() {
                   {classArmsData?.map((b, index) => (
                     <TableRow key={index}>
                       <TableCell>{titleCase(b.name) || ""}</TableCell>
-                      <TableCell>{b.code}</TableCell>
+                      <TableCell>{b.code || "-"}</TableCell>
                       <TableCell>{"placeholder, no teacher name"}</TableCell>
                       <TableCell>{b.capacity || "-"}</TableCell>
                       <TableCell>

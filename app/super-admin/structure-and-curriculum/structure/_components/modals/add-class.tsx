@@ -123,17 +123,19 @@ export default function AddClass({ defaults }: Props) {
           className="flex flex-col gap-4 w-full"
         >
           <>
-            <Select
-              name="level_id"
-              label="Select level"
-              onChange={(e) => {
-                console.log("le level is: ", e);
-                setFormLevel(e);
-              }}
-              options={levelOptions || []}
-              isLoading={isLevelsPending}
-              value={formLevel}
-            />
+            {!isEditMode && (
+              <Select
+                name="level_id"
+                label="Select level"
+                onChange={(e) => {
+                  console.log("le level is: ", e);
+                  setFormLevel(e);
+                }}
+                options={levelOptions || []}
+                isLoading={isLevelsPending}
+                value={formLevel}
+              />
+            )}
             <Input name="name" label="Enter name" />
             <Input name="code" label="Enter code" />
             <Input name="staff_id" label="Enter class teacher" />
