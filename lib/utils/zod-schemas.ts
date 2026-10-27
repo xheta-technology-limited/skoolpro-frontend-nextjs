@@ -32,7 +32,7 @@ export const numericString = ({ percent, message }: NumericString) => {
 
   const isValid = (value: string) => {
     if (value === "") {
-      return;
+      return true;
     }
     if (!/^\d+(\.\d+)?$/.test(value.trim())) return false; // plain decimals only
     const n = Number(value);

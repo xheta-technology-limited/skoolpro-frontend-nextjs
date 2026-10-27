@@ -33,6 +33,7 @@ export default function AddLevel({ defaults }: Props) {
   const searchParams = useSearchParams();
   const router = useProgressRouter();
   const levelId = searchParams.get("level-id");
+  const stageId = searchParams.get("stage-id");
 
   const methods = useForm<CreateLevelFormData>({
     defaultValues: defaults ? defaults : {},

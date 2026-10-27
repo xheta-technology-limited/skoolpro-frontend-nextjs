@@ -22,6 +22,7 @@ import { useState } from "react";
 import { DeleteModal } from "@/components/common";
 import { toast } from "sonner";
 import AddLevel from "../modals/add-level";
+import { CreateLevelFormData } from "@/features/academic-year/schemas/create-level-schema";
 
 const headRow = [
   "Level",
@@ -37,6 +38,9 @@ export default function Stages() {
   const router = useProgressRouter();
   const [deleteModal, setDeleteModal] = useState(false);
   const [targetDeleteID, setDeleteID] = useState<undefined | string>(undefined);
+  const [editDefaults, setEditDefaults] = useState<
+    CreateLevelFormData | undefined
+  >(undefined);
   const {
     data: stages,
     isPending,
@@ -48,9 +52,16 @@ export default function Stages() {
   });
   const { mutate: deleteLevel, isPending: isDeletePending } = useDeleteLevel();
 
-  const onEdit = (slug: string) => {
-    // router.push(`?modal=true&edit=true&stage=${slug}`)
-    alert("not implemented");
+  const onEdit = (level: any, stageId: string) => {
+    setEditDefaults({
+      education_stage_id: level.education_stage_id || stageId,
+      name: level.name || "",
+      code: level.code || "",
+      typical_entry_age: level.typical_entry_age?.toString() || "",
+    });
+    router.push(
+      `/super-admin/structure-and-curriculum/structure?tab=education&add-level=true&level-id=${level.id}`
+    );
   };
 
   const onAbortDelete = () => {
@@ -108,17 +119,18 @@ export default function Stages() {
         description="Delete this level?"
         onConfirm={onDeleteLevel}
       />
-      <AddLevel />
+      <AddLevel defaults={editDefaults} />
       {stages.map((s) => (
         <StructureItem
           isLoading={isRefetching}
           label={s.name.toUpperCase()}
           primaryButtonText="Add level"
-          primaryButtonFunc={() =>
+          primaryButtonFunc={() => {
+            setEditDefaults(undefined);
             router.push(
-              "/super-admin/structure-and-curriculum/structure?tab=education&add-level=true"
-            )
-          }
+              `/super-admin/structure-and-curriculum/structure?tab=education&add-level=true&stage-id=${s.id}`
+            );
+          }}
           key={s.id}
         >
           <div className="rounded-ml bg-primary-bg p-6 border border-primary-100">
@@ -160,7 +172,7 @@ export default function Stages() {
                         <div className="flex gap-2.5 items-center">
                           <button
                             className="py-1.5 px-2 rounded-[12px] text-[0.75rem] flex items-center border border-grays-borders"
-                            onClick={() => onEdit("t")}
+                            onClick={() => onEdit(b, s.id)}
                           >
                             <Edit
                               variant="Bulk"
