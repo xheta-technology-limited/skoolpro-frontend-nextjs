@@ -8,6 +8,9 @@ import { useProgressRouter } from "@/features/page-loader";
 export interface TabItem {
   label: string;
   href: string;
+  // Optional number badge shown after the label. Tabs without it render
+  // exactly as before.
+  count?: number;
 }
 
 interface TabsNavProps {
@@ -35,6 +38,16 @@ export default function TabsNav({ tabs, className }: TabsNavProps) {
             )}
           >
             {tab.label}
+            {tab.count !== undefined && (
+              <span
+                className={cn(
+                  "flex h-[18px] min-w-[18px] items-center justify-center rounded-[6px] px-1 text-[11px] font-medium leading-none text-neutrals-700",
+                  isActive ? "bg-[#D5D5FA]" : "bg-[#F5F5FF]"
+                )}
+              >
+                {tab.count}
+              </span>
+            )}
           </button>
         );
       })}
