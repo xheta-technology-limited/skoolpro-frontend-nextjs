@@ -24,22 +24,6 @@ interface DocumentDetailModalProps {
   onClose: () => void;
 }
 
-/**
- * Details for one document, opened from the "Open" button on a row.
- * No `maxWidth` override: FormModal's default (701px) leaves exactly
- * the 653px content width the design uses.
- *
- * Everything here is real:
- *  - Download opens GET /documents/{id}/download.
- *  - The timeline is the document's review history (without reviewer
- *    names — review rows only carry an actor id).
- *  - The Signature row's View lists the signatures and runs the tamper
- *    check. The signature image itself can't be shown: it's stored
- *    privately and no endpoint serves it.
- *  - Renew opens a replacement-upload modal (no design was shared for
- *    it, so it reuses the upload modal's look).
- *  - "Last updated" is created_at; there's no updated_at.
- */
 export default function DocumentDetailModal({
   doc,
   onClose,
@@ -47,8 +31,19 @@ export default function DocumentDetailModal({
   const [viewingSignatures, setViewingSignatures] = useState(false);
   const [renewing, setRenewing] = useState(false);
 
-  const { data: signatures } = useGetDocumentSignatures(doc?.id ?? "");
+  const {
+    data: signatures,
+    isPending: signaturesPending,
+    isError: signaturesError,
+  } = useGetDocumentSignatures(doc?.id ?? "");
+
   const activeCount = (signatures ?? []).filter((s) => !s.voided).length;
+
+  const signaturesEmpty =
+    !signaturesPending &&
+    !signaturesError &&
+    signatures !== undefined &&
+    signatures.length === 0;
 
   return (
     <>
@@ -112,9 +107,9 @@ export default function DocumentDetailModal({
                 <button
                   type="button"
                   onClick={() => setViewingSignatures(true)}
-                  disabled={(signatures ?? []).length === 0}
+                  disabled={signaturesEmpty}
                   title={
-                    (signatures ?? []).length === 0
+                    signaturesEmpty
                       ? "Nobody has signed this document yet"
                       : undefined
                   }
@@ -148,7 +143,7 @@ export default function DocumentDetailModal({
           key={doc.id}
           open={renewing}
           onOpenChange={setRenewing}
-          doc={doc}
+          documentId={doc.id}
         />
       )}
     </>

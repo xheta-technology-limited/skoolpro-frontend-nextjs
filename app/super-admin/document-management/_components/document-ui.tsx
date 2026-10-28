@@ -79,7 +79,7 @@ export function StatusBadge({ status }: { status: string | undefined }) {
 // 8px between the label and the value.
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex h-[55px] min-w-0 flex-col justify-center gap-2 rounded-[8px] border border-[#F0EBFB] bg-white p-2">
+    <div className="flex h-13.75 min-w-0 flex-col justify-center gap-2 rounded-[8px] border border-grays-borders bg-white p-2">
       <span className="text-[12px] leading-none text-neutrals-500">
         {label}
       </span>
@@ -101,7 +101,7 @@ export function InfoPair({
   right: [string, string];
 }) {
   return (
-    <div className="grid grid-cols-1 gap-2 rounded-[16px] bg-[#F5F5FF] p-2 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-2 rounded-ml bg-primary-bg p-2 sm:grid-cols-2">
       <InfoCard label={left[0]} value={left[1]} />
       <InfoCard label={right[0]} value={right[1]} />
     </div>
@@ -111,7 +111,7 @@ export function InfoPair({
 // The same field box holding a single full-width field.
 export function InfoSingle({ field }: { field: [string, string] }) {
   return (
-    <div className="rounded-[16px] bg-[#F5F5FF] p-2">
+    <div className="rounded-ml bg-primary-bg p-2">
       <InfoCard label={field[0]} value={field[1]} />
     </div>
   );
@@ -132,11 +132,11 @@ export function TimelineStep({
     <div className="flex items-start gap-3">
       {done ? (
         <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#9C97D6]">
-          <span className="h-2 w-2 rounded-full bg-[#010081]" />
+          <span className="h-2 w-2 rounded-full bg-primary" />
         </span>
       ) : (
-        <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-[#9F9C9C]">
-          <span className="h-2 w-2 rounded-full border border-[#9F9C9C]" />
+        <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-neutrals-400">
+          <span className="h-2 w-2 rounded-full border border-neutrals-400" />
         </span>
       )}
       <div className="flex flex-col">

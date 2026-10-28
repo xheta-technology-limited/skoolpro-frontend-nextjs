@@ -111,7 +111,7 @@ export default function ReviewDetailModal({
                 "Expiry",
                 doc.expiry_date ? formatDate(doc.expiry_date) : "Nil",
               ]}
-              right={["Last updated", formatDate(doc.created_at)]}
+              right={["Submitted", formatDate(doc.created_at)]}
             />
 
             <ReviewTimeline doc={doc} />

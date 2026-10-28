@@ -252,8 +252,13 @@ export default function SignaturesModal({
   onOpenChange,
   documentId,
 }: SignaturesModalProps) {
-  const { data: signatures, isPending, isError } =
-    useGetDocumentSignatures(documentId);
+  const {
+    data: signatures,
+    isPending,
+    isError,
+    refetch,
+    isFetching,
+  } = useGetDocumentSignatures(documentId);
 
   return (
     <FormModal
@@ -266,9 +271,22 @@ export default function SignaturesModal({
         {isPending ? (
           <span className="text-[13px] text-neutrals-500">Loading…</span>
         ) : isError || !signatures ? (
-          <span className="text-[13px] text-neutrals-500">
-            Couldn&apos;t load the signatures.
-          </span>
+          <div className="flex flex-col items-start gap-3">
+            <span className="text-[13px] text-neutrals-500">
+              Couldn&apos;t load the signatures.
+            </span>
+
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => void refetch()}
+              loading={isFetching}
+              disabled={isFetching}
+              className="h-10 rounded-[28px]"
+            >
+              Retry
+            </Button>
+          </div>
         ) : signatures.length === 0 ? (
           <span className="text-[13px] text-neutrals-500">
             Nobody has signed this document yet.

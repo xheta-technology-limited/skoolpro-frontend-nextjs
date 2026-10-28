@@ -222,6 +222,7 @@ export default function CaptureSignatureModal({
 
   function selectMethod(next: Method) {
     setValue("method", next);
+    setValue("drawn_signature", "");
     clearErrors();
   }
 

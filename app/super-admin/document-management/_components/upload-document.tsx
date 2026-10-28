@@ -22,6 +22,7 @@ import { useUserStore } from "@/features/school-profile/school-profile.store";
 import { useUploadDocument } from "@/features/documents/api/upload-document";
 import { useGetDocumentTypes } from "@/features/documents/types/get-document-types";
 import type { DocumentConfidentiality } from "@/features/documents/types/document-types";
+import { notifyError } from "./document-ui";
 
 
 const CONFIDENTIALITY_OPTIONS = [
@@ -238,12 +239,7 @@ export default function UploadDocumentModal() {
       toast.success("Document uploaded successfully");
       handleClose();
     } catch (error) {
-      console.error("Failed to upload document:", error);
-      toast.error(
-        error && typeof error === "object" && "message" in error
-          ? String((error as { message: unknown }).message)
-          : "Failed to upload document. Please try again."
-      );
+      notifyError(error, "Failed to upload document. Please try again.");
     }
   };
 
