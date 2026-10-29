@@ -7,6 +7,7 @@ export type SchoolProfile = {
   description: string;
   education_authorities: string[];
   motto: string;
+  logo_url?: string | null;
   primary_color: string;
   secondary_color: string;
   accent_color: string | null;
