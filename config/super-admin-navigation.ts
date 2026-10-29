@@ -14,6 +14,7 @@ import {
   type Icon,
   LogoutCurve,
   UserOctagon,
+  Document
 } from "iconsax-reactjs";
 
 export type DashboardNavigationItem = {
@@ -142,6 +143,11 @@ export const dashboardNavigation: DashboardNavigationItem[] = [
         ],
       },
     ],
+  },
+  {
+    label: "Document management",
+    href: "/super-admin/document-management/owner-document",
+    icon: Document,
   },
   {
     label: "Notification management",

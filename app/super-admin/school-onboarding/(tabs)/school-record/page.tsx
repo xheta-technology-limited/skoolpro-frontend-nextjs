@@ -15,7 +15,7 @@ import {
   TextArea,
   Checkbox,
 } from "@/components/ui/form";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import RecordTableSection, {
   type RecordTableRow,
@@ -445,6 +445,13 @@ export default function SchoolRecordPage() {
           <div className="flex min-h-41 w-full flex-col items-start justify-between gap-4 rounded-2xl border border-primary-100 bg-primary-bg px-4 py-6 lg:flex-row sm:items-center sm:px-12 sm:py-8">
             <div className="flex w-full min-w-0 items-center gap-4">
               <Avatar className="h-25 w-25 shrink-0">
+                {profile.logo_url && (
+                  <AvatarImage
+                    src={profile.logo_url}
+                    alt={`${schoolName} logo`}
+                    className="object-contain"
+                  />
+                )} 
                 <AvatarFallback className="bg-neutrals-100">
                   {getInitials(schoolName)}
                 </AvatarFallback>
