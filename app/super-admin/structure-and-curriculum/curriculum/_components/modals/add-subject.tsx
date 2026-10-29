@@ -27,7 +27,7 @@ export default function AddSubject({ defaults }: Props) {
   const params = usePathname();
   const searchParams = useSearchParams();
   const router = useProgressRouter();
-  const subjectId = searchParams.get("arm-id") || defaults?.arm_id;
+  const subjectId = searchParams.get("subject-id") || defaults?.arm_id;
   const [formLevel, setFormLevel] = useState("");
 
   const methods = useForm<CreateSubjectRequest>({
@@ -110,7 +110,7 @@ export default function AddSubject({ defaults }: Props) {
       <FormProvider {...methods}>
         <form
           onSubmit={methods.handleSubmit(onSubmit)}
-          id="class-create"
+          id="subject-create"
           className="flex flex-col gap-4 w-full"
         >
           <>
@@ -122,7 +122,6 @@ export default function AddSubject({ defaults }: Props) {
               isLoading={isDepartmentPending}
               options={departmentOptions || []}
             />
-            <Input name="capacity" label="Enter capacity" />
           </>
         </form>
 
@@ -133,7 +132,7 @@ export default function AddSubject({ defaults }: Props) {
           <Button
             loading={isCreatePending || isUpdatePending}
             type="submit"
-            form="class-create"
+            form="subject-create"
           >
             {isEditMode ? "Edit class" : "Add class"}
           </Button>
