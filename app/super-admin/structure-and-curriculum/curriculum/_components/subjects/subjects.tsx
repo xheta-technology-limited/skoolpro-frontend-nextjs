@@ -91,14 +91,18 @@ export default function Subjects() {
   const { mutate: deleteSubjectMutate, isPending: isDeletePending } =
     useDeleteSubject();
 
-  const onEdit = (subject: any) => {
+  const onEdit = (subject: Subject) => {
     setEditDefaults({
       subject_id: subject.id,
       name: subject.name || "",
       code: subject.code || "",
+      description: subject.description || "",
+      department: subject.department || "",
+      is_active: subject.is_active,
+      intended_stage_ids: subject.intended_stages.map((stage) => stage.id),
     });
     router.push(
-      `/super-admin/structure-and-curriculum/structure?tab=classes&add-class=true&arm-id=${subject.id}`
+      `/super-admin/structure-and-curriculum/curriculum?tab=subjects&add-subject=true&subject-id=${subject.id}`
     );
   };
 
@@ -127,9 +131,9 @@ export default function Subjects() {
     <div>
       <DeleteModal
         loading={isDeletePending}
-        open={deleteModal}
+        open={deleteModal && !!targetDeleteID}
         onOpenChange={onAbortDelete}
-        description="Delete this level?"
+        description="Delete this subject?"
         onConfirm={onDeleteSubject}
       />
       <AddSubject defaults={editDefaults} />
@@ -208,8 +212,8 @@ export default function Subjects() {
             <div className="w-fit mx-auto">
               {" "}
               <NoData
-                title="No Academic Years"
-                subTitle="You haven't created any academic years, click the button above to make one"
+                title="No Subjects"
+                subTitle="You haven't created any subjects, click the button above to make one"
                 className="w-97.5 h-143.75"
               />
             </div>

@@ -81,7 +81,7 @@ export default function ClassStructure() {
     setDeleteID(undefined);
     setDeleteModal(false);
   };
-  const onDeleteLevel = () => {
+  const onDeleteClass = () => {
     if (!targetDeleteID) {
       alert("No level ID!");
       return;
@@ -102,10 +102,10 @@ export default function ClassStructure() {
     <div>
       <DeleteModal
         loading={isDeletePending}
-        open={deleteModal}
+        open={deleteModal && !!targetDeleteID}
         onOpenChange={onAbortDelete}
         description="Delete this level?"
-        onConfirm={onDeleteLevel}
+        onConfirm={onDeleteClass}
       />
       <AddClass defaults={editDefaults} />
       <div className="w-full mb-4 flex flex-wrap gap-2 justify-between items-center">

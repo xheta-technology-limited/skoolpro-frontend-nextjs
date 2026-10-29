@@ -22,15 +22,14 @@ import { useListStages } from "@/features/academic-year/api/list-stages";
 import { Text } from "@/components/ui";
 
 interface Props {
-  defaults?: CreateSubjectRequest & { level_id?: string; arm_id?: string };
+  defaults?: CreateSubjectRequest & { subject_id?: string };
 }
 
 export default function AddSubject({ defaults }: Props) {
   const params = usePathname();
   const searchParams = useSearchParams();
   const router = useProgressRouter();
-  const subjectId = searchParams.get("subject-id") || defaults?.arm_id;
-  const [formLevel, setFormLevel] = useState("");
+  const subjectId = searchParams.get("subject-id") || defaults?.subject_id;
 
   const methods = useForm<CreateSubjectRequest>({
     defaultValues: defaults ? defaults : {},
@@ -59,7 +58,7 @@ export default function AddSubject({ defaults }: Props) {
   const departmentOptions = createSelectOptions(departmentData, "name", "name");
 
   const onCreate = (data: CreateSubjectRequest) => {
-    const { level_id, ...payload } = data as any;
+    const { subject_id, level_id, ...payload } = data as any;
     createMutate(payload, {
       onSuccess: () => {
         methods.reset();
@@ -73,10 +72,10 @@ export default function AddSubject({ defaults }: Props) {
 
   const onUpdate = (data: CreateSubjectRequest) => {
     if (!subjectId) {
-      toast.error("No arm ID found");
+      toast.error("No subject ID found");
       return;
     }
-    const { level_id, ...payload } = data as any;
+    const { subject_id, level_id, ...payload } = data as any;
     updateMutate(
       { subjectId, data: payload },
       {
@@ -159,3 +158,4 @@ export default function AddSubject({ defaults }: Props) {
     </FormModal>
   );
 }
+
