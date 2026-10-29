@@ -3,8 +3,6 @@
 import { Button } from "@/components/ui/custom-button";
 import { Input, Select } from "@/components/ui/form";
 import FormModal from "@/components/ui/form-modal";
-import { useCreateArm } from "@/features/academic-year/api/create-arm";
-import { useUpdateArm } from "@/features/academic-year/api/update-arm";
 import { useProgressRouter } from "@/features/page-loader";
 import { createSelectOptions, setFormErrors } from "@/lib/helpers";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,54 +10,52 @@ import { toast } from "sonner";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import {
-  CreateArmFormData,
-  createArmSchema,
-} from "@/features/academic-year/schemas/create-arm";
 import { useListLevels } from "@/features/academic-year/api/list-levels";
+import { useCreateSubject } from "@/features/academic-year/api/create-subject";
+import { useUpdateSubject } from "@/features/academic-year/api/update-subject";
+import {
+  CreateSubjectRequest,
+  createSubjectSchema,
+} from "@/features/academic-year/schemas/create-subject-schema";
+import { useListDepartments } from "@/features/academic-year/api/list-departments";
 
 interface Props {
-  defaults?: CreateArmFormData & { level_id?: string; arm_id?: string };
+  defaults?: CreateSubjectRequest & { level_id?: string; arm_id?: string };
 }
 
 export default function AddSubject({ defaults }: Props) {
   const params = usePathname();
   const searchParams = useSearchParams();
   const router = useProgressRouter();
-  const armId = searchParams.get("arm-id") || defaults?.arm_id;
-  const levelFromQuery = searchParams.get("level-id");
+  const subjectId = searchParams.get("arm-id") || defaults?.arm_id;
   const [formLevel, setFormLevel] = useState("");
 
-  const methods = useForm<CreateArmFormData>({
+  const methods = useForm<CreateSubjectRequest>({
     defaultValues: defaults ? defaults : {},
-    resolver: zodResolver(createArmSchema),
+    resolver: zodResolver(createSubjectSchema),
   });
 
-  const selectedLevel =
-    formLevel || levelFromQuery || (defaults as any)?.level_id;
-
-  const { mutate: createMutate, isPending: isCreatePending } = useCreateArm(
-    selectedLevel || ""
-  );
-  const { mutate: updateMutate, isPending: isUpdatePending } = useUpdateArm(
-    selectedLevel || ""
-  );
+  const { mutate: createMutate, isPending: isCreatePending } =
+    useCreateSubject();
+  const { mutate: updateMutate, isPending: isUpdatePending } =
+    useUpdateSubject();
   const isOpen =
     params.includes("/structure-and-curriculum") &&
     searchParams.get("add-subject") === "true";
-  const isEditMode = isOpen && !!armId;
+  const isEditMode = isOpen && !!subjectId;
 
   const { data: levelsData, isPending: isLevelsPending } = useListLevels({
     refetchOnWindowFocus: false,
   });
   const levelOptions = createSelectOptions(levelsData, "id", "name");
 
-  const onCreate = (data: CreateArmFormData) => {
-    const levelId = selectedLevel;
-    if (!levelId) {
-      toast.error("Please select a level");
-      return;
-    }
+  const { data: departmentData, isPending: isDepartmentPending } =
+    useListDepartments({
+      refetchOnWindowFocus: false,
+    });
+  const departmentOptions = createSelectOptions(departmentData, "name", "name");
+
+  const onCreate = (data: CreateSubjectRequest) => {
     const { level_id, ...payload } = data as any;
     createMutate(payload, {
       onSuccess: () => {
@@ -72,19 +68,14 @@ export default function AddSubject({ defaults }: Props) {
     });
   };
 
-  const onUpdate = (data: CreateArmFormData) => {
-    if (!armId) {
+  const onUpdate = (data: CreateSubjectRequest) => {
+    if (!subjectId) {
       toast.error("No arm ID found");
-      return;
-    }
-    const levelId = (data as any).level_id || selectedLevel;
-    if (!levelId) {
-      toast.error("Please select a level");
       return;
     }
     const { level_id, ...payload } = data as any;
     updateMutate(
-      { armId, level: levelId, data: payload },
+      { subjectId, data: payload },
       {
         onSuccess: () => {
           toast.success("Updated!");
@@ -97,7 +88,7 @@ export default function AddSubject({ defaults }: Props) {
     );
   };
 
-  const onSubmit = (data: CreateArmFormData) => {
+  const onSubmit = (data: CreateSubjectRequest) => {
     if (isEditMode) {
       onUpdate(data);
     } else {
@@ -114,7 +105,7 @@ export default function AddSubject({ defaults }: Props) {
     <FormModal
       onOpenChange={handleClose}
       open={isOpen}
-      title={isEditMode ? "Edit Class" : "Add Class"}
+      title={isEditMode ? "Edit Subject" : "Add Subject"}
     >
       <FormProvider {...methods}>
         <form
@@ -123,22 +114,14 @@ export default function AddSubject({ defaults }: Props) {
           className="flex flex-col gap-4 w-full"
         >
           <>
-            {!isEditMode && (
-              <Select
-                name="level_id"
-                label="Select level"
-                onChange={(e) => {
-                  console.log("le level is: ", e);
-                  setFormLevel(e);
-                }}
-                options={levelOptions || []}
-                isLoading={isLevelsPending}
-                value={formLevel}
-              />
-            )}
             <Input name="name" label="Enter name" />
             <Input name="code" label="Enter code" />
-            <Input name="staff_id" label="Enter class teacher" />
+            <Select
+              name="department"
+              label="Select department"
+              isLoading={isDepartmentPending}
+              options={departmentOptions || []}
+            />
             <Input name="capacity" label="Enter capacity" />
           </>
         </form>

@@ -30,6 +30,8 @@ export const educationStageKeys = {
 export const schoolSubjectKeys = {
   all: ["school-subjects"] as const,
   detail: (id: string) => ["school-subjects", id] as const,
+  filtered: (params: { department?: string; stage?: string }) =>
+    ["school-subjects", params] as const,
 };
 
 export const assignedSubjectKeys = {
@@ -48,4 +50,8 @@ export const schoolTypeKeys = {
 
 export const educationSummaryKeys = {
   all: ["education-summary"] as const,
+};
+
+export const departmentKeys = {
+  all: ["departments"] as const,
 };

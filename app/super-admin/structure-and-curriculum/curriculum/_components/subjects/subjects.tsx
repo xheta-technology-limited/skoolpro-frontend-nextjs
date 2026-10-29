@@ -18,7 +18,7 @@ import { useProgressRouter } from "@/features/page-loader";
 import { createSelectOptions, titleCase } from "@/lib/helpers";
 import { keepPreviousData } from "@tanstack/react-query";
 import { AddSquare, CloseSquare, Edit } from "iconsax-reactjs";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import AddSubject from "../modals/add-subject";
 import { CreateArmFormData } from "@/features/academic-year/schemas/create-arm";
 import { useDeleteArm } from "@/features/academic-year/api/delete-arm";
@@ -26,6 +26,10 @@ import { toast } from "sonner";
 import { useListSubjects } from "@/features/academic-year/api/list-subjects";
 import { NoData } from "@/components/icons";
 import { useDeleteSubject } from "@/features/academic-year/api/delete-subject";
+import { useListDepartments } from "@/features/academic-year/api/list-departments";
+import { useListStages } from "@/features/academic-year/api/list-stages";
+import { SearchInput } from "@/components/ui/form/input";
+import { Subject } from "@/features/academic-year/types/api/subjects";
 
 const headRow = [
   "Subject",
@@ -39,6 +43,8 @@ const headRow = [
 export default function Subjects() {
   const router = useProgressRouter();
   const [filteredDepartment, setFilteredDepartment] = useState("");
+  const [filteredStage, setFilteredStage] = useState("");
+  const [searchFilter, setSearchFilter] = useState("");
   const [deleteModal, setDeleteModal] = useState(false);
   const [targetDeleteID, setDeleteID] = useState<undefined | string>(undefined);
   const [editDefaults, setEditDefaults] = useState<
@@ -48,11 +54,39 @@ export default function Subjects() {
     data: subjectData,
     isPending: isSubjectsPending,
     isRefetching: isSubjectsRefetching,
-  } = useListSubjects(filteredDepartment, {
-    refetchOnWindowFocus: false,
-    placeholderData: keepPreviousData,
-  });
+  } = useListSubjects(
+    {
+      department: filteredDepartment || undefined,
+      stage: filteredStage || undefined,
+    },
+    {
+      refetchOnWindowFocus: false,
+      placeholderData: keepPreviousData,
+    }
+  );
+  const subjects: Subject[] = useMemo(() => {
+    if (!subjectData) return [];
+    const term = searchFilter.trim().toLowerCase();
+    if (!term) return subjectData;
+    return subjectData.filter((subject) =>
+      subject.name.toLowerCase().includes(term)
+    );
+  }, [subjectData, searchFilter]);
 
+  const { data: departmentData, isPending: isDepartmentPending } =
+    useListDepartments({ refetchOnWindowFocus: false });
+  const l = createSelectOptions(departmentData, "name", "name");
+  const departmentOptions = l
+    ? [{ value: "all", label: "All departments" }, ...l]
+    : [{ value: "all", label: "All departments" }];
+
+  const { data: stagesData, isPending: isStagesPending } = useListStages({
+    refetchOnWindowFocus: false,
+  });
+  const s = createSelectOptions(stagesData, "name", "name");
+  const stageOptions = s
+    ? [{ value: "all", label: "All Stages" }, ...s]
+    : [{ value: "all", label: "All Stages" }];
   const { mutate: deleteSubjectMutate, isPending: isDeletePending } =
     useDeleteSubject();
 
@@ -112,18 +146,6 @@ export default function Subjects() {
         </div>
 
         <div className="flex gap-6 items-center">
-          <MiniSelector
-            items={[
-              { value: "all", label: "All departments" },
-              { value: "imp", label: "implement this" },
-            ]}
-            defaultValue={"all"}
-            onValueChange={(e) => {
-              return;
-              //does nothing till departments are up
-            }}
-          />
-
           <Button
             onClick={() => {
               setEditDefaults(undefined);
@@ -143,6 +165,39 @@ export default function Subjects() {
         </div>
       </div>
 
+      <div className="flex items-center mb-7 justify-between gap-6">
+        <SearchInput
+          className="flex-1 max-w-117.5 hidden md:block"
+          value={searchFilter}
+          onChange={(e) => setSearchFilter(e.target.value)}
+          placeholder="Search subject name"
+        />
+        <div className="flex items-center gap-2 md:gap-8">
+          <MiniSelector
+            items={departmentOptions}
+            defaultValue={"all"}
+            onValueChange={(e) => {
+              if (e === "all") {
+                setFilteredDepartment("");
+              } else {
+                setFilteredDepartment(e as string);
+              }
+            }}
+          />
+          <MiniSelector
+            items={stageOptions}
+            defaultValue={"all"}
+            onValueChange={(e) => {
+              if (e === "all") {
+                setFilteredStage("");
+              } else {
+                setFilteredStage(e as string);
+              }
+            }}
+          />
+        </div>
+      </div>
+
       <div>
         <div className="rounded-ml bg-primary-bg p-6 border border-primary-100">
           {isSubjectsPending && (
@@ -151,7 +206,7 @@ export default function Subjects() {
             </div>
           )}
 
-          {subjectData && subjectData.length === 0 && (
+          {!isSubjectsPending && subjects.length === 0 && (
             <div className="w-fit mx-auto">
               {" "}
               <NoData
@@ -162,7 +217,7 @@ export default function Subjects() {
             </div>
           )}
 
-          {subjectData && subjectData.length > 0 && (
+          {subjects.length > 0 && (
             <TableWrapper>
               <Table>
                 <TableHeader>
@@ -183,7 +238,7 @@ export default function Subjects() {
                 </TableHeader>
 
                 <TableBody>
-                  {subjectData.map((b, index) => (
+                  {subjects.map((b, index) => (
                     <TableRow key={index}>
                       <TableCell>{titleCase(b.name) || ""}</TableCell>
                       <TableCell>{b.code || "-"}</TableCell>
@@ -193,6 +248,7 @@ export default function Subjects() {
                           ? "-"
                           : b.intended_stages.map((s) => (
                               <Text
+                                key={s.id}
                                 as="span"
                                 className="text-primary"
                                 scale={"caption"}

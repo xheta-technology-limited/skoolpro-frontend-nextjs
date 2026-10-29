@@ -136,78 +136,85 @@ export default function Stages() {
           key={s.id}
         >
           <div className="rounded-ml bg-primary-bg p-6 border border-primary-100">
-            <TableWrapper>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    {headRow.map((col, index) => {
-                      const isMiddle =
-                        index != 0 && index != headRow.length - 1;
-                      const style = isMiddle
-                        ? "border-t-[1px] border-b-[1px]"
-                        : "";
-                      return (
-                        <TableHead className={style} key={col}>
-                          {col}
-                        </TableHead>
-                      );
-                    })}
-                  </TableRow>
-                </TableHeader>
-
-                <TableBody>
-                  {s.levels.map((b, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{titleCase(b.name) || ""}</TableCell>
-                      <TableCell>{b.code}</TableCell>
-                      <TableCell>{b.global_sequence || "-"}</TableCell>
-                      <TableCell>{"placeholder for now"}</TableCell>
-                      <TableCell>{b.typical_entry_age || "-"}</TableCell>
-                      <TableCell
-                        style={{
-                          color: b.is_active ? "#0b7b69" : "#CC7914",
-                        }}
-                      >
-                        {b.is_active ? "Active" : "Inactive"}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2.5 items-center">
-                          <button
-                            className="py-1.5 px-2 rounded-[12px] text-[0.75rem] flex items-center border border-grays-borders"
-                            onClick={() => onEdit(b, s.id)}
-                          >
-                            <Edit
-                              variant="Bulk"
-                              size={12}
-                              className="text-neutrals-800"
-                            />
-                            <Text
-                              scale={"captionMobile"}
-                              className="text-neutrals-700"
-                            >
-                              Edit
-                            </Text>
-                          </button>
-
-                          <button
-                            onClick={() => {
-                              setDeleteID(b.id);
-                              setDeleteModal(true);
-                            }}
-                          >
-                            <CloseSquare
-                              variant="Bulk"
-                              size={20}
-                              className="text-neutrals-800"
-                            />
-                          </button>
-                        </div>
-                      </TableCell>
+            {s.levels.length === 0 && (
+              <Text scale={"caption"} className="text-neutrals-800">
+                No levels
+              </Text>
+            )}
+            {s.levels.length > 0 && (
+              <TableWrapper>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {headRow.map((col, index) => {
+                        const isMiddle =
+                          index != 0 && index != headRow.length - 1;
+                        const style = isMiddle
+                          ? "border-t-[1px] border-b-[1px]"
+                          : "";
+                        return (
+                          <TableHead className={style} key={col}>
+                            {col}
+                          </TableHead>
+                        );
+                      })}
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableWrapper>
+                  </TableHeader>
+
+                  <TableBody>
+                    {s.levels.map((b, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{titleCase(b.name) || ""}</TableCell>
+                        <TableCell>{b.code}</TableCell>
+                        <TableCell>{b.global_sequence || "-"}</TableCell>
+                        <TableCell>{"placeholder for now"}</TableCell>
+                        <TableCell>{b.typical_entry_age || "-"}</TableCell>
+                        <TableCell
+                          style={{
+                            color: b.is_active ? "#0b7b69" : "#CC7914",
+                          }}
+                        >
+                          {b.is_active ? "Active" : "Inactive"}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-2.5 items-center">
+                            <button
+                              className="py-1.5 px-2 rounded-[12px] text-[0.75rem] flex items-center border border-grays-borders"
+                              onClick={() => onEdit(b, s.id)}
+                            >
+                              <Edit
+                                variant="Bulk"
+                                size={12}
+                                className="text-neutrals-800"
+                              />
+                              <Text
+                                scale={"captionMobile"}
+                                className="text-neutrals-700"
+                              >
+                                Edit
+                              </Text>
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                setDeleteID(b.id);
+                                setDeleteModal(true);
+                              }}
+                            >
+                              <CloseSquare
+                                variant="Bulk"
+                                size={20}
+                                className="text-neutrals-800"
+                              />
+                            </button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableWrapper>
+            )}
           </div>
         </StructureItem>
       ))}
