@@ -30,6 +30,7 @@ import { useListDepartments } from "@/features/academic-year/api/list-department
 import { useListStages } from "@/features/academic-year/api/list-stages";
 import { SearchInput } from "@/components/ui/form/input";
 import { Subject } from "@/features/academic-year/types/api/subjects";
+import { CreateSubjectRequest } from "@/features/academic-year/schemas/create-subject-schema";
 
 const headRow = [
   "Subject",
@@ -48,7 +49,7 @@ export default function Subjects() {
   const [deleteModal, setDeleteModal] = useState(false);
   const [targetDeleteID, setDeleteID] = useState<undefined | string>(undefined);
   const [editDefaults, setEditDefaults] = useState<
-    (CreateArmFormData & { level_id?: string; arm_id?: string }) | undefined
+    (CreateSubjectRequest & { subject_id?: string }) | undefined
   >(undefined);
   const {
     data: subjectData,
@@ -90,17 +91,14 @@ export default function Subjects() {
   const { mutate: deleteSubjectMutate, isPending: isDeletePending } =
     useDeleteSubject();
 
-  const onEdit = (arm: any) => {
+  const onEdit = (subject: any) => {
     setEditDefaults({
-      level_id: arm.level_id || "",
-      arm_id: arm.id,
-      name: arm.name || "",
-      code: arm.code || "",
-      staff_id: arm.staff_id || "",
-      capacity: arm.capacity?.toString() || "",
+      subject_id: subject.id,
+      name: subject.name || "",
+      code: subject.code || "",
     });
     router.push(
-      `/super-admin/structure-and-curriculum/structure?tab=classes&add-class=true&arm-id=${arm.id}`
+      `/super-admin/structure-and-curriculum/structure?tab=classes&add-class=true&arm-id=${subject.id}`
     );
   };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/custom-button";
-import { Input, Select } from "@/components/ui/form";
+import { Checkbox, Input, Select } from "@/components/ui/form";
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { createSelectOptions, setFormErrors } from "@/lib/helpers";
@@ -18,6 +18,8 @@ import {
   createSubjectSchema,
 } from "@/features/academic-year/schemas/create-subject-schema";
 import { useListDepartments } from "@/features/academic-year/api/list-departments";
+import { useListStages } from "@/features/academic-year/api/list-stages";
+import { Text } from "@/components/ui";
 
 interface Props {
   defaults?: CreateSubjectRequest & { level_id?: string; arm_id?: string };
@@ -44,10 +46,11 @@ export default function AddSubject({ defaults }: Props) {
     searchParams.get("add-subject") === "true";
   const isEditMode = isOpen && !!subjectId;
 
-  const { data: levelsData, isPending: isLevelsPending } = useListLevels({
+  const { data: stages, isPending: isStagesPending } = useListStages({
     refetchOnWindowFocus: false,
   });
-  const levelOptions = createSelectOptions(levelsData, "id", "name");
+  const stageOptions =
+    stages?.map((stage) => ({ label: stage.name, value: stage.id })) || [];
 
   const { data: departmentData, isPending: isDepartmentPending } =
     useListDepartments({
@@ -122,6 +125,21 @@ export default function AddSubject({ defaults }: Props) {
               isLoading={isDepartmentPending}
               options={departmentOptions || []}
             />
+            <Text
+              className="text-neutrals-700"
+              scale={"content"}
+              weight={"accent"}
+            >
+              Intended Stages
+            </Text>
+            <Checkbox
+              variant="grid"
+              name="intended_stage_ids"
+              options={stageOptions}
+              label=""
+              isLoading={isStagesPending}
+              isLoadingText="Fetching stages"
+            />
           </>
         </form>
 
@@ -134,7 +152,7 @@ export default function AddSubject({ defaults }: Props) {
             type="submit"
             form="subject-create"
           >
-            {isEditMode ? "Edit class" : "Add class"}
+            {isEditMode ? "Edit subject" : "Add subject"}
           </Button>
         </div>
       </FormProvider>
