@@ -20,6 +20,7 @@ type CheckboxProps = {
   isLoading?: boolean;
   isLoadingText?: string;
   info?: string;
+  variant?: "dropdown" | "grid";
 };
 
 const Checkbox = ({
@@ -31,6 +32,7 @@ const Checkbox = ({
   isLoading,
   isLoadingText = "Loading",
   info,
+  variant = "dropdown",
 }: CheckboxProps) => {
   const {
     control,
@@ -78,6 +80,70 @@ const Checkbox = ({
 
         const isDisabled = disabled || isLoading;
         const isMaxedOut = max !== undefined && value.length >= max;
+
+        if (variant === "grid") {
+          if (isLoading || options.length === 0) return <></>;
+
+          return (
+            <div>
+              {label && (
+                <span
+                  className={clsx(
+                    "mb-2 block text-[0.875rem] text-neutral-400",
+                    isDisabled && "text-neutrals-100"
+                  )}
+                >
+                  {label}
+                </span>
+              )}
+
+              <div className="grid grid-cols-2 gap-3">
+                {options.map((option) => {
+                  const isSelected = value.includes(option.value);
+                  const isOptionDisabled =
+                    isDisabled || (!isSelected && isMaxedOut);
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => toggleOption(option)}
+                      disabled={isOptionDisabled}
+                      className={clsx(
+                        "w-full text-neutrals-1000 text-left px-ml py-2 text-[0.875rem] md:text-[1rem] cursor-pointer flex items-center justify-between gap-2 rounded-[8px] border border-[#F0EBFB] bg-white",
+                        isOptionDisabled &&
+                          "text-neutrals-200 cursor-not-allowed"
+                      )}
+                    >
+                      <span>{option.label}</span>
+                      <TickSquare
+                        variant={isSelected ? "Bold" : "Linear"}
+                        size={20}
+                        className={clsx(
+                          isSelected
+                            ? "text-primary-500"
+                            : "text-neutrals-300"
+                        )}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+
+              {error && (
+                <>
+                  <XIcon size={16} color="#C03744" />{" "}
+                  <span className="ml-2 text-xs text-error-200">{error}</span>
+                </>
+              )}
+
+              {info && (
+                <div className="flex">
+                  <span className="text-xs text-neutrals-400">{info}</span>
+                </div>
+              )}
+            </div>
+          );
+        }
 
         return (
           <div className="relative" ref={containerRef}>

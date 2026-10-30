@@ -1,7 +1,8 @@
+import { requiredString } from "@/lib/utils/zod-schemas";
 import { z } from "zod";
 
 export const createSubjectSchema = z.object({
-  name: z.string(),
+  name: requiredString,
   code: z.string().optional(),
   description: z.string().optional(),
   department: z.string().optional(),
