@@ -1,5 +1,5 @@
 "use client";
-import { useFormContext, get } from "react-hook-form";
+import { useFormContext, get, FieldError } from "react-hook-form";
 import { XIcon } from "@phosphor-icons/react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { EyeSlash, Eye, SearchNormal } from "iconsax-reactjs";
@@ -12,7 +12,7 @@ type InputProps = {
   search?: boolean;
   value?: string;
   label?: string;
-  onChange?: (e: any[]) => void;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>; 
   isSuccess?: boolean;
   isLoading?: boolean;
   isWarning?: boolean;
@@ -42,9 +42,7 @@ const Input = ({
     ? formContext.register(name)
     : { name, value, onChange };
 
-  const error = get(formContext?.formState?.errors, name)?.message as
-    | string
-    | undefined;
+  const error = (get(formContext?.formState?.errors, name) as FieldError | undefined)?.message;
 
   const hasUnauthorizedServerError =
     !isControlled &&

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useFormContext, get } from "react-hook-form";
+import { useFormContext, get, FieldError } from "react-hook-form";
 import countryCodesList from "country-codes-list";
 import { IconSearch } from "@tabler/icons-react";
 import { ArrowSquareDown } from "iconsax-reactjs";
@@ -36,8 +36,7 @@ const CountrySelectField = ({ name, placeholder }: CountrySelectFieldProps) => {
   } = useFormContext();
 
   const value = watch(name);
-  const error = get(errors, name)?.message as string | undefined;
-
+  const error = (get(errors, name) as FieldError | undefined)?.message;
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const wrapperRef = useRef<HTMLDivElement>(null);
