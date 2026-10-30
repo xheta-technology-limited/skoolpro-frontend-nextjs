@@ -12,28 +12,19 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import { useListArms } from "@/features/academic-year/api/list-arms";
 import { useListLevels } from "@/features/academic-year/api/list-levels";
 import { useProgressRouter } from "@/features/page-loader";
 import { createSelectOptions, titleCase } from "@/lib/helpers";
 import { keepPreviousData } from "@tanstack/react-query";
 import { AddSquare, CloseSquare, Edit } from "iconsax-reactjs";
-import { useMemo, useState } from "react";
-import AddSubject from "../modals/add-subject";
-import { CreateArmFormData } from "@/features/academic-year/schemas/create-arm";
-import { useDeleteArm } from "@/features/academic-year/api/delete-arm";
+import { useState } from "react";
+import AddAssignment from "../modals/add-assignment";
 import { toast } from "sonner";
-import { useListSubjects } from "@/features/academic-year/api/list-subjects";
 import { NoData } from "@/components/icons";
 import { useDeleteSubject } from "@/features/academic-year/api/delete-subject";
-import { useListDepartments } from "@/features/academic-year/api/list-departments";
-import { useListStages } from "@/features/academic-year/api/list-stages";
-import { SearchInput } from "@/components/ui/form/input";
-import { Subject } from "@/features/academic-year/types/api/subjects";
-import { CreateSubjectRequest } from "@/features/academic-year/schemas/create-subject-schema";
 import { useListLevelSubjectAssignments } from "@/features/academic-year/api/list-level-overview";
-import { error } from "console";
 import { SubjectAssignment } from "@/features/academic-year";
+import { useDeleteSubjectAssignment } from "@/features/academic-year/api/delete-subject-assignment";
 
 const headRow = [
   "Subject",
@@ -50,7 +41,7 @@ export default function SubjectAssignments() {
   const [deleteModal, setDeleteModal] = useState(false);
   const [targetDeleteID, setDeleteID] = useState<undefined | string>(undefined);
   const [editDefaults, setEditDefaults] = useState<
-    (CreateSubjectRequest & { subject_id?: string }) | undefined
+    SubjectAssignment | undefined
   >(undefined);
   const {
     data: assignments,
@@ -68,7 +59,7 @@ export default function SubjectAssignments() {
     }
   );
 
-  const { data: levelsData, isPending: isLevelsPending } = useListLevels({
+  const { data: levelsData } = useListLevels({
     refetchOnWindowFocus: false,
   });
   const l = createSelectOptions(levelsData, "id", "name");
@@ -76,21 +67,13 @@ export default function SubjectAssignments() {
     ? [{ value: "nil", label: "Select level" }, ...l]
     : [{ value: "nil", label: "Select level" }];
 
-  const { mutate: deleteSubjectMutate, isPending: isDeletePending } =
-    useDeleteSubject();
+  const { mutate: deleteAssignmentMutate, isPending: isDeletePending } =
+    useDeleteSubjectAssignment();
 
-  const onEdit = (subject: SubjectAssignment) => {
-    setEditDefaults({
-      subject_id: subject.id,
-      name: subject.name || "",
-      code: subject.code || "",
-      description: subject.description || "",
-      department: subject.department || "",
-      is_active: subject.is_active,
-      intended_stage_ids: subject.intended_stages.map((stage) => stage.id),
-    });
+  const onEdit = (assignment: SubjectAssignment) => {
+    setEditDefaults(assignment);
     router.push(
-      `/super-admin/structure-and-curriculum/curriculum?tab=subjects&add-subject=true&subject-id=${subject.id}`
+      `/super-admin/structure-and-curriculum/curriculum?tab=subject-assignments&add-assignment=true&assignment-id=${assignment.id}`
     );
   };
 
@@ -103,8 +86,8 @@ export default function SubjectAssignments() {
       alert("No level ID!");
       return;
     }
-    deleteSubjectMutate(
-      { subjectId: targetDeleteID },
+    deleteAssignmentMutate(
+      { assignmentId: targetDeleteID },
       {
         onSuccess: () => {
           setDeleteID(undefined);
@@ -124,7 +107,7 @@ export default function SubjectAssignments() {
         description="Delete this subject?"
         onConfirm={onDeleteSubject}
       />
-      <AddSubject defaults={editDefaults} />
+      <AddAssignment defaults={editDefaults} />
       <div className="w-full mb-4 flex flex-wrap gap-2 justify-between items-center">
         <div className="flex flex-col gap-1 text-left max-w-146.5">
           <div className="flex gap-2 items-center">
@@ -151,7 +134,7 @@ export default function SubjectAssignments() {
             onClick={() => {
               setEditDefaults(undefined);
               router.push(
-                "/super-admin/structure-and-curriculum/curriculum?tab=subjects&add-subject=true"
+                "/super-admin/structure-and-curriculum/curriculum?tab=subject-assignments&add-assignment=true"
               );
             }}
             leftIcon={
@@ -192,14 +175,9 @@ export default function SubjectAssignments() {
               )}
 
               {!isAssignmentsPending && assignments?.length === 0 && (
-                <div className="w-fit mx-auto">
-                  {" "}
-                  <NoData
-                    title="No Subject Assignments"
-                    subTitle="You haven't assigned any subjects, click the button above to make assignments"
-                    className="w-97.5 h-143.75"
-                  />
-                </div>
+                <Text scale={"caption"} className="text-neutrals-800">
+                  No subject assignments for the selected level.
+                </Text>
               )}
 
               {assignments && assignments?.length > 0 && (
@@ -246,7 +224,7 @@ export default function SubjectAssignments() {
                                 className="text-success-300"
                                 scale={"caption"}
                               >
-                                Whole level
+                                Compulsory
                               </Text>
                             ) : (
                               "Elective"
