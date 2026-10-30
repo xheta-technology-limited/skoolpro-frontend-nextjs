@@ -1,20 +1,9 @@
 "use client";
 
-import { Text } from "@/components/ui";
 import StructureItem from "../structure-item";
 import { useProgressRouter } from "@/features/page-loader";
 import { useGetEducationSummary } from "@/features/academic-year/api/get-education-summary";
-
-type Block = {
-  label: string;
-  data: number;
-};
-const BLOCKS: Block[] = [
-  { label: "Stages", data: 10 },
-  { label: "Levels", data: 10 },
-  { label: "Classes", data: 10 },
-  { label: "Active levels", data: 10 },
-];
+import { BlockElement } from "../../../_components/block-element";
 
 export default function EducationStructure() {
   const router = useProgressRouter();
@@ -52,16 +41,3 @@ export default function EducationStructure() {
     </StructureItem>
   );
 }
-
-const BlockElement = ({ label, num }: { label: string; num: number }) => {
-  return (
-    <div className="p-4 border border-primary-100 flex flex-col gap-2 rounded-ml min-w-28 max-w-full lg:w-60">
-      <Text scale={"caption"} className="text-neutrals-800">
-        {label}
-      </Text>
-      <Text scale={"feature"} weight={"accent"} className="text-neutrals-800">
-        {num}
-      </Text>
-    </div>
-  );
-};
