@@ -187,9 +187,7 @@ export default function ClassStructure() {
                       <TableCell>{b.code || "-"}</TableCell>
                       <TableCell>{"placeholder, no teacher name"}</TableCell>
                       <TableCell>{b.capacity || "-"}</TableCell>
-                      <TableCell>
-                        {"placeholder, no subject counts from backend"}
-                      </TableCell>
+                      <TableCell>{b.subject_count || "-"}</TableCell>
                       <TableCell
                         style={{
                           color: b.is_active ? "#0b7b69" : "#CC7914",

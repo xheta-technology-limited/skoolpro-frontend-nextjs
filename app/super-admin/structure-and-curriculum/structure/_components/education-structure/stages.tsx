@@ -167,7 +167,7 @@ export default function Stages() {
                         <TableCell>{titleCase(b.name) || ""}</TableCell>
                         <TableCell>{b.code}</TableCell>
                         <TableCell>{b.global_sequence || "-"}</TableCell>
-                        <TableCell>{"placeholder for now"}</TableCell>
+                        <TableCell>{b.stage_sequence}</TableCell>
                         <TableCell>{b.typical_entry_age || "-"}</TableCell>
                         <TableCell
                           style={{

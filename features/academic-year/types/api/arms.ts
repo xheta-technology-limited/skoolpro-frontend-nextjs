@@ -19,6 +19,7 @@ export type EducationArm = {
   capacity: number;
   is_active: boolean;
   level: EducationArmLevel;
+  subject_count: number;
   created_at: string;
   updated_at: string;
 };
