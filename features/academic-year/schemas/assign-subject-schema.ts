@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export const assignSubjectSchema = z.object({
   subject_id: requiredString,
-  education_level_id: z.string(),
+  education_level_id: requiredString,
   class_section_id: z.string().optional(),
   is_compulsory: z.union([z.string(), z.boolean()]).optional(), //switched to boolean in submit handler
   pass_mark: z

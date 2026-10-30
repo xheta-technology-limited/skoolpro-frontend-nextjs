@@ -14,7 +14,7 @@ import {
   type Icon,
   LogoutCurve,
   UserOctagon,
-  Document
+  Document,
 } from "iconsax-reactjs";
 
 export type DashboardNavigationItem = {
@@ -54,14 +54,41 @@ export const dashboardNavigation: DashboardNavigationItem[] = [
     icon: MoneyChange,
   },
   {
-    label: "Curriculum management",
-    href: "/dashboard/curriculum",
-    icon: Book,
+    label: "Structure & Curriculum",
+    href: "/super-admin/structure-and-curriculum/structure",
+    icon: Book1,
+    children: [
+      {
+        label: "Classes structure",
+        href: "/super-admin/structure-and-curriculum/structure?tab=classes",
+        icon: null,
+      },
+      {
+        label: "Add class",
+        href: "/super-admin/structure-and-curriculum/structure?tab=classes&add-class=true",
+        icon: null,
+      },
+      {
+        label: "Add subject",
+        href: "/super-admin/structure-and-curriculum/curriculum?tab=subjects&add-subject=true",
+        icon: null,
+      },
+      {
+        label: "Class subjects",
+        href: "/super-admin/structure-and-curriculum/curriculum?tab=class-subjects",
+        icon: null,
+      },
+      {
+        label: "All subjects",
+        href: "/super-admin/structure-and-curriculum/curriculum?tab=subjects",
+        icon: null,
+      },
+    ],
   },
   {
     label: "Exam management",
     href: "/dashboard/exams",
-    icon: Book1,
+    icon: Book,
   },
   {
     label: "Hostel management",
