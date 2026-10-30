@@ -107,7 +107,10 @@ export default function AddAssignment({ defaults }: Props) {
   );
   const armOptions = createSelectOptions(armsData, "id", "name");
 
-  const handleClose = () => router.back();
+  const handleClose = () =>
+    router.push(
+      "/super-admin/structure-and-curriculum/curriculum?tab=subject-assignments"
+    );
 
   const onCreate = (data: AssignmentFormData) => {
     const { scope, ...payload } = data;

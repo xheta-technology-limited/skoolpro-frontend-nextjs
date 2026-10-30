@@ -109,7 +109,8 @@ export default function AddClass({ defaults }: Props) {
     methods.reset(defaults ?? {});
   }, [defaults]);
 
-  const handleClose = () => router.back();
+  const handleClose = () =>
+    router.push("/super-admin/structure-and-curriculum/structure?tab=classes");
   return (
     <FormModal
       onOpenChange={handleClose}

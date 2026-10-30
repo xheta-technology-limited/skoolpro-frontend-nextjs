@@ -43,7 +43,8 @@ export default function AddStage() {
   const onCreate = (data: CreateStageFormData) => {
     const payload = {
       ...data,
-      school_type_id: data.school_type_id === "" ? undefined : data.school_type_id,
+      school_type_id:
+        data.school_type_id === "" ? undefined : data.school_type_id,
     };
     createMutate(payload as CreateStageFormData, {
       onSuccess: () => {
@@ -60,13 +61,12 @@ export default function AddStage() {
     onCreate(data);
   };
 
-  const handleClose = () => router.back();
+  const handleClose = () =>
+    router.push(
+      "/super-admin/structure-and-curriculum/structure?tab=education"
+    );
   return (
-    <FormModal
-      onOpenChange={handleClose}
-      open={isOpen}
-      title="Add Stage"
-    >
+    <FormModal onOpenChange={handleClose} open={isOpen} title="Add Stage">
       <FormProvider {...methods}>
         <form
           onSubmit={methods.handleSubmit(onSubmit as any)}

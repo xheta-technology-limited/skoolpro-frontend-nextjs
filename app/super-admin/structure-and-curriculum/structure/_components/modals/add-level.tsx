@@ -105,7 +105,10 @@ export default function AddLevel({ defaults }: Props) {
     methods.reset(defaults ?? {});
   }, [defaults]);
 
-  const handleClose = () => router.back();
+  const handleClose = () =>
+    router.push(
+      "/super-admin/structure-and-curriculum/structure?tab=education"
+    );
   return (
     <FormModal
       onOpenChange={handleClose}
@@ -141,8 +144,8 @@ export default function AddLevel({ defaults }: Props) {
             <Input name="name" label="Enter name" />
             <Input name="code" label="Enter code" />
             <Input name="typical_entry_age" label="Enter typical entry age" />
-            <Input name="uniform_fee" label="Uniform fee" />
-            <Input name="book_fee" label="Book fee" />
+            {/* <Input name="uniform_fee" label="Uniform fee" />
+            <Input name="book_fee" label="Book fee" /> */}
           </>
         </form>
 

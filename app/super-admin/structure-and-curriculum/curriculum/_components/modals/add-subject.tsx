@@ -102,7 +102,10 @@ export default function AddSubject({ defaults }: Props) {
     methods.reset(defaults ?? {});
   }, [defaults]);
 
-  const handleClose = () => router.back();
+  const handleClose = () =>
+    router.push(
+      "/super-admin/structure-and-curriculum/curriculum?tab=subjects"
+    );
   return (
     <FormModal
       onOpenChange={handleClose}
@@ -158,4 +161,3 @@ export default function AddSubject({ defaults }: Props) {
     </FormModal>
   );
 }
-
