@@ -37,11 +37,13 @@ export type DocumentVerificationStatus =
 // they're assumed to match the other paginated lists (guardians,
 // students). Check `search` in particular against the real endpoint.
 export type GetDocumentsParams = {
-  purpose?: string; // exact match
+  purpose?: string; 
+  title?: string;
   source?: DocumentSource;
   page?: number;
   per_page?: number;
   search?: string;
+  verification_status?: DocumentVerificationStatus;
 };
 
 // Confirmed against a real list response. The api returns no file URL
@@ -128,10 +130,12 @@ export type DocumentTypesMap = Record<string, DocumentTypeRules>;
 // response is paginated. A `type` alias (not interface) so it can be
 // passed as the api client's `params`.
 export type GetReviewQueueParams = {
+  title?: string;
   purpose?: string;
   documentable_type?: string;
   page?: number;
   per_page?: number;
+  verification_status?: DocumentVerificationStatus;
 };
 
 export type DocumentReviewAction =

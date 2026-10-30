@@ -437,185 +437,182 @@ export default function SchoolRecordPage() {
 
       <div className="mb-8 flex w-full flex-col gap-4 rounded-2xl border border-grays-borders bg-white p-4">
         {mode === "view" && (
-          <>
-            <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1 [font-family:var(--font-inter)]">
-              SCHOOL IDENTITY
-            </span>
+        <>
+          <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1 [font-family:var(--font-inter)]">
+            SCHOOL IDENTITY
+          </span>
 
-            <div className="flex min-h-41 w-full flex-col items-start justify-between gap-4 rounded-2xl border border-primary-100 bg-primary-bg px-4 py-6 lg:flex-row sm:items-center sm:px-12 sm:py-8">
-              <div className="flex w-full min-w-0 items-center gap-4">
-                <Avatar className="h-25 w-25 shrink-0">
-                  {profile.logo_url && (
-                    <AvatarImage
-                      src={profile.logo_url}
-                      alt={`${schoolName} logo`}
-                      className="object-contain"
-                    />
-                  )}
-                  <AvatarFallback className="bg-neutrals-100">
-                    {getInitials(schoolName)}
-                  </AvatarFallback>
-                </Avatar>
+          <div className="flex min-h-41 w-full flex-col items-start justify-between gap-4 rounded-2xl border border-primary-100 bg-primary-bg px-4 py-6 lg:flex-row sm:items-center sm:px-12 sm:py-8">
+            <div className="flex w-full min-w-0 items-center gap-4">
+              <Avatar className="h-25 w-25 shrink-0">
+                {profile.logo_url && (
+                  <AvatarImage
+                    src={profile.logo_url}
+                    alt={`${schoolName} logo`}
+                    className="object-contain"
+                  />
+                )} 
+                <AvatarFallback className="bg-neutrals-100">
+                  {getInitials(schoolName)}
+                </AvatarFallback>
+              </Avatar>
 
-                <div className="flex min-w-0 flex-col gap-1">
-                  <span className="text-[24px] font-semibold leading-[1.2] text-primary-1000">
-                    {schoolName}
-                  </span>
+              <div className="flex min-w-0 flex-col gap-1">
+                <span className="text-[24px] font-semibold leading-[1.2] text-primary-1000">
+                  {schoolName}
+                </span>
 
-                  <span className="text-[16px] font-normal leading-[1.2] text-neutrals-700">
-                    {email}
-                  </span>
+                <span className="text-[16px] font-normal leading-[1.2] text-neutrals-700">
+                  {email}
+                </span>
 
-                  <span className="text-[16px] font-normal leading-[1.2] text-neutrals-700">
-                    {address}
-                  </span>
-                </div>
+                <span className="text-[16px] font-normal leading-[1.2] text-neutrals-700">
+                  {address}
+                </span>
               </div>
-
-              <Button
-                type="button"
-                variant="secondary"
-                size="lg"
-                onClick={enterEditMode}
-                leftIcon={<Edit size={24} variant="Bulk" color="#010081" />}
-                className="w-full shrink-0 lg:w-32.25"
-              >
-                Edit
-              </Button>
             </div>
 
-            <RecordTableSection
-              title="Registration number"
-              columns={[
-                { key: "number", label: "Registration number" },
-                { key: "country", label: "Issuing country" },
-                { key: "authority", label: "Issuing authority" },
-                { key: "expiry", label: "Expiry date" },
-              ]}
-              rows={registrationRows}
-              onAdd={() => setIsAddRegistrationOpen(true)}
-              onEditRow={(rowId) => setEditingRegistrationId(rowId)}
-              onDeleteRow={handleDeleteRegistration}
-              deletingRowId={deletingRegistrationId}
-              emptyLabel="No registration numbers added yet"
-            />
+            <Button
+              type="button"
+              variant="secondary"
+              size="lg"
+              onClick={enterEditMode}
+              leftIcon={<Edit size={24} variant="Bulk" color="#010081" />}
+              className="w-full shrink-0 lg:w-32.25"
+            >
+              Edit
+            </Button>
+          </div>
 
-            <RecordTableSection
-              title="Location"
-              columns={[
-                { key: "address", label: "Address line" },
-                { key: "city", label: "City" },
-                { key: "country", label: "Country" },
-                { key: "postalCode", label: "Postal Code" },
-              ]}
-              rows={locationRows}
-              onAdd={() => setIsAddLocationOpen(true)}
-              onEditRow={(rowId) => setEditingCampusId(rowId)}
-              onDeleteRow={handleDeleteLocation}
-              deletingRowId={deletingCampusId}
-              emptyLabel="No locations added yet"
-            />
+          <RecordTableSection
+            title="Registration number"
+            columns={[
+              { key: "number", label: "Registration number" },
+              { key: "country", label: "Issuing country" },
+              { key: "authority", label: "Issuing authority" },
+              { key: "expiry", label: "Expiry date" },
+            ]}
+            rows={registrationRows}
+            onAdd={() => setIsAddRegistrationOpen(true)}
+            onEditRow={(rowId) => setEditingRegistrationId(rowId)}
+            onDeleteRow={handleDeleteRegistration}
+            deletingRowId={deletingRegistrationId}
+            emptyLabel="No registration numbers added yet"
+          />
 
-            <RecordTableSection
-              title="Contact"
-              columns={[
-                { key: "type", label: "Contact type" },
-                { key: "label", label: "Label" },
-                { key: "value", label: "Value" },
-                { key: "assigned", label: "Assigned" },
-              ]}
-              rows={contactRows}
-              onAdd={() => setIsAddContactOpen(true)}
-              onEditRow={(rowId) => setEditingContactId(rowId)}
-              onDeleteRow={handleDeleteContact}
-              deletingRowId={deletingContactId}
-              emptyLabel="No contacts added yet"
-            />
+          <RecordTableSection
+            title="Location"
+            columns={[
+              { key: "address", label: "Address line" },
+              { key: "city", label: "City" },
+              { key: "country", label: "Country" },
+              { key: "postalCode", label: "Postal Code" },
+            ]}
+            rows={locationRows}
+            onAdd={() => setIsAddLocationOpen(true)}
+            onEditRow={(rowId) => setEditingCampusId(rowId)}
+            onDeleteRow={handleDeleteLocation}
+            deletingRowId={deletingCampusId}
+            emptyLabel="No locations added yet"
+          />
 
-            <RecordTableSection
-              title="Key contact"
-              columns={[
-                { key: "role", label: "Role type" },
-                { key: "name", label: "Full name" },
-                { key: "title", label: "Role" },
-                { key: "email", label: "Email" },
-              ]}
-              rows={keyContactRows}
-              onAdd={() => setIsAddKeyContactOpen(true)}
-              onEditRow={(rowId) => setEditingKeyContactId(rowId)}
-              onDeleteRow={handleDeleteKeyContact}
-              deletingRowId={deletingKeyContactId}
-              emptyLabel="No key contacts added yet"
-            />
+          <RecordTableSection
+            title="Contact"
+            columns={[
+              { key: "type", label: "Contact type" },
+              { key: "label", label: "Label" },
+              { key: "value", label: "Value" },
+              { key: "assigned", label: "Assigned" },
+            ]}
+            rows={contactRows}
+            onAdd={() => setIsAddContactOpen(true)}
+            onEditRow={(rowId) => setEditingContactId(rowId)}
+            onDeleteRow={handleDeleteContact}
+            deletingRowId={deletingContactId}
+            emptyLabel="No contacts added yet"
+          />
 
-            <RecordTableSection
-              title="Color code"
-              columns={[
-                { key: "primary", label: "Primary color", isColor: true },
-                { key: "secondary", label: "Secondary color", isColor: true },
-                { key: "tertiary", label: "Tertiary color", isColor: true },
-                { key: "accent", label: "Accent color", isColor: true },
-              ]}
-              rows={colorCodeRows}
-              onEditRow={() => setIsEditColorCodeOpen(true)}
-            />
-          </>
+          <RecordTableSection
+            title="Key contact"
+            columns={[
+              { key: "role", label: "Role type" },
+              { key: "name", label: "Full name" },
+              { key: "title", label: "Role" },
+              { key: "email", label: "Email" },
+            ]}
+            rows={keyContactRows}
+            onAdd={() => setIsAddKeyContactOpen(true)}
+            onEditRow={(rowId) => setEditingKeyContactId(rowId)}
+            onDeleteRow={handleDeleteKeyContact}
+            deletingRowId={deletingKeyContactId}
+            emptyLabel="No key contacts added yet"
+          />
+
+          <RecordTableSection
+            title="Color code"
+            columns={[
+              { key: "primary", label: "Primary color", isColor: true },
+              { key: "secondary", label: "Secondary color", isColor: true },
+              { key: "tertiary", label: "Tertiary color", isColor: true },
+              { key: "accent", label: "Accent color", isColor: true },
+            ]}
+            rows={colorCodeRows}
+            onEditRow={() => setIsEditColorCodeOpen(true)}
+          />
+        </>
         )}
 
         {mode === "edit" && (
-          <>
-            <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1 [font-family:var(--font-inter)]">
-              SCHOOL IDENTITY
-            </span>
+        <>
+          <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1 [font-family:var(--font-inter)]">
+            SCHOOL IDENTITY
+          </span>
 
-            <FormProvider {...methods}>
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="flex w-full flex-col gap-4 rounded-2xl"
-              >
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <Input name="schoolName" label="School name" />
-                  <Input name="displayName" label="Short name" />
-                </div>
+          <FormProvider {...methods}>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex w-full flex-col gap-4 rounded-2xl"
+            >
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Input name="schoolName" label="School name" />
+                <Input name="displayName" label="Short name" />
+              </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div className="[&>div>button:first-child]:bg-primary-bg!">
-                    <Checkbox
-                      name="schoolTypes"
-                      label="School type"
-                      options={SCHOOL_TYPE_OPTIONS}
-                    />
-                  </div>
-
-                  <Select
-                    name="ownershipType"
-                    placeholder="Ownership type"
-                    options={OWNERSHIP_TYPE_OPTIONS}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="[&>div>button:first-child]:bg-primary-bg!">
+                  <Checkbox
+                    name="schoolTypes"
+                    label="School type"
+                    options={SCHOOL_TYPE_OPTIONS}
                   />
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <Input name="issuingAuthority" label="Issuing authority" />
-                  <CountrySelectField
-                    name="countryCode"
-                    placeholder="Country"
-                  />
-                </div>
-
-                <DatePicker
-                  name="dateOfEstablishment"
-                  label="Date of establishment"
+                <Select
+                  name="ownershipType"
+                  placeholder="Ownership type"
+                  options={OWNERSHIP_TYPE_OPTIONS}
                 />
+              </div>
 
-                <TextArea name="motto" label="School motto" maxLength={200} />
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Input name="issuingAuthority" label="Issuing authority" />
+                <CountrySelectField name="countryCode" placeholder="Country" />
+              </div>
 
-                <div className="flex justify-end">
-                  <Button type="submit" loading={isSaving} size="lg">
-                    {isSaving ? "Saving" : "Save"}
-                  </Button>
-                </div>
-              </form>
-            </FormProvider>
+              <DatePicker
+                name="dateOfEstablishment"
+                label="Date of establishment"
+              />
+
+              <TextArea name="motto" label="School motto" maxLength={200} />
+
+              <div className="flex justify-end">
+                <Button type="submit" loading={isSaving} size="lg">
+                  {isSaving ? "Saving" : "Save"}
+                </Button>
+              </div>
+            </form>
+          </FormProvider>
           </>
         )}
       </div>
