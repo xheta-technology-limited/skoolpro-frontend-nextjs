@@ -437,10 +437,25 @@ export default function SchoolRecordPage() {
 
       <div className="mb-8 flex w-full flex-col gap-4 rounded-2xl border border-grays-borders bg-white p-4">
         {mode === "view" && (
-          <>
-            <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1 [font-family:var(--font-inter)]">
-              SCHOOL IDENTITY
-            </span>
+        <>
+          <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1 [font-family:var(--font-inter)]">
+            SCHOOL IDENTITY
+          </span>
+
+          <div className="flex min-h-41 w-full flex-col items-start justify-between gap-4 rounded-2xl border border-primary-100 bg-primary-bg px-4 py-6 lg:flex-row sm:items-center sm:px-12 sm:py-8">
+            <div className="flex w-full min-w-0 items-center gap-4">
+              <Avatar className="h-25 w-25 shrink-0">
+                {profile.logo_url && (
+                  <AvatarImage
+                    src={profile.logo_url}
+                    alt={`${schoolName} logo`}
+                    className="object-contain"
+                  />
+                )} 
+                <AvatarFallback className="bg-neutrals-100">
+                  {getInitials(schoolName)}
+                </AvatarFallback>
+              </Avatar>
 
             <div className="flex min-h-41 w-full flex-col items-start justify-between gap-4 rounded-2xl border border-primary-100 bg-primary-bg px-4 py-6 lg:flex-row sm:items-center sm:px-12 sm:py-8">
               <div className="flex w-full min-w-0 items-center gap-4">
@@ -562,21 +577,25 @@ export default function SchoolRecordPage() {
           </>
         )}
 
-        {mode === "edit" && (
-          <>
-            <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1 [font-family:var(--font-inter)]">
-              SCHOOL IDENTITY
-            </span>
+          <RecordTableSection
+            title="Color code"
+            columns={[
+              { key: "primary", label: "Primary color", isColor: true },
+              { key: "secondary", label: "Secondary color", isColor: true },
+              { key: "tertiary", label: "Tertiary color", isColor: true },
+              { key: "accent", label: "Accent color", isColor: true },
+            ]}
+            rows={colorCodeRows}
+            onEditRow={() => setIsEditColorCodeOpen(true)}
+          />
+        </>
+        )}
 
-            <FormProvider {...methods}>
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="flex w-full flex-col gap-4 rounded-2xl"
-              >
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <Input name="schoolName" label="School name" />
-                  <Input name="displayName" label="Short name" />
-                </div>
+        {mode === "edit" && (
+        <>
+          <span className="text-[16px] font-normal leading-6 text-neutrals-text-body-light-1 [font-family:var(--font-inter)]">
+            SCHOOL IDENTITY
+          </span>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="[&>div>button:first-child]:bg-primary-bg!">
@@ -609,13 +628,20 @@ export default function SchoolRecordPage() {
 
                 <TextArea name="motto" label="School motto" maxLength={200} />
 
-                <div className="flex justify-end">
-                  <Button type="submit" loading={isSaving} size="lg">
-                    {isSaving ? "Saving" : "Save"}
-                  </Button>
-                </div>
-              </form>
-            </FormProvider>
+              <DatePicker
+                name="dateOfEstablishment"
+                label="Date of establishment"
+              />
+
+              <TextArea name="motto" label="School motto" maxLength={200} />
+
+              <div className="flex justify-end">
+                <Button type="submit" loading={isSaving} size="lg">
+                  {isSaving ? "Saving" : "Save"}
+                </Button>
+              </div>
+            </form>
+          </FormProvider>
           </>
         )}
       </div>
