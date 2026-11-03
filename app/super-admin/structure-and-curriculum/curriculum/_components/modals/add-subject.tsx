@@ -55,7 +55,7 @@ export default function AddSubject({ defaults }: Props) {
     useListDepartments({
       refetchOnWindowFocus: false,
     });
-  const departmentOptions = createSelectOptions(departmentData, "name", "name");
+  const departmentOptions = createSelectOptions(departmentData, "id", "name");
 
   const onCreate = (data: CreateSubjectRequest) => {
     const { subject_id, level_id, ...payload } = data as any;

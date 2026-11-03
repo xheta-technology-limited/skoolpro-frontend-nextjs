@@ -169,7 +169,7 @@ function StaffManagement() {
                     <TableCell>{staff.staff_number ?? "-"}</TableCell>
                     <TableCell>{titleCase(staff.category) ?? "-"}</TableCell>
                     <TableCell>
-                      {titleCase(staff.department || "") ?? "-"}
+                      {titleCase(staff.department?.name || "") ?? "-"}
                     </TableCell>
                     <TableCell>
                       {titleCase(staff.contract_type || "") ?? "-"}

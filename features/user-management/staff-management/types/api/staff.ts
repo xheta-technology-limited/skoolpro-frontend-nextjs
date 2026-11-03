@@ -1,3 +1,5 @@
+import { Department } from "@/types";
+
 export type StaffCategory = string;
 
 export type EmploymentType = string;
@@ -5,6 +7,8 @@ export type EmploymentType = string;
 export type StaffStatus = "active" | "inactive";
 
 export type WorkingDay = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun";
+
+export type StaffDepartment = Pick<Department, "id" | "name" | "code">;
 
 export interface Staff {
   id: string;
@@ -26,7 +30,7 @@ export interface Staff {
   phone: string | null;
   address: string | null;
   category: StaffCategory;
-  department: string | null;
+  department: StaffDepartment;
   reporting_manager_id: string | null;
   campus_id: string | null;
   work_location: string | null;
