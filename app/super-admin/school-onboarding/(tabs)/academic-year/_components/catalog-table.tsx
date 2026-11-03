@@ -63,7 +63,7 @@ export default function CatalogTable({ data, isSubjectsPending }: Props) {
               >
                 <TableCell>{s.name}</TableCell>
                 <TableCell>{s.code}</TableCell>
-                <TableCell>{s.department}</TableCell>
+                <TableCell>{s.department?.name}</TableCell>
                 <TableCell>
                   {s.intended_stages.map((stage) => stage.name).join(", ")}
                 </TableCell>

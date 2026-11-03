@@ -18,6 +18,7 @@ import { createSelectOptions } from "@/lib/helpers";
 import { Staff } from "@/features/user-management/staff-management/types/api/staff";
 import { useListCampuses } from "@/features/campuses/api/list-campuses";
 import { Campus } from "@/features/campuses/types/api/campus";
+import { useListDepartments } from "@/features/academic-year/api/list-departments";
 
 interface Props {
   methods: UseFormReturn<AddStaffSecondFormData>;
@@ -39,6 +40,8 @@ const SecondModal = ({ methods, onSubmit, isPending }: Props) => {
   const { data: allCampus, isPending: isCampusPending } = useListCampuses({
     enabled: false,
   });
+  const { data: allDepartments, isPending: isDepartmentPending } =
+    useListDepartments({ enabled: isOpen });
 
   const staffOptions = createSelectOptions<Staff, "id", "full_name">(
     allStaff?.data,
@@ -50,6 +53,7 @@ const SecondModal = ({ methods, onSubmit, isPending }: Props) => {
     "id",
     "name"
   );
+  const departmentOptions = createSelectOptions(allDepartments, "id", "name");
   if (!isOpen) {
     return null;
   }
@@ -98,7 +102,12 @@ const SecondModal = ({ methods, onSubmit, isPending }: Props) => {
                 label="Employment starts"
               />
 
-              <Select name="department" label="Department" options={[]} />
+              <Select
+                name="department"
+                label="Department"
+                isLoading={isDepartmentPending}
+                options={departmentOptions || []}
+              />
               <Select name="contract_type" label="Contract type" options={[]} />
 
               <Select

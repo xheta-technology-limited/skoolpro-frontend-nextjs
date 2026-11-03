@@ -1,3 +1,5 @@
+import { Department } from "@/types";
+
 interface Stages {
   id: string;
   name: string;
@@ -14,7 +16,7 @@ export interface Subject {
   slug: string;
   code: string;
   description: string | null;
-  department: string | null;
+  department: Pick<Department, "id" | "name" | "code">;
   is_active: boolean;
   intended_stages: Array<Stages>;
   created_at: string;
