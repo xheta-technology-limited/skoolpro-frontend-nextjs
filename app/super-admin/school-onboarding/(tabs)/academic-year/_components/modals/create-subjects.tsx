@@ -18,6 +18,7 @@ import CatalogTable from "../catalog-table";
 import AssignedSubjectsTable from "../assigned-subjects-table";
 import { SuccessModal } from "@/components/common";
 import { useListStages } from "@/features/academic-year/api/list-stages";
+import { useListDepartments } from "@/features/academic-year/api/list-departments";
 import { useCreateSubject } from "@/features/academic-year/api/create-subject";
 import {
   CreateSubjectRequest,
@@ -63,6 +64,14 @@ export default function CreateSubjects() {
   });
   const stageOptions =
     stages?.map((stage) => ({ label: stage.name, value: stage.id })) || [];
+
+  const { data: departments, isPending: isDepartmentsPending } =
+    useListDepartments({ refetchOnWindowFocus: false });
+  const departmentOptions =
+    departments?.map((department) => ({
+      value: department.id,
+      label: department.name,
+    })) || [];
 
   const { mutate: createSubjectMutate, isPending: isCreateSubjectPending } =
     useCreateSubject();
@@ -161,8 +170,10 @@ export default function CreateSubjects() {
               <Input name="code" label="Enter subject code" />
               <Select
                 name="department"
-                options={[]}
+                options={departmentOptions}
                 label="Select department"
+                isLoading={isDepartmentsPending}
+                isLoadingText="Fetching departments"
               />
               <Checkbox
                 name="intended_stage_ids"
