@@ -97,7 +97,7 @@ export default function Subjects() {
       name: subject.name || "",
       code: subject.code || "",
       description: subject.description || "",
-      department: subject.department?.name || "",
+      department: subject.department?.id || "",
       is_active: subject.is_active,
       intended_stage_ids: subject.intended_stages.map((stage) => stage.id),
     });
