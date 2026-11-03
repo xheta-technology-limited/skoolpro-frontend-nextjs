@@ -76,7 +76,7 @@ export default function Subjects() {
 
   const { data: departmentData, isPending: isDepartmentPending } =
     useListDepartments({ refetchOnWindowFocus: false });
-  const l = createSelectOptions(departmentData, "name", "name");
+  const l = createSelectOptions(departmentData, "id", "name");
   const departmentOptions = l
     ? [{ value: "all", label: "All departments" }, ...l]
     : [{ value: "all", label: "All departments" }];
@@ -97,7 +97,7 @@ export default function Subjects() {
       name: subject.name || "",
       code: subject.code || "",
       description: subject.description || "",
-      department: subject.department || "",
+      department: subject.department?.name || "",
       is_active: subject.is_active,
       intended_stage_ids: subject.intended_stages.map((stage) => stage.id),
     });
@@ -177,6 +177,7 @@ export default function Subjects() {
         <div className="flex items-center gap-2 md:gap-8">
           <MiniSelector
             items={departmentOptions}
+            disabled={isDepartmentPending === true}
             defaultValue={"all"}
             onValueChange={(e) => {
               if (e === "all") {
@@ -188,6 +189,7 @@ export default function Subjects() {
           />
           <MiniSelector
             items={stageOptions}
+            disabled={isStagesPending === true}
             defaultValue={"all"}
             onValueChange={(e) => {
               if (e === "all") {
@@ -244,7 +246,7 @@ export default function Subjects() {
                     <TableRow key={index}>
                       <TableCell>{titleCase(b.name) || ""}</TableCell>
                       <TableCell>{b.code || "-"}</TableCell>
-                      <TableCell>{b.department || "-"}</TableCell>
+                      <TableCell>{b.department?.name || "-"}</TableCell>
                       <TableCell>
                         {b.intended_stages.length === 0
                           ? "-"

@@ -49,14 +49,13 @@ export default function DocumentManagementLayout({
 
         <OpenModalButton />
       </div>
-
-      <TabsNav tabs={DOC_MANAGEMENT_TABS} className="mt-6" />
-
-      <div className="mb-8 w-full rounded-2xl border border-grays-borders bg-white">
-        {children}
-      </div>
-
       <Suspense fallback={null}>
+        <TabsNav tabs={DOC_MANAGEMENT_TABS} className="mt-6" />
+
+        <div className="mb-8 w-full rounded-2xl border border-grays-borders bg-white">
+          {children}
+        </div>
+
         <UploadDocumentModal />
       </Suspense>
     </div>

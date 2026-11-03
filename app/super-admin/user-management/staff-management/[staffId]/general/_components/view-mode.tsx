@@ -112,7 +112,7 @@ export default function ViewMode({ setEditMode, profileData }: Props) {
           />
           <DetailField
             label="Department"
-            value={formatField(profileData.department)}
+            value={formatField(profileData.department?.name)}
           />
           <DetailField
             label="Contract type"
