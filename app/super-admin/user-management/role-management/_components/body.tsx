@@ -119,6 +119,7 @@ export default function Body() {
     <>
       <AddRole />
       <DeleteModal
+        title="Delete Role"
         open={!!deleteID}
         onOpenChange={() => setDeleteID(null)}
         description="You are about to delete this role, do you want to proceed with this action."
@@ -132,12 +133,9 @@ export default function Body() {
             <SearchInput
               value={searchFilter}
               onChange={onSearchInputChange}
-              placeholder="Search staff name"
+              placeholder="Search role"
               className="flex-1"
             />
-            {/* <Text scale={"caption"} className="text-neutrals-700">{`Showing ${
-              metaData?.from ?? 0
-            } - ${metaData?.to ?? 0} of ${metaData?.total ?? 0}`}</Text> */}
           </div>
         </div>
 
@@ -228,17 +226,6 @@ export default function Body() {
           </>
         )}
       </div>
-
-      {/* {hasRoles && (
-        <div className="overflow-hidden rounded-b-ml">
-          <Pagination
-            currentPage={metaData?.current_page ?? currentPage}
-            totalItems={metaData?.total ?? 0}
-            pageSize={metaData?.per_page ?? 14}
-            onPageChange={onPageChange}
-          />
-        </div>
-      )} */}
     </>
   );
 }

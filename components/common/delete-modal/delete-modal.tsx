@@ -10,7 +10,7 @@ interface DeleteModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
-  title: string;
+  title?: string;
   description: ReactNode;
   confirmText?: string;
   cancelText?: string;
