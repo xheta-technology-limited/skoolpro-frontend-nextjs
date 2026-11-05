@@ -19,6 +19,8 @@ import { ChangeEvent, Suspense, useEffect, useRef, useState } from "react";
 import { NoData } from "@/components/icons";
 import { Button } from "@/components/ui/custom-button";
 import { useProgressRouter } from "@/features/page-loader";
+import { useListRoles } from "@/features/role-management/api/list-roles";
+import AddRole from "./add-role";
 
 const HEADROW = ["Role Name", "Permissions", "Date Created", "Action"];
 
@@ -34,14 +36,14 @@ export default function Body() {
   };
 
   const {
-    data: allStaff,
+    data: allRoles,
     isRefetching,
     refetch,
     error,
     isPending,
-  } = useListStaff({ search: searchKey, page: currentPage }, {});
-  const hasStaff = allStaff && allStaff.data.length > 0;
-  const metaData = allStaff?.meta;
+  } = useListRoles();
+  const hasRoles = allRoles && allRoles.length > 0;
+  //   const metaData = allRoles?.meta;
   const onSearchInputChange = (
     e: ChangeEvent<HTMLInputElement, HTMLInputElement>
   ) => {
@@ -69,7 +71,7 @@ export default function Body() {
   if (error) {
     return (
       <div className="w-fit mx-auto">
-        {" "}
+        <AddRole />{" "}
         <NoData
           variant="signal"
           title="Something went Wrong"
@@ -89,11 +91,9 @@ export default function Body() {
   }
   return (
     <>
+      <AddRole />
       <div className="rounded-tr-ml flex-1 overflow-auto">
-        <div className="bg-white p-4 ">
-          <Text className="block mb-8" weight={"standard"} scale={"highlight"}>
-            Staff Management
-          </Text>
+        <div className="bg-white p-4 rounded-t-ml">
           <div className="flex items-center gap-6">
             <SearchInput
               value={searchFilter}
@@ -101,9 +101,9 @@ export default function Body() {
               placeholder="Search staff name"
               className="flex-1"
             />
-            <Text scale={"caption"} className="text-neutrals-700">{`Showing ${
+            {/* <Text scale={"caption"} className="text-neutrals-700">{`Showing ${
               metaData?.from ?? 0
-            } - ${metaData?.to ?? 0} of ${metaData?.total ?? 0}`}</Text>
+            } - ${metaData?.to ?? 0} of ${metaData?.total ?? 0}`}</Text> */}
           </div>
         </div>
 
@@ -111,7 +111,7 @@ export default function Body() {
           <div className="w-full flex items-center justify-center py-7">
             <Spinner size={70} />
           </div>
-        ) : hasStaff ? (
+        ) : hasRoles ? (
           <Table className="m-0">
             <TableHeader className="[&>tr>th:first-child]:!rounded-none [&>tr>th:first-child]:!border-0 [&>tr>th:first-child]:!pl-4 [&>tr>th:last-child]:!rounded-none [&>tr>th:last-child]:!border-0 [&>tr>th:last-child]:!pr-4">
               <TableRow>
@@ -126,41 +126,22 @@ export default function Body() {
             </TableHeader>
 
             <TableBody>
-              {allStaff.data.map((staff, index) => (
-                <TableRow
-                  className="cursor-pointer"
-                  key={index}
-                  onClick={() =>
-                    router.push(
-                      `/super-admin/user-management/staff-management/${staff.id}/general`
-                    )
-                  }
-                >
-                  <TableCell>{titleCase(staff.full_name) ?? "-"}</TableCell>
-                  <TableCell>{staff.email ?? "-"}</TableCell>
-                  <TableCell>{staff.staff_number ?? "-"}</TableCell>
-                  <TableCell>{titleCase(staff.category) ?? "-"}</TableCell>
-                  <TableCell>
-                    {titleCase(staff.department?.name || "") ?? "-"}
-                  </TableCell>
-                  <TableCell>
-                    {titleCase(staff.contract_type || "") ?? "-"}
-                  </TableCell>
-                  <TableCell>
-                    <StatusBadge
-                      data={titleCase(staff.staff_status)}
-                      variant={
-                        staff.staff_status === "active" ? "green" : "orange"
-                      }
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+              {allRoles.map((r, index) => {
+                const date = new Date(r.created_at).toLocaleDateString();
+                return (
+                  <TableRow key={index}>
+                    <TableCell>{titleCase(r.label) ?? "-"}</TableCell>
+                    <TableCell>{r.permissions_count ?? "-"}</TableCell>
+                    <TableCell>{date}</TableCell>
+                    <TableCell>nun for now</TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         ) : (
           <>
-            {" "}
+            <AddRole />{" "}
             <div className="w-fit mx-auto">
               {" "}
               <NoData
@@ -173,7 +154,7 @@ export default function Body() {
         )}
       </div>
 
-      {hasStaff && (
+      {/* {hasRoles && (
         <div className="overflow-hidden rounded-b-ml">
           <Pagination
             currentPage={metaData?.current_page ?? currentPage}
@@ -182,7 +163,7 @@ export default function Body() {
             onPageChange={onPageChange}
           />
         </div>
-      )}
+      )} */}
     </>
   );
 }
