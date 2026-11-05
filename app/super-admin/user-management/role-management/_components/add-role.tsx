@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateRole } from "@/features/role-management/api/create-role";
 import { useListPermissions } from "@/features/role-management/api/list-permissions";
 import { createSelectOptions } from "@/lib/helpers";
+import { useState } from "react";
 
 interface Props {
   defaults?: CreateRoleFormData & { subject_id?: string };
@@ -24,10 +25,12 @@ const AddRole = ({ defaults }: Props) => {
     defaultValues: defaults ? defaults : {},
     resolver: zodResolver(createRoleSchema),
   });
+  const [searchFilter, setFilter] = useState("");
+  const [permissionLength, setPermissionLength] = useState(0);
   const searchParams = useSearchParams();
   const isOpen = searchParams.get("add-role") === "true";
   const handleClose = () =>
-    router.replace("/super-admin/user-management/staff-management");
+    router.replace("/super-admin/user-management/role-management");
 
   const { data: permissionsData, isPending: isPermissionsPending } =
     useListPermissions();
@@ -48,25 +51,47 @@ const AddRole = ({ defaults }: Props) => {
             className="flex flex-col sm:h-auto gap-6 w-full"
             onSubmit={methods.handleSubmit(onSubmit)}
           >
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-4">
               <Input name="name" label="Enter role name" />
+              <div className="gap-4 hidden md:flex items-center">
+                <div className="flex-1">
+                  <Input
+                    name="filter"
+                    label="Filter permissions, e.g fees"
+                    value={searchFilter}
+                    onChange={(e) => setFilter(e.target.value)}
+                  />
+                </div>
+
+                <Text
+                  className="text-neutrals-700"
+                  scale={"content"}
+                >{`${permissionLength} selected`}</Text>
+                <button className="py-2 px-3 border border-grays-borders rounded-[12px]">
+                  <Text className="text-neutrals-700" scale={"content"}>
+                    Clear
+                  </Text>
+                </button>
+              </div>
+
               <Text
                 scale={"content"}
                 weight={"accent"}
-                as="p"
                 className="text-neutrals-700"
               >
                 Assign permissions
               </Text>
-              {permissionsData?.modules.map((m) => (
-                <CompactCheckbox
-                  key={m.key}
-                  label={m.label}
-                  name="permissions"
-                  id={m.key}
-                  value={m.key}
-                />
-              ))}
+              <div className="bg-primary-bg rounded-ml flex flex-col gap-4 p-2">
+                {permissionsData?.modules.map((m) => (
+                  <CompactCheckbox
+                    key={m.key}
+                    label={m.label}
+                    name="permissions"
+                    id={m.key}
+                    value={m.key}
+                  />
+                ))}
+              </div>
             </div>
 
             <div className="flex *:flex-1 gap-6">

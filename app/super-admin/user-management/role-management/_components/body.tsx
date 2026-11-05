@@ -12,15 +12,21 @@ import {
 } from "@/components/ui/table";
 import clsx from "clsx";
 import { SearchInput } from "@/components/ui/form/input";
-import { Pagination, StatusBadge } from "@/components/common";
-import { useSearchParams } from "next/navigation";
-import { useListStaff } from "@/features/user-management/staff-management/api/list-staff";
-import { ChangeEvent, Suspense, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { NoData } from "@/components/icons";
 import { Button } from "@/components/ui/custom-button";
 import { useProgressRouter } from "@/features/page-loader";
 import { useListRoles } from "@/features/role-management/api/list-roles";
 import AddRole from "./add-role";
+import { DotsThreeVerticalIcon } from "@phosphor-icons/react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { DeleteModal } from "@/components/common";
+import { useDisableRole } from "@/features/role-management/api/disable-role";
+import { toast } from "sonner";
 
 const HEADROW = ["Role Name", "Permissions", "Date Created", "Action"];
 
@@ -28,12 +34,11 @@ export default function Body() {
   const router = useProgressRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchFilter, setSearchFilter] = useState("");
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [popoverOpenID, setPopoverOpenID] = useState<number | null>(null);
+  const [deleteID, setDeleteID] = useState<number | null>(null);
   const [searchKey, setSearchKey] = useState("");
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const onPageChange = (page: number) => {
-    setCurrentPage(page);
-  };
 
   const {
     data: allRoles,
@@ -43,7 +48,7 @@ export default function Body() {
     isPending,
   } = useListRoles();
   const hasRoles = allRoles && allRoles.length > 0;
-  //   const metaData = allRoles?.meta;
+
   const onSearchInputChange = (
     e: ChangeEvent<HTMLInputElement, HTMLInputElement>
   ) => {
@@ -58,6 +63,27 @@ export default function Body() {
         setCurrentPage(1);
       }
     }, 300);
+  };
+
+  const { mutate: deleteMutate, isPending: isDeletePending } = useDisableRole();
+
+  const onDelete = () => {
+    if (!deleteID) {
+      console.error("No delete ID");
+      return;
+    }
+    deleteMutate(
+      { id: String(deleteID) },
+      {
+        onSuccess: () => {
+          setDeleteID(null);
+          toast.success("Role deleted");
+        },
+        onError: () => {
+          setDeleteID(null);
+        },
+      }
+    );
   };
 
   useEffect(() => {
@@ -92,6 +118,14 @@ export default function Body() {
   return (
     <>
       <AddRole />
+      <DeleteModal
+        open={!!deleteID}
+        onOpenChange={() => setDeleteID(null)}
+        description="You are about to delete this role, do you want to proceed with this action."
+        onConfirm={onDelete}
+        confirmText="Delete role"
+        cancelText="Cancel"
+      />
       <div className="rounded-tr-ml flex-1 overflow-auto">
         <div className="bg-white p-4 rounded-t-ml">
           <div className="flex items-center gap-6">
@@ -133,7 +167,48 @@ export default function Body() {
                     <TableCell>{titleCase(r.label) ?? "-"}</TableCell>
                     <TableCell>{r.permissions_count ?? "-"}</TableCell>
                     <TableCell>{date}</TableCell>
-                    <TableCell>nun for now</TableCell>
+                    <TableCell>
+                      <Popover
+                        open={popoverOpen && popoverOpenID === r.id}
+                        onOpenChange={() => {
+                          const open = popoverOpen && popoverOpenID === r.id;
+                          if (!open) {
+                            setPopoverOpen(true);
+                            setPopoverOpenID(r.id);
+                          } else {
+                            setPopoverOpen(false);
+                            setPopoverOpenID(null);
+                          }
+                        }}
+                      >
+                        <PopoverTrigger
+                          render={
+                            <button className="border-none rounded-full hover:bg-primary-100 transition-colors p-2">
+                              <DotsThreeVerticalIcon size={20} />
+                            </button>
+                          }
+                        />
+                        <PopoverContent className="w-48 overflow-hidden p-0 rounded-[16px] bg-white py-4 flex flex-col gap-2">
+                          <button className="h-8 text-left border-b-grays-borders pl-4 px-8 hover:bg-grays-borders transition-colors">
+                            <Text className="text-left" scale={"caption"}>
+                              Edit
+                            </Text>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setPopoverOpen(false);
+                              setPopoverOpenID(null);
+                              setDeleteID(r.id);
+                            }}
+                            className="h-8 text-left border-b-grays-borders pl-4 px-8 hover:bg-grays-borders transition-colors"
+                          >
+                            <Text className="text-left" scale={"caption"}>
+                              Delete
+                            </Text>
+                          </button>
+                        </PopoverContent>
+                      </Popover>
+                    </TableCell>
                   </TableRow>
                 );
               })}
