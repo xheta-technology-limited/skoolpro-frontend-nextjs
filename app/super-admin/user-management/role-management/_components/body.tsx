@@ -126,6 +126,7 @@ export default function Body() {
         onConfirm={onDelete}
         confirmText="Delete role"
         cancelText="Cancel"
+        loading={isDeletePending}
       />
       <div className="rounded-tr-ml flex-1 overflow-auto">
         <div className="bg-white p-4 rounded-t-ml">

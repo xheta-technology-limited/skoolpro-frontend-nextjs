@@ -55,7 +55,7 @@ const DeleteModal = ({
         <Button
           variant="secondary"
           onClick={() => onOpenChange(false)}
-          disabled={loading}
+          loading={loading}
         >
           {cancelText}
         </Button>

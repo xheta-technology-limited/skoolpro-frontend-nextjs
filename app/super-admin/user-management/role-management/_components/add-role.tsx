@@ -15,6 +15,7 @@ import { useCreateRole } from "@/features/role-management/api/create-role";
 import { useUpdateRole } from "@/features/role-management/api/update-role";
 import { useGetRole } from "@/features/role-management/api/get-role";
 import { useListPermissions } from "@/features/role-management/api/list-permissions";
+import { Spinner } from "@/components/animations";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -47,9 +48,12 @@ const AddRole = () => {
 
   const { data: permissionsData, isPending: isPermissionsPending } =
     useListPermissions();
-  const { data: roleData } = useGetRole(editRoleId ?? "", {
-    enabled: isEdit,
-  });
+  const { data: roleData, isPending: isRolePending } = useGetRole(
+    editRoleId ?? "",
+    {
+      enabled: isEdit,
+    }
+  );
 
   const { mutate: createRole, isPending: isCreatePending } = useCreateRole();
   const { mutate: updateRole, isPending: isUpdatePending } = useUpdateRole();
@@ -105,7 +109,12 @@ const AddRole = () => {
         open={isOpen}
         onOpenChange={handleClose}
       >
-        <FormProvider {...methods}>
+        {isEdit && isRolePending ? (
+          <div className="w-full flex items-center justify-center py-10">
+            <Spinner size={70} />
+          </div>
+        ) : (
+          <FormProvider {...methods}>
           <form
             className="flex flex-col sm:h-auto gap-6 w-full"
             onSubmit={methods.handleSubmit(onSubmit)}
@@ -210,7 +219,8 @@ const AddRole = () => {
               </Button>
             </div>
           </form>
-        </FormProvider>
+          </FormProvider>
+        )}
       </FormModal>
     </>
   );
