@@ -4,13 +4,10 @@ import { z } from "zod";
 export const createRoleSchema = z
   .object({
     name: requiredString,
-    permissions: z.union([z.array(z.string()), z.boolean()]),
+    permissions: z.array(z.string()),
   })
   .superRefine((data, ctx) => {
-    if (
-      data.permissions === false ||
-      (Array.isArray(data.permissions) && data.permissions.length === 0)
-    ) {
+    if (data.permissions.length === 0) {
       ctx.addIssue({
         code: "custom",
         path: ["permissions"],

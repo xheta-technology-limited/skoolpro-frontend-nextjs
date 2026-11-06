@@ -2,7 +2,7 @@
 import FormModal from "@/components/ui/form-modal";
 import { useProgressRouter } from "@/features/page-loader";
 import { useSearchParams } from "next/navigation";
-import { FormProvider, useForm, useWatch } from "react-hook-form";
+import { FormProvider, useController, useForm } from "react-hook-form";
 import { Text } from "@/components/ui";
 import { CompactCheckbox, Input } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
@@ -36,15 +36,20 @@ const AddRole = () => {
     router.replace("/super-admin/user-management/role-management");
   };
 
-  const selectedPermissions = useWatch({
+  const { field: permissionsField } = useController({
     control: methods.control,
     name: "permissions",
   });
-  const permissionLength = Array.isArray(selectedPermissions)
-    ? selectedPermissions.length
-    : selectedPermissions
-    ? 1
-    : 0;
+  const selectedPermissions = permissionsField.value ?? [];
+  const permissionLength = selectedPermissions.length;
+
+  const togglePermission = (key: string) => {
+    permissionsField.onChange(
+      selectedPermissions.includes(key)
+        ? selectedPermissions.filter((permission) => permission !== key)
+        : [...selectedPermissions, key]
+    );
+  };
 
   const { data: permissionsData, isPending: isPermissionsPending } =
     useListPermissions();
@@ -137,7 +142,7 @@ const AddRole = () => {
                 >{`${permissionLength} selected`}</Text>
                 <button
                   type="button"
-                  onClick={() => methods.setValue("permissions", [])}
+                  onClick={() => permissionsField.onChange([])}
                   className="py-2 px-3 border border-grays-borders rounded-[12px]"
                 >
                   <Text className="text-neutrals-700" scale={"content"}>
@@ -188,6 +193,10 @@ const AddRole = () => {
                                 name="permissions"
                                 id={permission.key}
                                 value={permission.key}
+                                checked={selectedPermissions.includes(
+                                  permission.key
+                                )}
+                                onChange={() => togglePermission(permission.key)}
                               />
                             ))}
                           </div>
