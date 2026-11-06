@@ -187,7 +187,16 @@ export default function Body() {
                           }
                         />
                         <PopoverContent className="w-48 overflow-hidden p-0 rounded-[16px] bg-white py-4 flex flex-col gap-2">
-                          <button className="h-8 text-left border-b-grays-borders pl-4 px-8 hover:bg-grays-borders transition-colors">
+                          <button
+                            onClick={() => {
+                              setPopoverOpen(false);
+                              setPopoverOpenID(null);
+                              router.push(
+                                `/super-admin/user-management/role-management?edit-role=${r.id}`
+                              );
+                            }}
+                            className="h-8 text-left border-b-grays-borders pl-4 px-8 hover:bg-grays-borders transition-colors"
+                          >
                             <Text className="text-left" scale={"caption"}>
                               Edit
                             </Text>
@@ -214,7 +223,6 @@ export default function Body() {
           </Table>
         ) : (
           <>
-            <AddRole />{" "}
             <div className="w-fit mx-auto">
               {" "}
               <NoData
