@@ -1,7 +1,6 @@
 "use client";
 
 import { useFormContext, useWatch } from "react-hook-form";
-import Text from "../../text/text";
 import clsx from "clsx";
 import { SquareTickNull } from "@/components/icons";
 import { TickSquare } from "iconsax-reactjs";
@@ -21,6 +20,8 @@ export default function CompactCheckbox({
   id,
   subLabel,
   disabled,
+  checked: controlledChecked,
+  onChange,
   ...props
 }: Props) {
   const {
@@ -31,7 +32,12 @@ export default function CompactCheckbox({
 
   const error = errors[name]?.message as string | undefined;
   const value = useWatch({ control, name });
-  const checked = Array.isArray(value) ? value.includes(props.value) : !!value;
+  const isControlled = controlledChecked !== undefined;
+  const checked = isControlled
+    ? controlledChecked
+    : Array.isArray(value)
+    ? value.includes(props.value)
+    : !!value;
 
   return (
     <>
@@ -56,7 +62,9 @@ export default function CompactCheckbox({
               "absolute inset-0 w-full h-full opacity-0 cursor-pointer",
               error && "border-red-500"
             )}
-            {...register(name)}
+            {...(isControlled
+              ? { checked: controlledChecked, onChange }
+              : register(name))}
             {...props}
           />
           {checked ? (

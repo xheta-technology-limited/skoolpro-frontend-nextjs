@@ -4,7 +4,7 @@ import { Spinner } from "@/components/animations";
 import { getSpinnerColor, getSpinnerSize } from "./helpers";
 import clsx from "clsx";
 
-const button = cva(
+export const button = cva(
   [
     "rounded-[28px]",
     "flex",
