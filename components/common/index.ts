@@ -7,3 +7,4 @@ export { default as StatusBadge } from "./status-badge/status-badge";
 export { default as DetailField } from "./detail-field/detail-field";
 export { default as MiniBadge } from "./mini-badge/mini-badge";
 export { default as BackButton } from "./back-button/back-button";
+export { default as ButtonLink } from "../ui/custom-button/button-link";
