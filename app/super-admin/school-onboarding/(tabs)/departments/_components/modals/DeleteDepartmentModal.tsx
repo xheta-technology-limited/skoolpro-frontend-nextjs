@@ -83,7 +83,7 @@ export default function DeleteDepartmentModal({
           <DialogPrimitive.Backdrop className="fixed inset-0 z-50 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
 
           <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-4 sm:p-8">
-            <DialogPrimitive.Popup className="relative my-auto flex w-full max-w-[440px] shrink-0 flex-col items-center gap-6 rounded-[16px] bg-white p-6 text-center outline-none duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
+            <DialogPrimitive.Popup className="relative my-auto flex w-full max-w-110 shrink-0 flex-col items-center gap-6 rounded-ml bg-white p-6 text-center outline-none duration-100 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
               <DialogPrimitive.Close className="absolute right-2 top-2 sm:-right-5 sm:-top-5">
                 <CloseSquare size={24} variant="Bulk" color="#433E3F" />
                 <span className="sr-only">Close</span>
@@ -115,7 +115,7 @@ export default function DeleteDepartmentModal({
                   type="button"
                   onClick={handleDelete}
                   disabled={isDeleting}
-                  className={`${PILL} bg-[#8C1823] text-white`}
+                  className={`${PILL} bg-error-300 text-white`}
                 >
                   {isDeleting ? "Deleting…" : "Delete"}
                 </button>

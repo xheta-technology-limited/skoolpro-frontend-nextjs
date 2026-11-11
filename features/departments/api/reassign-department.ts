@@ -19,6 +19,7 @@ type ReassignDepartmentVariables = {
   data: ReassignDepartmentPayload;
 };
 
+/** Move a department's live subjects and staff to another department. */
 export const reassignDepartment = ({
   id,
   data,
@@ -26,6 +27,7 @@ export const reassignDepartment = ({
   return api.post(`departments/${id}/reassign`, data);
 };
 
+/** Mutation hook that reassigns department members and refreshes the list. */
 export const useReassignDepartment = () => {
   const queryClient = useQueryClient();
 

@@ -27,11 +27,12 @@ const STAFF_GRID = "grid-cols-[1.4fr_1fr_1fr]";
 const ACTION_BUTTON =
   "flex h-8 items-center gap-2 rounded-[28px] border bg-base-white px-5 text-[14px] font-normal";
 
+/** Count pill shown next to a detail tab label. */
 function CountBadge({ count, active }: { count: number; active: boolean }) {
   return (
     <span
-      className={`flex h-[18px] min-w-[18px] items-center justify-center rounded-[6px] px-1 text-[11px] font-medium leading-none text-neutrals-700 ${
-        active ? "bg-[#D5D5FA]" : "bg-[#F5F5FF]"
+      className={`flex h-4.5 min-w-4.5 items-center justify-center rounded-sm px-1 text-[11px] font-medium leading-none text-neutrals-700 ${
+        active ? "bg-[#D5D5FA]" : "bg-primary-bg"
       }`}
     >
       {count}
@@ -39,6 +40,7 @@ function CountBadge({ count, active }: { count: number; active: boolean }) {
   );
 }
 
+/** Tab button with an optional count badge. */
 function TabButton({
   label,
   count,
@@ -70,16 +72,18 @@ function TabButton({
 
 // Lavender box with a white card inside, used for the empty states and
 // the lists.
+/** Bordered container used for detail lists. */
 function ListBox({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-[16px] bg-[#F5F5FF] p-2">
-      <div className="overflow-hidden rounded-[8px] border border-[#F0EBFB] bg-white">
+    <div className="rounded-ml bg-primary-bg p-2">
+      <div className="overflow-hidden rounded-[8px] border border-grays-borders bg-white">
         {children}
       </div>
     </div>
   );
 }
 
+/** Empty state for a detail tab. */
 function EmptyState({ message }: { message: string }) {
   return (
     <ListBox>
@@ -91,9 +95,10 @@ function EmptyState({ message }: { message: string }) {
   );
 }
 
+/** Compact stat card used in the detail summary. */
 function StatCard({ value, label }: { value: number; label: string }) {
   return (
-    <div className="flex flex-col gap-1 rounded-[16px] border border-[#E2DDF9] bg-white p-4">
+    <div className="flex flex-col gap-1 rounded-ml border border-[#E2DDF9] bg-white p-4">
       <span className="text-[24px] font-medium leading-none text-neutrals-900">
         {value}
       </span>
@@ -285,9 +290,9 @@ export default function DepartmentDetailModal() {
               />
             </div>
 
-            <div className="flex items-center justify-between gap-4 rounded-[16px] border border-[#E2DDF9] bg-[#F5F5FF] px-4 py-4">
+            <div className="flex items-center justify-between gap-4 rounded-ml border border-[#E2DDF9] bg-primary-bg px-4 py-4">
               <div className="flex min-w-0 items-center gap-4">
-                <Avatar className="h-[60px] w-[60px] shrink-0">
+                <Avatar className="h-15 w-15 shrink-0">
                   <AvatarFallback className="bg-neutrals-100">
                     {headName ? (
                       initials(headName)
@@ -377,26 +382,47 @@ export default function DepartmentDetailModal() {
                     Retry
                   </Button>
                 </div>
-              ) : !staffData || staffData.data.length === 0 ? (
+              ) : !staffData || staffData.meta.total === 0 ? (
                 <EmptyState message="No staff in this department yet." />
+              ) : staffData.data.length === 0 ? (
+                <>
+                  <EmptyState message="No staff on this page." />
+                  <div className="flex justify-center">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => setStaffPage(1)}
+                    >
+                      Go to page 1
+                    </Button>
+                  </div>
+                  <div className="overflow-hidden rounded-xl">
+                    <Pagination
+                      currentPage={staffData.meta.current_page}
+                      totalItems={staffData.meta.total}
+                      pageSize={staffData.meta.per_page}
+                      onPageChange={setStaffPage}
+                    />
+                  </div>
+                </>
               ) : (
                 <>
                   {/* Same look as the record tables: a white header bar and
                       white rows on a lavender background, with thin gaps
                       between them. Scrolls past nine rows. */}
-                  <div className="rounded-[16px] border border-[#E2DDF9] bg-[#F5F5FF] p-2">
+                  <div className="rounded-ml border border-[#E2DDF9] bg-primary-bg p-2">
                     <div
-                      className={`grid ${STAFF_GRID} h-[34px] items-center rounded-t-[8px] border border-[#F0EBFB] bg-white px-4 text-[12px] font-medium text-neutrals-700`}
+                      className={`grid ${STAFF_GRID} h-8.5 items-center rounded-t-[8px] border border-grays-borders bg-white px-4 text-[12px] font-medium text-neutrals-700`}
                     >
                       <span>Name</span>
                       <span>ID</span>
                       <span>Role</span>
                     </div>
-                    <div className="max-h-[340px] overflow-y-auto">
+                    <div className="max-h-85 overflow-y-auto">
                       {staffData.data.map((member) => (
                         <div
                           key={member.id}
-                          className={`mt-[3px] grid ${STAFF_GRID} h-[34px] items-center bg-white px-4 text-[13px] text-neutrals-900`}
+                          className={`mt-0.75 grid ${STAFF_GRID} h-8.5 items-center bg-white px-4 text-[13px] text-neutrals-900`}
                         >
                           <span className="truncate pr-2">
                             {titleCase(member.full_name)}

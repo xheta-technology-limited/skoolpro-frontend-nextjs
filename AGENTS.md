@@ -40,7 +40,7 @@ Before finishing: `npm run lint` → `npx tsc --noEmit` → `npm run build`. Nex
 - Always use `api` from `@/lib/api` through TanStack Query hooks under `features/**/api`. Never call `fetch`/axios directly in components.
 - Routes are relative to `/api/v1/` — omit the leading `/` and never include `/api/v1`. A leading `/` bypasses the prefix; use it only for `/sanctum/...`.
 - Default calls return `json.data`; use `{ raw: true }` plus an envelope type for paginated responses (`{ data, meta }`).
-- `lib/api.ts` already toasts errors and redirects to `/login` on 401. Do not add try/catch or manual error toasts; consume the thrown `ApiError`.
+- `lib/api.ts` toasts non-401 HTTP errors and redirects to `/login` on 401. Network (`fetch` rejection) and JSON-parse failures are thrown without a toast, so callers may add their own recovery feedback for those. For errors the client already handles, do not add try/catch or manual toasts; consume the thrown `ApiError`.
 - Login must call `getCsrfCookie()` (`/sanctum/csrf-cookie`) before submitting credentials; see `features/auth/api/login.ts`.
 - Reuse `features/*/api/query-keys.ts` factories; include params in list keys and invalidate affected keys in `onSuccess`. Match a sibling if a feature uses inline keys instead.
 
@@ -61,7 +61,7 @@ Before finishing: `npm run lint` → `npx tsc --noEmit` → `npm run build`. Nex
 
 ## Environment / backend
 
-- Copy `.env.example`, but only `BACKEND_API_URL` is currently read (server-side, in `lib/api.ts`); the `NEXT_PUBLIC_*` keys there are unused. Browser requests are same-origin.
+- Copy `.env.example`, but only `BACKEND_API_URL` is currently read (server-side, in `lib/api.ts`); it must be an absolute backend origin because server requests resolve against it. The `NEXT_PUBLIC_*` keys there are unused. Browser requests are same-origin.
 - `next.config.ts` rewrites `/api/v1/*` and `/sanctum/*` to `https://api.skoolpro.net`. Remote images allow `picsum.photos` and `api.skoolpro.net`.
 - `output: "standalone"` and `cacheComponents: true` are enabled. Check bundled Next 16 docs before adding cache directives or assuming old caching behaviour.
 - No middleware or route guard exists; protection relies on API 401 redirects.

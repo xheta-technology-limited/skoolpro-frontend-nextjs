@@ -37,16 +37,19 @@ const COLUMNS = ["Department", "Head", "Subjects", "Staff", "Status", "Action"];
 // they can't drift apart.
 const GRID_TEMPLATE = "grid-cols-[3fr_1fr_1fr_1fr_1fr_.8fr]";
 
+/** Parse the `status` query parameter into a filter value. */
 function parseFilter(value: string | null): StatusFilter {
   return value === "active" || value === "deactivated" ? value : "all";
 }
 
+/** Map the UI filter to the API's `active` flag. */
 function statusToActive(status: StatusFilter): boolean | undefined {
   if (status === "active") return true;
   if (status === "deactivated") return false;
   return undefined;
 }
 
+/** Pill tabs that filter the department list by status. */
 function StatusTabs({
   value,
   onChange,
@@ -93,6 +96,7 @@ function StatusTabs({
 //
 // The design doesn't show what's in this menu — the four actions are
 // View details, Deactivate/Reactivate, Reassign member and Delete.
+/** Row "…" menu with view, activate/deactivate, reassign, and delete actions. */
 function RowMenu({
   department,
   onView,
@@ -233,9 +237,10 @@ function RowMenu({
   );
 }
 
+/** One department row in the table. */
 function DepartmentRow({
   department,
-  headName,
+  headLabel,
   isLast,
   onOpen,
   onEdit,
@@ -244,7 +249,8 @@ function DepartmentRow({
   onDelete,
 }: {
   department: Department;
-  headName: string | null;
+  /** Resolved head name, "Unavailable", or "-" when no head is assigned. */
+  headLabel: string;
   isLast: boolean;
   onOpen: () => void;
   onEdit: () => void;
@@ -279,7 +285,7 @@ function DepartmentRow({
       </div>
 
       <span role="cell" className="min-w-0 truncate pr-4 text-[14px] text-neutrals-900">
-        {headName ?? "-"}
+        {headLabel}
       </span>
 
       <span role="cell" className="text-[14px] text-neutrals-900">
@@ -327,6 +333,10 @@ function DepartmentRow({
   );
 }
 
+/**
+ * Departments list: search, status filter, pagination, row actions, and the
+ * reassign/delete dialogs.
+ */
 export default function Body() {
   const router = useRouter();
   const pathname = usePathname();
@@ -337,25 +347,59 @@ export default function Body() {
   const [searchKey, setSearchKey] = useState(searchParams.get("q") ?? "");
   const [currentPage, setCurrentPage] = useState(1);
   const [reassignTarget, setReassignTarget] = useState<Department>();
-  const [deleteTarget, setDeleteTarget] = useState<Department>();
+  const [deleteTargetId, setDeleteTargetId] = useState<string>();
   const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const {
-    data,
-    isPending,
-    isRefetching,
-    error,
-    refetch,
-  } = useListDepartments({
+  const listParams = {
     search: searchKey || undefined,
     active: statusToActive(status),
-    page: currentPage,
-  });
+  };
+
+  const {
+    data: pageData,
+    isPending: isPagePending,
+    isRefetching: isPageRefetching,
+    error: pageError,
+    refetch: refetchPage,
+  } = useListDepartments({ ...listParams, page: currentPage });
+
+  // A delete or filter change can leave currentPage past the end. Derive the
+  // valid page from the last response and fetch that page instead of showing
+  // an empty table (pages beyond last_page return no rows).
+  const lastPage = Math.max(pageData?.meta.last_page ?? currentPage, 1);
+  const page = Math.min(currentPage, lastPage);
+  const isPageOutOfRange = page !== currentPage;
+
+  const {
+    data: clampedData,
+    isPending: isClampedPending,
+    isRefetching: isClampedRefetching,
+    error: clampedError,
+    refetch: refetchClamped,
+  } = useListDepartments(
+    { ...listParams, page },
+    { enabled: isPageOutOfRange }
+  );
+
+  const data = isPageOutOfRange ? clampedData : pageData;
+  const isPending = isPageOutOfRange ? isClampedPending : isPagePending;
+  const isRefetching = isPageOutOfRange ? isClampedRefetching : isPageRefetching;
+  const error = isPageOutOfRange ? clampedError : pageError;
+  const refetch = isPageOutOfRange ? refetchClamped : refetchPage;
 
   const departments = data?.data ?? [];
   const meta = data?.meta;
 
-  const { data: staffPicker } = useListStaffPicker();
+  // Derive the delete target from the (possibly refreshed) list so the open
+  // dialog reflects counts updated by a reassignment.
+  const deleteTarget = deleteTargetId
+    ? departments.find((department) => department.id === deleteTargetId)
+    : undefined;
+
+  const {
+    data: staffPicker,
+    isPending: isStaffPickerPending,
+  } = useListStaffPicker();
 
   const headNames = useMemo(() => {
     const names = new Map<string, string>();
@@ -364,6 +408,17 @@ export default function Body() {
     });
     return names;
   }, [staffPicker]);
+
+  function headLabel(department: Department) {
+    if (!department.head_staff_id) return "-";
+
+    const name = headNames.get(department.head_staff_id);
+    if (name) return name;
+
+    // An assigned head that we can't resolve (lookup pending or failed) is
+    // not the same as no head at all.
+    return isStaffPickerPending ? "…" : "Unavailable";
+  }
 
   useEffect(() => {
     return () => {
@@ -512,17 +567,13 @@ export default function Body() {
                     <DepartmentRow
                       key={department.id}
                       department={department}
-                      headName={
-                        department.head_staff_id
-                          ? headNames.get(department.head_staff_id) ?? null
-                          : null
-                      }
+                      headLabel={headLabel(department)}
                       isLast={index === departments.length - 1}
                       onOpen={() => openDepartment(department.id)}
                       onEdit={() => openEdit(department.id)}
                       onToggleActive={() => handleToggleActive(department)}
                       onReassign={() => setReassignTarget(department)}
-                      onDelete={() => setDeleteTarget(department)}
+                      onDelete={() => setDeleteTargetId(department.id)}
                     />
                   ))
                 )}
@@ -533,7 +584,7 @@ export default function Body() {
           {meta && meta.total > 0 && (
             <div className="overflow-hidden rounded-xl">
               <Pagination
-                currentPage={meta.current_page}
+                currentPage={page}
                 totalItems={meta.total}
                 pageSize={meta.per_page}
                 onPageChange={setCurrentPage}
@@ -550,7 +601,7 @@ export default function Body() {
 
       <DeleteDepartmentModal
         department={deleteTarget}
-        onClose={() => setDeleteTarget(undefined)}
+        onClose={() => setDeleteTargetId(undefined)}
       />
     </div>
   );

@@ -1,13 +1,20 @@
 "use client";
 
 import { FormProvider, useForm } from "react-hook-form";
+import { useQueries, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { Select } from "@/components/ui/form";
 import { Button } from "@/components/ui/custom-button";
 import FormModal from "@/components/ui/form-modal";
 import { useReassignDepartment } from "@/features/departments/api/reassign-department";
-import { useListDepartments } from "@/features/departments/api/list-departments";
+import {
+  listDepartments,
+  useListDepartments,
+} from "@/features/departments/api/list-departments";
+import { departmentKeys } from "@/features/departments/api/query-keys";
+import { staffKeys } from "@/features/user-management/staff-management/api/query-keys";
+import { schoolSubjectKeys } from "@/features/academic-year/api/query-keys";
 import { setFormErrors } from "@/lib/helpers";
 import { Department } from "@/types";
 
@@ -20,6 +27,10 @@ interface ReassignDepartmentModalProps {
 interface ReassignFormValues {
   department_id: string;
 }
+
+// Destinations are loaded 100 at a time so every eligible department is
+// reachable, not just the first page.
+const DESTINATION_PAGE_SIZE = 100;
 
 const plural = (count: number, one: string, many: string) =>
   `${count} ${count === 1 ? one : many}`;
@@ -37,19 +48,58 @@ export default function ReassignDepartmentModal({
     defaultValues: { department_id: "" },
   });
   const { handleSubmit, reset, setError } = methods;
+  const queryClient = useQueryClient();
 
   const { mutate: reassign, isPending: isReassigning } =
     useReassignDepartment();
 
-  const { data: departmentsData, isPending: isDepartmentsPending } =
-    useListDepartments(
-      { per_page: 100 },
-      { enabled: !!department }
-    );
+  const {
+    data: firstPageData,
+    isPending: isFirstPagePending,
+    error: firstPageError,
+    refetch: refetchFirstPage,
+  } = useListDepartments(
+    { per_page: DESTINATION_PAGE_SIZE, page: 1 },
+    { enabled: !!department }
+  );
 
-  const options = (departmentsData?.data ?? [])
+  // The first response tells us how many extra pages exist; fetch the rest so
+  // the selector exposes every eligible destination.
+  const lastPage = firstPageData?.meta.last_page ?? 1;
+  const remainingPages = useQueries({
+    queries: Array.from({ length: Math.max(lastPage - 1, 0) }, (_, index) => {
+      const page = index + 2;
+
+      return {
+        queryKey: departmentKeys.filtered(
+          undefined,
+          undefined,
+          page,
+          DESTINATION_PAGE_SIZE
+        ),
+        queryFn: () =>
+          listDepartments({ per_page: DESTINATION_PAGE_SIZE, page }),
+        enabled: !!department,
+      };
+    }),
+  });
+
+  const destinations = [firstPageData, ...remainingPages.map((q) => q.data)]
+    .flatMap((page) => page?.data ?? []);
+
+  const isDepartmentsPending =
+    isFirstPagePending || remainingPages.some((query) => query.isPending);
+  const isDepartmentsError =
+    !!firstPageError || remainingPages.some((query) => query.error);
+
+  const options = destinations
     .filter((candidate) => candidate.id !== department?.id)
     .map((candidate) => ({ value: candidate.id, label: candidate.name }));
+
+  function handleRetryDestinations() {
+    refetchFirstPage();
+    remainingPages.forEach((query) => query.refetch());
+  }
 
   function handleClose() {
     reset();
@@ -71,6 +121,10 @@ export default function ReassignDepartmentModal({
       },
       {
         onSuccess: ({ reassigned }) => {
+          // The staff and subject lists sit behind their own feature keys, so
+          // refresh them here (the app layer may span feature boundaries).
+          queryClient.invalidateQueries({ queryKey: staffKeys.all });
+          queryClient.invalidateQueries({ queryKey: schoolSubjectKeys.all });
           toast.success(
             `Reassigned ${plural(
               reassigned.subjects,
@@ -122,6 +176,21 @@ export default function ReassignDepartmentModal({
                 options={options}
                 isLoading={isDepartmentsPending}
               />
+
+              {isDepartmentsError && (
+                <div className="flex items-center gap-2">
+                  <p className="text-[13px] text-[#D64545]">
+                    Couldn&apos;t load destination departments.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleRetryDestinations}
+                    className="cursor-pointer text-[13px] font-medium text-primary underline"
+                  >
+                    Retry
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="flex gap-4">

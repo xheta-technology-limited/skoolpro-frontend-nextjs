@@ -11,7 +11,9 @@ export default function Departments() {
   return (
     <>
       <Header label="Departments">
-        <ActionButtons />
+        <Suspense fallback={null}>
+          <ActionButtons />
+        </Suspense>
       </Header>
 
       <Suspense fallback={null}>

@@ -15,6 +15,7 @@ import {
   DepartmentFormFields,
 } from "./department-form-fields";
 
+/** Modal that creates a department. */
 export default function AddDepartment() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -45,6 +46,7 @@ export default function AddDepartment() {
   }));
 
   const handleClose = () => {
+    methods.reset();
     const params = new URLSearchParams(searchParams.toString());
     params.delete("add-department");
     const query = params.toString();

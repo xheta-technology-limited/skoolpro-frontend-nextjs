@@ -64,7 +64,7 @@ export function DepartmentFormFields({
         name="description"
         label="Description"
         maxLength={200}
-        className="!rounded-ml"
+        className="rounded-ml!"
       />
       <Select
         name="head_staff_id"

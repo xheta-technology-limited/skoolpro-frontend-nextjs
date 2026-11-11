@@ -17,6 +17,7 @@ type UpdateDepartmentVariables = {
   data: UpdateDepartmentPayload;
 };
 
+/** Update a department by id. */
 export const updateDepartment = ({
   id,
   data,
@@ -24,6 +25,7 @@ export const updateDepartment = ({
   return api.put(`departments/${id}`, data);
 };
 
+/** Mutation hook that updates a department and refreshes department queries. */
 export const useUpdateDepartment = () => {
   const queryClient = useQueryClient();
 

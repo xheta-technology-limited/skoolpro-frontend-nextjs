@@ -17,6 +17,7 @@ export type ListDepartmentsParams = {
   [key: string]: string | number | boolean | undefined;
 };
 
+/** Fetch a paginated list of departments. */
 export const listDepartments = (
   params?: ListDepartmentsParams
 ): Promise<DepartmentResponse> => {
@@ -32,6 +33,7 @@ export const listDepartments = (
   return api.get(`departments${query ? `?${query}` : ""}`, { raw: true });
 };
 
+/** Query hook for the departments list, keyed by every request param. */
 export const useListDepartments = (
   params?: ListDepartmentsParams,
   options?: Partial<UseQueryOptions<DepartmentResponse, ServerErrorResponse>>
@@ -41,7 +43,8 @@ export const useListDepartments = (
     queryKey: departmentKeys.filtered(
       params?.search,
       params?.active,
-      params?.page
+      params?.page,
+      params?.per_page
     ),
     ...options,
   });

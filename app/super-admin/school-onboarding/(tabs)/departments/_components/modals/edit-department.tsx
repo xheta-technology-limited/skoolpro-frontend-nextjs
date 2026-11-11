@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { usePathname, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
@@ -19,6 +19,7 @@ import {
   DepartmentHeadOption,
 } from "./department-form-fields";
 
+/** Modal that edits an existing department, prefilled from its details. */
 export default function EditDepartment() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -49,11 +50,23 @@ export default function EditDepartment() {
       is_active: true,
     },
   });
-  const { reset } = methods;
+  const { reset, formState } = methods;
+  // Tracks which department the form was last populated from, so background
+  // refetches don't clobber unsaved edits or skip a fresh department.
+  const syncedDepartmentIdRef = useRef<string | null>(null);
 
   useEffect(() => {
+    if (!isOpen) {
+      syncedDepartmentIdRef.current = null;
+      return;
+    }
+
     if (!department) return;
 
+    const sameDepartment = syncedDepartmentIdRef.current === department.id;
+    if (sameDepartment && formState.isDirty) return;
+
+    syncedDepartmentIdRef.current = department.id;
     reset({
       name: department.name,
       code: department.code ?? "",
@@ -61,7 +74,7 @@ export default function EditDepartment() {
       head_staff_id: department.head_staff_id ?? department.head?.id ?? "",
       is_active: department.is_active,
     });
-  }, [department, reset]);
+  }, [isOpen, department, reset, formState.isDirty]);
 
   const headOptions = useMemo<DepartmentHeadOption[]>(() => {
     const staffOptions: DepartmentHeadOption[] = (staffPicker ?? []).map(
@@ -83,6 +96,7 @@ export default function EditDepartment() {
   }, [staffPicker, department]);
 
   function handleClose() {
+    reset();
     const params = new URLSearchParams(searchParams.toString());
     params.delete("edit-department");
     const query = params.toString();

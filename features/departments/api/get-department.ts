@@ -15,10 +15,12 @@ export type DepartmentDetail = Department & {
   head: DepartmentHead | null;
 };
 
+/** Fetch one department, including its resolved head. */
 export const getDepartment = (id: string): Promise<DepartmentDetail> => {
   return api.get(`departments/${id}`);
 };
 
+/** Query hook for a single department's details. */
 export const useGetDepartment = (
   id: string,
   options?: Partial<UseQueryOptions<DepartmentDetail, ServerErrorResponse>>

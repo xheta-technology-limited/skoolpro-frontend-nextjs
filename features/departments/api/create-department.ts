@@ -12,12 +12,14 @@ export type CreateDepartmentPayload = {
   is_active?: boolean;
 };
 
+/** Create a department. */
 export const createDepartment = (
   data: CreateDepartmentPayload
 ): Promise<Department> => {
   return api.post("departments", data);
 };
 
+/** Mutation hook that creates a department and refreshes department queries. */
 export const useCreateDepartment = () => {
   const queryClient = useQueryClient();
 

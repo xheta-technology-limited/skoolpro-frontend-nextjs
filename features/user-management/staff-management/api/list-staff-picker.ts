@@ -9,9 +9,11 @@ export type StaffPickerOption = {
   last_name: string;
 };
 
+/** Fetch the unpaginated staff options used by pickers. */
 export const listStaffPicker = (): Promise<StaffPickerOption[]> =>
   api.get("staff/list-picker");
 
+/** Query hook for the unpaginated staff picker options. */
 export const useListStaffPicker = (
   options?: Partial<UseQueryOptions<StaffPickerOption[], ServerErrorResponse>>
 ) => {

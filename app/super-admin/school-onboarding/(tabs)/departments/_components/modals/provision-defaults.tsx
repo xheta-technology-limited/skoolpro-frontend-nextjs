@@ -23,6 +23,7 @@ export interface DefaultDepartmentSet {
 
 // Preset labels look like "Standard (academic + administrative)"; the
 // design wants the name on one line and the parenthetical as the blurb.
+/** Split a preset label into its name and parenthetical description. */
 function parsePresetLabel(label: string) {
   const [name, ...rest] = label.split("(");
   const description = rest.join("(").replace(/\)\s*$/, "").trim();
@@ -30,6 +31,7 @@ function parsePresetLabel(label: string) {
   return { name: name.trim(), description };
 }
 
+/** Radio indicator for a preset choice. */
 function RadioMark({ selected }: { selected: boolean }) {
   return (
     <StopCircle
@@ -41,6 +43,7 @@ function RadioMark({ selected }: { selected: boolean }) {
   )
 }
 
+/** Modal that provisions a default set of departments. */
 export default function ProvisionDefaultsModal() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -89,7 +92,13 @@ export default function ProvisionDefaultsModal() {
 
   function handleClose() {
     setSelectedId(null);
-    router.push("/super-admin/school-onboarding/departments");
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("provision-defaults");
+    const query = params.toString();
+
+    router.push(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
   }
 
   function handleOpenChange(nextOpen: boolean) {
@@ -165,7 +174,7 @@ export default function ProvisionDefaultsModal() {
                     key={option.id}
                     className={clsx(
                       "flex cursor-pointer items-start gap-3 rounded-2xl bg-white p-4",
-                      "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary"
+                      "has-focus-visible:ring-2 has-focus-visible:ring-primary"
                     )}
                   >
                     <input
@@ -196,7 +205,7 @@ export default function ProvisionDefaultsModal() {
                         {option.departments.map((department) => (
                           <li
                             key={department}
-                            className="rounded-full border border-[#F0EBFB] bg-[#FFFFFF] px-3 py-0.5 text-[11px] leading-[1.4] text-neutrals-700"
+                            className="rounded-full border border-grays-borders bg-[#FFFFFF] px-3 py-0.5 text-[11px] leading-[1.4] text-neutrals-700"
                           >
                             {department}
                           </li>
