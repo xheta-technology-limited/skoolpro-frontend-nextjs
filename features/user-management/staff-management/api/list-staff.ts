@@ -12,6 +12,7 @@ interface StaffResponse {
 export type ListStaffParams = {
   search?: string;
   page?: number;
+  department?: string;
   [key: string]: string | number | undefined;
 };
 
@@ -32,10 +33,12 @@ export const useListStaff = (
   params?: ListStaffParams,
   options?: Partial<UseQueryOptions<StaffResponse, ServerErrorResponse>>
 ) => {
+  const hasFilters = !!params?.search || !!params?.department;
+
   return useQuery<StaffResponse, ServerErrorResponse>({
     queryFn: () => listStaff(params),
-    queryKey: params?.search
-      ? staffKeys.filtered(params.search, params.page)
+    queryKey: hasFilters
+      ? staffKeys.filtered(params?.search ?? "", params?.page, params?.department)
       : params?.page !== undefined
       ? staffKeys.byPage(params.page)
       : staffKeys.all,
