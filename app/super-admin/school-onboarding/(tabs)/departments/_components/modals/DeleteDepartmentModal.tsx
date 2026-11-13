@@ -26,12 +26,13 @@ const plural = (count: number, one: string, many: string) =>
   `${count} ${count === 1 ? one : many}`;
 
 /**
- * Delete a department, with two states keyed on its status:
+ * Delete a department, with two states keyed on whether it has members:
  *
- *  - ACTIVE: a department in use is never deleted outright, so this
- *    explains why and offers Deactivate, Reassign members (which opens
- *    the reassign modal) or Cancel.
- *  - DEACTIVATED: a plain "are you sure?" confirmation.
+ *  - IN USE (at least one subject or staff member): never deleted outright,
+ *    so this explains why and offers Deactivate (when still active),
+ *    Reassign members (which opens the reassign modal) or Cancel.
+ *  - EMPTY (no subjects and no staff): a plain "are you sure?" confirmation,
+ *    regardless of whether the department is active.
  *
  * Deactivate, reassign and delete are all wired to the API.
  */
@@ -46,6 +47,9 @@ export default function DeleteDepartmentModal({
   const { mutate: remove, isPending: isDeleting } = useDeleteDepartment();
 
   const isActive = department?.is_active ?? false;
+  const hasMembers =
+    (department?.subjects_count ?? 0) > 0 ||
+    (department?.staff_count ?? 0) > 0;
 
   function handleDeactivate() {
     if (!department) return;
@@ -70,8 +74,8 @@ export default function DeleteDepartmentModal({
     });
   }
 
-  // ------- deactivated: confirm -------
-  if (department && !isActive) {
+  // ------- empty: confirm -------
+  if (department && !hasMembers) {
     return (
       <DialogPrimitive.Root
         open
@@ -127,7 +131,7 @@ export default function DeleteDepartmentModal({
     );
   }
 
-  // ------- active: can't delete -------
+  // ------- in use: can't delete -------
   return (
     <FormModal
       open={!!department}
@@ -161,20 +165,23 @@ export default function DeleteDepartmentModal({
                 "staff member",
                 "staff members"
               )}
-              . Move them to another department (or unset) first, or retire this
-              one instead.
+              . Move them to another department (or unset) first{isActive
+                ? ", or deactivate this one instead."
+                : "."}
             </p>
           </div>
 
           <div className="flex gap-4">
-            <button
-              type="button"
-              onClick={handleDeactivate}
-              disabled={isDeactivating}
-              className={`${PILL} border border-primary bg-base-white text-primary`}
-            >
-              {isDeactivating ? "Deactivating…" : "Deactivate"}
-            </button>
+            {isActive && (
+              <button
+                type="button"
+                onClick={handleDeactivate}
+                disabled={isDeactivating}
+                className={`${PILL} border border-primary bg-base-white text-primary`}
+              >
+                {isDeactivating ? "Deactivating…" : "Deactivate"}
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setReassigning(true)}
