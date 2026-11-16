@@ -1,6 +1,8 @@
 import TabsNav from "@/components/common/tabs/tabs-nav";
 import Header from "./_components/header/header";
 import { ReactNode, Suspense } from "react";
+import CloneRole from "./_components/modals/clone-role";
+import { AddRole } from "./_components/modals";
 
 const TABS = [
   {
@@ -25,6 +27,8 @@ export default function Layout({ children }: { children: ReactNode }) {
     <>
       <Header />
       <Suspense>
+        <CloneRole />
+        <AddRole />
         <TabsNav tabs={TABS} />
         <div className="h-1" />
         {children}

@@ -4,7 +4,7 @@ import { roleKeys } from "./query-keys";
 import { ServerErrorResponse } from "@/types/api";
 
 type DisableRoleVariables = {
-  id: string;
+  id: Number;
 };
 
 export const disableRole = ({ id }: DisableRoleVariables): Promise<null> => {

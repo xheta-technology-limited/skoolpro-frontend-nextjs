@@ -11,6 +11,7 @@ type Response = {
 export type ListRolesParams = {
   disabled?: boolean;
   role_type?: "custom" | "system";
+  page?: number;
 };
 export const listRoles = (params?: ListRolesParams): Promise<Response> => {
   const searchParams = new URLSearchParams();
@@ -32,7 +33,11 @@ export const useListRoles = (
 ) => {
   return useQuery<Response, ServerErrorResponse>({
     queryFn: () => listRoles(params),
-    queryKey: roleKeys.filtered(params?.role_type, params?.disabled),
+    queryKey: roleKeys.filtered(
+      params?.role_type,
+      params?.disabled,
+      params?.page
+    ),
     ...options,
   });
 };

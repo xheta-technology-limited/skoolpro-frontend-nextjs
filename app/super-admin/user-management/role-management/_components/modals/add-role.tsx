@@ -28,8 +28,12 @@ const AddRole = () => {
   const searchParams = useSearchParams();
   const path = usePathname();
   const editRoleId = searchParams.get("edit-role");
+  const viewRoleId = searchParams.get("view-role");
   const isEdit = !!editRoleId;
-  const isOpen = isEdit || searchParams.get("add-role") === "true";
+  const isView = !!viewRoleId;
+  const roleId = editRoleId ?? viewRoleId ?? "";
+  const isViewRole = isEdit || isView;
+  const isOpen = isViewRole || searchParams.get("add-role") === "true";
 
   const handleClose = () => {
     methods.reset();
@@ -54,12 +58,9 @@ const AddRole = () => {
 
   const { data: permissionsData, isPending: isPermissionsPending } =
     useListPermissions();
-  const { data: roleData, isPending: isRolePending } = useGetRole(
-    editRoleId ?? "",
-    {
-      enabled: isEdit,
-    }
-  );
+  const { data: roleData, isPending: isRolePending } = useGetRole(roleId, {
+    enabled: isViewRole,
+  });
 
   const { mutate: createRole, isPending: isCreatePending } = useCreateRole();
   const { mutate: updateRole, isPending: isUpdatePending } = useUpdateRole();
@@ -69,11 +70,11 @@ const AddRole = () => {
     if (!isOpen) return;
 
     methods.reset(
-      isEdit && roleData
+      isViewRole && roleData
         ? { name: roleData.name, permissions: roleData.permissions }
         : { name: "", permissions: [] }
     );
-  }, [isOpen, isEdit, roleData, methods]);
+  }, [isOpen, isViewRole, roleData, methods]);
 
   const onSubmit = (data: CreateRoleFormData) => {
     const onSuccess = () => {
@@ -111,11 +112,13 @@ const AddRole = () => {
   return (
     <>
       <FormModal
-        title={isEdit ? "Edit Role" : "Create New Role"}
+        title={
+          isView ? "View Role" : isEdit ? "Edit Role" : "Create New Role"
+        }
         open={isOpen}
         onOpenChange={handleClose}
       >
-        {isEdit && isRolePending ? (
+        {isViewRole && isRolePending ? (
           <div className="w-full flex items-center justify-center py-10">
             <Spinner size={70} />
           </div>
@@ -126,7 +129,7 @@ const AddRole = () => {
               onSubmit={methods.handleSubmit(onSubmit)}
             >
               <div className="flex flex-col gap-4">
-                <Input name="name" label="Enter role name" />
+                <Input name="name" label="Enter role name" disabled={isView} />
                 <div className="gap-4 hidden md:flex items-center">
                   <div className="flex-1">
                     <Input
@@ -134,6 +137,7 @@ const AddRole = () => {
                       label="Filter permissions, e.g fees"
                       value={searchFilter}
                       onChange={(e) => setFilter(e.target.value)}
+                      disabled={isView}
                     />
                   </div>
 
@@ -144,7 +148,8 @@ const AddRole = () => {
                   <button
                     type="button"
                     onClick={() => permissionsField.onChange([])}
-                    className="py-2 px-3 border border-grays-borders rounded-[12px]"
+                    disabled={isView}
+                    className="py-2 px-3 border border-grays-borders rounded-[12px] disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <Text className="text-neutrals-700" scale={"content"}>
                       Clear
@@ -200,6 +205,7 @@ const AddRole = () => {
                                   checked={selectedPermissions.includes(
                                     permission.key
                                   )}
+                                  disabled={isView}
                                   onChange={() =>
                                     togglePermission(permission.key)
                                   }
@@ -214,25 +220,27 @@ const AddRole = () => {
                 </div>
               </div>
 
-              <div className="flex *:flex-1 gap-6">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="lg"
-                  className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
-                  onClick={handleClose}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  loading={isMutatePending}
-                  type="submit"
-                  size="lg"
-                  className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
-                >
-                  {isEdit ? "Save changes" : "Create role"}
-                </Button>
-              </div>
+              {!isView && (
+                <div className="flex *:flex-1 gap-6">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="lg"
+                    className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+                    onClick={handleClose}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    loading={isMutatePending}
+                    type="submit"
+                    size="lg"
+                    className="w-full mt-auto sm:mt-0 sm:w-fit self-end"
+                  >
+                    {isEdit ? "Save changes" : "Create role"}
+                  </Button>
+                </div>
+              )}
             </form>
           </FormProvider>
         )}

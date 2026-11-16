@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/custom-button";
 import { useProgressRouter } from "@/features/page-loader";
 import { useListRoles } from "@/features/role-management/api/list-roles";
 import AddRole from "../_components/modals/add-role";
+import CloneRole from "../_components/modals/clone-role";
 import { DeleteModal, MiniButton, Pagination } from "@/components/common";
 import { useDisableRole } from "@/features/role-management/api/disable-role";
 import { toast } from "sonner";
@@ -24,6 +25,7 @@ import Counts from "./_components/counts";
 import { Lock1 } from "iconsax-reactjs";
 import { keepPreviousData } from "@tanstack/react-query";
 import { FilterType } from "./constants";
+import { useEnableRole } from "@/features/role-management/api/enable-role";
 
 const HEADROW = ["Role", "Type", "Permissions", "Holders", "Status", "Action"];
 const FILTERS = ["All", "System", "Custom", "Disabled"];
@@ -31,9 +33,9 @@ const FILTERS = ["All", "System", "Custom", "Disabled"];
 export default function Body() {
   const router = useProgressRouter();
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchFilter, setSearchFilter] = useState("");
-  const [deleteID, setDeleteID] = useState<number | null>(null);
   const [filter, setFilter] = useState<string>("all");
+  const [disablingID, setDisablingID] = useState<null | number>(null);
+  const [cloneID, setCloneID] = useState<null | number>(null);
 
   const returnFilter: FilterType =
     filter === "disabled"
@@ -44,17 +46,19 @@ export default function Body() {
       ? { role_type: "system" }
       : undefined;
 
-  //TODO: PAGINATION
   const {
     data: allRoles,
     isRefetching,
     refetch,
     error,
     isPending,
-  } = useListRoles(returnFilter, {
-    refetchOnWindowFocus: false,
-    placeholderData: keepPreviousData,
-  });
+  } = useListRoles(
+    { ...returnFilter, page: currentPage || undefined },
+    {
+      refetchOnWindowFocus: false,
+      placeholderData: keepPreviousData,
+    }
+  );
   const hasRoles = allRoles && allRoles.data?.length > 0;
   const metaData = allRoles?.meta;
 
@@ -62,31 +66,14 @@ export default function Body() {
     setCurrentPage(page);
   };
 
-  const { mutate: deleteMutate, isPending: isDeletePending } = useDisableRole();
-
-  const onDelete = () => {
-    if (!deleteID) {
-      console.error("No delete ID");
-      return;
-    }
-    deleteMutate(
-      { id: String(deleteID) },
-      {
-        onSuccess: () => {
-          setDeleteID(null);
-          toast.success("Role deleted");
-        },
-        onError: () => {
-          setDeleteID(null);
-        },
-      }
-    );
-  };
+  const { mutate: disableMutate, isPending: isDisablePending } =
+    useDisableRole();
+  const { mutate: enableMutate, isPending: isEnablePending } = useEnableRole();
 
   if (error) {
     return (
       <div className="w-fit mx-auto">
-        <AddRole />{" "}
+        <AddRole />
         <NoData
           variant="signal"
           title="Something went Wrong"
@@ -111,17 +98,8 @@ export default function Body() {
         <div className="h-8" />
 
         <>
-          <AddRole />
-          <DeleteModal
-            title="Delete Role"
-            open={!!deleteID}
-            onOpenChange={() => setDeleteID(null)}
-            description="You are about to delete this role, do you want to proceed with this action."
-            onConfirm={onDelete}
-            confirmText="Delete role"
-            cancelText="Cancel"
-            loading={isDeletePending}
-          />
+          <CloneRole />
+
           <div className="rounded-tr-ml flex-1 overflow-auto">
             {isPending ? (
               <div className="w-full flex items-center justify-center py-7">
@@ -197,12 +175,18 @@ export default function Body() {
                               <TableCell>
                                 <div className="flex items-center gap-2">
                                   <MiniButton
-                                    onClick={() => alert("Not implemented")}
+                                    onClick={() =>
+                                      router.push(`?view-role=${r.id}`)
+                                    }
                                   >
                                     View
                                   </MiniButton>
                                   <MiniButton
-                                    onClick={() => alert("Not implemented")}
+                                    onClick={() =>
+                                      router.push(
+                                        `?clone-role=true&role-id=${r.id}`
+                                      )
+                                    }
                                   >
                                     Clone
                                   </MiniButton>
@@ -216,11 +200,32 @@ export default function Body() {
                                       Locked
                                     </div>
                                   ) : r.is_active ? (
-                                    <MiniButton variant="error">
+                                    <MiniButton
+                                      variant="error"
+                                      loading={
+                                        isDisablePending && disablingID === r.id
+                                      }
+                                      onClick={() => {
+                                        setDisablingID(r.id);
+                                        disableMutate(
+                                          { id: r.id },
+                                          {
+                                            onSettled: () =>
+                                              setDisablingID(null),
+                                          }
+                                        );
+                                      }}
+                                    >
                                       Disable
                                     </MiniButton>
                                   ) : !r.is_active ? (
-                                    <MiniButton variant="success">
+                                    <MiniButton
+                                      loading={isEnablePending}
+                                      onClick={() => {
+                                        enableMutate({ id: r.id });
+                                      }}
+                                      variant="success"
+                                    >
                                       Enable
                                     </MiniButton>
                                   ) : null}

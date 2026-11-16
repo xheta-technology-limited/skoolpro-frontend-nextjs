@@ -1,8 +1,10 @@
+import { Spinner } from "@/components/animations";
 import { cva } from "class-variance-authority";
 import clsx from "clsx";
 
 type Props = {
   variant?: "base" | "error" | "success";
+  loading?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const button = cva([], {
@@ -16,19 +18,25 @@ const button = cva([], {
 });
 export default function MiniButton({
   children,
+  loading,
   variant = "base",
   ...props
 }: Props) {
   return (
     <button
       {...props}
+      disabled={loading}
       className={clsx(
         button({ variant }),
         "rounded-[12px] border py-1.5 px-2 text-[0.75rem]",
         props.className
       )}
     >
-      {children}
+      {loading ? (
+        <Spinner size={14} color="var(--color-neutrals-700)" />
+      ) : (
+        children
+      )}
     </button>
   );
 }
