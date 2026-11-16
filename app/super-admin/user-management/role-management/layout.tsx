@@ -9,10 +9,10 @@ const TABS = [
     label: "Roles",
     href: "/super-admin/user-management/role-management/roles",
   },
-  {
-    label: "Role Editor",
-    href: "/super-admin/user-management/role-management/role-editor",
-  },
+  // {
+  //   label: "Role Editor",
+  //   href: "/super-admin/user-management/role-management/role-editor",
+  // },
   {
     label: "Permission catalog",
     href: "/super-admin/user-management/role-management/permission-catalog",

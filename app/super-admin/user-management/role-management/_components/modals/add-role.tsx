@@ -18,6 +18,7 @@ import { useListPermissions } from "@/features/role-management/api/list-permissi
 import { Spinner } from "@/components/animations";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { MiniButton } from "@/components/common";
 
 const AddRole = () => {
   const router = useProgressRouter();
@@ -54,6 +55,23 @@ const AddRole = () => {
         ? selectedPermissions.filter((permission) => permission !== key)
         : [...selectedPermissions, key]
     );
+  };
+
+  const selectModulePermissions = (moduleKey: string) => {
+    if (isView) return;
+
+    const permissionModule = permissionsData?.modules.find(
+      (currentModule) => currentModule.key === moduleKey
+    );
+    if (!permissionModule) return;
+
+    const modulePermissionKeys = permissionModule.resources.flatMap((resource) =>
+      resource.permissions.map((permission) => permission.key)
+    );
+
+    permissionsField.onChange([
+      ...new Set([...selectedPermissions, ...modulePermissionKeys]),
+    ]);
   };
 
   const { data: permissionsData, isPending: isPermissionsPending } =
@@ -112,9 +130,7 @@ const AddRole = () => {
   return (
     <>
       <FormModal
-        title={
-          isView ? "View Role" : isEdit ? "Edit Role" : "Create New Role"
-        }
+        title={isView ? "View Role" : isEdit ? "Edit Role" : "Create New Role"}
         open={isOpen}
         onOpenChange={handleClose}
       >
@@ -176,13 +192,39 @@ const AddRole = () => {
                   ) : (
                     filteredModules.map((module) => (
                       <div key={module.key} className="flex flex-col gap-3">
-                        <Text
-                          scale={"content"}
-                          weight={"accent"}
-                          className="text-neutrals-700"
-                        >
-                          {module.label}
-                        </Text>
+                        <div className="bg-white rounded-t-ml border-grays-borders border px-4 py-2.5 flex justify-between">
+                          <div className="flex gap-2.5 items-center">
+                            <Text
+                              scale={"captionMobile"}
+                              weight={"accent"}
+                              className="text-neutrals-700"
+                            >
+                              {module.label}
+                            </Text>
+
+                            {/* {isEdit ||
+                              (isView && (
+                                <Text scale={"captionMobile"}>
+                                  {module.resources[0].permissions[0].}/
+                                  {module.resources.reduce(
+                                    (sum, current) =>
+                                      sum + current.permissions.length,
+                                    0
+                                  )}
+                                </Text>
+                              ))} */}
+                          </div>
+
+                          <MiniButton
+                            type="button"
+                            onClick={() => selectModulePermissions(module.key)}
+                          >
+                            <Text scale={"captionMobile"} weight={"accent"}>
+                              All
+                            </Text>
+                          </MiniButton>
+                        </div>
+
                         {module.resources.map((resource) => (
                           <div
                             key={resource.key}

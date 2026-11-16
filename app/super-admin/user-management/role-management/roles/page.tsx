@@ -181,6 +181,16 @@ export default function Body() {
                                   >
                                     View
                                   </MiniButton>
+
+                                  <MiniButton
+                                    onClick={() =>
+                                      router.push(
+                                        `?add-role=true&edit-role=${r.id}`
+                                      )
+                                    }
+                                  >
+                                    Edit
+                                  </MiniButton>
                                   <MiniButton
                                     onClick={() =>
                                       router.push(
