@@ -9,61 +9,57 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableWrapper,
 } from "@/components/ui/table";
-import clsx from "clsx";
-import { SearchInput } from "@/components/ui/form/input";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, CSSProperties, useEffect, useRef, useState } from "react";
 import { NoData } from "@/components/icons";
 import { Button } from "@/components/ui/custom-button";
 import { useProgressRouter } from "@/features/page-loader";
 import { useListRoles } from "@/features/role-management/api/list-roles";
-import AddRole from "../_components/add-role";
-import { DotsThreeVerticalIcon } from "@phosphor-icons/react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { DeleteModal } from "@/components/common";
+import AddRole from "../_components/modals/add-role";
+import { DeleteModal, MiniButton, Pagination } from "@/components/common";
 import { useDisableRole } from "@/features/role-management/api/disable-role";
 import { toast } from "sonner";
 import Counts from "./_components/counts";
+import { Lock1 } from "iconsax-reactjs";
+import { keepPreviousData } from "@tanstack/react-query";
+import { FilterType } from "./constants";
 
-const HEADROW = ["Role Name", "Permissions", "Date Created", "Action"];
+const HEADROW = ["Role", "Type", "Permissions", "Holders", "Status", "Action"];
+const FILTERS = ["All", "System", "Custom", "Disabled"];
 
 export default function Body() {
   const router = useProgressRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchFilter, setSearchFilter] = useState("");
-  const [popoverOpen, setPopoverOpen] = useState(false);
-  const [popoverOpenID, setPopoverOpenID] = useState<number | null>(null);
   const [deleteID, setDeleteID] = useState<number | null>(null);
-  const [searchKey, setSearchKey] = useState("");
-  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [filter, setFilter] = useState<string>("all");
 
+  const returnFilter: FilterType =
+    filter === "disabled"
+      ? { disabled: true }
+      : filter === "custom"
+      ? { role_type: "custom" }
+      : filter === "system"
+      ? { role_type: "system" }
+      : undefined;
+
+  //TODO: PAGINATION
   const {
     data: allRoles,
     isRefetching,
     refetch,
     error,
     isPending,
-  } = useListRoles();
-  const hasRoles = allRoles && allRoles.length > 0;
+  } = useListRoles(returnFilter, {
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
+  });
+  const hasRoles = allRoles && allRoles.data?.length > 0;
+  const metaData = allRoles?.meta;
 
-  const onSearchInputChange = (
-    e: ChangeEvent<HTMLInputElement, HTMLInputElement>
-  ) => {
-    const value = e.target.value;
-    setSearchFilter(value);
-    if (searchDebounceRef.current) {
-      clearTimeout(searchDebounceRef.current);
-    }
-    searchDebounceRef.current = setTimeout(() => {
-      setSearchKey(value.length > 2 ? value : "");
-      if (value.length <= 2) {
-        setCurrentPage(1);
-      }
-    }, 300);
+  const onPageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   const { mutate: deleteMutate, isPending: isDeletePending } = useDisableRole();
@@ -87,14 +83,6 @@ export default function Body() {
     );
   };
 
-  useEffect(() => {
-    return () => {
-      if (searchDebounceRef.current) {
-        clearTimeout(searchDebounceRef.current);
-      }
-    };
-  }, []);
-
   if (error) {
     return (
       <div className="w-fit mx-auto">
@@ -117,121 +105,193 @@ export default function Body() {
     );
   }
   return (
-    <div className="p-6 bg-white rounded-tr-ml">
-      <Counts />
+    <>
+      <div className="p-6 bg-white rounded-tr-ml mb-1">
+        <Counts />
+        <div className="h-8" />
 
-      <>
-        <AddRole />
-        <DeleteModal
-          title="Delete Role"
-          open={!!deleteID}
-          onOpenChange={() => setDeleteID(null)}
-          description="You are about to delete this role, do you want to proceed with this action."
-          onConfirm={onDelete}
-          confirmText="Delete role"
-          cancelText="Cancel"
-          loading={isDeletePending}
-        />
-        <div className="rounded-tr-ml flex-1 overflow-auto">
-          {isPending ? (
-            <div className="w-full flex items-center justify-center py-7">
-              <Spinner size={70} />
-            </div>
-          ) : hasRoles ? (
-            <Table className="m-0">
-              <TableHeader className="[&>tr>th:first-child]:!rounded-none [&>tr>th:first-child]:!border-0 [&>tr>th:first-child]:!pl-4 [&>tr>th:last-child]:!rounded-none [&>tr>th:last-child]:!border-0 [&>tr>th:last-child]:!pr-4">
-                <TableRow>
-                  {HEADROW.map((col) => {
-                    return (
-                      <TableHead
-                        className={clsx("text-neutrals-700")}
-                        key={col}
-                      >
-                        {col}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              </TableHeader>
-
-              <TableBody>
-                {allRoles.map((r, index) => {
-                  const date = new Date(r.created_at).toLocaleDateString();
-                  return (
-                    <TableRow key={index}>
-                      <TableCell>{titleCase(r.label) ?? "-"}</TableCell>
-                      <TableCell>{r.permissions_count ?? "-"}</TableCell>
-                      <TableCell>{date}</TableCell>
-                      <TableCell>
-                        <Popover
-                          open={popoverOpen && popoverOpenID === r.id}
-                          onOpenChange={() => {
-                            const open = popoverOpen && popoverOpenID === r.id;
-                            if (!open) {
-                              setPopoverOpen(true);
-                              setPopoverOpenID(r.id);
-                            } else {
-                              setPopoverOpen(false);
-                              setPopoverOpenID(null);
-                            }
-                          }}
-                        >
-                          <PopoverTrigger
-                            render={
-                              <button className="border-none rounded-full hover:bg-primary-100 transition-colors p-2">
-                                <DotsThreeVerticalIcon size={20} />
-                              </button>
-                            }
-                          />
-                          <PopoverContent className="w-48 overflow-hidden p-0 rounded-[16px] bg-white py-4 flex flex-col gap-2">
-                            <button
-                              onClick={() => {
-                                setPopoverOpen(false);
-                                setPopoverOpenID(null);
-                                router.push(
-                                  `/super-admin/user-management/role-management?edit-role=${r.id}`
-                                );
-                              }}
-                              className="h-8 text-left border-b-grays-borders pl-4 px-8 hover:bg-grays-borders transition-colors"
-                            >
-                              <Text className="text-left" scale={"caption"}>
-                                Edit
-                              </Text>
-                            </button>
-                            <button
-                              onClick={() => {
-                                setPopoverOpen(false);
-                                setPopoverOpenID(null);
-                                setDeleteID(r.id);
-                              }}
-                              className="h-8 text-left border-b-grays-borders pl-4 px-8 hover:bg-grays-borders transition-colors"
-                            >
-                              <Text className="text-left" scale={"caption"}>
-                                Delete
-                              </Text>
-                            </button>
-                          </PopoverContent>
-                        </Popover>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          ) : (
-            <>
-              <div className="w-fit mx-auto">
-                {" "}
-                <NoData
-                  title="No Staff"
-                  subTitle="You haven't added any staff yet, click the button above to make one"
-                  className="w-97.5 h-143.75"
-                />
+        <>
+          <AddRole />
+          <DeleteModal
+            title="Delete Role"
+            open={!!deleteID}
+            onOpenChange={() => setDeleteID(null)}
+            description="You are about to delete this role, do you want to proceed with this action."
+            onConfirm={onDelete}
+            confirmText="Delete role"
+            cancelText="Cancel"
+            loading={isDeletePending}
+          />
+          <div className="rounded-tr-ml flex-1 overflow-auto">
+            {isPending ? (
+              <div className="w-full flex items-center justify-center py-7">
+                <Spinner size={70} />
               </div>
-            </>
-          )}
+            ) : hasRoles ? (
+              <>
+                <div className="mb-8 flex gap-2 items-center flex-wrap">
+                  {FILTERS.map((f) => (
+                    <Filter
+                      key={f}
+                      label={f}
+                      onClick={() => setFilter(f.toLocaleLowerCase())}
+                      isActive={f.toLocaleLowerCase() === filter}
+                    />
+                  ))}
+                  {isRefetching && (
+                    <Spinner size={14} color="var(--color-neutrals-700)" />
+                  )}
+                </div>
+                <div className="rounded-ml bg-primary-bg p-2 border border-primary-100">
+                  <TableWrapper>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          {HEADROW.map((col, index) => {
+                            const isMiddle =
+                              index != 0 && index != HEADROW.length - 1;
+                            const style = isMiddle
+                              ? "border-t-[1px] border-b-[1px]"
+                              : "";
+                            return (
+                              <TableHead className={style} key={col}>
+                                {col}
+                              </TableHead>
+                            );
+                          })}
+                        </TableRow>
+                      </TableHeader>
+
+                      <TableBody>
+                        {allRoles.data?.map((r, index) => {
+                          const date = new Date(
+                            r.created_at
+                          ).toLocaleDateString();
+                          return (
+                            <TableRow key={index}>
+                              <TableCell>{titleCase(r.label) ?? "-"}</TableCell>
+                              <TableCell>
+                                {r.is_protected ? "System" : "Custom"}
+                              </TableCell>
+                              <TableCell>
+                                {r.permissions_count ?? "-"}
+                              </TableCell>
+                              <TableCell>{r.users_count ?? "-"}</TableCell>
+                              <TableCell>
+                                {r.is_active ? (
+                                  <Text
+                                    scale={"caption"}
+                                    className="text-success-300"
+                                  >
+                                    Active
+                                  </Text>
+                                ) : (
+                                  <Text
+                                    scale={"caption"}
+                                    className="text-warning-200"
+                                  >
+                                    Disabled
+                                  </Text>
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center gap-2">
+                                  <MiniButton
+                                    onClick={() => alert("Not implemented")}
+                                  >
+                                    View
+                                  </MiniButton>
+                                  <MiniButton
+                                    onClick={() => alert("Not implemented")}
+                                  >
+                                    Clone
+                                  </MiniButton>
+                                  {r.is_protected ? (
+                                    <div className="flex gap-1 items-center">
+                                      <Lock1
+                                        size={12}
+                                        variant="Bulk"
+                                        className="text-secondary-800"
+                                      />{" "}
+                                      Locked
+                                    </div>
+                                  ) : r.is_active ? (
+                                    <MiniButton variant="error">
+                                      Disable
+                                    </MiniButton>
+                                  ) : !r.is_active ? (
+                                    <MiniButton variant="success">
+                                      Enable
+                                    </MiniButton>
+                                  ) : null}
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </TableWrapper>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="w-fit mx-auto">
+                  {" "}
+                  <NoData
+                    title="No Roles"
+                    subTitle="You haven't added any roles yet, click the button above to make one"
+                    className="w-97.5 h-143.75"
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        </>
+      </div>
+
+      {allRoles?.data.length && (
+        <div className="rounded-b-ml pb-4">
+          <Pagination
+            currentPage={metaData?.current_page ?? currentPage}
+            totalItems={metaData?.total ?? 0}
+            pageSize={metaData?.per_page ?? 14}
+            onPageChange={onPageChange}
+          />
         </div>
-      </>
-    </div>
+      )}
+    </>
   );
 }
+
+const Filter = ({
+  isActive,
+  onClick,
+  label,
+}: {
+  isActive: boolean;
+  onClick: () => void;
+  label: string;
+}) => {
+  const activeStyle: CSSProperties = {
+    color: "white",
+    backgroundColor: "var(--color-primary-900)",
+  };
+  const styles: CSSProperties = {
+    backgroundColor: "transparent",
+  };
+  return (
+    <button
+      onClick={onClick}
+      style={isActive ? activeStyle : styles}
+      className="px-6 py-2 rounded-sm"
+    >
+      <Text
+        style={{ color: isActive ? "white" : "var(--color-neutrals-700)" }}
+        scale={"caption"}
+      >
+        {label}
+      </Text>
+    </button>
+  );
+};

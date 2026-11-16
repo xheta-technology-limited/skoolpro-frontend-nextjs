@@ -17,7 +17,7 @@ import { NoData } from "@/components/icons";
 import { Button } from "@/components/ui/custom-button";
 import { useProgressRouter } from "@/features/page-loader";
 import { useListRoles } from "@/features/role-management/api/list-roles";
-import AddRole from "./add-role";
+import AddRole from "./modals/add-role";
 import { DotsThreeVerticalIcon } from "@phosphor-icons/react";
 import {
   Popover,

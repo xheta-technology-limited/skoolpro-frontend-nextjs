@@ -1,17 +1,38 @@
 import { api } from "@/lib/api";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { ServerErrorResponse } from "@/types/api";
+import { PaginationMeta, ServerErrorResponse } from "@/types/api";
 import { roleKeys } from "./query-keys";
 import { Role } from "../types/api/role";
 
-export const listRoles = (): Promise<Role[]> => api.get("roles");
+type Response = {
+  meta: PaginationMeta;
+  data: Role[];
+};
+export type ListRolesParams = {
+  disabled?: boolean;
+  role_type?: "custom" | "system";
+};
+export const listRoles = (params?: ListRolesParams): Promise<Response> => {
+  const searchParams = new URLSearchParams();
+
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined) {
+        searchParams.set(key, String(value));
+      }
+    }
+  }
+  const query = searchParams.toString();
+  return api.get(`roles${query ? `?${query}` : ""}`, { raw: true });
+};
 
 export const useListRoles = (
-  options?: Partial<UseQueryOptions<Role[], ServerErrorResponse>>
+  params?: ListRolesParams,
+  options?: Partial<UseQueryOptions<Response, ServerErrorResponse>>
 ) => {
-  return useQuery<Role[], ServerErrorResponse>({
-    queryFn: listRoles,
-    queryKey: roleKeys.all,
+  return useQuery<Response, ServerErrorResponse>({
+    queryFn: () => listRoles(params),
+    queryKey: roleKeys.filtered(params?.role_type, params?.disabled),
     ...options,
   });
 };

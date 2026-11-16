@@ -8,3 +8,4 @@ export { default as DetailField } from "./detail-field/detail-field";
 export { default as MiniBadge } from "./mini-badge/mini-badge";
 export { default as BackButton } from "./back-button/back-button";
 export { default as ButtonLink } from "../ui/custom-button/button-link";
+export { default as MiniButton } from "./mini-button/button";

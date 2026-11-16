@@ -1,7 +1,6 @@
 "use client";
 import { Text } from "@/components/ui";
 import { useGetRoleStats } from "@/features/role-management/api/get-stats";
-import { useEffect } from "react";
 
 export default function Counts() {
   const { data, isPending } = useGetRoleStats({ refetchOnWindowFocus: false });
