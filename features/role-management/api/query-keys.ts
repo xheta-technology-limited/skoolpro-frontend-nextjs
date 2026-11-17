@@ -15,3 +15,9 @@ export const roleKeys = {
 export const permissionKeys = {
   all: ["permissions"] as const,
 };
+
+export const restrictionKeys = {
+  all: ["restrictions"] as const,
+  filtered: (denyableType: string, denyableId: string) =>
+    ["restrictions", "filtered", denyableType, denyableId] as const,
+};
