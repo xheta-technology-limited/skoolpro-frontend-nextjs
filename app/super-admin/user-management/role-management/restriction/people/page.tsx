@@ -8,6 +8,7 @@ import { NoData } from "@/components/icons";
 import { Button } from "@/components/ui/custom-button";
 import { useState } from "react";
 import { Spinner } from "@/components/animations";
+import { keepPreviousData } from "@tanstack/react-query";
 import {
   TableWrapper,
   TableHeader,
@@ -22,6 +23,7 @@ import { useProgressRouter } from "@/features/page-loader";
 
 const HEADROW = ["Name", "Role", "Restrictions", "Action"];
 export default function People() {
+  const [currentPage, setCurrentPage] = useState(1);
   const {
     data: serverData,
     isPending,
@@ -29,12 +31,14 @@ export default function People() {
     isError,
     refetch,
     isRefetching,
-  } = useListUsers();
+  } = useListUsers(
+    { page: currentPage },
+    { placeholderData: keepPreviousData }
+  );
   const router = useProgressRouter();
 
   const data = serverData?.data;
   const metaData = serverData?.meta;
-  const [currentPage, setCurrentPage] = useState(1);
   if (isPending) {
     return (
       <div className="w-full flex items-center justify-center py-7">
@@ -113,7 +117,7 @@ export default function People() {
         </div>
       </div>
 
-      {data && data.length && (
+      {data && data.length > 0 && (
         <div className="rounded-b-ml pb-4">
           <Pagination
             currentPage={metaData?.current_page ?? currentPage}

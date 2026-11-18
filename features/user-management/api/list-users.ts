@@ -9,16 +9,32 @@ interface UsersResponse {
   meta: PaginationMeta;
 }
 
-export const listUsers = (): Promise<UsersResponse> => {
-  return api.get("users", { raw: true });
+export type ListUsersParams = {
+  page?: number;
+  [key: string]: string | number | undefined;
+};
+
+export const listUsers = (params?: ListUsersParams): Promise<UsersResponse> => {
+  const searchParams = new URLSearchParams();
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined) {
+        searchParams.set(key, String(value));
+      }
+    }
+  }
+  const query = searchParams.toString();
+  return api.get(`users${query ? `?${query}` : ""}`, { raw: true });
 };
 
 export const useListUsers = (
+  params?: ListUsersParams,
   options?: Partial<UseQueryOptions<UsersResponse, ServerErrorResponse>>
 ) => {
   return useQuery<UsersResponse, ServerErrorResponse>({
-    queryFn: listUsers,
-    queryKey: userKeys.all,
+    queryFn: () => listUsers(params),
+    queryKey:
+      params?.page !== undefined ? userKeys.byPage(params.page) : userKeys.all,
     ...options,
   });
 };

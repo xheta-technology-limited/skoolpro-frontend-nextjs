@@ -105,14 +105,17 @@ export default function Body() {
               <div className="w-full flex items-center justify-center py-7">
                 <Spinner size={70} />
               </div>
-            ) : hasRoles ? (
+            ) : (
               <>
                 <div className="mb-8 flex gap-2 items-center flex-wrap">
                   {FILTERS.map((f) => (
                     <Filter
                       key={f}
                       label={f}
-                      onClick={() => setFilter(f.toLocaleLowerCase())}
+                      onClick={() => {
+                        setFilter(f.toLocaleLowerCase());
+                        setCurrentPage(1);
+                      }}
                       isActive={f.toLocaleLowerCase() === filter}
                     />
                   ))}
@@ -120,145 +123,148 @@ export default function Body() {
                     <Spinner size={14} color="var(--color-neutrals-700)" />
                   )}
                 </div>
-                <div className="rounded-ml bg-primary-bg p-2 border border-primary-100">
-                  <TableWrapper>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          {HEADROW.map((col, index) => {
-                            const isMiddle =
-                              index != 0 && index != HEADROW.length - 1;
-                            const style = isMiddle
-                              ? "border-t-[1px] border-b-[1px]"
-                              : "";
+                {hasRoles ? (
+                  <div className="rounded-ml bg-primary-bg p-2 border border-primary-100">
+                    <TableWrapper>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            {HEADROW.map((col, index) => {
+                              const isMiddle =
+                                index != 0 && index != HEADROW.length - 1;
+                              const style = isMiddle
+                                ? "border-t-[1px] border-b-[1px]"
+                                : "";
+                              return (
+                                <TableHead className={style} key={col}>
+                                  {col}
+                                </TableHead>
+                              );
+                            })}
+                          </TableRow>
+                        </TableHeader>
+
+                        <TableBody>
+                          {allRoles.data?.map((r, index) => {
+                            const date = new Date(
+                              r.created_at
+                            ).toLocaleDateString();
                             return (
-                              <TableHead className={style} key={col}>
-                                {col}
-                              </TableHead>
+                              <TableRow key={index}>
+                                <TableCell>
+                                  {titleCase(r.label) ?? "-"}
+                                </TableCell>
+                                <TableCell>
+                                  {r.is_protected ? "System" : "Custom"}
+                                </TableCell>
+                                <TableCell>
+                                  {r.permissions_count ?? "-"}
+                                </TableCell>
+                                <TableCell>{r.users_count ?? "-"}</TableCell>
+                                <TableCell>
+                                  {r.is_active ? (
+                                    <Text
+                                      scale={"caption"}
+                                      className="text-success-300"
+                                    >
+                                      Active
+                                    </Text>
+                                  ) : (
+                                    <Text
+                                      scale={"caption"}
+                                      className="text-warning-200"
+                                    >
+                                      Disabled
+                                    </Text>
+                                  )}
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-2">
+                                    <MiniButton
+                                      onClick={() =>
+                                        router.push(`?view-role=${r.id}`)
+                                      }
+                                    >
+                                      View
+                                    </MiniButton>
+
+                                    <MiniButton
+                                      onClick={() =>
+                                        router.push(
+                                          `?add-role=true&edit-role=${r.id}`
+                                        )
+                                      }
+                                    >
+                                      Edit
+                                    </MiniButton>
+                                    <MiniButton
+                                      onClick={() =>
+                                        router.push(
+                                          `?clone-role=true&role-id=${r.id}`
+                                        )
+                                      }
+                                    >
+                                      Clone
+                                    </MiniButton>
+                                    {r.is_protected ? (
+                                      <div className="flex gap-1 items-center">
+                                        <Lock1
+                                          size={12}
+                                          variant="Bulk"
+                                          className="text-secondary-800"
+                                        />{" "}
+                                        Locked
+                                      </div>
+                                    ) : r.is_active ? (
+                                      <MiniButton
+                                        variant="error"
+                                        loading={
+                                          isDisablePending &&
+                                          disablingID === r.id
+                                        }
+                                        onClick={() => {
+                                          setDisablingID(r.id);
+                                          disableMutate(
+                                            { id: r.id },
+                                            {
+                                              onSettled: () =>
+                                                setDisablingID(null),
+                                            }
+                                          );
+                                        }}
+                                      >
+                                        Disable
+                                      </MiniButton>
+                                    ) : !r.is_active ? (
+                                      <MiniButton
+                                        loading={isEnablePending}
+                                        onClick={() => {
+                                          enableMutate({ id: r.id });
+                                        }}
+                                        variant="success"
+                                      >
+                                        Enable
+                                      </MiniButton>
+                                    ) : null}
+                                  </div>
+                                </TableCell>
+                              </TableRow>
                             );
                           })}
-                        </TableRow>
-                      </TableHeader>
-
-                      <TableBody>
-                        {allRoles.data?.map((r, index) => {
-                          const date = new Date(
-                            r.created_at
-                          ).toLocaleDateString();
-                          return (
-                            <TableRow key={index}>
-                              <TableCell>{titleCase(r.label) ?? "-"}</TableCell>
-                              <TableCell>
-                                {r.is_protected ? "System" : "Custom"}
-                              </TableCell>
-                              <TableCell>
-                                {r.permissions_count ?? "-"}
-                              </TableCell>
-                              <TableCell>{r.users_count ?? "-"}</TableCell>
-                              <TableCell>
-                                {r.is_active ? (
-                                  <Text
-                                    scale={"caption"}
-                                    className="text-success-300"
-                                  >
-                                    Active
-                                  </Text>
-                                ) : (
-                                  <Text
-                                    scale={"caption"}
-                                    className="text-warning-200"
-                                  >
-                                    Disabled
-                                  </Text>
-                                )}
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex items-center gap-2">
-                                  <MiniButton
-                                    onClick={() =>
-                                      router.push(`?view-role=${r.id}`)
-                                    }
-                                  >
-                                    View
-                                  </MiniButton>
-
-                                  <MiniButton
-                                    onClick={() =>
-                                      router.push(
-                                        `?add-role=true&edit-role=${r.id}`
-                                      )
-                                    }
-                                  >
-                                    Edit
-                                  </MiniButton>
-                                  <MiniButton
-                                    onClick={() =>
-                                      router.push(
-                                        `?clone-role=true&role-id=${r.id}`
-                                      )
-                                    }
-                                  >
-                                    Clone
-                                  </MiniButton>
-                                  {r.is_protected ? (
-                                    <div className="flex gap-1 items-center">
-                                      <Lock1
-                                        size={12}
-                                        variant="Bulk"
-                                        className="text-secondary-800"
-                                      />{" "}
-                                      Locked
-                                    </div>
-                                  ) : r.is_active ? (
-                                    <MiniButton
-                                      variant="error"
-                                      loading={
-                                        isDisablePending && disablingID === r.id
-                                      }
-                                      onClick={() => {
-                                        setDisablingID(r.id);
-                                        disableMutate(
-                                          { id: r.id },
-                                          {
-                                            onSettled: () =>
-                                              setDisablingID(null),
-                                          }
-                                        );
-                                      }}
-                                    >
-                                      Disable
-                                    </MiniButton>
-                                  ) : !r.is_active ? (
-                                    <MiniButton
-                                      loading={isEnablePending}
-                                      onClick={() => {
-                                        enableMutate({ id: r.id });
-                                      }}
-                                      variant="success"
-                                    >
-                                      Enable
-                                    </MiniButton>
-                                  ) : null}
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </TableWrapper>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="w-fit mx-auto">
-                  {" "}
-                  <NoData
-                    title="No Roles"
-                    subTitle="You haven't added any roles yet, click the button above to make one"
-                    className="w-97.5 h-143.75"
-                  />
-                </div>
+                        </TableBody>
+                      </Table>
+                    </TableWrapper>
+                  </div>
+                ) : (
+                  <div className="w-fit mx-auto">
+                    {" "}
+                    <NoData
+                      title="No Roles"
+                      subTitle="You haven't added any roles yet, click the button above to make one"
+                      className="w-97.5 h-143.75"
+                    />
+                  </div>
+                )}
               </>
             )}
           </div>

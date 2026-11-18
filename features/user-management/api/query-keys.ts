@@ -5,6 +5,7 @@ export const templateKeys = {
 
 export const userKeys = {
   all: ["users"] as const,
+  byPage: (page: number) => ["users", "page", page] as const,
 };
 
 export const countKeys = {
