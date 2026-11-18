@@ -16,13 +16,13 @@ import {
 } from "@/components/ui/table";
 import { useProgressRouter } from "@/features/page-loader";
 import { useListPermissions } from "@/features/role-management/api/list-permissions";
+import { useListRestrictions } from "@/features/role-management/api/list-restrictions";
 import { formatPermission } from "@/features/role-management/helpers/formatPermission";
 import { titleCase } from "@/lib/helpers";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 
 export default function AddRestriction() {
-  const HEADROW = ["Current restrictions", "placeholder-content"];
   const searchParams = useSearchParams();
   const path = usePathname();
   const router = useProgressRouter();
@@ -35,6 +35,17 @@ export default function AddRestriction() {
   const isOpen =
     path.includes("/restriction") &&
     searchParams.get("add-restriction") === "true";
+
+  const { data: restrictions, isPending: isRestrictionsPending } =
+    useListRestrictions(dType || "", userId || "", {
+      refetchOnWindowFocus: false,
+      enabled: !!dType && !!userId,
+    });
+
+  const HEADROW = [
+    "Current restrictions",
+    `${restrictions?.length} restrictions`,
+  ];
 
   const { data: perms, isPending: isPermsPending } = useListPermissions();
 
@@ -51,7 +62,7 @@ export default function AddRestriction() {
               "/super-admin/user-management/role-management/restriction/people"
             )
       }
-      title={name}
+      title={titleCase(name || "")}
       icon={
         <Text
           scale={"highlight"}
@@ -63,40 +74,78 @@ export default function AddRestriction() {
       }
     >
       <div>
-        <div className="rounded-ml bg-primary-bg p-2 border border-primary-100 mb-6">
-          <TableWrapper>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  {HEADROW.map((col, index) => {
-                    const isMiddle = index != 0 && index != HEADROW.length - 1;
-                    const style = isMiddle
-                      ? "border-t-[1px] border-b-[1px]"
-                      : "";
-                    return (
-                      <TableHead className={style} key={col}>
-                        {col}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              </TableHeader>
+        {restrictions && restrictions?.length > 0 && (
+          <div className="rounded-ml bg-primary-bg p-2 border border-primary-100 mb-6">
+            <TableWrapper>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {HEADROW.map((col, index) => {
+                      const isMiddle =
+                        index != 0 && index != HEADROW.length - 1;
+                      const style = isMiddle
+                        ? "border-t-[1px] border-b-[1px]"
+                        : "";
+                      return (
+                        <TableHead className={style} key={col}>
+                          {col}
+                        </TableHead>
+                      );
+                    })}
+                  </TableRow>
+                </TableHeader>
 
-              <TableBody>
-                {/* {allRoles.data?.map((r, index) =>  */}
+                <TableBody>
+                  {restrictions.map((r) => (
+                    <TableRow key={r.id}>
+                      <TableCell>
+                        <Text
+                          as="span"
+                          scale={"contentMobile"}
+                          className="text-neutrals-900"
+                        >
+                          {formatPermission(r.permission)}
+                        </Text>
+                        <br />
+                        <Text
+                          as="span"
+                          scale={"captionMobile"}
+                          className="text-neutrals-600"
+                        >
+                          {r.reason}
+                        </Text>
+                        <br />
+                        <Text as="span" scale={"footnote"}>
+                          {r.created_by && (
+                            <span>{titleCase(r.created_by || "")}</span>
+                          )}
+                          {r.created_at && r.created_by && <span> · </span>}
+                          {r.created_at && (
+                            <span>
+                              {new Date(r.created_at).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                }
+                              )}
+                            </span>
+                          )}
+                        </Text>
+                      </TableCell>
+                      <TableCell>
+                        <MiniButton>Revoke</MiniButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
 
-                <TableRow key={""}>
-                  <TableCell>{titleCase("poopydoopy") ?? "-"}</TableCell>
-                  <TableCell>
-                    <MiniButton>Revoke</MiniButton>
-                  </TableCell>
-                </TableRow>
-
-                {/* )} */}
-              </TableBody>
-            </Table>
-          </TableWrapper>
-        </div>
+                  {/* )} */}
+                </TableBody>
+              </Table>
+            </TableWrapper>
+          </div>
+        )}
 
         <div className="border border-grays-borders p-4 rounded-ml">
           <Text
@@ -127,25 +176,25 @@ export default function AddRestriction() {
             {perms && (
               <div className="border border-grays-borders flex flex-col rounded-[8px] max-h-36 overflow-auto">
                 {perms?.modules.map((p) => (
-                  <>
-                    {p.resources.map((r, idx) => (
-                      <>
+                  <Fragment key={p.key}>
+                    {p.resources.map((r) => (
+                      <Fragment key={r.key}>
                         {r.permissions.map((per) => (
                           <div
-                            key={`${per.key}-${p.key}`}
+                            key={`${p.key}-${r.key}-${per.key}`}
                             className="px-2 py-4 border-b border-b-grays-borders"
                           >
                             <Text
                               className="text-neutrals-800"
-                              scale={"captionMobile"}
+                              scale="captionMobile"
                             >
                               {formatPermission(per.key)}
                             </Text>
                           </div>
                         ))}
-                      </>
+                      </Fragment>
                     ))}
-                  </>
+                  </Fragment>
                 ))}
               </div>
             )}
