@@ -65,8 +65,8 @@ const AddRole = () => {
     );
     if (!permissionModule) return;
 
-    const modulePermissionKeys = permissionModule.resources.flatMap((resource) =>
-      resource.permissions.map((permission) => permission.key)
+    const modulePermissionKeys = permissionModule.resources.flatMap(
+      (resource) => resource.permissions.map((permission) => permission.key)
     );
 
     permissionsField.onChange([
@@ -173,14 +173,7 @@ const AddRole = () => {
                   </button>
                 </div>
 
-                <Text
-                  scale={"content"}
-                  weight={"accent"}
-                  className="text-neutrals-700"
-                >
-                  Assign permissions
-                </Text>
-                <div className="bg-primary-bg rounded-ml flex flex-col gap-4 p-2 max-h-[45vh] overflow-y-auto overscroll-contain">
+                <div className="rounded-ml flex flex-col gap-4 p-2 max-h-[45vh] overflow-y-auto overscroll-contain">
                   {isPermissionsPending ? (
                     <Text scale={"content"} className="text-neutrals-500 p-2">
                       Loading permissions...
@@ -228,17 +221,18 @@ const AddRole = () => {
                         {module.resources.map((resource) => (
                           <div
                             key={resource.key}
-                            className="flex flex-col gap-2"
+                            className="flex flex-col gap-2 bg-primary-bg rounded-ml p-2"
                           >
                             <Text
                               scale={"caption"}
-                              className="text-neutrals-500"
+                              className="text-neutrals-800"
                             >
                               {resource.label}
                             </Text>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                               {resource.permissions.map((permission) => (
                                 <CompactCheckbox
+                                  className="py-2"
                                   key={permission.key}
                                   label={permission.label}
                                   name="permissions"
