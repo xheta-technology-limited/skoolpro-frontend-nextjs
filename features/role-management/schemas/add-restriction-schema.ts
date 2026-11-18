@@ -5,7 +5,7 @@ export const addRestrictionSchema = z.object({
   denyable_type: requiredString,
   denyable_id: requiredString,
   permission: requiredString,
-  reason: requiredString,
+  reason: z.string().optional(),
 });
 
 export type AddRestrictionFormData = z.infer<typeof addRestrictionSchema>;

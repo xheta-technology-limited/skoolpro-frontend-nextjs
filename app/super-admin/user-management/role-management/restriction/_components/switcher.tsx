@@ -20,7 +20,7 @@ export default function Switcher() {
     {
       label: "Roles",
       isActive: searchParams.includes("/restriction/roles"),
-      onClick: () => () =>
+      onClick: () =>
         router.push(
           "/super-admin/user-management/role-management/restriction/roles"
         ),
