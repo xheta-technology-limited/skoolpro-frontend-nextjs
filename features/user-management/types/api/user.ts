@@ -1,0 +1,26 @@
+export type User = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  middle_name: string | null;
+  full_name: string;
+  email: string;
+  phone: string | null;
+  username: string | null;
+  active_role: string;
+  email_verified_at: string | null;
+  is_staff: number;
+  status: string;
+  login_count: number;
+  last_login_at: string | null;
+  timezone: string;
+  password_changed_at: string | null;
+  failed_login_attempts: number;
+  locked_until: string | null;
+  last_failed_login_at: string | null;
+  mfa_enabled: boolean;
+  must_change_password: boolean;
+  denials_count: number;
+  created_at: string;
+  updated_at: string;
+};

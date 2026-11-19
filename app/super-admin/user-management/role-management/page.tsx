@@ -1,14 +1,5 @@
-import Header from "./_components/header/header";
-import Body from "./_components/body";
-import { Suspense } from "react";
+import { redirect } from "next/navigation";
 
 export default function RoleManagement() {
-  return (
-    <div className="flex flex-col h-full">
-      <Header />
-      <Suspense>
-        <Body />
-      </Suspense>
-    </div>
-  );
+  redirect("/super-admin/user-management/role-management/roles");
 }

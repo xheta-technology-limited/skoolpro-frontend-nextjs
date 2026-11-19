@@ -3,6 +3,11 @@ export const templateKeys = {
   detail: (ent: string) => ["template", ent] as const,
 };
 
+export const userKeys = {
+  all: ["users"] as const,
+  byPage: (page: number) => ["users", "page", page] as const,
+};
+
 export const countKeys = {
   all: ["count", "people"] as const,
 };
