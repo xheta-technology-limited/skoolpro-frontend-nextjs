@@ -41,6 +41,46 @@ export const dashboardNavigation: DashboardNavigationItem[] = [
         href: "/super-admin/user-management/staff-management",
         icon: UserOctagon,
       },
+      {
+        label: "Role Management",
+        href: "/super-admin/user-management/role-management/roles",
+        icon: UserOctagon,
+        keywords: [
+          "role",
+          "roles",
+          "permission",
+          "permissions",
+          "restriction",
+          "restrictions",
+          "access control",
+        ],
+        children: [
+          {
+            label: "Roles",
+            href: "/super-admin/user-management/role-management/roles",
+            icon: null,
+            keywords: ["roles", "role list", "create role", "clone role"],
+          },
+          {
+            label: "Permission Catalog",
+            href: "/super-admin/user-management/role-management/permission-catalog",
+            icon: null,
+            keywords: ["permissions", "catalog"],
+          },
+          {
+            label: "Restrictions (People)",
+            href: "/super-admin/user-management/role-management/restriction/people",
+            icon: null,
+            keywords: ["restrictions", "people", "user restriction"],
+          },
+          {
+            label: "Restrictions (Roles)",
+            href: "/super-admin/user-management/role-management/restriction/roles",
+            icon: null,
+            keywords: ["restrictions", "role restriction"],
+          },
+        ],
+      },
     ],
   },
   {

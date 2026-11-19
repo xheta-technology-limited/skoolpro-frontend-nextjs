@@ -1,7 +1,7 @@
 "use client";
 
 import { useFormContext, useWatch } from "react-hook-form";
-import clsx from "clsx";
+import { cn } from "@/lib/utils";
 import { SquareTickNull } from "@/components/icons";
 import { TickSquare } from "iconsax-reactjs";
 import { XIcon } from "@phosphor-icons/react";
@@ -12,6 +12,7 @@ type Props = {
   id: string;
   subLabel?: string;
   disabled?: boolean;
+  className?: string;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 export default function CompactCheckbox({
@@ -22,6 +23,7 @@ export default function CompactCheckbox({
   disabled,
   checked: controlledChecked,
   onChange,
+  className,
   ...props
 }: Props) {
   const {
@@ -43,9 +45,10 @@ export default function CompactCheckbox({
     <>
       <label
         htmlFor={id}
-        className={clsx(
+        className={cn(
           "px-4 py-4.75 bg-white border border-grays-borders rounded-[8px] flex justify-between items-center",
-          disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+          disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
+          className
         )}
       >
         <div className="flex items-center">
@@ -58,7 +61,7 @@ export default function CompactCheckbox({
             type="checkbox"
             id={id}
             disabled={disabled}
-            className={clsx(
+            className={cn(
               "absolute inset-0 w-full h-full opacity-0 cursor-pointer",
               error && "border-red-500"
             )}
